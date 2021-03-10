@@ -1,0 +1,39 @@
+/*-----------------------------------------------------------------------------------
+
+    Theme Name: Kidszone - Kids Education and Shop Template
+    Description: Kids Education and Shop Template
+    Author: Chitrakoot Web
+    Version: 1.0
+
+-----------------------------------------------------------------------------------*/
+
+/* ----------------------------------------------------------------
+			[ All CSS Plugins & Default Classes File ]
+-----------------------------------------------------------------*/
+
+/* == bootstrap == */
+@import url("plugins/bootstrap.min.css");
+
+/* == animate Headline == */
+@import url("plugins/animate.css");
+
+/* == fontawesome icon font == */
+@import url("plugins/fontawesome-all.min.css");
+
+/* == magnific-popup == */
+@import url("plugins/magnific-popup.css");
+
+/* == owl.carousel == */
+@import url("plugins/owl.carousel.min.css");
+
+/* == zoom css == */
+@import url("plugins/xzoom.css");
+
+/* == default classes == */
+@import url("plugins/default.css");
+
+/* == navigation == */
+@import url("plugins/nav-menu.css");
+
+/* == range slider == */
+@import url("plugins/ion.rangeSlider.min.css");
