@@ -501,12 +501,23 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Data\Models\ContactPage.generated.cs" />
+    <Compile Include="App_Data\Models\ContentBoxWithLink.generated.cs" />
+    <Compile Include="App_Data\Models\ContentPage.generated.cs" />
+    <Compile Include="App_Data\Models\CourseBox.generated.cs" />
+    <Compile Include="App_Data\Models\FAqgroup.generated.cs" />
+    <Compile Include="App_Data\Models\FAqitem.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />
     <Compile Include="App_Data\Models\Home.generated.cs" />
+    <Compile Include="App_Data\Models\HomeScroller.generated.cs" />
     <Compile Include="App_Data\Models\Image.generated.cs" />
+    <Compile Include="App_Data\Models\LessonGroup.generated.cs" />
+    <Compile Include="App_Data\Models\LessonItem.generated.cs" />
     <Compile Include="App_Data\Models\Member.generated.cs" />
+    <Compile Include="App_Data\Models\Review.generated.cs" />
     <Compile Include="App_Data\Models\SEO.generated.cs" />
+    <Compile Include="App_Data\Models\SocialLink.generated.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -552,6 +563,15 @@
     <Content Include="Views\Partials\BlockList\Default.cshtml" />
     <Content Include="Views\Home.cshtml" />
     <Content Include="Views\Master.cshtml" />
+    <Content Include="Views\FAQGroup.cshtml" />
+    <Content Include="Views\FAQItem.cshtml" />
+    <Content Include="Views\LessonGroup.cshtml" />
+    <Content Include="Views\LessonItem.cshtml" />
+    <Content Include="Views\ReviewItem.cshtml" />
+    <Content Include="Views\ReviewList.cshtml" />
+    <Content Include="Views\SocialLink.cshtml" />
+    <Content Include="Views\ContactPage.cshtml" />
+    <Content Include="Views\ContentPage.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

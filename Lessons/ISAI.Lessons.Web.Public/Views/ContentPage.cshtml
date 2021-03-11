@@ -1,0 +1,44 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ContentPage>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+
+
+<!-- start page title section -->
+<section class="page-title-section bg-img cover-background bg-yellow" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
+    <div class="container">
+        <div class="page-title">
+            <h1>@Model.Title</h1>
+            <div class="page-link">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="javascript:void(0)">@Model.Name</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title section -->
+<!-- start service details section -->
+<section>
+    <div class="container">
+        
+            <div class="row">
+
+                <div class="margin-40px-bottom sm-margin-30px-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-12  xs-margin-25px-bottom">
+                            <h4 class="margin-15px-bottom">@Model.SubTitle</h4>
+                       @Model.HTmlcontent </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+</section>
+<!-- end service details section -->

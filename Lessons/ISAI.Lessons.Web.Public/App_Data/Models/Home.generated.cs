@@ -45,6 +45,146 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
+		/// Background Image: 1920x900
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("backgroundImage")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent BackgroundImage => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("backgroundImage");
+
+		///<summary>
+		/// Button Link
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("buttonLink")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent ButtonLink => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("buttonLink");
+
+		///<summary>
+		/// Button Text
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("buttonText")]
+		public string ButtonText => this.Value<string>("buttonText");
+
+		///<summary>
+		/// Contact Address
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("contactAddress")]
+		public string ContactAddress => this.Value<string>("contactAddress");
+
+		///<summary>
+		/// Contact Email
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("contactEmail")]
+		public string ContactEmail => this.Value<string>("contactEmail");
+
+		///<summary>
+		/// Contact Phone
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("contactPhone")]
+		public string ContactPhone => this.Value<string>("contactPhone");
+
+		///<summary>
+		/// Context Boxes
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("contextBoxes")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContentBoxWithLink> ContextBoxes => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContentBoxWithLink>>("contextBoxes");
+
+		///<summary>
+		/// Courses
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("courses")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.CourseBox> Courses => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.CourseBox>>("courses");
+
+		///<summary>
+		/// Footer Logo
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("footerLogo")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent FooterLogo => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("footerLogo");
+
+		///<summary>
+		/// Footer Text
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("footerText")]
+		public global::System.Web.IHtmlString FooterText => this.Value<global::System.Web.IHtmlString>("footerText");
+
+		///<summary>
+		/// Footer Title
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("footerTitle")]
+		public string FooterTitle => this.Value<string>("footerTitle");
+
+		///<summary>
+		/// Links
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("links")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link> Links => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link>>("links");
+
+		///<summary>
+		/// Main Scroller
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("mainScroller")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.HomeScroller> MainScroller => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.HomeScroller>>("mainScroller");
+
+		///<summary>
+		/// Reviews
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("reviews")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.Review> Reviews => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.Review>>("reviews");
+
+		///<summary>
+		/// Review Title
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("reviewTitle")]
+		public string ReviewTitle => this.Value<string>("reviewTitle");
+
+		///<summary>
+		/// Social Links
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("socialLinks")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.SocialLink> SocialLinks => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.SocialLink>>("socialLinks");
+
+		///<summary>
+		/// Text
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("text")]
+		public global::System.Web.IHtmlString Text => this.Value<global::System.Web.IHtmlString>("text");
+
+		///<summary>
+		/// Title
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("title")]
+		public string Title => this.Value<string>("title");
+
+		///<summary>
+		/// Top Left Logo
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("topLeftLogo")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent TopLeftLogo => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("topLeftLogo");
+
+		///<summary>
+		/// Top Menu
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("topMenu")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link> TopMenu => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link>>("topMenu");
+
+		///<summary>
 		/// META Description
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]

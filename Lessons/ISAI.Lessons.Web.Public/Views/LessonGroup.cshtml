@@ -1,0 +1,214 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.LessonGroup>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+
+
+    var childLessonGroups = Model.Children<LessonGroup>();
+    var childLessons = Model.Children<LessonItem>();
+}
+
+
+<!-- start page title section -->
+<section class="page-title-section bg-img cover-background bg-yellow" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
+    <div class="container">
+        <div class="page-title">
+            <h1>@Model.Title</h1>
+            <div class="page-link">
+                <ul>
+
+
+                    @{
+
+                        var ancestors = Model.Ancestors().Reverse().ToList();
+
+                        foreach (var ancestor in ancestors)
+                        {
+
+
+                                if (ancestor.Id == Model.Root().Id)
+                                {
+                                <li><a href="/">Home</a></li>
+                                }
+                                else
+                                {
+                                <li>
+                                    <a href="@ancestor.Url()">@ancestor.Name</a>
+                                </li>
+                                }
+
+                            }
+
+
+                        }
+
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title section -->
+<!-- start our courses section -->
+<section>
+    <div class="container">
+
+        <div class="section-heading">
+            <h3>@Model.Title</h3>
+
+            @Model.HTmlcontent
+            <span class="title-separator"></span>
+        </div>
+
+        <div class="row no-gutters">
+
+            @if (childLessonGroups != null && childLessonGroups.Count() > 0)
+            {
+
+                var courseCounter = 0;
+
+                foreach (LessonGroup childLessonGroup in childLessonGroups)
+                {
+
+                    var courseColour = "";
+
+                    switch (courseCounter)
+                    {
+
+                        case 1:
+                            courseColour = "yellow";
+                            break;
+                        case 2:
+                            courseColour = "pink";
+                            break;
+                        case 3:
+                            courseColour = "green";
+                            break;
+                        case 4:
+                            courseColour = "orange";
+                            break;
+                        default:
+                            courseColour = "blue";
+                            break;
+                    }
+
+
+
+
+
+                    <div class="col-md-6 col-lg-6 margin-25px-bottom xs-margin-15px-bottom">
+                        <div class="courses-block @courseColour">
+                            @*<div class="courses-pic">
+                            <a href="course-details.html">
+                                <img src="img/courses/courses-1.jpg" alt="" />
+                            </a>
+                        </div>*@
+                            <div class="course-desc">
+                                <h4><a href="@childLessonGroup.Url()">@childLessonGroup.Title</a></h4>
+                                @childLessonGroup.HTmlcontent
+                            </div>
+                            <div class="course-details">
+                                <ul>
+                                    <li>
+                                        @childLessonGroup.BottomLeftText
+                                    </li>
+                                    <li>
+                                        @childLessonGroup.BottomRightText
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    courseCounter++;
+
+                    if (courseCounter > 4)
+                    {
+                        courseCounter = 0;
+                    }
+
+                }
+
+            }
+            else
+            {
+
+                if (childLessons != null && childLessons.Count() > 0)
+                {
+                    var courseCounter = 0;
+
+                    foreach (LessonItem childLesson in childLessons)
+                    {
+
+                        var courseColour = "";
+
+                        switch (courseCounter)
+                        {
+
+                            case 1:
+                                courseColour = "yellow";
+                                break;
+                            case 2:
+                                courseColour = "pink";
+                                break;
+                            case 3:
+                                courseColour = "green";
+                                break;
+                            case 4:
+                                courseColour = "orange";
+                                break;
+                            default:
+                                courseColour = "blue";
+                                break;
+                        }
+
+
+
+
+
+                        <div class="col-md-6 col-lg-6 margin-25px-bottom xs-margin-15px-bottom">
+                            <div class="courses-block @courseColour">
+                                @*<div class="courses-pic">
+                                <a href="course-details.html">
+                                    <img src="img/courses/courses-1.jpg" alt="" />
+                                </a>
+                            </div>*@
+                                <div class="course-desc">
+                                    <h4><a href="@childLesson.Url()">@childLesson.Title</a></h4>
+                                    @childLesson.Description
+                                </div>
+                                <div class="course-details">
+                                    <ul>
+                                        <li>
+                                            @childLesson.BottomLeftText
+                                        </li>
+                                        <li>
+                                            @childLesson.BottomRightText
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        courseCounter++;
+
+                        if (courseCounter > 4)
+                        {
+                            courseCounter = 0;
+                        }
+
+                    }
+
+                }
+            }
+
+
+
+
+
+
+        </div>
+
+        </div>
+</section>
+<!-- end our courses section -->
