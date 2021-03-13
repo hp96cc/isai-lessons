@@ -1,0 +1,278 @@
+﻿@using ISAI.Lessons.Web.Portal.Helpers
+@using Microsoft.AspNet.Identity
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Decking Supplies</title>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet">
+
+    <link href="~/Content/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Toastr style -->
+    <link href="~/Content/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+
+
+    <!-- Gritter -->
+    <link href="~/Scripts/plugins/gritter/jquery.gritter.css" rel="stylesheet">
+
+    <!-- Sweet Alert -->
+    <link href="~/Content/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <link href="~/Content/css/animate.css" rel="stylesheet">
+    <link href="~/Content/css/style.css" rel="stylesheet">
+
+    @RenderSection("header", false)
+
+    <link href="~/Content/Site.css" rel="stylesheet">
+
+    <!-- Syncfusion Essential JS 2 Styles -->
+    <link rel="stylesheet" href="~/Content/ej2/material.css" />
+
+    <!-- Syncfusion Essential JS 2 Scripts -->
+    <script src="~/Scripts/ej2/ej2.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="~/Scripts/plugins/printjs/print.css">
+
+    <script>
+
+        function loadCultureFiles(name, currency) {
+            var files = ['ca-gregorian.json', 'numbers.json', 'timeZoneNames.json', 'currencies.json'];
+            var loadCulture = function (prop) {
+                var val, ajax;
+                ajax = new ej.base.Ajax('/scripts/cldr-data/main/' + name + '/' + files[prop], 'GET', false);
+                ajax.onSuccess = function (value) {
+                    val = value;
+                };
+                ajax.send();
+                ej.base.loadCldr(JSON.parse(val));
+                ej.base.setCulture(name);
+                ej.base.setCurrencyCode(currency);
+            };
+            for (var prop = 0; prop < files.length; prop++) {
+                loadCulture(prop);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadCultureFiles('en-US', 'USD');
+
+
+        });
+
+        @*@{ 
+
+            var info = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            DateTimeOffset localServerTime = DateTimeOffset.Now;
+            var offset = info.GetUtcOffset(localServerTime).Hours * 1;
+
+        }
+
+        //HACK: The system is always set to display times for current time in UK
+        //ej.data.DataUtil.serverTimezoneOffset = @offset;*@
+
+        function uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            )
+        }
+
+    </script>
+
+
+
+
+</head>
+
+<body class="md-skin pace-done">
+
+    <div id="
+         ">
+
+
+
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav metismenu" id="side-menu">
+                    <li class="nav-header">
+                        <div class="dropdown profile-element">
+                            <img alt="image" class="rounded-circle" src="~/content/img/user.svg" style="width:48px;height:48px;" />
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="block m-t-xs font-bold">@string.Format("{0} {1}", User.Identity.GetClaim("Firstname"), User.Identity.GetClaim("Surname"))</span>
+                                <span class="text-muted text-xs block">@User.Identity.GetClaim("Position") @*<b class="caret"></b>*@</span>
+                            </a>
+
+                        </div>
+                        <div class="logo-element">
+                            FMS
+                        </div>
+                    </li>
+
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        @*<li class="@Html.IsSelected(controller: "dashboard")"><a href="/"><i class="fa fa-desktop"></i>  <span class="nav-label">Dashboard</span></a></li>*@
+                        <li class="@Html.IsSelected(controller: "app")"><a href="/app/"><i class="fa fa-shopping-basket"></i>  <span class="nav-label">Apps</span></a></li>
+                        <li class="@Html.IsSelected(controller: "order")"><a href="/order/"><i class="fa fa-money"></i>  <span class="nav-label">Orders</span></a></li>
+                        <li class="@Html.IsSelected(controller: "customer")"><a href="/customer/"><i class="fa fa-users"></i>  <span class="nav-label">Customers</span></a></li>
+                        <li class="@Html.IsSelected(controller: "calculator")"><a href="/calculator/"><i class="fa fa-money"></i>  <span class="nav-label">Calculator</span></a></li>
+                        <li class="@Html.IsSelected(controller: "salestax")"><a href="/salestax/"><i class="fa fa-money"></i>  <span class="nav-label">Sales Tax</span></a></li>
+                        <li class="@Html.IsSelected(controller: "promotion")"><a href="/promotion/"><i class="fa fa-money"></i>  <span class="nav-label">Promotions</span></a></li>
+                        <li class="@Html.IsSelected(controller: "voucher")"><a href="/voucher/"><i class="fa fa-money"></i>  <span class="nav-label">Vouchers</span></a></li>
+
+
+                    }
+
+                    else
+                    {
+
+
+
+                    }
+
+                </ul>
+
+
+            </div>
+        </nav>
+
+
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row border-bottom">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header">
+
+
+                    </div>
+
+                    @using (Html.BeginForm("Logoff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+
+                        <ul class="nav navbar-top-links navbar-right">
+
+                            <li style="padding: 20px">
+
+                                <span class="text-xs block" style="color:white;">Decking Supplies</span>
+
+
+                            </li>
+
+
+                            <li>
+                                <a href="javascript:document.getElementById('logoutForm').submit()">
+                                    &nbsp; &nbsp;<i class="fa fa-sign-out"></i> Log out
+                                </a>
+                            </li>
+
+                        </ul>
+                    }
+
+
+                </nav>
+            </div>
+
+
+
+
+            @RenderBody()
+
+
+            <div class="footer">
+
+
+
+                <div class="pull-right">
+
+
+                    Decking SUpplies - <a href="https://www.isai.co.uk" target="_blank">Developed by ISAI</a>
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div id="ActiveDialog"></div>
+
+    <!-- Mainly scripts -->
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/Scripts/umd/popper.min.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="~/Scripts/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="~/Scripts/plugins/datapicker/bootstrap-datepicker.js"></script>
+    <script src="~/scripts/luxon.min.js"></script>
+    <script src="~/Scripts/plugins/sweetalert/sweetalert.min.js"></script>
+
+    <script src="~/Scripts/plugins/hotkeys/jquery.hotkeys.js"></script>
+
+    <script src="~/Scripts/plugins/printjs/print.js"></script>
+
+
+    <!--Reference the SignalR library. -->
+    <script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+
+    <!--Reference the autogenerated SignalR hub script. -->
+    <script src="~/signalr/hubs"></script>
+
+
+    <!-- Custom and plugin javascript -->
+    <script src="~/Scripts/inspinia.js"></script>
+    <script src="~/Scripts/plugins/pace/pace.min.js"></script>
+
+    <script src="~/Scripts/site.js?version=6"></script>
+
+
+    <script>
+
+        var userId = '@User.Identity.GetUserId()';
+        var userRole = '@User.Identity.GetClaim("Role")';
+
+        var orderHub;
+        var orderLineExceptionCount = 0;
+
+        $(document).ready(function () {
+
+            orderHub = $.connection.orderHub;
+
+            orderHub.client.hubTest = function () {
+                alert('Message Received');
+            }
+
+        });
+
+
+
+    </script>
+
+
+    @RenderSection("scripts", false)
+
+
+    <script>
+
+        $(document).ready(function () {
+
+            $.connection.hub.start();
+
+        });
+
+    </script>
+
+
+</body>
+</html >

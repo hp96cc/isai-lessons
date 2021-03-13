@@ -1,0 +1,77 @@
+﻿.table-download-icon {
+    font-size: 16px;
+    display: block;
+    color: #676a6c;
+}
+
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.file-list li {
+    font-size: 13px;
+}
+
+.field-validation-error {
+    color: #ed5565;
+}
+
+
+.file-list-action li {
+    padding: 0px 0px;
+    border-radius: 0px;
+    border: 0px solid #e7eaec;
+    margin-bottom: 5px;
+}
+
+
+
+.validation-summary-valid
+{
+    display: none;
+}
+
+
+table.dataTable tbody tr.selected {
+    color: white;
+    background-color: #1ab394;
+}
+
+
+.DTE_Header {
+
+    display: block;
+}
+
+
+.newDataTableRecord {
+    color: white;
+    background-color: #1ab394;
+}
+
+.editDataTableRecord {
+    color: white;
+    background-color: #f8ac59;
+}
+
+
+.deleteDataTableRecord {
+    color: white;
+    background-color: #ec4758;
+}
+
+
+.xEditableTextArea {
+    width: 450px;
+}
+
+.whiteBg {
+    background-color: white;
+}
+
+.e-export:before {
+    content: '\e240';
+}
+
+
+

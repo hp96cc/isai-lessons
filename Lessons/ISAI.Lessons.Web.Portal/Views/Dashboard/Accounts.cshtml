@@ -1,0 +1,200 @@
+﻿<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+
+
+        <div class="col-lg-6">
+            <div class="widget navy-bg p-md text-center">
+                <div class="m-b-md">
+                    <i class="fa fa-file-text fa-4x"></i>
+                    <h1 class="m-xs" id="InvoicesAwaitingApproval"></h1>
+                    <h3 class="font-bold no-margins">
+                        Invoices Awaiting Approval
+                    </h3>
+                    <a href="/report/invoicesawaitingapproval" style="color:white;"><small>View</small></a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-6">
+            <div class="widget navy-bg p-md text-center">
+                <div class="m-b-md">
+                    <i class="fa fa-users fa-4x"></i>
+                    <h1 class="m-xs" id="ApproveInvoiceBatch"></h1>
+                    <h3 class="font-bold no-margins">
+                        Approve Invoice Batch
+                    </h3>
+                    <a href="/report/invoicesawaitingbatch" style="color:white;"><small>View</small></a>
+                </div>
+            </div>
+        </div>
+
+
+     
+    </div>
+
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-content">
+                        <div>
+
+                            <h1 class="m-b-xs">£<span id="month-value"></span> - @DateTime.Today.ToString("MMMM yyyy")</h1>
+                            <h3 class="font-bold no-margins">
+                                Invoice value by month
+                            </h3>
+
+                        </div>
+
+                        <div>
+                            <canvas id="lineChart" height="70"></canvas>
+                        </div>
+
+                        <div class="m-t-md">
+                            <small class="float-right">
+                                <i class="fa fa-clock-o"> </i>
+                                Update on @DateTime.Now.ToString()
+                            </small>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+
+
+@section Header {
+    <link href="~/Content/css/plugins/dataTables/datatables.css" rel="stylesheet">
+
+
+
+}
+
+@section Scripts {
+
+
+    <!-- ChartJS-->
+    <script src="~/Scripts/plugins/chartJs/Chart.min.js"></script>
+
+
+
+    <script>
+
+        $(document).ready(function () {
+
+
+            GetInvoiceByMonth();
+            GetAccountsCounts();
+
+        });
+
+
+
+        function GetInvoiceByMonth() {
+
+            var url = "/api/report/invoicebymonth";
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (data) {
+
+                    DisplayInvoiceByMonth(data);
+
+                },
+                error: function (xhRequest, ErrorText, thrownError) {
+
+                    console.log(ErrorText);
+                    alert(ErrorText);
+
+                }
+            });
+
+        }
+
+
+        function GetAccountsCounts() {
+
+            var url = "/api/report/accountscounts";
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (data) {
+
+                    $("#InvoicesAwaitingApproval").text(data.InvoicesAwaitingApproval);
+                    $("#ApproveInvoiceBatch").text(data.ApproveInvoiceBatch);
+
+                },
+                error: function (xhRequest, ErrorText, thrownError) {
+
+                    console.log(ErrorText);
+                    alert(ErrorText);
+
+                }
+            });
+
+        }
+
+        function DisplayInvoiceByMonth(data) {
+
+
+            var monthLabels = [];
+            var lastYearData = [];
+            var thisYearData = [];
+
+            for (var i = 0; i < 12; i++) {
+                monthLabels.push(data[i].MonthName);
+                lastYearData.push(data[i].TotalValue);
+                thisYearData.push(data[i + 12].TotalValue);
+
+                if (data[i + 12].MonthName === "@DateTime.Today.ToString("MMMM")") {
+                    $("#month-value").text(Math.round(data[i + 12].TotalValue));
+                }
+
+            }
+
+
+            var lineData = {
+                labels: monthLabels,
+                datasets: [
+                    {
+                        label: "@DateTime.Today.ToString("yyyy")",
+                        backgroundColor: "rgba(26,179,148,0.5)",
+                        borderColor: "rgba(26,179,148,0.7)",
+                        pointBackgroundColor: "rgba(26,179,148,1)",
+                        pointBorderColor: "#fff",
+                        data: thisYearData
+                    },
+                    {
+                        label: "@DateTime.Today.AddYears(-1).ToString("yyyy")",
+                        backgroundColor: "rgba(220,220,220,0.5)",
+                        borderColor: "rgba(220,220,220,1)",
+                        pointBackgroundColor: "rgba(220,220,220,1)",
+                        pointBorderColor: "#fff",
+                        data: lastYearData
+                    }
+                ]
+            };
+
+            var lineOptions = {
+                responsive: true
+            };
+
+
+            var ctx = document.getElementById("lineChart").getContext("2d");
+            new Chart(ctx, { type: 'line', data: lineData, options: lineOptions });
+
+        }
+
+    </script>
+
+}

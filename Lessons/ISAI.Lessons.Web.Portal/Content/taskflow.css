@@ -1,0 +1,93 @@
+﻿.flowchart-container {
+    height: 800px;
+    border: 1px solid #BBB;
+    margin-bottom: 10px;
+}
+
+.flowchart-operator-connector-arrow {
+    top: 4px;
+}
+
+.flowchart-operator-connector-small-arrow {
+    top: 9px;
+}
+
+.flowchart pre {
+    display: none;
+}
+
+#create_operator {
+    margin-bottom: 10px;
+}
+
+
+#flowchart_data {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    height: 140px;
+}
+
+#operator_properties, #link_properties {
+    display: none;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 4px solid;
+    padding: 10px;
+}
+
+
+#chart_container {
+    width: 100%;
+    height: 1000px;
+    overflow: hidden;
+    background: repeating-linear-gradient( 45deg, #eee, #eee 10px, #e5e5e5 10px, #e5e5e5 20px );
+    border: 1px solid black;
+}
+
+.draggable_operator {
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    margin-bottom: 5px;
+    cursor: grab;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
+    user-select: none; /* non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+.draggable_operators {
+    margin-top: 10px;
+}
+
+.draggable_operators_label {
+    margin-bottom: 5px;
+}
+
+.draggable_operators_divs {
+    margin-bottom: 20px;
+}
+
+.delete_selected_button {
+    margin-bottom: 20px;
+}
+
+.flowchart-operator {
+    position: absolute;
+    width: 275px;
+    min-height: 75px;
+    border: 1px solid #CCCCCC;
+    background: #FAFAFA;
+    pointer-events: initial;
+}
+
+#flowchart-taskroute {
+    width: 4000px;
+    height: 4000px;
+    background: white;
+}
+

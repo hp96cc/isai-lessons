@@ -1,0 +1,67 @@
+﻿
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+
+        <div class="col-lg-6">
+            <div class="widget navy-bg p-md text-center">
+                <div class="m-b-md">
+                    <i class="fa fa-building fa-4x"></i>
+                    <h1 class="m-xs" id="LiveOrderLines"></h1>
+                    <h3 class="font-bold no-margins">
+                        New Orders
+                    </h3>
+                    <a href="/orderline" style="color:white;"><small>View</small></a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-6">
+            <div class="widget navy-bg p-md text-center">
+                <div class="m-b-md">
+                    <i class="fa fa-clock-o fa-4x"></i>
+                    <h1 class="m-xs" id="QuickTurnaroundOrderLines"></h1>
+                    <h3 class="font-bold no-margins">
+                        Pending Orders
+                    </h3>
+                    <a href="/orderline?status=quick" style="color:white;"><small>View</small></a>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+
+
+</div>
+
+
+@section Header {
+
+    <link href="~/Content/css/plugins/dataTables/datatables.css" rel="stylesheet">
+
+}
+
+@section Scripts {
+
+
+    <!-- ChartJS-->
+    <script src="~/Scripts/plugins/chartJs/Chart.min.js"></script>
+
+
+
+    <script>
+
+        $(document).ready(function () {
+
+
+            
+
+        });
+
+
+    </script>
+
+}

@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>SCF</title>
+
+    <link href="~/Content/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/Content/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Toastr style -->
+    <link href="~/Content/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+
+
+    <!-- Gritter -->
+    <link href="~/Scripts/plugins/gritter/jquery.gritter.css" rel="stylesheet">
+
+    <link href="~/Content/css/animate.css" rel="stylesheet">
+    <link href="~/Content/css/style.css" rel="stylesheet">
+    @RenderSection("header", false)
+
+
+    <link href="~/Content/Site.css" rel="stylesheet">
+
+</head>
+
+
+<body class="gray-bg">
+
+
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <div>
+            
+
+
+
+            @RenderBody()
+
+            
+
+        </div>
+    </div>
+    
+
+<script src="~/Scripts/jquery-3.1.1.min.js"></script>
+
+
+@RenderSection("scripts", required: false)
+
+</body>
+</html>
+

@@ -175,7 +175,17 @@
                             </div>*@
                                 <div class="course-desc">
                                     <h4><a href="@childLesson.Url()">@childLesson.Title</a></h4>
-                                    @childLesson.Description
+
+                                    @if (childLesson.Description.ToHtmlString().Length > 100)
+                                    {
+                                        @Html.Raw(childLesson.Description.ToHtmlString().Substring(0, 100)) @:...
+                                    }
+                                    else
+                                    {
+                                        @childLesson.Description
+                                    }
+
+
                                 </div>
                                 <div class="course-details">
                                     <ul>

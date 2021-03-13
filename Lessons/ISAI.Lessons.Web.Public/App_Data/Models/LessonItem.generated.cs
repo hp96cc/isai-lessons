@@ -66,6 +66,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString Description => this.Value<global::System.Web.IHtmlString>("description");
 
 		///<summary>
+		/// Media Id
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("mediaId")]
+		public string MediaId => this.Value<string>("mediaId");
+
+		///<summary>
 		/// Title
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
