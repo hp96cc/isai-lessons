@@ -21,6 +21,23 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string Email { get; set; }
 
+        public string AddressLine1 { get; set; }
+
+        public string AddressLine2 { get; set; }
+
+        public string AddressLine3 { get; set; }
+
+        public string AddressTownCity { get; set; }
+
+        public string AddressCounty { get; set; }
+
+        public string AddressPostcode { get; set; }
+
+        public string AddressCountry { get; set; }
+
+        [JsonIgnore]
+        public string PasswordSalt { get; set; }
+
         [JsonIgnore]
         public string PasswordHash { get; set; }
 
@@ -29,7 +46,6 @@ namespace ISAI.Lessons.EntityFramework.Models
         public string Mobile { get; set; }
 
         public bool AcceptMarketing { get; set; }
-
 
 
     }

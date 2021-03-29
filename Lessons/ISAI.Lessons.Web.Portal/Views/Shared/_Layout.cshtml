@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Decking Supplies</title>
+    <title>Scottish Online Lessons</title>
 
     <link href="~/Content/bootstrap.min.css" rel="stylesheet">
 
@@ -62,7 +62,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            loadCultureFiles('en-US', 'USD');
+            loadCultureFiles('en-GB', 'GBP');
 
 
         });
@@ -118,14 +118,12 @@
 
                     @if (User.IsInRole("Admin"))
                     {
-                        @*<li class="@Html.IsSelected(controller: "dashboard")"><a href="/"><i class="fa fa-desktop"></i>  <span class="nav-label">Dashboard</span></a></li>*@
+                        <li class="@Html.IsSelected(controller: "dashboard")"><a href="/"><i class="fa fa-desktop"></i>  <span class="nav-label">Dashboard</span></a></li>
                         <li class="@Html.IsSelected(controller: "app")"><a href="/app/"><i class="fa fa-shopping-basket"></i>  <span class="nav-label">Apps</span></a></li>
-                        <li class="@Html.IsSelected(controller: "order")"><a href="/order/"><i class="fa fa-money"></i>  <span class="nav-label">Orders</span></a></li>
                         <li class="@Html.IsSelected(controller: "customer")"><a href="/customer/"><i class="fa fa-users"></i>  <span class="nav-label">Customers</span></a></li>
-                        <li class="@Html.IsSelected(controller: "calculator")"><a href="/calculator/"><i class="fa fa-money"></i>  <span class="nav-label">Calculator</span></a></li>
-                        <li class="@Html.IsSelected(controller: "salestax")"><a href="/salestax/"><i class="fa fa-money"></i>  <span class="nav-label">Sales Tax</span></a></li>
-                        <li class="@Html.IsSelected(controller: "promotion")"><a href="/promotion/"><i class="fa fa-money"></i>  <span class="nav-label">Promotions</span></a></li>
-                        <li class="@Html.IsSelected(controller: "voucher")"><a href="/voucher/"><i class="fa fa-money"></i>  <span class="nav-label">Vouchers</span></a></li>
+                        <li class="@Html.IsSelected(controller: "subscription")"><a href="/subscription/"><i class="fa fa-money"></i>  <span class="nav-label">Subscriptions</span></a></li>
+                        <li class="@Html.IsSelected(controller: "lesson")"><a href="/lessongroup/"><i class="fa fa-graduation-cap"></i>  <span class="nav-label">Lessons</span></a></li>
+                        <li class="@Html.IsSelected(controller: "user")"><a href="/user/"><i class="fa fa-users"></i>  <span class="nav-label">Users</span></a></li>
 
 
                     }
@@ -161,7 +159,7 @@
 
                             <li style="padding: 20px">
 
-                                <span class="text-xs block" style="color:white;">Decking Supplies</span>
+                                <span class="text-xs block" style="color:white;">Scottish Online Lessons</span>
 
 
                             </li>
@@ -193,7 +191,7 @@
                 <div class="pull-right">
 
 
-                    Decking SUpplies - <a href="https://www.isai.co.uk" target="_blank">Developed by ISAI</a>
+                    Scottish Online Lessons - <a href="https://www.isai.co.uk" target="_blank">Developed by ISAI</a>
                 </div>
 
 

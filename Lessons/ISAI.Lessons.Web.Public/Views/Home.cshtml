@@ -285,7 +285,7 @@
 <section class="no-padding-top">
     <div class="container">
         <div class="section-heading">
-            <h3>Our Courses</h3>
+            <h3>@Model.LessonsTitle</h3>
             <span class="title-separator"></span>
         </div>
 
@@ -378,6 +378,9 @@
 </section>
 <!-- end about section -->
 
+@if (Model.ShowReviewTab)
+{
+
 <!-- start testimonial section -->
 <section class="testimonial-section pt-5">
     <div class="container">
@@ -427,3 +430,5 @@
     </div>
 </section>
 <!-- end testimonial section -->
+
+}

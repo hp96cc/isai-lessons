@@ -19,6 +19,11 @@ namespace ISAI.Lessons.Web.Portal.App_Start
             ODataModelBuilder builder = new ODataConventionModelBuilder();
             builder.EntitySet<App>("Apps");
             builder.EntitySet<Customer>("Customers");
+            builder.EntitySet<CustomerActivity>("CustomerActivities");
+            builder.EntitySet<CustomerDevice>("CustomerDevices");
+            builder.EntitySet<Lesson>("Lessons");
+            builder.EntitySet<LessonGroup>("LessonGroups");
+            builder.EntitySet<Subscription>("Subscriptions");
 
             config.MapODataServiceRoute(
                 routeName: "odata",

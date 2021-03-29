@@ -14,7 +14,7 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Timber.Ecommerce.Web.Portal</RootNamespace>
+    <RootNamespace>ISAI.Lessons.Web.Portal</RootNamespace>
     <AssemblyName>ISAI.Lessons.Web.Portal</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
@@ -51,6 +51,9 @@
   <ItemGroup>
     <Reference Include="BarcodeStandard, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\BarcodeLib.2.3.0\lib\netstandard2.0\BarcodeStandard.dll</HintPath>
+    </Reference>
+    <Reference Include="Credentials, Version=2.0.0.30, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Credentials.2.0.0.30\lib\netstandard2.0\Credentials.dll</HintPath>
     </Reference>
     <Reference Include="CsvHelper, Version=7.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>..\packages\CsvHelper.7.1.1\lib\net45\CsvHelper.dll</HintPath>
@@ -122,6 +125,12 @@
     <Reference Include="Microsoft.OData.Edm, Version=7.5.0.20627, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.OData.Edm.7.5.0\lib\portable-net45+win8+wpa81\Microsoft.OData.Edm.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Owin, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.1.1\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Cors, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Cors.4.1.1\lib\net45\Microsoft.Owin.Cors.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Spatial, Version=7.5.0.20627, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Spatial.7.5.0\lib\portable-net45+win8+wpa81\Microsoft.Spatial.dll</HintPath>
     </Reference>
@@ -135,6 +144,9 @@
     </Reference>
     <Reference Include="RestSharp, Version=106.11.7.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.11.7\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Savage.RandomBytesGenerator, Version=1.1.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RandomBytesGenerator.1.1.8\lib\net46\Savage.RandomBytesGenerator.dll</HintPath>
     </Reference>
     <Reference Include="SQLite-net, Version=1.5.231.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\sqlite-net-pcl.1.5.231\lib\netstandard1.1\SQLite-net.dll</HintPath>
@@ -378,9 +390,6 @@
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin">
-      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Owin.Host.SystemWeb">
       <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
@@ -429,7 +438,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
-    <Compile Include="App_Start\Class1.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\ODataConfig.cs" />
@@ -437,6 +445,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\Api\AppController.cs" />
     <Compile Include="Controllers\Api\BaseApiController.cs" />
     <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Controllers\BaseAdminController.cs" />
@@ -455,6 +464,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\AuthorizationServiceProvider.cs" />
     <Compile Include="Helpers\EnableQueryWithSearchAttribute.cs" />
     <Compile Include="Helpers\HTMLHelperExtensions.cs" />
     <Compile Include="Helpers\IdentityExtensions.cs" />
@@ -2662,18 +2672,8 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="Documents\holder.txt" />
-    <Content Include="Scripts\views\order-edit.js" />
-    <Content Include="Scripts\views\voucher-index.js" />
-    <Content Include="Scripts\views\promotion-index.js" />
-    <Content Include="Scripts\views\salestax-index.js" />
     <Content Include="Scripts\views\customer-index.js" />
-    <Content Include="Scripts\views\order-index.js" />
     <Content Include="Scripts\views\app-index.js" />
-    <Content Include="Scripts\views\calculatorpriceband-index.js" />
-    <Content Include="Scripts\views\calculatorgroupoptionvalue-index.js" />
-    <Content Include="Scripts\views\calculatorgroupoption-index.js" />
-    <Content Include="Scripts\views\calculatorgroup-index.js" />
-    <Content Include="Scripts\views\calculator-index.js" />
     <Content Include="Upload\holder.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -2739,7 +2739,6 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Scripts\data.json" />
     <Content Include="Views\App\Index.cshtml" />
-    <Content Include="Views\Dashboard\Accounts.cshtml" />
     <Content Include="Views\Shared\Modals\_DailyChecklist.cshtml" />
     <Content Include="Views\Shared\Modals\_OrderLineEditTaskFlowChange.cshtml" />
     <Content Include="Views\Customer\Index.cshtml" />

@@ -1,15 +1,23 @@
-﻿using System.Web.Mvc;
-
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
 namespace ISAI.Lessons.Web.Portal.Controllers
 {
     public class DashboardController : Controller
     {
-       
-        public ActionResult Index()
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            return Redirect("/order/");
+            base.OnActionExecuting(filterContext);
+            ViewBag.ItemName = "Dashboard";
+
         }
 
+        // GET: /Subjects/
+        public async Task<ActionResult> Index()
+        {
 
+
+            return View();
+        }
     }
 }

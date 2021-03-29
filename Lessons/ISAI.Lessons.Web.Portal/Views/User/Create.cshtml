@@ -1,4 +1,4 @@
-﻿@model Scf.EntityFramework.Models.User
+﻿@model ISAI.Lessons.EntityFramework.Models.User
 
 <div class="row wrapper border-bottom white-bg page-heading">
     <div class="col-sm-4">
@@ -46,28 +46,7 @@
 
 
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.AgentId, new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.DropDownListFor(model => model.AgentId, new SelectList(ViewBag.Agents, "Id", "Name"), new { @class = "input-sm form-control input-s-sm inline" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.ServiceId, new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.DropDownListFor(model => model.ServiceId, new SelectList(ViewBag.Services, "Id", "Name"), new { @class = "input-sm form-control input-s-sm inline" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.IsSalesUser, new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.IsSalesUser)
-                                @Html.ValidationMessageFor(model => model.IsSalesUser)
-                            </div>
-                        </div>
-
+                        
                         <div class="form-group">
                             @Html.LabelFor(model => model.Firstname, new { @class = "control-label col-md-2" })
                             <div class="col-md-10">
@@ -84,14 +63,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Position, new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.Position)
-                                @Html.ValidationMessageFor(model => model.Position)
-                            </div>
-                        </div>
-
+                       
 
                         <div class="form-group">
                             @Html.LabelFor(model => model.Email, new { @class = "control-label col-md-2" })

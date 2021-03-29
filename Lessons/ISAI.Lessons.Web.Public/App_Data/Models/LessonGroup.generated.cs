@@ -73,6 +73,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString HTmlcontent => this.Value<global::System.Web.IHtmlString>("hTMLContent");
 
 		///<summary>
+		/// Show Lessons As List
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("showLessonsAsList")]
+		public bool ShowLessonsAsList => this.Value<bool>("showLessonsAsList");
+
+		///<summary>
 		/// Title
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]

@@ -4,10 +4,55 @@
     Layout = "Master.cshtml";
 
 
-    var childLessonGroups = Model.Children<LessonGroup>();
-    var childLessons = Model.Children<LessonItem>();
+
 }
 
+
+@helper RenderChildren(LessonGroup lessonGroup)
+{
+
+   
+        <div class="list-group-item">
+
+            @lessonGroup.Title
+
+            @if (lessonGroup.Children != null && lessonGroup.Children.Count() > 0)
+            {
+
+                var childLessons = lessonGroup.Children<LessonItem>();
+
+                if (childLessons != null && childLessons.Count() > 0)
+                {
+
+                    <div class="list-group">
+
+                        @foreach (var childLesson in childLessons)
+                        {
+                            <div class="list-group-item">@childLesson.Title</div>
+                        }
+
+                    </div>
+                }
+                else
+                {
+
+                    var childLessonGroups = lessonGroup.Children<LessonGroup>();
+
+                    foreach (var childLessonGroup in childLessonGroups)
+                    {
+                        @RenderChildren(childLessonGroup);
+                    }
+
+                }
+
+
+            }
+
+        </div>
+   
+
+
+}
 
 <!-- start page title section -->
 <section class="page-title-section bg-img cover-background bg-yellow" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
@@ -26,21 +71,21 @@
                         {
 
 
-                                if (ancestor.Id == Model.Root().Id)
-                                {
+                            if (ancestor.Id == Model.Root().Id)
+                            {
                                 <li><a href="/">Home</a></li>
-                                }
-                                else
-                                {
+                            }
+                            else
+                            {
                                 <li>
                                     <a href="@ancestor.Url()">@ancestor.Name</a>
                                 </li>
-                                }
-
                             }
 
-
                         }
+
+
+                    }
 
 
                 </ul>
@@ -49,176 +94,227 @@
     </div>
 </section>
 <!-- end page title section -->
-<!-- start our courses section -->
-<section>
-    <div class="container">
 
-        <div class="section-heading">
-            <h3>@Model.Title</h3>
+@if (Model.ShowLessonsAsList)
+{
+    <section>
+        <div class="container">
 
-            @Model.HTmlcontent
-            <span class="title-separator"></span>
-        </div>
+            <div class="section-heading">
+                <h3>@Model.Title</h3>
 
-        <div class="row no-gutters">
+                @Model.HTmlcontent
+                <span class="title-separator"></span>
+            </div>
 
-            @if (childLessonGroups != null && childLessonGroups.Count() > 0)
-            {
+            <div class="row no-gutters">
 
-                var courseCounter = 0;
+                <div class="col-12 alert-warning">(TBC needs styling)</div>
+                <div class="col.12">
+                    @{
 
-                foreach (LessonGroup childLessonGroup in childLessonGroups)
-                {
+                        var childLessonGroups = Model.Children<LessonGroup>();
 
-                    var courseColour = "";
-
-                    switch (courseCounter)
-                    {
-
-                        case 1:
-                            courseColour = "yellow";
-                            break;
-                        case 2:
-                            courseColour = "pink";
-                            break;
-                        case 3:
-                            courseColour = "green";
-                            break;
-                        case 4:
-                            courseColour = "orange";
-                            break;
-                        default:
-                            courseColour = "blue";
-                            break;
-                    }
-
-
-
-
-
-                    <div class="col-md-6 col-lg-6 margin-25px-bottom xs-margin-15px-bottom">
-                        <div class="courses-block @courseColour">
-                            @*<div class="courses-pic">
-                            <a href="course-details.html">
-                                <img src="img/courses/courses-1.jpg" alt="" />
-                            </a>
-                        </div>*@
-                            <div class="course-desc">
-                                <h4><a href="@childLessonGroup.Url()">@childLessonGroup.Title</a></h4>
-                                @childLessonGroup.HTmlcontent
-                            </div>
-                            <div class="course-details">
-                                <ul>
-                                    <li>
-                                        @childLessonGroup.BottomLeftText
-                                    </li>
-                                    <li>
-                                        @childLessonGroup.BottomRightText
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    courseCounter++;
-
-                    if (courseCounter > 4)
-                    {
-                        courseCounter = 0;
-                    }
-
-                }
-
-            }
-            else
-            {
-
-                if (childLessons != null && childLessons.Count() > 0)
-                {
-                    var courseCounter = 0;
-
-                    foreach (LessonItem childLesson in childLessons)
-                    {
-
-                        var courseColour = "";
-
-                        switch (courseCounter)
+                        if (childLessonGroups != null && childLessonGroups.Count() > 0)
                         {
+                            <div class="list-group">
 
-                            case 1:
-                                courseColour = "yellow";
-                                break;
-                            case 2:
-                                courseColour = "pink";
-                                break;
-                            case 3:
-                                courseColour = "green";
-                                break;
-                            case 4:
-                                courseColour = "orange";
-                                break;
-                            default:
-                                courseColour = "blue";
-                                break;
-                        }
+                                @foreach (LessonGroup childLessonGroup in childLessonGroups)
+                                {
+                                    @RenderChildren(childLessonGroup);
+                                }
 
-
-
-
-
-                        <div class="col-md-6 col-lg-6 margin-25px-bottom xs-margin-15px-bottom">
-                            <div class="courses-block @courseColour">
-                                @*<div class="courses-pic">
-                                <a href="course-details.html">
-                                    <img src="img/courses/courses-1.jpg" alt="" />
-                                </a>
-                            </div>*@
-                                <div class="course-desc">
-                                    <h4><a href="@childLesson.Url()">@childLesson.Title</a></h4>
-
-                                    @if (childLesson.Description.ToHtmlString().Length > 100)
-                                    {
-                                        @Html.Raw(childLesson.Description.ToHtmlString().Substring(0, 100)) @:...
-                                    }
-                                    else
-                                    {
-                                        @childLesson.Description
-                                    }
-
-
-                                </div>
-                                <div class="course-details">
-                                    <ul>
-                                        <li>
-                                            @childLesson.BottomLeftText
-                                        </li>
-                                        <li>
-                                            @childLesson.BottomRightText
-                                        </li>
-                                    </ul>
-                                </div>
                             </div>
-                        </div>
-
-                        courseCounter++;
-
-                        if (courseCounter > 4)
-                        {
-                            courseCounter = 0;
                         }
 
                     }
+                </div>
+
+            </div>
+        </div>
+    </section>
+}
+else
+{
+
+
+    var childLessons = Model.Children<LessonItem>();
+
+
+    <!-- start our courses section -->
+    <section>
+        <div class="container">
+
+            <div class="section-heading">
+                <h3>@Model.Title</h3>
+
+                @Model.HTmlcontent
+                <span class="title-separator"></span>
+            </div>
+
+            <div class="row no-gutters">
+
+                @{
+                    var childLessonGroups = Model.Children<LessonGroup>();
+
+                    if (childLessonGroups != null && childLessonGroups.Count() > 0)
+                    {
+
+                        var courseCounter = 0;
+
+                        foreach (LessonGroup childLessonGroup in childLessonGroups)
+                        {
+
+                            var courseColour = "";
+
+                            switch (courseCounter)
+                            {
+
+                                case 1:
+                                    courseColour = "yellow";
+                                    break;
+                                case 2:
+                                    courseColour = "pink";
+                                    break;
+                                case 3:
+                                    courseColour = "green";
+                                    break;
+                                case 4:
+                                    courseColour = "orange";
+                                    break;
+                                default:
+                                    courseColour = "blue";
+                                    break;
+                            }
+
+
+
+
+
+                            <div class="col-md-6 col-lg-6 margin-25px-bottom xs-margin-15px-bottom">
+                                <div class="courses-block @courseColour">
+                                    @*<div class="courses-pic">
+                                            <a href="course-details.html">
+                                                <img src="img/courses/courses-1.jpg" alt="" />
+                                            </a>
+                                        </div>*@
+                                    <div class="course-desc">
+                                        <h4><a href="@childLessonGroup.Url()">@childLessonGroup.Title</a></h4>
+                                        @childLessonGroup.HTmlcontent
+                                    </div>
+                                    <div class="course-details">
+                                        <ul>
+                                            <li>
+                                                @childLessonGroup.BottomLeftText
+                                            </li>
+                                            <li>
+                                                @childLessonGroup.BottomRightText
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            courseCounter++;
+
+                            if (courseCounter > 4)
+                            {
+                                courseCounter = 0;
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+
+                        if (childLessons != null && childLessons.Count() > 0)
+                        {
+                            var courseCounter = 0;
+
+                            foreach (LessonItem childLesson in childLessons)
+                            {
+
+                                var courseColour = "";
+
+                                switch (courseCounter)
+                                {
+
+                                    case 1:
+                                        courseColour = "yellow";
+                                        break;
+                                    case 2:
+                                        courseColour = "pink";
+                                        break;
+                                    case 3:
+                                        courseColour = "green";
+                                        break;
+                                    case 4:
+                                        courseColour = "orange";
+                                        break;
+                                    default:
+                                        courseColour = "blue";
+                                        break;
+                                }
+
+
+
+
+
+                                <div class="col-md-6 col-lg-6 margin-25px-bottom xs-margin-15px-bottom">
+                                    <div class="courses-block @courseColour">
+                                        @*<div class="courses-pic">
+                                                <a href="course-details.html">
+                                                    <img src="img/courses/courses-1.jpg" alt="" />
+                                                </a>
+                                            </div>*@
+                                        <div class="course-desc">
+                                            <h4><a href="@childLesson.Url()">@childLesson.Title</a></h4>
+
+                                            @if (childLesson.Description.ToHtmlString().Length > 100)
+                                            {
+                                                @Html.Raw(childLesson.Description.ToHtmlString().Substring(0, 100)) @:...
+                                            }
+                                            else
+                                            {
+                                                @childLesson.Description
+                                            }
+
+
+                                        </div>
+                                        <div class="course-details">
+                                            <ul>
+                                                <li>
+                                                    @childLesson.BottomLeftText
+                                                </li>
+                                                <li>
+                                                    @childLesson.BottomRightText
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                courseCounter++;
+
+                                if (courseCounter > 4)
+                                {
+                                    courseCounter = 0;
+                                }
+
+                            }
+
+                        }
+                    }
+
 
                 }
-            }
 
 
 
-
-
+            </div>
 
         </div>
-
-        </div>
-</section>
-<!-- end our courses section -->
+    </section>
+    <!-- end our courses section -->
+}

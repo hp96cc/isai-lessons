@@ -22,7 +22,7 @@
         allowPaging: true,
         width: 'auto',
         pageSettings: { pageCount: 4, pageSize: 50 },
-        toolbar: [/*'Add'*/ 'Edit', /*'Delete',*/ 'Update', 'Cancel'],
+        toolbar: [/*'Add',*/ 'Edit', /*'Delete',*/ 'Update', 'Cancel'],
         actionBegin: function (args) {
 
 
@@ -36,7 +36,6 @@
             }
         },
         columns: [
-
 
             {
                 field: 'Id',
@@ -58,74 +57,46 @@
 
 
             {
-                field: 'SquareUseSandbox',
-                headerText: 'Use Square Sandbox?',
+                field: 'StripeUseSandbox',
+                headerText: 'Use Stripe Sandbox?',
                 displayAsCheckBox: true,
                 editType: "booleanedit",
                 width: 120
 
             },
 
-
-
             {
-                field: 'AllowCollectAtStore',
-                headerText: 'Allow Collect At Store?',
-                displayAsCheckBox: true,
-                editType: "booleanedit",
-                width: 120
-
-            },
-
-
-            {
-                field: 'ShippingLoadingIsPercent',
-                headerText: 'Pecentage Shipping Loading?',
-                displayAsCheckBox: true,
-                editType: "booleanedit",
-                width: 120
-
-            },
-
-
-
-            {
-                field: 'ShippingLoading',
-                headerText: 'Shipping Loading',
+                field: 'StripeTestPublishApiKey',
+                headerText: 'Stripe Test Publish Api Key',
                 validationRules: { required: true },
-                defaultValue: 0,
-                editType: 'numericedit',
-                edit: {
-                    params: {
-                        validateDecimalOnType: true,
-                        decimals: 2,
-                        format: 'n2',
-                        showSpinButton: false
-                    }
-                },
-                width: 100,
-                format: "n2",
-
+                width: 200
             },
 
             {
-                field: 'MinimumOrder',
-                headerText: 'Minimum Order',
+                field: 'StripeTestSecretApiKey',
+                headerText: 'Stripe Test Scret Api Key',
                 validationRules: { required: true },
-                defaultValue: 0,
-                editType: 'numericedit',
-                edit: {
-                    params: {
-                        validateDecimalOnType: true,
-                        decimals: 2,
-                        format: 'n2',
-                        showSpinButton: false
-                    }
-                },
-                width: 100,
-                format: "n2",
-
+                width: 200
             },
+
+
+            {
+                field: 'StripeLivePublishApiKey',
+                headerText: 'Stripe Live Publish Api Key',
+                validationRules: { required: true },
+                width: 200
+            },
+
+            {
+                field: 'StripeLiveSecretApiKey',
+                headerText: 'Stripe Live Scret Api Key',
+                validationRules: { required: true },
+                width: 200
+            },
+
+
+
+
 
           
 

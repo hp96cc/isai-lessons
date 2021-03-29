@@ -40,6 +40,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers
 
         public async Task<ActionResult> Create()
         {
+            await LoadRoles();
             return View();
         }
 
@@ -72,138 +73,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers
 
             }
 
+            await LoadRoles();
             return View(user);
         }
 
-        //public async Task<ActionResult> ImportUsers()
-        //{
-
-        //    var userJson = System.IO.File.ReadAllText(@"c:\temp\users.json");
-        //    var users = JsonConvert.DeserializeObject<dynamic>(userJson);
-
-        //    StringBuilder sbCsv = new StringBuilder();
-
-        //    foreach (var user in users)
-        //    {
-
-        //        string[] name = ((string)user.Name).Split(" ".ToCharArray());
-        //        string role = user.Level;
-        //        string email = user.Email;
-
- 
-        //        var dbUser = db.Users.FirstOrDefault(x => x.Email.ToLower() == email.ToLower());
-
-        //        if (dbUser == null)
-        //        {
-
-        //            var newUserId = db.Users.Max(x => x.ScanId);
-
-           
-
-        //            dbUser = new User();
-        //            dbUser.Firstname = name[0];
-        //            dbUser.Surname = name.Length > 1 ? name[1] : "";
-        //            dbUser.ScanId = newUserId + 1;
-        //            dbUser.Role = role;
-        //            dbUser.EmailConfirmed = true;
-        //            dbUser.AgentId = null;
-        //            dbUser.ServiceId = null;
-        //            dbUser.Email = user.Email;
-        //            dbUser.UserName = user.Email;
-        //            dbUser.DateModified = DateTime.UtcNow;
-        //            dbUser.DateCreated = DateTime.UtcNow;
-        //            dbUser.ModifiedBy = "e76914f4-0583-456a-b27e-9fdad37759bd";
-        //            dbUser.CreatedBy = "e76914f4-0583-456a-b27e-9fdad37759bd";
-
-        //            var password = PasswordService.Generate();
-
-        //            sbCsv.AppendLine(string.Format("{0},{1},{2}", name, email, password));
-
-        //            var result = await UserManager.CreateAsync(dbUser, password);
-
-        //            await UserManager.AddToRoleAsync(dbUser.Id, role);
-
-        //            bool dbs = true;
-
-        //        }
-
-        //        Console.WriteLine(name + " " + email);
-
-
-        //    }
-
-        //    string csvText = sbCsv.ToString();
-
-        //    return new HttpStatusCodeResult(HttpStatusCode.OK);
-
-        //}
-
-
-        //public async Task<ActionResult> ImportUsers()
-        //{
-
-        //    using (var textReader = System.IO.File.OpenText(@"C:\Temp\users.csv"))
-        //    {
-
-        //        var csv = new CsvReader(textReader);
-        //        var records = csv.GetRecords<ImportUser>();
-
-        //        foreach(var record in records)
-        //        {
-
-        //            var user = new User()
-        //            {
-        //                Firstname = record.Firstname,
-        //                Surname = record.Lastname,
-        //                Email = record.Email
-
-        //            };
-
-
-        //            user.EmailConfirmed = true;
-        //            user.UserName = user.Email;
-        //            user.DateModified = DateTime.UtcNow;
-        //            user.DateCreated = DateTime.UtcNow;
-        //            user.ModifiedBy = User.Identity.Name;
-
-        //            var result = await UserManager.CreateAsync(user, PasswordService.Generate());
-
-
-        //            if (result.Succeeded)
-        //            {
-
-        //                //Users = u
-        //                //Tool Owners = t
-        //                //Program Owners = p
-
-        //                var type = record.Type.ToLower();
-
-        //                if (type.Equals("t"))
-        //                {
-        //                    await UserManager.AddToRoleAsync(user.Id, "Tool Owner");
-        //                }
-        //                else if (type.Equals("p"))
-        //                {
-        //                    await UserManager.AddToRoleAsync(user.Id, "Program Owner");
-
-        //                }
-        //                else
-        //                {
-        //                    await UserManager.AddToRoleAsync(user.Id, "User");
-        //                }
-
-
-        //            }
-
-        //                bool b = true;
-        //        }
-
-                
-
-        //    }
-
-        //    return new HttpStatusCodeResult(HttpStatusCode.OK);
-        //}
 
         public async Task<ActionResult> Edit(string id)
         {
@@ -219,6 +92,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers
                 return HttpNotFound();
             }
 
+            await LoadRoles();
             return View(user);
         }
 
@@ -254,6 +128,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers
                 }
             }
 
+            await LoadRoles();
             return View(user);
 
 

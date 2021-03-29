@@ -18,7 +18,7 @@ namespace ISAI.Lessons.Web.Portal
         {
             base.OnActionExecuting(filterContext);
 
-            ViewBag.Title = "Decking Supplies";
+            ViewBag.Title = "Scottish Online Lessons";
 
         }
        

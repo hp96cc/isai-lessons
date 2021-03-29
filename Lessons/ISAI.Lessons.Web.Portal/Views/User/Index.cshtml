@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Scf.EntityFramework.Models.User>
+﻿@model IEnumerable<ISAI.Lessons.EntityFramework.Models.User>
 
 
 <div class="row wrapper border-bottom white-bg page-heading">
@@ -39,26 +39,12 @@
                                         Name
                                     </th>
 
-                                    <th>
-                                        Agent
-                                    </th>
-
-                                    <th>
-                                        Service
-                                    </th>
-
-                                    <th>
-                                        Sales User
-                                    </th>
-
+                                    
                                     <th>
                                         Email
                                     </th>
 
-                                    <th>
-                                        Position
-                                    </th>
-
+                   
 
                                     <th>
                                         User Role
@@ -79,36 +65,16 @@
                                 @Html.DisplayFor(modelItem => item.Firstname)  @Html.DisplayFor(modelItem => item.Surname)
                             </td>
 
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Agent.Name)
-                            </td>
+                            
 
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Service.Name)
-                            </td>
-
-                            <td>
-                                @if (item.IsSalesUser)
-                                {
-
-                                    @:Yes
-
-                                } else
-                                {
-
-                                    @:No
-
-                                }
-                            </td>
+                            
 
                             <td>
                                 <a href="mailto:@Html.DisplayFor(modelItem => item.Email)">@Html.DisplayFor(modelItem => item.Email)</a>
                             </td>
 
 
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Position)
-                            </td>
+                    
 
                             <td>
                                 @Html.DisplayFor(modelItem => item.Role)
@@ -119,15 +85,7 @@
 
                             <td class="text-right">
 
-                                @if (!item.AgentId.HasValue)
-                                {
-
-                                    <a href="/api/documentexport/userbarcode?userId=@item.Id&isEditable=true" class="btn btn-primary btn-sm m-n">Word Bar Code</a>
-                                    <a href="/api/documentexport/userbarcode?userId=@item.Id&isEditable=false" class="btn btn-primary btn-sm m-n">PDF Bar Code</a>
-
-
-                                }
-
+    
                                 @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-primary btn-sm m-n" })
                                 @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "btn btn-warning btn-sm m-n" })
                             </td>

@@ -22,6 +22,16 @@ namespace ISAI.Lessons.EntityFramework
 
         public DbSet<Customer> Customer { get; set; }
 
+        public DbSet<Subscription> Subscription { get; set; }
+
+        public DbSet<LessonGroup> LessonGroup { get; set; }
+
+        public DbSet<Lesson> Lesson { get; set; }
+
+        public DbSet<CustomerActivity> CustomerActivity { get; set; }
+
+        public DbSet<CustomerDevice> CustomerDevice { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 

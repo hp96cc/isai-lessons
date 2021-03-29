@@ -13,11 +13,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers
 
         }
 
-        public async Task<ActionResult> Test()
-        {
-            return View();
-
-        }
+       
     }
 
   

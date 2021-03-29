@@ -122,6 +122,13 @@ namespace Umbraco.Web.PublishedModels
 		public string FooterTitle => this.Value<string>("footerTitle");
 
 		///<summary>
+		/// Our Lessons Title
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("lessonsTitle")]
+		public string LessonsTitle => this.Value<string>("lessonsTitle");
+
+		///<summary>
 		/// Links
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
@@ -148,6 +155,13 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		[ImplementPropertyType("reviewTitle")]
 		public string ReviewTitle => this.Value<string>("reviewTitle");
+
+		///<summary>
+		/// Show Review Tab
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("showReviewTab")]
+		public bool ShowReviewTab => this.Value<bool>("showReviewTab");
 
 		///<summary>
 		/// Social Links

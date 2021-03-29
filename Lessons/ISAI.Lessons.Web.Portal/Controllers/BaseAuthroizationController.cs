@@ -8,6 +8,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ISAI.Lessons.Web.Portal.App_Start;
+using System.Threading.Tasks;
+using System.Data.Entity;
 
 namespace ISAI.Lessons.Web.Portal.Controllers
 {
@@ -64,6 +66,13 @@ namespace ISAI.Lessons.Web.Portal.Controllers
                 return HttpContext.GetOwinContext().Authentication;
             }
         }
+
+        protected async Task LoadRoles()
+        {
+            var userRoles = await db.Roles.ToListAsync();
+            ViewBag.UserRoles = userRoles;
+        }
+
 
         protected void AddErrors(IdentityResult result)
         {

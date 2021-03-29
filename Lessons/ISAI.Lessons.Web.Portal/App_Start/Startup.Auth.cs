@@ -7,6 +7,8 @@ using Owin;
 using ISAI.Lessons.EntityFramework;
 using ISAI.Lessons.Web.Portal.App_Start;
 using ISAI.Lessons.EntityFramework.Models;
+using Microsoft.Owin.Security.OAuth;
+using Timber.Ecommerce.Web.Portal.Helpers;
 
 [assembly: OwinStartup(typeof(ISAI.Lessons.Web.Portal.Startup))]
 namespace ISAI.Lessons.Web.Portal
@@ -50,24 +52,21 @@ namespace ISAI.Lessons.Web.Portal
             // This is similar to the RememberMe option when you log in.
             app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
 
-            // Uncomment the following lines to enable logging in with third party login providers
-            //app.UseMicrosoftAccountAuthentication(
-            //    clientId: "",
-            //    clientSecret: "");
+            app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+            var myProvider = new AuthorizationServiceProvider();
+            OAuthAuthorizationServerOptions options = new OAuthAuthorizationServerOptions
+            {
+                AllowInsecureHttp = true,
+                TokenEndpointPath = new PathString("/token"),
+                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(60),
+                Provider = myProvider,
+                RefreshTokenProvider = new RefreshTokenProvider()
 
-            //app.UseTwitterAuthentication(
-            //   consumerKey: "",
-            //   consumerSecret: "");
+            };
+            app.UseOAuthAuthorizationServer(options);
+            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
         }
     }
 }
