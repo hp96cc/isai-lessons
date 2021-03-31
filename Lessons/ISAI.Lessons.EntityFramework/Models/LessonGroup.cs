@@ -22,6 +22,10 @@ namespace ISAI.Lessons.EntityFramework.Models
         [ForeignKey("ParentLessonGroupId")]
         public LessonGroup ParentLessonGroup { get; set; }
 
+        public int ListOrder { get; set; }
+
+        public bool HasSubGroups { get; set; }
+
 
     }
 }

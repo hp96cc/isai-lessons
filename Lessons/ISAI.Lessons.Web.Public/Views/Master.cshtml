@@ -107,40 +107,39 @@
             <div id="top-bar" class="top-bar">
                 <div class="container">
                     <div class="row">
-                        <div class="col-6 col-sm-8">
+                        <div class="col-4 col-sm-4">
 
                             <div class="top-bar-info mt-2">
                                 <ul>
-                                    <li><a href="tel:@home.ContactPhone"><i class="fas fa-mobile-alt"></i><span class="d-none d-sm-inline-block vertical-align-middle padding-10px-left">@home.ContactPhone</span></a></li>
-                                    <li><a href="mailto:@home.ContactEmail"><i class="far fa-envelope"></i><span class="d-none d-sm-inline-block vertical-align-middle padding-10px-left">@home.ContactEmail</span></a></li>
-                                </ul>
-                            </div>
+                                    @*<li><a href="tel:@home.ContactPhone"><i class="fas fa-mobile-alt"></i><span class="d-none d-sm-inline-block vertical-align-middle padding-10px-left">@home.ContactPhone</span></a></li>
+                                    <li><a href="mailto:@home.ContactEmail"><i class="far fa-envelope"></i><span class="d-none d-sm-inline-block vertical-align-middle padding-10px-left">@home.ContactEmail</span></a></li>*@
 
-                        </div>
-                        <div class="col-6 col-sm-4">
-                            <div class="top-right-bar">
-                                <a href="/" class="butn x-small pink float-right p-2 pl-4 pr-4 ml-4 mb-2"><span>Sign Up</span></a>
-                                <ul class="top-social-icon mt-2">
-
-                                    @if (home.SocialLinks != null)
+                                    @*@if (home.SocialLinks != null)
                                     {
                                         foreach (var socialLink in home.SocialLinks)
                                         {
                                             if (socialLink.Link != null)
                                             {
 
-                                            <li><a href="@socialLink.Link.Url"><i class="fab @socialLink.IconPrefix"></i></a></li>
+                                                <li><a href="@socialLink.Link.Url"><i class="fab @socialLink.IconPrefix"></i></a></li>
                                             }
                                         }
-                                    }
+                                    }*@
 
                                     @*<li><a href="javascript:void(0)"><i class="fab fa-facebook-f"></i></a></li>
-                                        <li><a href="javascript:void(0)"><i class="fab fa-twitter"></i></a></li>
-                                        <li><a href="javascript:void(0)"><i class="fab fa-youtube"></i></a></li>
-                                        <li><a href="javascript:void(0)"><i class="fab fa-linkedin-in"></i></a></li>*@
+        <li><a href="javascript:void(0)"><i class="fab fa-twitter"></i></a></li>
+        <li><a href="javascript:void(0)"><i class="fab fa-youtube"></i></a></li>
+        <li><a href="javascript:void(0)"><i class="fab fa-linkedin-in"></i></a></li>*@
                                 </ul>
+                            </div>
 
+                        </div>
+                        <div class="col-8 col-sm-8">
+                            <div class="top-right-bar">
+                                <a href="/account/signup" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
+                                <a href="/account/" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Signin</span></a>
                                 
+
 
                             </div>
                         </div>
@@ -183,7 +182,7 @@
 
                                     </ul>
                                     <!-- end menu area -->
-                                  
+
 
                                 </nav>
                             </div>
@@ -213,15 +212,15 @@
 
                                 @if (home.Links != null)
                                 {
-                            <ul class="list-style3">
-                                @foreach (var link in home.Links)
-                                {
-                                    <li><a href="@link.Url">@link.Name</a></li>
-                                }
-                            </ul>
+                                    <ul class="list-style3">
+                                        @foreach (var link in home.Links)
+                                        {
+                                            <li><a href="@link.Url">@link.Name</a></li>
+                                        }
+                                    </ul>
                                 }
 
-                                </div>
+                            </div>
                         </div>
 
 
@@ -231,7 +230,7 @@
                                 <ul class="contact-info">
                                     @*<li><i class="fas fa-mobile-alt"></i><a href="tel:@home.ContactPhone">@home.ContactPhone</a></li>*@
                                     <li><i class="far fa-envelope"></i><a href="mailto:@home.ContactEmail">@home.ContactEmail</a></li>
-                                    <li><i class="fab fa-facebook-f"></i><a href="mailto:@home.ContactEmail">FACEBOOK TBC</a></li>
+                                    <li><i class="far fa-facebook"></i><a href="mailto:@home.ContactEmail">FACEBOOK TBC</a></li>
                                     @*<li><i class="fas fa-map-marker-alt"></i> @home.ContactAddress</li>*@
                                 </ul>
                             </div>
@@ -308,10 +307,31 @@
     <!-- range slider -->
     <script src="/assets/js/ion.rangeSlider.min.js"></script>
 
+    <script src="~/scripts/js.cookie.min.js"></script>
+    <script src="~/scripts/mustache.js"></script>
+    <script src="~/scripts/luxon.min.js"></script>
+
     <!-- custom scripts -->
     <script src="/assets/js/main.js"></script>
 
-    <!-- all js include end -->
+    <script src="~/scripts/app.js"></script>
+
+    <script>
+
+        function initFingerprintJS() {
+            FingerprintJS.load().then(fp => {
+                fp.get().then(result => {
+                    LessonsApp.visitorId = result.visitorId;
+                    console.log(LessonsApp.visitorId);
+                });
+            });
+        }
+
+    </script>
+    <script async
+            src="~/scripts/fp.min.js"
+            onload="initFingerprintJS()"></script>
+
     @RenderSection("Scripts", required: false)
 
 </body>

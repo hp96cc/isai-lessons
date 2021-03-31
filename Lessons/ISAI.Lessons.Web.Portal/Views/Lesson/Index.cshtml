@@ -1,0 +1,96 @@
+﻿
+
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-4">
+        <h2>@ViewBag.Title</h2>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">
+                <strong>Lessons</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Lessons</h5>
+
+                    @if (ViewBag.BreadCrumbList != null)
+                    {
+
+                        var lessonGroups = ViewBag.BreadCrumbList as List<ISAI.Lessons.EntityFramework.Models.LessonGroup>;
+
+                        <ol class="breadcrumb">
+
+                            <li class="breadcrumb-item">
+                                <a href="/lessongroup">Lessons</a>
+                            </li>
+
+                            @foreach (var lessonGroup in lessonGroups)
+                            {
+
+                                var active = lessonGroups.Last().Id == lessonGroup.Id ? "active" : "";
+
+                                if (lessonGroup.HasSubGroups)
+                                {
+                                    <li class="breadcrumb-item @active"><a href="/lessongroup?parentLessonGroupid=@lessonGroup.Id">@lessonGroup.Name</a></li>
+                                }
+                                else
+                                {
+                                    <li class="breadcrumb-item @active"><a href="/lesson?lessonGroupId=@lessonGroup.Id">@lessonGroup.Name</a></li>
+                                }
+
+
+                            }
+
+
+                        </ol>
+
+                    }
+
+                </div>
+                <div class="ibox-content">
+
+                    <div id="Grid"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Header {
+
+
+}
+
+
+@section Scripts {
+
+    <script type="text/javascript" src="~/Scripts/views/lesson-index.js?v=1"></script>
+
+    @{
+
+        var lessonGroupId = "null";
+
+        if (Request.QueryString["lessonGroupId"] != null)
+        {
+            lessonGroupId = Request.QueryString["lessonGroupId"].ToString();
+        }
+
+    }
+
+    <script>
+        var lessonGroupId =  @Html.Raw(lessonGroupId);
+    </script>
+
+}

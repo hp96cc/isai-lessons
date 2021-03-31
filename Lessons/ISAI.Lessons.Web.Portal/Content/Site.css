@@ -75,3 +75,8 @@ table.dataTable tbody tr.selected {
 
 
 
+.breadcrumb > .active {
+
+    font-weight: bold;
+
+}

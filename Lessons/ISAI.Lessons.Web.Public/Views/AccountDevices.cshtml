@@ -1,0 +1,260 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountDevices>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+
+<!-- BREADCRUMB -->
+<nav class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+
+                <!-- Breadcrumb -->
+                <ol class="breadcrumb mb-0 font-size-xs text-gray-400">
+                    <li class="breadcrumb-item">
+                        <a class="text-gray-400" href="index.html">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        My Devices
+                    </li>
+                </ol>
+
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<section class="p-0">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="spinner-border mb-10" role="status" id="spinner-loading">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+                <div class="row" id="account-panel" style="display:none;">
+                    <div class="col-12 col-md-3">
+
+                        <!-- Nav -->
+                        @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "devices" } })
+
+
+                    </div>
+                    <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                        <div class="row">
+
+                          
+                                <div class="col-12 text-center">
+
+                                    <!-- Heading -->
+                                    <h3 class="mb-10 mt-3">My Devices</h3>
+                                    <p>The table below shows your registered devices. You can register up to 3 devices at any one time.</p>
+
+
+
+                                </div>
+                         
+
+                            <div class="col-12 p-1">
+                                <div class="row" id="device-list"></div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</section>
+
+<div class="modal fade" id="deleteAddressModal" tabindex="-1" role="dialog" aria-labelledby="deleteAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAddressModalLabel">Delete Device</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you wish to delete this device? You will no longer be able to access any lesson content after it has been deleted.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="DeleteDevice();">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <template id="template-device">
+
+        <div class="col-12 p-0">
+            <div class="card-body pt-0">
+
+                <!-- Info -->
+                <div class="card card-sm">
+                    <div class="card-body bg-light">
+                        <div class="row">
+                            <div class="col-5">
+
+                                <!-- Heading -->
+                                <h6 class="heading-xxxs text-muted">Device Name:</h6>
+
+                                <!-- Text -->
+                                <p class="mb-lg-0 font-size-sm font-weight-bold">
+                                    CCUS-{{Id}}
+                                </p>
+
+                            </div>
+                            <div class="col-5">
+
+                                <!-- Heading -->
+                                <h6 class="heading-xxxs text-muted">Date Registered:</h6>
+
+                                <!-- Text -->
+                                <p class="mb-lg-0 font-size-sm font-weight-bold">
+                                    <time datetime="2019-09-07">
+                                        {{FormattedOrderDate}}
+                                    </time>
+                                </p>
+
+                            </div>
+                            <div class="col-2 float-right">
+
+                 
+                                <!-- Button -->
+                                <button class="btn btn-circle float-right p-0" data-toggle="modal" data-target="#deleteAddressModal" onclick="PromptDeleteAddress({{Id}});">
+                                    <i class="far fa-trash-alt delete-button"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+
+
+    </template>
+
+
+    <script>
+
+        var deleteDeviceId;
+        var devices;
+
+        $(document).ready(function () {
+
+            //GetAddresses();
+            devices = [{}, {}, {}];
+           DisplayDevices();
+
+        });
+
+
+        function GetAddresses() {
+
+
+            var url = baseUrl + "/api/shopping/addresses/";
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: 'application/x-www-form-urlencoded',
+                headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
+                success: function (data) {
+
+                    addresses = data;
+                    DisplayAddresses();
+
+                },
+                error: function (xhRequest, ErrorText, thrownError) {
+
+                    console.log(ErrorText);
+
+                }
+            });
+
+        }
+
+        function DisplayDevices() {
+
+            $('#device-list').html('');
+
+            var itemListHTML = '';
+            var templateItem = $('#template-device').html();
+
+            devices.forEach(function (item) {
+
+                itemListHTML += Mustache.render(templateItem, item);
+
+            });
+
+
+            $('#device-list').html(itemListHTML);
+
+            $('#account-panel').show();
+            $('#spinner-loading').hide();
+
+
+        }
+
+
+
+        function PromptDeleteAddress(id) {
+
+            deleteAddressId = id;
+
+        }
+
+        function DeleteAddress() {
+
+
+            $('#deleteAddressModal').modal('hide');
+
+            $('#account-panel').hide();
+            $('#spinner-loading').show();
+
+            var url = baseUrl + "/api/shopping/address?id=" + deleteAddressId;
+
+            $.ajax({
+                url: url,
+                type: "DELETE",
+                contentType: 'application/x-www-form-urlencoded',
+                headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
+                success: function (data) {
+
+                    GetAddresses();
+
+                },
+                error: function (xhRequest, ErrorText, thrownError) {
+
+                    console.log(ErrorText);
+                    alert("Error: Could not load data. See browser log for details.");
+
+                }
+            });
+
+        }
+
+
+    </script>
+
+
+
+
+}

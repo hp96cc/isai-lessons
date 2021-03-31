@@ -35,17 +35,17 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string AddressCountry { get; set; }
 
-        [JsonIgnore]
-        public string PasswordSalt { get; set; }
-
-        [JsonIgnore]
-        public string PasswordHash { get; set; }
-
         public string Telephone { get; set; }
 
         public string Mobile { get; set; }
 
         public bool AcceptMarketing { get; set; }
+
+        [JsonIgnore]
+        public string PasswordSalt { get; set; }
+
+        [JsonIgnore]
+        public string PasswordHash { get; set; }
 
 
     }

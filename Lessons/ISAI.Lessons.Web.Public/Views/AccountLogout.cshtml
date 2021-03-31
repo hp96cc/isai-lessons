@@ -1,0 +1,83 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountLogout>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+
+}
+
+<!-- BREADCRUMB -->
+<nav class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+
+                <!-- Breadcrumb -->
+                <ol class="breadcrumb mb-0 font-size-xs text-gray-400">
+                    <li class="breadcrumb-item">
+                        <a class="text-gray-400" href="index.html">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Signout
+                    </li>
+                </ol>
+
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<section class="p-0">
+    <div class="container">
+
+     
+        <div class="row" id="account-panel">
+            <div class="col-12 col-md-3">
+
+                <!-- Nav -->
+                @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "logout" } })
+
+
+            </div>
+            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                <div class="row">
+
+
+                    <div class="col-12 text-center">
+
+                        <!-- Heading -->
+                        <h3 class="mb-10 mt-3">Signout</h3>
+   
+                        <p>Are you sure you wish to signout?</p>
+
+                        <!-- Button -->
+                        <button class="butn x-small mt-2" type="button" onclick="LessonsApp.logout();">Signout</button>
+                    </div>
+
+
+         
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(function () {
+            if (LessonsApp.customerId === null) {
+                LessonsApp.logout();
+            }
+        });
+
+    </script>
+
+}

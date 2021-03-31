@@ -1,0 +1,337 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountInfo>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+
+<!-- BREADCRUMB -->
+<nav class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+
+                <!-- Breadcrumb -->
+                <ol class="breadcrumb mb-0 font-size-xs text-gray-400">
+                    <li class="breadcrumb-item">
+                        <a class="text-gray-400" href="index.html">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        My Details
+                    </li>
+                </ol>
+
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<!-- CONTENT -->
+<section class="p-0">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="spinner-border mb-10" role="status" id="spinner-loading">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="account-panel" style="display:none;">
+            <div class="col-12 col-md-3">
+
+                <!-- Nav -->
+                @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "info" } })
+
+
+            </div>
+            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                <div class="row">
+
+              
+                        <div class="col-12 text-center">
+
+                            <!-- Heading -->
+                            <h3 class="mb-10 mt-3">My Details</h3>
+                            <p>Your details are below. If you wish to make changes, please adjust as correct and click the 'Save Changes' button</p>
+
+                        </div>
+                    </div>
+
+                    <div class="col-12 p-1 pt-3">
+             
+                            <!-- Form -->
+                        <form id="account-form" class="needs-validation" novalidate>
+                            <div class="row">
+
+                                <!--<div class="col-12 ">-->
+
+                                    <!-- Email -->
+                                    <!--<div class="form-group">
+                                        <label for="accountFirstName">
+                                            Title *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountTitle" type="text" placeholder="Title *" required>
+                                    </div>
+
+                                </div>-->
+
+                                <div class="col-12">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountFirstName">
+                                            First Name *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountFirstName" type="text" placeholder="First Name *" required>
+                                    </div>
+
+                                </div>
+                                <div class="col-12">
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountLastName">
+                                            Last Name *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountLastName" type="text" placeholder="Last Name *" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            Email Address *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountEmail" type="email" placeholder="Email Address *" required>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-12 ">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            Phone Number *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountPhone" type="tel" placeholder="Phone *" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12 ">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            Address Line 1 *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountAddress1" type="text" placeholder="Address Line 1 *" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12 ">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            Address Line 2
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountAddress2" type="text" placeholder="Address Line 2" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12 ">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            Address Line 3
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountAddress3" type="text" placeholder="Address Line 3" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12 ">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            Town / City *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountAddressTownCity" type="text" placeholder="  Town / City *" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12 ">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            County
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountAddressCounty" type="text" placeholder="County *" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12 ">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            Postcode *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountAddressPostcode" type="text" placeholder="Postcode *" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12 ">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label for="accountEmail">
+                                            Country *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="accountAddressCountry" type="text" placeholder="Country *" required>
+                                    </div>
+
+                                </div>
+
+
+
+
+                                <div class="col-12">
+
+                                    <!-- Button -->
+                                    <button class="butn x-small float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SaveCustomer();">Save Changes</button>
+
+
+                                    <div id="label-saved" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
+                                        Your details have been saved
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            </form>
+
+                      
+
+
+              
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(function () {
+
+            GetCustomer();
+
+        });
+
+
+        async function GetCustomer() {
+
+            await lessonsApp.getCustomer();
+
+            if (lessonsApp.customer == null) {
+                location.href = '/account/'
+            } else {
+                DisplayCustomer();
+            }
+
+
+        }
+
+
+        function DisplayCustomer() {
+
+            //$('#accountTitle').val(lessonsApp.customer.FirstName);
+            $('#accountFirstName').val(lessonsApp.customer.FirstName);
+            $('#accountLastName').val(lessonsApp.customer.LastName);
+            $('#accountEmail').val(lessonsApp.customer.Email);
+            $('#accountPhone').val(lessonsApp.customer.Telephone);
+            $('#accountAddress1').val(lessonsApp.customer.AddressLine1);
+            $('#accountAddress2').val(lessonsApp.customer.AddressLine2);
+            $('#accountAddress3').val(lessonsApp.customer.AddressLine3);
+            $('#accountAddressTownCity').val(lessonsApp.customer.AddressTownCity);
+            $('#accountAddressCounty').val(lessonsApp.customer.AddressCounty);
+            $('#accountAddressPostcode').val(lessonsApp.customer.AddressPocstcode);
+            $('#accountAddressCountry').val(lessonsApp.customer.AddressCountry);
+
+            $('#account-panel').show();
+            $('#spinner-loading').hide();
+
+        }
+
+        function SaveCustomer() {
+
+            var form = document.getElementById("account-form");
+
+            if (form.checkValidity() === false) {
+
+                event.preventDefault();
+                event.stopPropagation();
+                form.classList.add('was-validated');
+
+            } else {
+
+                var url = baseUrl + "/api/shopping/customer";
+
+                customer.FirstName = $('#accountFirstName').val();
+                customer.LastName = $('#accountLastName').val();
+                customer.CompanyName = $('#accountCompany').val();
+                customer.Email = $('#accountEmail').val();
+                customer.Telephone = $('#accountPhone').val();
+
+                $.ajax({
+                    url: url,
+                    data: customer,
+                    type: "POST",
+                    contentType: 'application/x-www-form-urlencoded',
+                    headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
+                    success: function (data) {
+
+                        customer = data;
+                        $('#label-saved').show();
+
+                    },
+                    error: function (xhRequest, ErrorText, thrownError) {
+
+                        console.log(ErrorText);
+                        //alert("Error: Could not load data. See browser log for details.");
+                        Logout();
+
+                    }
+                });
+
+
+            }
+
+        }
+
+
+    </script>
+
+}

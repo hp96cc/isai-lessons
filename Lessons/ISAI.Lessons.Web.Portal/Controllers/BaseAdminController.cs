@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using ISAI.Lessons.EntityFramework;
+using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.Web.Portal.Helpers;
 
 namespace ISAI.Lessons.Web.Portal
@@ -21,7 +23,19 @@ namespace ISAI.Lessons.Web.Portal
             ViewBag.Title = "Scottish Online Lessons";
 
         }
-       
+
+        protected async Task GetParentLessonGroup(int parentLessonGroupId, List<LessonGroup> lessonGroups)
+        {
+            var parentLessonGroup = await db.LessonGroup.FirstAsync(x => x.Id == parentLessonGroupId);
+            lessonGroups.Add(parentLessonGroup);
+
+            if (parentLessonGroup.ParentLessonGroupId != null)
+            {
+                await GetParentLessonGroup(parentLessonGroup.ParentLessonGroupId.Value, lessonGroups);
+            }
+
+        }
+
 
         protected override void Dispose(bool disposing)
         {

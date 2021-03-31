@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using System.Web.Http;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
 {
@@ -93,11 +93,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [HttpPost]
         public async Task<Customer> Customer()
         {
-            var customer = await db.Customer.FirstOrDefaultAsync(x => 
-            x.Id == _customerId && 
-            x.AppId == _appId && 
+            var customer = await db.Customer.FirstOrDefaultAsync(x =>
+            x.Id == _customerId &&
+            x.AppId == _appId &&
             x.Deleted == false);
-            
+
             return customer;
 
         }
@@ -105,10 +105,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/lesson")]
         [HttpPost]
-        public async Task<Lesson> Lesson(int lessonId)
+        public async Task<Lesson> Lesson(LessonRequestViewModel lessonRequestViewModel)
         {
             var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
-            x.Id == lessonId &&
+            x.Id == lessonRequestViewModel.LessonId &&
             x.Deleted == false);
 
             return lesson;
@@ -123,20 +123,21 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             var dateTimeNow = DateTime.UtcNow;
 
-            var subscriptions = await db.Subscription.Where(x => 
-            x.CustomerId == _customerId && 
-            x.Deleted == false && 
+            var subscriptions = await db.Subscription.Where(x =>
+            x.CustomerId == _customerId &&
+            x.Deleted == false &&
             x.Active == true &&
             x.StartDate <= dateTimeNow &&
             x.EndDate >= dateTimeNow
             ).ToListAsync();
 
             return subscriptions;
+
         }
 
         [Route("api/app/customerdevices")]
         [HttpPost]
-        public async Task<List<CustomerDevice>> CustonerDevices()
+        public async Task<List<CustomerDevice>> CustomerDevices()
         {
 
             var devices = await db.CustomerDevice.Where(x =>
@@ -163,6 +164,15 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             return activity;
         }
 
+        [Route("api/app/forgotpassword")]
+        [HttpPost]
+        public async Task ForgotPassword()
+        {
+            var customer = await Customer();
+
+            //TODO: send password email
+
+        }
 
     }
 }

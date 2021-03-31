@@ -1,0 +1,232 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountActivity>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+<!-- BREADCRUMB -->
+<nav class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+
+                <!-- Breadcrumb -->
+                <ol class="breadcrumb mb-0 font-size-xs text-gray-400">
+                    <li class="breadcrumb-item">
+                        <a class="text-gray-400" href="index.html">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Activity
+                    </li>
+                </ol>
+
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<section class="p-0">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="spinner-border mb-10" role="status" id="spinner-loading">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="account-panel" style="display:none;">
+            <div class="col-12 col-md-3">
+
+                <!-- Nav -->
+                @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "activity" } })
+
+
+            </div>
+            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                <div class="row">
+
+
+                    <div class="col-12 text-center">
+
+                        <!-- Heading -->
+                        <h3 class="mb-10 mt-3">Activity</h3>
+                        <p>The table below shows the last 7 days of activity</p>
+
+
+
+                    </div>
+
+
+                    <div class="col-12 p-1">
+                        <div class="row" id="activity-list"></div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+@section Scripts {
+
+    <template id="template-activity">
+
+        <div class="col-12 p-0">
+            <div class="card-body pt-0">
+
+                <!-- Info -->
+                <div class="card card-sm">
+                    <div class="card-body bg-light">
+                        <div class="row">
+                            <div class="col-7">
+
+                                <!-- Heading -->
+                                <h6 class="heading-xxxs text-muted">Lesson:</h6>
+
+                                <!-- Text -->
+                                <p class="mb-lg-0 font-size-sm ">
+                                    <a href="/lessons/primary/year-1/literacy/test-lesson-1/" target="_blank">Primary > Lieteracy > How to Spell&nbsp;&nbsp;<i class="far fa-play-circle"></i></a>
+                                </p>
+
+                            </div>
+                            <div class="col-5">
+
+                                <!-- Heading -->
+                                <h6 class="heading-xxxs text-muted">Date / Time Watched:</h6>
+
+                                <!-- Text -->
+                                <p class="mb-lg-0 font-size-sm font-weight-bold">
+                                    <time datetime="2019-09-07">
+                                        23rd March 2021 - 14:13
+                                    </time>
+                                </p>
+
+                            </div>
+                           
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </template>
+
+
+    <script>
+
+        var activity;
+
+        $(document).ready(function () {
+
+            //GetAddresses();
+            activity = [{}, {}, {}];
+            DisplayActivity();
+
+        });
+
+
+        function GetAddresses() {
+
+
+            var url = baseUrl + "/api/shopping/addresses/";
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: 'application/x-www-form-urlencoded',
+                headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
+                success: function (data) {
+
+                    addresses = data;
+                    DisplayAddresses();
+
+                },
+                error: function (xhRequest, ErrorText, thrownError) {
+
+                    console.log(ErrorText);
+
+                }
+            });
+
+        }
+
+        function DisplayActivity() {
+
+            $('#activity-list').html('');
+
+            var itemListHTML = '';
+            var templateItem = $('#template-activity').html();
+
+            activity.forEach(function (item) {
+
+                itemListHTML += Mustache.render(templateItem, item);
+
+            });
+
+
+            $('#activity-list').html(itemListHTML);
+
+            $('#account-panel').show();
+            $('#spinner-loading').hide();
+
+
+        }
+
+
+
+        function PromptDeleteAddress(id) {
+
+            deleteAddressId = id;
+
+        }
+
+        function DeleteAddress() {
+
+
+            $('#deleteAddressModal').modal('hide');
+
+            $('#account-panel').hide();
+            $('#spinner-loading').show();
+
+            var url = baseUrl + "/api/shopping/address?id=" + deleteAddressId;
+
+            $.ajax({
+                url: url,
+                type: "DELETE",
+                contentType: 'application/x-www-form-urlencoded',
+                headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
+                success: function (data) {
+
+                    GetAddresses();
+
+                },
+                error: function (xhRequest, ErrorText, thrownError) {
+
+                    console.log(ErrorText);
+                    alert("Error: Could not load data. See browser log for details.");
+
+                }
+            });
+
+        }
+
+
+    </script>
+
+
+
+
+}

@@ -497,10 +497,24 @@
     <Content Include="config\Lang\sv-SE.user.xml" />
     <Content Include="config\Lang\zh-CN.user.xml" />
     <Content Include="config\logviewer.searches.config.js" />
+    <Content Include="Content\Site.css" />
+    <Content Include="css\site.css" />
     <Content Include="Global.asax" />
+    <Content Include="scripts\app.js" />
+    <Content Include="scripts\fp.min.js" />
+    <Content Include="scripts\js.cookie.min.js" />
+    <Content Include="scripts\luxon.min.js" />
+    <Content Include="scripts\mustache.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Data\Models\AccountActivity.generated.cs" />
+    <Compile Include="App_Data\Models\AccountDevices.generated.cs" />
+    <Compile Include="App_Data\Models\AccountHome.generated.cs" />
+    <Compile Include="App_Data\Models\AccountInfo.generated.cs" />
+    <Compile Include="App_Data\Models\AccountLogout.generated.cs" />
+    <Compile Include="App_Data\Models\AccountRegister.generated.cs" />
+    <Compile Include="App_Data\Models\AccountSubscriptions.generated.cs" />
     <Compile Include="App_Data\Models\ContactPage.generated.cs" />
     <Compile Include="App_Data\Models\ContentBoxWithLink.generated.cs" />
     <Compile Include="App_Data\Models\ContentPage.generated.cs" />
@@ -518,6 +532,8 @@
     <Compile Include="App_Data\Models\Review.generated.cs" />
     <Compile Include="App_Data\Models\SEO.generated.cs" />
     <Compile Include="App_Data\Models\SocialLink.generated.cs" />
+    <Compile Include="Components\AttributeRoutingCompsoer.cs" />
+    <Compile Include="Controllers\LessonAppController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -549,7 +565,6 @@
     <Content Include="Assets\fonts\revicons\revicons90c6.eot" />
     <Content Include="Assets\fonts\revicons\revicons90c6.ttf" />
     <Content Include="Assets\fonts\revicons\revicons90c6.woff" />
-    <Content Include="App_Data\Models\ood.flag" />
     <None Include="packages.config" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Partials\Grid\Editors\Textstring.cshtml" />
@@ -572,6 +587,17 @@
     <Content Include="Views\SocialLink.cshtml" />
     <Content Include="Views\ContactPage.cshtml" />
     <Content Include="Views\ContentPage.cshtml" />
+    <Content Include="Views\AccountActivity.cshtml" />
+    <Content Include="Views\AccountDevices.cshtml" />
+    <Content Include="Views\AccountHome.cshtml" />
+    <Content Include="Views\AccountSubscriptions.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Partials\_AccountMenu.cshtml" />
+    <Content Include="Views\AccountInfo.cshtml" />
+    <Content Include="Views\AccountLogout.cshtml" />
+    <Content Include="Views\AccountTokenRedirect.cshtml" />
+    <Content Include="Views\AccountRegister.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -579,7 +605,15 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\LessonApp\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ISAI.Lessons.EntityFramework\ISAI.Lessons.EntityFramework.csproj">
+      <Project>{8eb5db26-d0cf-4fe2-bf84-533c55cf0e6b}</Project>
+      <Name>ISAI.Lessons.EntityFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

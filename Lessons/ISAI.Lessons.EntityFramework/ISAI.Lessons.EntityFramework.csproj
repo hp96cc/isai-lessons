@@ -112,6 +112,7 @@
     <Compile Include="Attributes\AllowSearchAttribute.cs" />
     <Compile Include="Interfaces\IBaseInterface.cs" />
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Auth.cs" />
     <Compile Include="Models\CustomerActivity.cs" />
     <Compile Include="Models\Lesson.cs" />
     <Compile Include="Models\LessonGroup.cs" />
@@ -134,10 +135,11 @@
     <Compile Include="Services\ValidationService.cs" />
     <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\FileUpload.cs" />
-    <Compile Include="ViewModels\RegisterRequestViewModel.cs" />
+    <Compile Include="ViewModels\LessonRequestViewModel.cs" />
     <Compile Include="ViewModels\LoginRequestViewModel.cs" />
-    <Compile Include="ViewModels\RegisterResponseViewModel.cs" />
+    <Compile Include="ViewModels\RegisterRequestViewModel.cs" />
     <Compile Include="ViewModels\LoginResponseViewModel.cs" />
+    <Compile Include="ViewModels\RegisterResponseViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

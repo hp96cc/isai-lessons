@@ -1,0 +1,221 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountRegister>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+<!-- BREADCRUMB -->
+<nav class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+
+                <!-- Breadcrumb -->
+                <ol class="breadcrumb mb-0 font-size-xs text-gray-400">
+                    <li class="breadcrumb-item">
+                        <a class="text-gray-400" href="/">Account</a>
+                    </li>
+
+                </ol>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<section class="p-0">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 text-center">
+
+                <!-- Heading -->
+                <h3 class="mb-4">Sign Up</h3>
+
+
+                <div class="spinner-border  mb-10" role="status" id="spinner-loading" style="display:none;">
+                    <span class="sr-only">Loading...</span>
+                </div>
+
+            </div>
+        </div>
+        <div class="row justify-content-center" id="account-panel">
+            <div class="col-12 col-md-6">
+
+                <!-- Card -->
+                <div class="card card-lg mb-10 mb-md-0">
+                    <div class="card-body">
+
+                        <!-- Heading -->
+                        <p class="pb-0 mb-3"><strong>To signup please complete the form below.</strong></p>
+
+                        <!-- Form -->
+
+                        <form id="register-form" class="needs-validation" novalidate>
+                            <div class="row">
+                                <div class="col-12">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label class="sr-only" for="registerFirstName">
+                                            First Name *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="registerFirstName" type="text" placeholder="First Name *" autocomplete="none"
+                                               required>
+                                    </div>
+
+                                </div>
+                                <div class="col-12">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label class="sr-only" for="registerLastName">
+                                            Last Name *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="registerLastName" type="text" placeholder="Last Name *" autocomplete="none" required>
+                                    </div>
+
+                                </div>
+                                <div class="col-12">
+
+                                    <!-- Email -->
+                                    <div class="form-group">
+                                        <label class="sr-only" for="registerEmail">
+                                            Email Address *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="registerEmail" type="email" placeholder="Email Address *" autocomplete="none" required>
+                                    </div>
+
+                                </div>
+                                <div class="col-12 col-md-6">
+
+                                    <!-- Password -->
+                                    <div class="form-group">
+                                        <label class="sr-only" for="registerPassword">
+                                            Password *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="registerPassword" type="password" placeholder="Password *" autocomplete="new-password" required>
+                                    </div>
+
+                                </div>
+                                <div class="col-12 col-md-6">
+
+                                    <!-- Password -->
+                                    <div class="form-group">
+                                        <label class="sr-only" for="registerPasswordConfirm">
+                                            Confirm Password *
+                                        </label>
+                                        <input class="form-control form-control-sm" id="registerPasswordConfirm" type="password" placeholder="Confrm Password *" autocomplete="new-password" required>
+                                    </div>
+
+                                </div>
+                                <div class="col-12 col-md-auto">
+
+                                    <!-- Link -->
+                                    <div class="form-group font-size-sm text-muted">
+                                        By registering your details, you agree with our Terms & Conditions,
+                                        and Privacy and Cookie Policy.
+                                    </div>
+
+                                </div>
+                                <div class="col-12 col-md">
+
+                                    <!-- Newsletter -->
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" id="registerNewsletter" type="checkbox">
+                                            <label class="custom-control-label" for="registerNewsletter">
+                                                Sign me up for the Newsletter!
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-12 d-flex justify-content-center">
+
+                                    <div id="register-error-label" class="alert alert-danger m-3 delivery-error-label" role="alert" style="display:none;">
+                                        An error has occured. We could not complete registration at this time.
+                                    </div>
+
+                                    <!-- Button -->
+                                    <button class="butn x-small pink p-2 pl-4 pr-4 mb-2 mt-2" type="button" onclick="Register();">
+                                        Register
+                                    </button>
+
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+
+    <script>
+
+        async function Login() {
+
+            var username = $("#loginEmail").val();
+            var password = $("#loginPassword").val();
+            var result = await lessonsApp.login(username, password);
+
+            if (result) {
+                location.href = "/account/info";
+            }
+            else
+            {
+                $("#login-error-label").show();
+            }
+        }
+
+
+        function Register() {
+
+            var form = document.getElementById("register-form");
+
+            if (form.checkValidity() === false) {
+
+                event.preventDefault();
+                event.stopPropagation();
+                form.classList.add('was-validated');
+
+            } else {
+
+                $('#account-panel').hide();
+                $('#spinner-loading').show();
+
+                var registerRequest = {
+
+                    FirstName: $('#registerFirstName').val(),
+                    LastName: $('#registerLastName').val(),
+                    Email: $('#registerEmail').val(),
+                    Password: $('#registerPassword').val(),
+                    PasswordConfirm: $('#registerPasswordConfirm').val(),
+                    AcceptMarketing: $('#registerNewsletter').prop("checked")
+                    //TODO: check fields
+                };
+
+                var result = await lessonsApp.register(registerRequest);
+
+                if (result) {
+                    window.location.href = "/account/info";
+                }
+                else {
+                    $("#register-error-label").show();
+                }
+
+
+            }
+
+        }
+
+    </script>
+
+}

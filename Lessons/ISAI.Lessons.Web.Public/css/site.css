@@ -18,3 +18,15 @@
 .navbar-header-custom {
     padding: 5px;
 }
+
+.list-group-item.active {
+	background-color: #18b8ff;
+}
+
+.list-group-item {
+	border-radius: .15rem;
+}
+
+.delete-button {
+	color: #ff457e;
+}

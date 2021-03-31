@@ -1,0 +1,167 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountSubscriptions>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+<!-- BREADCRUMB -->
+<nav class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+
+                <!-- Breadcrumb -->
+                <ol class="breadcrumb mb-0 font-size-xs text-gray-400">
+                    <li class="breadcrumb-item">
+                        <a class="text-gray-400" href="index.html">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Subscriptions
+                    </li>
+                </ol>
+
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<section class="p-0">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="spinner-border mb-10" role="status" id="spinner-loading">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="account-panel" style="display:none;">
+            <div class="col-12 col-md-3">
+
+                <!-- Nav -->
+                @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "subscriptions" } })
+
+
+            </div>
+            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                <div class="row">
+
+
+                    <div class="col-12 text-center">
+
+                        <!-- Heading -->
+                        <h3 class="mb-10 mt-3">Subscriptions</h3>
+                        <p>Your current subscription is shown below.</p>
+
+
+
+
+                    </div>
+
+
+                    <div class="col-12 p-1">
+                        <div class="row" id="device-list">
+
+                            <div class="col-12 p-0">
+                                <div class="card-body pt-0">
+
+                                    <!-- Info -->
+                                    <div class="card card-sm">
+                                        <div class="card-body bg-light">
+                                            <div class="row">
+                                                <div class="col-6">
+
+                                                    <!-- Heading -->
+                                                    <h6 class="heading-xxxs text-muted">Subscription Type:</h6>
+
+                                                    <!-- Text -->
+                                                    <p class="mb-lg-0 font-size-sm font-weight-bold">
+                                                        Primary Lessons
+                                                    </p>
+
+                                                </div>
+                                                <div class="col-6">
+
+                                                    <!-- Heading -->
+                                                    <h6 class="heading-xxxs text-muted">Subscription Staus:</h6>
+
+                                                    <!-- Text -->
+                                                    <p class="mb-lg-0 font-size-sm font-weight-bold">
+                                                        LIVE - Expires 12th March 2022
+                                                    </p>
+
+                                                </div>
+                                                <div class="col-12 mt-3">
+                                                    <!-- Heading -->
+                                                    <h6 class="heading-xxxs text-muted">Subscription Renewal</h6>
+
+                                                    <!-- Text -->
+
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" id="terms-condition" checked>
+                                                        <label class="custom-control-label" for="terms-condition">Renew my subscription automatically?</label>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <!-- Button -->
+                            <button class="butn x-small  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SaveCustomer();">Save Changes</button>
+
+
+                            <div id="label-saved" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
+                                Your details have been saved
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+@section Scripts {
+
+
+    <script>
+
+
+
+        $(document).ready(function () {
+
+            $('#account-panel').show();
+            $('#spinner-loading').hide();
+
+
+        });
+
+
+
+
+    </script>
+
+
+
+
+}

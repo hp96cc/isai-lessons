@@ -1,0 +1,29 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+
+<!-- Nav -->
+<nav class="mb-10 mb-md-0">
+    <div class="list-group list-group-sm list-group-strong list-group-flush-x">
+
+        <a class="list-group-item list-group-item-action dropright-toggle @(ViewData["active-menu"].Equals("info") ? "active" : "" )" href="/account/info">
+            My Details
+        </a>
+
+
+        <a class="list-group-item list-group-item-action dropright-toggle @(ViewData["active-menu"].Equals("subscriptions") ? "active" : "" )" href="/account/subscriptions">
+            Subscriptions
+        </a>
+
+        <a class="list-group-item list-group-item-action dropright-toggle @(ViewData["active-menu"].Equals("devices") ? "active" : "" )" href="/account/devices">
+            Devices
+        </a>
+
+        <a class="list-group-item list-group-item-action dropright-toggle @(ViewData["active-menu"].Equals("activity") ? "active" : "" )" href="/account/activity">
+            Activity
+        </a>
+
+      
+        <a class="list-group-item list-group-item-action dropright-toggle @(ViewData["active-menu"].Equals("logout") ? "active" : "" )" href="/account/signout">
+            Signout
+        </a>
+    </div>
+</nav>

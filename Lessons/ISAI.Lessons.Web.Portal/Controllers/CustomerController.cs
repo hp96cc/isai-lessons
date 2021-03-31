@@ -14,11 +14,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers
 
         }
 
-        // GET: /Subjects/
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
-
-
             return View();
         }
 

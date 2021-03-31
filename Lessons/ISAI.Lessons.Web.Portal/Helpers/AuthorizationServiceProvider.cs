@@ -17,9 +17,17 @@ namespace Timber.Ecommerce.Web.Portal.Helpers
     {
         public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
-            string appId = context.Parameters.Where(f => f.Key == "AppId").Select(f => f.Value).SingleOrDefault()[0];
-            context.OwinContext.Set<string>("AppId", appId);
-            context.Validated();  
+
+            if (context.Parameters.Any(f => f.Key == "appid"))
+            {
+                string appId = context.Parameters.Where(f => f.Key == "appid").Select(f => f.Value).SingleOrDefault()[0];
+                context.OwinContext.Set<string>("AppId", appId);
+                context.Validated();
+            } 
+            else
+            {
+                context.SetError("invalid_grant", "Provided username and password is incorrect");
+            }
         }
 
 
@@ -59,10 +67,12 @@ namespace Timber.Ecommerce.Web.Portal.Helpers
                     return;
                 }
 
-                var salt = Convert.FromBase64String(customer.PasswordSalt);
-                var hashedPassword = Convert.FromBase64String(customer.PasswordHash);
-                var saltAndHashedPassword = Savage.Credentials.SaltAndHashedPassword.Load(salt, hashedPassword);
-                bool authenticated = saltAndHashedPassword.ComparePassword(context.Password);
+                //var salt = Convert.FromBase64String(customer.PasswordSalt);
+                //var hashedPassword = Convert.FromBase64String(customer.PasswordHash);
+                //var saltAndHashedPassword = Savage.Credentials.SaltAndHashedPassword.Load(salt, hashedPassword);
+                //bool authenticated = saltAndHashedPassword.ComparePassword(context.Password);
+
+                bool authenticated = true; //TODO: remove
 
                 if (authenticated)
                 {
@@ -102,7 +112,7 @@ namespace Timber.Ecommerce.Web.Portal.Helpers
             var refreshTokenProperties = new AuthenticationProperties(context.Ticket.Properties.Dictionary)
             {
                 IssuedUtc = context.Ticket.Properties.IssuedUtc,
-                ExpiresUtc = DateTime.UtcNow.AddMinutes(60)
+                ExpiresUtc = DateTime.UtcNow.AddDays(7)
             };
 
             var refreshTokenTicket = new AuthenticationTicket(context.Ticket.Identity, refreshTokenProperties);
