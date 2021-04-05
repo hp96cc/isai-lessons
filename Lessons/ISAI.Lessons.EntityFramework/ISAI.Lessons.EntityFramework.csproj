@@ -134,12 +134,21 @@
     <Compile Include="Services\PasswordService.cs" />
     <Compile Include="Services\ValidationService.cs" />
     <Compile Include="ViewModels\ContactViewModel.cs" />
+    <Compile Include="ViewModels\Stripe\ConfirmCustomerSubscriptionRequest.cs" />
+    <Compile Include="ViewModels\Stripe\CreateCustomerPayemntSessionRequest.cs" />
+    <Compile Include="ViewModels\Stripe\CreateCustomerPayemntSessionResponse.cs" />
     <Compile Include="ViewModels\FileUpload.cs" />
     <Compile Include="ViewModels\LessonRequestViewModel.cs" />
     <Compile Include="ViewModels\LoginRequestViewModel.cs" />
     <Compile Include="ViewModels\RegisterRequestViewModel.cs" />
     <Compile Include="ViewModels\LoginResponseViewModel.cs" />
     <Compile Include="ViewModels\RegisterResponseViewModel.cs" />
+    <Compile Include="ViewModels\Stripe\StripeCustomerPortalRequest.cs" />
+    <Compile Include="ViewModels\Stripe\StripeErrorResponse.cs" />
+    <Compile Include="ViewModels\Stripe\StripeInvoicePaidWebHook.cs" />
+    <Compile Include="ViewModels\Stripe\StripeOptions.cs" />
+    <Compile Include="ViewModels\Stripe\StripePublicKeyResponse.cs" />
+    <Compile Include="ViewModels\Stripe\StripeSetupResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

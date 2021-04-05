@@ -10,52 +10,51 @@
 
 @helper RenderChildren(LessonGroup lessonGroup)
 {
+    <div class="col-4">
 
-   
-        <div class="list-group-item">
+        <h4> @lessonGroup.Title</h4>
 
-            @lessonGroup.Title
+       @if (lessonGroup.Children != null && lessonGroup.Children.Count() > 0)
+        {
 
-            @if (lessonGroup.Children != null && lessonGroup.Children.Count() > 0)
+        var childLessons = lessonGroup.Children<LessonItem>
+            ();
+
+            if (childLessons != null && childLessons.Count() > 0)
             {
 
-                var childLessons = lessonGroup.Children<LessonItem>();
+            <ul>
 
-                if (childLessons != null && childLessons.Count() > 0)
+                @foreach (var childLesson in childLessons)
                 {
-
-                    <div class="list-group">
-
-                        @foreach (var childLesson in childLessons)
-                        {
-                            <div class="list-group-item">@childLesson.Title</div>
-                        }
-
-                    </div>
-                }
-                else
-                {
-
-                    var childLessonGroups = lessonGroup.Children<LessonGroup>();
-
-                    foreach (var childLessonGroup in childLessonGroups)
-                    {
-                        @RenderChildren(childLessonGroup);
-                    }
-
+                    <li><i class="fas fa-chalkboard-teacher m-2"></i>&nbsp;<u><a href="@childLesson.Url()">@childLesson.Title</a></u></li>
                 }
 
-
+            </ul>
             }
+            else
+            {
 
-        </div>
-   
+            var childLessonGroups = lessonGroup.Children<LessonGroup>
+                ();
+
+                foreach (var childLessonGroup in childLessonGroups)
+                {
+                @RenderChildren(childLessonGroup);
+                }
+
+                }
+
+
+                }
+
+    </div>
 
 
 }
 
 <!-- start page title section -->
-<section class="page-title-section bg-img cover-background bg-yellow" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
+<section class="page-title-section bg-img cover-background bg-yellow  p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
     <div class="container">
         <div class="page-title">
             <h1>@Model.Title</h1>
@@ -100,7 +99,7 @@
     <section>
         <div class="container">
 
-            <div class="section-heading">
+            <div class="section-heading mb-2">
                 <h3>@Model.Title</h3>
 
                 @Model.HTmlcontent
@@ -109,26 +108,25 @@
 
             <div class="row no-gutters">
 
-                <div class="col-12 alert-warning">(TBC needs styling)</div>
-                <div class="col.12">
-                    @{
 
-                        var childLessonGroups = Model.Children<LessonGroup>();
 
-                        if (childLessonGroups != null && childLessonGroups.Count() > 0)
-                        {
-                            <div class="list-group">
+                @{
 
-                                @foreach (LessonGroup childLessonGroup in childLessonGroups)
-                                {
-                                    @RenderChildren(childLessonGroup);
-                                }
+                    var childLessonGroups = Model.Children<LessonGroup>();
 
-                            </div>
-                        }
+                    if (childLessonGroups != null && childLessonGroups.Count() > 0)
+                    {
+              
+
+                            foreach (LessonGroup childLessonGroup in childLessonGroups)
+                            {
+                                @RenderChildren(childLessonGroup);
+                            }
 
                     }
-                </div>
+
+                }
+
 
             </div>
         </div>

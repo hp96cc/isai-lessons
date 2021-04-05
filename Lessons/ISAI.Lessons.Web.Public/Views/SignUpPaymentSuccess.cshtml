@@ -1,0 +1,50 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.SignUpPaymentSuccess>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using ISAI.Lessons.Web.Public.Controllers;
+@using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
+@{
+    Layout = "Master.cshtml";
+
+
+    //try
+    //{
+
+    //var controller = new LessonAppController();
+    //var request = new ConfirmCustomerSubscriptionRequest()
+    //{
+    //    SessionId = Request.QueryString["session_id"]
+    //};
+
+    //controller.ConfirmCustomerSubscription(request).Wait();
+
+    //Response.Redirect("/plans/confirmed", true);
+
+
+    // } catch(Exception ex)
+    // {
+    //Payment failed or illegal use of page, redirect to home
+    //     Response.Redirect("/", true);
+    //}
+
+}
+
+@section Scripts { 
+
+<script>
+
+    $(document).ready(function () {
+
+        ConfirmSignup('@Request.QueryString["session_id"].ToString()');
+
+    });
+
+
+    async function ConfirmSignup(sessionId) {
+
+        await lessonsApp.confirmSignup(sessionId);
+
+    }
+
+</script>
+
+    }

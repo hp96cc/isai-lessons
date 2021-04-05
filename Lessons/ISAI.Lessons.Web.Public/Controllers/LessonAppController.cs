@@ -1,8 +1,10 @@
 ﻿using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.ViewModels;
+using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,17 +18,19 @@ namespace ISAI.Lessons.Web.Public.Controllers
     public class LessonAppController : ApiController
     {
 
-        const string _baseUrl = "https://localhost:44392/";
+        string _baseUrl;
+        string _baseReturnUrl;
         const string _refreshCookieName = "lessons_refresh_token";
         const string _accessCookieName = "lessons_access_token";
-        const string _appId = "1";
+        const int _appId = 1;
 
         HttpClient _httpClient;
         Auth _auth;
 
         public LessonAppController()
         {
-
+            _baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
+            _baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
         }
 
         [Route("api/lessonapp/login")]
@@ -34,7 +38,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         public async Task Login(LoginRequestViewModel model)
         {
 
-            await GetAuthToken(model.Email, model.Password);
+            await GetAuthToken(HttpContext.Current, model.Email, model.Password, null);
 
             if (_auth == null)
             {
@@ -44,12 +48,25 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-        [Route("api/lessonapp/register")]
+        [Route("api/lessonapp/logout")]
         [HttpPost]
-        [AllowAnonymous]
-        public async Task<RegisterResponseViewModel> Register(RegisterRequestViewModel model)
+        public void Logout()
         {
-            return null;
+            HttpContext.Current.Response.Cookies.Add(new HttpCookie(_refreshCookieName, string.Empty)
+            {
+                Path = "/",
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTime.Now.AddDays(-1)
+            });
+
+            HttpContext.Current.Response.Cookies.Add(new HttpCookie(_accessCookieName, string.Empty)
+            {
+                Path = "/",
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTime.Now.AddDays(-1)
+            });
 
         }
 
@@ -149,6 +166,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
             }
         }
 
+
+
         [Route("api/lessonapp/customerdevices")]
         [HttpPost]
         public async Task<List<CustomerDevice>> CustomerDevices()
@@ -187,7 +206,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
             try
             {
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/customerdevices", null).ConfigureAwait(false);
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/customeractivity", null).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
@@ -207,6 +226,48 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
         }
+
+        [Route("api/lessonapp/subscriptionportal")]
+        [HttpPost]
+        public async Task<Stripe.BillingPortal.Session> StripeCustomerPortal()
+        {
+            await SetHttpAuthClient();
+
+            try
+            {
+                var model = new StripeCustomerPortalRequest()
+                {
+                    ReturnUrl = _baseReturnUrl + "/account/subscriptions"
+                };
+
+                var json = JsonConvert.SerializeObject(model);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/stripecustomerportal", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var billingPortalSession = JsonConvert.DeserializeObject<Stripe.BillingPortal.Session>(serialisedContent);
+                    return billingPortalSession;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+
+        
 
         [Route("api/lessonapp/forgotpassword")]
         [HttpPost]
@@ -235,11 +296,93 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
+        [Route("api/lessonapp/createcustomerpaymentsession")]
+        [HttpPost]
+        public async Task<CreateCustomerPayemntSessionResponse> CreateCustomerPaymentSession(CreateCustomerPayemntSessionRequest model)
+        {
+            SetHttpClient();
+
+            try
+            {
+                model.AppId = _appId;
+                model.PriceId = "price_1IbJ0pJ81SbG6nzaIrTZGt25";
+                model.CancelUrl = _baseReturnUrl + "/plans/payment-cancel";
+                model.SuccessUrl = _baseReturnUrl + "/plans/payment-success";
+
+                var json = JsonConvert.SerializeObject(model);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/stripecreatepayemntsession", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var stripeCheckoutSessionResponse = JsonConvert.DeserializeObject<CreateCustomerPayemntSessionResponse>(serialisedContent);
+                    return stripeCheckoutSessionResponse;
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
+
+        [Route("api/lessonapp/confirmcustomersubscription")]
+        [HttpPost]
+        public async Task<Customer> ConfirmCustomerSubscription(ConfirmCustomerSubscriptionRequest request)
+        {
+            
+            SetHttpClient();
+
+            var context = HttpContext.Current;
+
+            try
+            {
+                request.AppId = _appId;
+
+                var json = JsonConvert.SerializeObject(request);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/confirmcustomersubscription", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var customer = JsonConvert.DeserializeObject<Customer>(serialisedContent);
+
+                    await GetAuthToken(context, customer.Email, string.Empty, customer.PostRegistrationAccessCode);
+
+                    return customer;
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+            throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+        }
+
+        
+
+
         #region Auth Methods
 
-
-
-        async Task GetAuthToken(string username, string password)
+        async Task GetAuthToken(HttpContext context, string username, string password, string postRegistrationAccessCode)
         {
 
             _auth = null;
@@ -252,7 +395,13 @@ namespace ISAI.Lessons.Web.Public.Controllers
             keyValues.Add(new KeyValuePair<string, string>("grant_type", "password"));
             keyValues.Add(new KeyValuePair<string, string>("username", username));
             keyValues.Add(new KeyValuePair<string, string>("password", password));
-            keyValues.Add(new KeyValuePair<string, string>("appid", _appId));
+
+            if(postRegistrationAccessCode != null)
+            {
+                keyValues.Add(new KeyValuePair<string, string>("postRegistrationAccessCode", postRegistrationAccessCode));
+            }
+
+            keyValues.Add(new KeyValuePair<string, string>("appid", _appId.ToString()));
             
             request.Content = new FormUrlEncodedContent(keyValues);
 
@@ -266,14 +415,14 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
                 if (_auth != null)
             {
-                HttpContext.Current.Response.Cookies.Add(new HttpCookie(_refreshCookieName, _auth.RefreshToken)
+                context.Response.Cookies.Add(new HttpCookie(_refreshCookieName, _auth.RefreshToken)
                 {
                     Path = "/",
                     HttpOnly = true,
                     Secure = true
                 });
 
-                HttpContext.Current.Response.Cookies.Add(new HttpCookie(_accessCookieName, _auth.AccessToken)
+                context.Response.Cookies.Add(new HttpCookie(_accessCookieName, _auth.AccessToken)
                 {
                     Path = "/",
                     HttpOnly = true,
@@ -314,7 +463,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 var keyValues = new List<KeyValuePair<string, string>>();
                 keyValues.Add(new KeyValuePair<string, string>("grant_type", "refresh_token"));
                 keyValues.Add(new KeyValuePair<string, string>("refresh_token", refreshToken));
-                keyValues.Add(new KeyValuePair<string, string>("appid", _appId));
+                keyValues.Add(new KeyValuePair<string, string>("appid", _appId.ToString()));
 
                 request.Content = new FormUrlEncodedContent(keyValues);
 
@@ -375,11 +524,34 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 _httpClient.DefaultRequestHeaders.Accept.Clear();
                 _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 _httpClient.DefaultRequestHeaders.Add("Keep-Alive", "true");
+
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _auth.AccessToken);
               
             }
 
 
+        }
+
+        void SetHttpClient()
+        {
+
+            _httpClient = new HttpClient()
+            {
+
+                MaxResponseContentBufferSize = int.MaxValue,
+                Timeout = TimeSpan.FromSeconds(30),
+                BaseAddress = new Uri(_baseUrl)
+
+
+            };
+
+            ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
+
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Add("Keep-Alive", "true");
+
+      
         }
 
 

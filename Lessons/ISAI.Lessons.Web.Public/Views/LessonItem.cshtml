@@ -4,11 +4,19 @@
     Layout = "Master.cshtml";
 
     var lessonGroup = Model.Parent as LessonGroup;
+
+    /* Check is logged in */
+    if (Request.Cookies["lessons_access_token"] != null && Request.Cookies["lessons_access_token"].Value.ToString().Length > 100)
+    {
+
+        ViewBag.LoggedIn = true;
+
+    }
 }
 
 
 <!-- start page title section -->
-<section class="page-title-section bg-img cover-background bg-yellow" data-overlay-dark="0" data-background="@lessonGroup.BackgroundImage.MediaUrl()">
+<section class="page-title-section bg-img cover-background bg-yellow  p-5" data-overlay-dark="0" data-background="@lessonGroup.BackgroundImage.MediaUrl()">
     <div class="container">
         <div class="page-title">
             <h1>@Model.Title</h1>
@@ -21,7 +29,6 @@
 
                         foreach (var ancestor in ancestors)
                         {
-
 
                             if (ancestor.Id == Model.Root().Id)
                             {
@@ -48,13 +55,91 @@
 <section>
     <div class="container">
         <div class="row">
-           
-                <!--  start course left-->
+
+            <!--  start course left-->
             <div class="col-lg-8 col-md-12 sm-margin-40px-bottom ms-margin-30px-bottom">
 
-                <div class="embed-responsive embed-responsive-16by9">
-                    <iframe src="//aka.ms/ampembed?url=%2F%2Famssamples.streaming.mediaservices.windows.net%2F3b970ae0-39d5-44bd-b3a3-3136143d6435%2FAzureMediaServicesPromo.ism%2Fmanifest" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
+                @*<div>
+            <a href="#" data-toggle="modal" data-target="#video-modal"><img class="img-fluid" src="~/Assets/img/lesson-placeholder.png" alt="Play Video" /></a>
+        </div>
+
+
+        <div id="video-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="video-modal" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <div class="row">
+
+                        <div class="col-12 p-5">
+
+                            <h1>@Model.Title</h1>
+
+                            <div class="embed-responsive embed-responsive-16by9">
+                                <iframe src="//aka.ms/ampembed?url=%2F%2Famssamples.streaming.mediaservices.windows.net%2F3b970ae0-39d5-44bd-b3a3-3136143d6435%2FAzureMediaServicesPromo.ism%2Fmanifest" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
+                            </div>
+
+                            <div class="float-right p pt-3 pr-3"><a href="javascript:ToggleLessonNotes();"><i class="far fa-file"></i>&nbsp;&nbsp;<span id="notes-button-label">Show Notes</span></a></div>
+
+                            <div id="lesson-notes"class="col-12 p-3 mt-5 d-none" >
+
+                                <h4>Lesson Notes</h4>
+
+                                <p>notes here</p>
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+                    </div>
+
+
+
                 </div>
+                </div>
+        </div>*@
+
+
+                @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
+                {
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe src="//aka.ms/ampembed?url=%2F%2Famssamples.streaming.mediaservices.windows.net%2F3b970ae0-39d5-44bd-b3a3-3136143d6435%2FAzureMediaServicesPromo.ism%2Fmanifest" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
+
+                    </div>
+
+                    <div class="float-right p p-3"><a href="javascript:ToggleLessonNotes();"><i class="far fa-file"></i>&nbsp;&nbsp;<span id="notes-button-label">Show Notes</span></a></div>
+
+
+                    <div id="lesson-notes" class="col-12 p-3 mt-5 d-none">
+
+                        <h4>Lesson Notes</h4>
+
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vel porttitor velit. Nullam sit amet laoreet dui. Integer eleifend lacus sit amet elit mattis porta. Aenean et purus faucibus elit commodo molestie. Phasellus ac molestie lacus. Integer ullamcorper tellus odio, ut varius lorem bibendum at. Vestibulum commodo, neque eget maximus molestie, risus lacus hendrerit orci, non vestibulum nulla elit a eros. Donec fringilla dui id nibh vestibulum vestibulum vitae non orci. Morbi sit amet malesuada elit. Integer non sodales ante, nec accumsan nisl. Suspendisse accumsan sit amet risus in commodo.
+                        </p><p>
+                            Proin aliquam venenatis cursus. Etiam non leo a velit bibendum scelerisque eu sit amet nisi. Cras quis orci ac arcu vulputate suscipit non pharetra est. Vivamus tempor gravida consectetur. Nulla finibus placerat lacus, vel ullamcorper odio. Etiam vestibulum tincidunt purus. Donec ullamcorper sem urna, eu vehicula ligula euismod sed. Donec convallis felis dapibus turpis posuere lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin sit amet leo vitae est euismod egestas sit amet a metus. Morbi sem nulla, elementum non consectetur et, tempus ut lacus. Phasellus molestie, quam ac bibendum dignissim, enim est ornare tortor, sed dignissim magna ligula eu metus. Duis aliquam nisl non mauris vehicula, non fermentum orci tincidunt. Nunc ullamcorper tortor non nisl laoreet pulvinar.
+                        </p>
+
+                    </div>
+
+
+                }
+                else
+                {
+
+                    <div>
+                        <a href="/plans"><img class="img-fluid" src="~/Assets/img/lesson-signup.png" alt="Play Video" /></a>
+                    </div>
+                }
+
+
+
+
+
 
                 <div class="text-center">
                     <img src="img/courses/courses-detail.jpg" class="course-img" alt="" />
@@ -74,74 +159,97 @@
 
 
             </div>
-                <!--  end course left-->
-                <!--  start course right-->
-                <div class="col-lg-4 col-md-12">
+            <!--  end course left-->
+            <!--  start course right-->
+            <div class="col-lg-4 col-md-12">
 
 
-                    <div class="padding-40px-left md-padding-20px-left sm-no-padding-left">
+                <div class="padding-40px-left md-padding-20px-left sm-no-padding-left">
 
-                        <div class="side-bar">
+                    <div class="side-bar">
 
-                            <div class="widget-sidebar">
+                        <div class="widget-sidebar">
 
-                                <div class="block-info">
-                                    <h6 class="bg-yellow">Course Information</h6>
+                            <div class="block-info">
+                                <h6 class="bg-yellow">Course Information</h6>
 
-                                    <ul class="list-style12">
+                                <ul class="list-style12">
 
-                                        <li>
-                                            <span class="icon far fa-calendar-alt text-sky font-size20 vertical-align-middle width-40px"></span>Info 1
-                                            <span class="float-right font-size14 opacity7"> TBC</span>
-                                        </li>
-                                        <li>
-                                            <span class="icon fas fa-birthday-cake text-yellow font-size20 vertical-align-middle width-40px"></span>Info 2
-                                            <span class="float-right font-size14 opacity7">TBC</span>
-                                        </li>
-                                        <li>
-                                            <span class="icon fas fa-anchor text-pink font-size20 vertical-align-middle width-40px"></span>Info 3
-                                            <span class="float-right font-size14 opacity7">TBC</span>
-                                        </li>
-                                        <li>
-                                            <span class="icon fas fa-clock text-green font-size20 vertical-align-middle width-40px"></span>Info 4
-                                            <span class="float-right font-size14 opacity7">TBC</span>
-                                        </li>
-                                        <li>
-                                            <span class="icon fas fa-user text-orange font-size20 vertical-align-middle width-40px"></span>Info 5
-                                            <span class="float-right font-size14 opacity7">TBC</span>
-                                        </li>
-                                        <li>
-                                            <span class="icon fas fa-money-bill-alt text-purple font-size20 vertical-align-middle width-40px"></span>Info 6
-                                            <span class="float-right font-size14 opacity7">TBC</span>
-                                        </li>
+                                    <li>
+                                        <span class="icon far fa-calendar-alt text-sky font-size20 vertical-align-middle width-40px"></span>Info 1
+                                        <span class="float-right font-size14 opacity7"> TBC</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon fas fa-birthday-cake text-yellow font-size20 vertical-align-middle width-40px"></span>Info 2
+                                        <span class="float-right font-size14 opacity7">TBC</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon fas fa-anchor text-pink font-size20 vertical-align-middle width-40px"></span>Info 3
+                                        <span class="float-right font-size14 opacity7">TBC</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon fas fa-clock text-green font-size20 vertical-align-middle width-40px"></span>Info 4
+                                        <span class="float-right font-size14 opacity7">TBC</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon fas fa-user text-orange font-size20 vertical-align-middle width-40px"></span>Info 5
+                                        <span class="float-right font-size14 opacity7">TBC</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon fas fa-money-bill-alt text-purple font-size20 vertical-align-middle width-40px"></span>Info 6
+                                        <span class="float-right font-size14 opacity7">TBC</span>
+                                    </li>
 
-                                    </ul>
+                                </ul>
 
-                                </div>
-
-                            </div>
-
-
-                            <div class="widget-sidebar">
-                                <div class="event-contact bg-img cover-background theme-overlay border-radius-5" data-overlay-dark="9" data-background="img/content/small-banner.jpg">
-                                    <div class="position-relative z-index-9 text-center padding-50px-tb md-padding-40px-tb sm-padding-30px-tb padding-30px-lr">
-                                        <i class="fas fa-headset font-size50 md-font-size46 sm-font-size42 text-white margin-15px-bottom"></i>
-                                        <h5 class="text-white font-weight-600 margin-5px-bottom">How can we help?</h5>
-                                        <p class="text-white font-weight-500">Let’s get in touch!!</p>
-                                        <div class="bg-white separator-line-horrizontal-full opacity3 margin-20px-bottom sm-margin-15px-bottom"></div>
-                                        <ul class="text-center no-padding no-margin">
-                                            <li class="text-white margin-5px-bottom"><i class="fa fa-phone font-size16 text-white margin-15px-right"></i><a href="tel:123456789" class="text-white">(+44) 123 456 789</a></li>
-                                            <li class="text-white"><i class="fa fa-envelope-open font-size16 text-white margin-15px-right"></i><a href="mailto:mail@example.com" class="text-white">addyour@emailhere</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
                             </div>
 
                         </div>
+
+
+                        <div class="widget-sidebar">
+                            <div class="event-contact bg-img cover-background theme-overlay border-radius-5" data-overlay-dark="9" data-background="img/content/small-banner.jpg">
+                                <div class="position-relative z-index-9 text-center padding-50px-tb md-padding-40px-tb sm-padding-30px-tb padding-30px-lr">
+                                    <i class="fas fa-headset font-size50 md-font-size46 sm-font-size42 text-white margin-15px-bottom"></i>
+                                    <h5 class="text-white font-weight-600 margin-5px-bottom">How can we help?</h5>
+                                    <p class="text-white font-weight-500">Let’s get in touch!!</p>
+                                    <div class="bg-white separator-line-horrizontal-full opacity3 margin-20px-bottom sm-margin-15px-bottom"></div>
+                                    <ul class="text-center no-padding no-margin">
+                                        <li class="text-white margin-5px-bottom"><i class="fa fa-phone font-size16 text-white margin-15px-right"></i><a href="tel:123456789" class="text-white">(+44) 123 456 789</a></li>
+                                        <li class="text-white"><i class="fa fa-envelope-open font-size16 text-white margin-15px-right"></i><a href="mailto:mail@example.com" class="text-white">addyour@emailhere</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-                <!--  end course right-->
             </div>
+            <!--  end course right-->
         </div>
+    </div>
 </section>
 <!-- end course details section -->
+
+
+@section Scripts {
+    
+ 
+    <script>
+
+
+        function ToggleLessonNotes() {
+
+            $("#lesson-notes").toggleClass('d-none');
+
+            if ($("#notes-button-label").text === 'Show Notes') {
+                $("#notes-button-label").text('Hide Notes');
+            } else {
+                $("#notes-button-label").text('Show Notes');
+            }
+           
+        }
+
+    </script>
+    
+ }

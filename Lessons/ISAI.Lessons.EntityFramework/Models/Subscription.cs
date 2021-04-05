@@ -11,6 +11,11 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public int CustomerId { get; set; }
 
+
+        public string Name { get; set; }
+
+        public string StripeSubscriptionId { get; set; }
+
         [ForeignKey("CustomerId")]
         public Customer Customer { get; set; }
 

@@ -127,93 +127,7 @@
 
                                 </div>
 
-                                <div class="col-12 ">
-
-                                    <!-- Email -->
-                                    <div class="form-group">
-                                        <label for="accountEmail">
-                                            Address Line 1 *
-                                        </label>
-                                        <input class="form-control form-control-sm" id="accountAddress1" type="text" placeholder="Address Line 1 *" required>
-                                    </div>
-
-                                </div>
-
-                                <div class="col-12 ">
-
-                                    <!-- Email -->
-                                    <div class="form-group">
-                                        <label for="accountEmail">
-                                            Address Line 2
-                                        </label>
-                                        <input class="form-control form-control-sm" id="accountAddress2" type="text" placeholder="Address Line 2" required>
-                                    </div>
-
-                                </div>
-
-                                <div class="col-12 ">
-
-                                    <!-- Email -->
-                                    <div class="form-group">
-                                        <label for="accountEmail">
-                                            Address Line 3
-                                        </label>
-                                        <input class="form-control form-control-sm" id="accountAddress3" type="text" placeholder="Address Line 3" required>
-                                    </div>
-
-                                </div>
-
-                                <div class="col-12 ">
-
-                                    <!-- Email -->
-                                    <div class="form-group">
-                                        <label for="accountEmail">
-                                            Town / City *
-                                        </label>
-                                        <input class="form-control form-control-sm" id="accountAddressTownCity" type="text" placeholder="  Town / City *" required>
-                                    </div>
-
-                                </div>
-
-                                <div class="col-12 ">
-
-                                    <!-- Email -->
-                                    <div class="form-group">
-                                        <label for="accountEmail">
-                                            County
-                                        </label>
-                                        <input class="form-control form-control-sm" id="accountAddressCounty" type="text" placeholder="County *" required>
-                                    </div>
-
-                                </div>
-
-                                <div class="col-12 ">
-
-                                    <!-- Email -->
-                                    <div class="form-group">
-                                        <label for="accountEmail">
-                                            Postcode *
-                                        </label>
-                                        <input class="form-control form-control-sm" id="accountAddressPostcode" type="text" placeholder="Postcode *" required>
-                                    </div>
-
-                                </div>
-
-                                <div class="col-12 ">
-
-                                    <!-- Email -->
-                                    <div class="form-group">
-                                        <label for="accountEmail">
-                                            Country *
-                                        </label>
-                                        <input class="form-control form-control-sm" id="accountAddressCountry" type="text" placeholder="Country *" required>
-                                    </div>
-
-                                </div>
-
-
-
-
+              
                                 <div class="col-12">
 
                                     <!-- Button -->
@@ -272,14 +186,7 @@
             $('#accountLastName').val(lessonsApp.customer.LastName);
             $('#accountEmail').val(lessonsApp.customer.Email);
             $('#accountPhone').val(lessonsApp.customer.Telephone);
-            $('#accountAddress1').val(lessonsApp.customer.AddressLine1);
-            $('#accountAddress2').val(lessonsApp.customer.AddressLine2);
-            $('#accountAddress3').val(lessonsApp.customer.AddressLine3);
-            $('#accountAddressTownCity').val(lessonsApp.customer.AddressTownCity);
-            $('#accountAddressCounty').val(lessonsApp.customer.AddressCounty);
-            $('#accountAddressPostcode').val(lessonsApp.customer.AddressPocstcode);
-            $('#accountAddressCountry').val(lessonsApp.customer.AddressCountry);
-
+           
             $('#account-panel').show();
             $('#spinner-loading').hide();
 
@@ -301,7 +208,6 @@
 
                 customer.FirstName = $('#accountFirstName').val();
                 customer.LastName = $('#accountLastName').val();
-                customer.CompanyName = $('#accountCompany').val();
                 customer.Email = $('#accountEmail').val();
                 customer.Telephone = $('#accountPhone').val();
 

@@ -21,25 +21,19 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string Email { get; set; }
 
-        public string AddressLine1 { get; set; }
-
-        public string AddressLine2 { get; set; }
-
-        public string AddressLine3 { get; set; }
-
-        public string AddressTownCity { get; set; }
-
-        public string AddressCounty { get; set; }
-
-        public string AddressPostcode { get; set; }
-
-        public string AddressCountry { get; set; }
-
         public string Telephone { get; set; }
 
-        public string Mobile { get; set; }
-
         public bool AcceptMarketing { get; set; }
+
+        public bool HasCompletedCheckout { get; set; }
+
+        public string PostRegistrationAccessCode { get; set; }
+
+        public string StripeCustomerId { get; set; }
+
+
+        [JsonIgnore]
+        public string PaymentSessionId { get; set; }
 
         [JsonIgnore]
         public string PasswordSalt { get; set; }
@@ -47,6 +41,11 @@ namespace ISAI.Lessons.EntityFramework.Models
         [JsonIgnore]
         public string PasswordHash { get; set; }
 
+        [NotMapped]
+        public string Password{ get; set; }
+
+        [NotMapped]
+        public string PasswordConfirm { get; set; }
 
     }
 }

@@ -18,6 +18,13 @@ namespace Timber.Ecommerce.Web.Portal.Helpers
         public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
 
+            if (context.Parameters.Any(f => f.Key == "postRegistrationAccessCode"))
+            {
+                string appId = context.Parameters.Where(f => f.Key == "postRegistrationAccessCode").Select(f => f.Value).SingleOrDefault()[0];
+                context.OwinContext.Set<string>("PostRegistrationAccessCode", appId);
+                context.Validated();
+            }
+
             if (context.Parameters.Any(f => f.Key == "appid"))
             {
                 string appId = context.Parameters.Where(f => f.Key == "appid").Select(f => f.Value).SingleOrDefault()[0];
@@ -58,6 +65,7 @@ namespace Timber.Ecommerce.Web.Portal.Helpers
                 var email = context.UserName.ToLower().Trim();
                 int appId = Convert.ToInt32(context.OwinContext.Get<string>("AppId"));
 
+     
                 var customer = await db.Customer.FirstOrDefaultAsync(x => x.Email == context.UserName && x.AppId == appId);
 
              
@@ -67,12 +75,27 @@ namespace Timber.Ecommerce.Web.Portal.Helpers
                     return;
                 }
 
-                //var salt = Convert.FromBase64String(customer.PasswordSalt);
-                //var hashedPassword = Convert.FromBase64String(customer.PasswordHash);
-                //var saltAndHashedPassword = Savage.Credentials.SaltAndHashedPassword.Load(salt, hashedPassword);
-                //bool authenticated = saltAndHashedPassword.ComparePassword(context.Password);
+                bool authenticated = false;
 
-                bool authenticated = true; //TODO: remove
+                if (context.OwinContext.Get<string>("PostRegistrationAccessCode") != null)
+                {
+                    var postRegistrationAccessCode = context.OwinContext.Get<string>("PostRegistrationAccessCode");
+                    if(customer.PostRegistrationAccessCode == postRegistrationAccessCode)
+                    {
+                        authenticated = true;
+                        customer.PostRegistrationAccessCode = null;
+                        customer.DateModified = DateTime.UtcNow;
+                        db.Entry(customer).State = EntityState.Modified;
+                        await db.SaveChangesAsync();
+                    } 
+                }
+                else
+                {
+                    var salt = Convert.FromBase64String(customer.PasswordSalt);
+                    var hashedPassword = Convert.FromBase64String(customer.PasswordHash);
+                    var saltAndHashedPassword = Savage.Credentials.SaltAndHashedPassword.Load(salt, hashedPassword);
+                    authenticated = saltAndHashedPassword.ComparePassword(context.Password);
+                }
 
                 if (authenticated)
                 {

@@ -1,0 +1,203 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.SignUpEnterDetails>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/qz0hs2bw/bg1.jpg" style="background-image: url(&quot;/media/qz0hs2bw/bg1.jpg&quot;);">
+    <div class="container">
+        <div class="page-title">
+            <h1>Complete Signup</h1>
+            <p><strong>To complete signup please enter your details below and click the Go to Payment Button</strong></p>
+        </div>
+    </div>
+</section>
+
+
+<section class="pt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 center-col">
+
+                <div class="block-info">
+                    <h6 class="bg-sky">Your Details</h6>
+
+                    <div class="padding-50px-all md-padding-50px-all sm-padding-25px-all">
+
+                        <div class="spinner-border  mb-10" role="status" id="spinner-loading" style="display:none;">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+
+                        <form method="post" id="register-form" class="needs-validation" novalidate>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Firstname *:</label>
+                                        <input type="text" class="form-control" id="input-firstname" name="input-firstname" autocomplete="none" required />
+                                        <div class="invalid-feedback">Firstname is required</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Surname *:</label>
+                                        <input type="text" class="form-control" id="input-lastname" name="input-lastname" autocomplete="none" required />
+                                        <div class="invalid-feedback">Surname is required</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Email *:</label>
+                                        <input type="email" class="form-control" id="input-email" name="input-email" autocomplete="none" required />
+                                        <div class="invalid-feedback">Email is required</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Password *:</label>
+                                        <input type="password" class="form-control" id="input-password" name="input-password" autocomplete="new-password" required />
+                                        <div class="invalid-feedback">Password is required</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Confirm Password *:</label>
+                                        <input type="password" class="form-control" id="input-confirmpassword" name="input-confirmpassword" autocomplete="new-password" required />
+                                        <div class="invalid-feedback">Confirm Password is required</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="input-newsletter">
+                                        <label class="custom-control-label" for="input-newsletter">Accept Marketing?</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="input-terms-condition" required>
+                                        <label class="custom-control-label" for="input-terms-condition">I agree to the <a href="#!">Terms &amp; Conditions</a></label>
+                                        <span class="invalid-feedback">You must agree before submitting.</span>
+
+                                    </div>
+                                </div>
+
+                                <div id="form-error-label" class="col-md-12 alert alert-danger m-3 delivery-error-label" role="alert" style="display:none;">
+
+                                </div>
+
+                                <div class="col-md-12 margin-35px-top sm-margin-25px-top">
+                                    <button type="button" id="button-checkout" onclick="GoToPayment();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Go To Payment</button>
+                                </div>
+
+                                <div class="col-md-12 text-center margin-25px-top">
+                                    <span>Already have an account? <a href="/account">Login</a></span>
+                                </div>
+
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Head {
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+}
+
+
+@section Scripts {
+    
+    <script>
+
+        async function GoToPayment() {
+
+            $('#form-error-label').text('');
+            $('#form-error-label').hide();
+
+            var form = document.getElementById("register-form");
+
+            if (form.checkValidity() === false) {
+
+                event.preventDefault();
+                event.stopPropagation();
+                form.classList.add('was-validated');
+
+            } else {
+
+                $('#register-form').hide();
+                $('#spinner-loading').show();
+                var errorHTML = '';
+
+                var paymentSessionObject = {
+
+                    firstName: $("#input-firstname").val(),
+                    lastName: $("#input-lastname").val(),
+                    email: $("#input-email").val(),
+                    password: $("#input-password").val(),
+                    passwordConfirm: $('#input-confirmpassword').val(),
+                    acceptMarketing: $('#input-newsletter').prop("checked"),
+
+                }
+
+                
+                var data = await lessonsApp.createCustomerPaymentSession(paymentSessionObject);
+
+                if (data.sessionId != null) {
+
+                    var stripe = Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');
+                    stripe.redirectToCheckout({
+                        sessionId: data.sessionId
+                    }).then(handleResult);
+                    return;
+
+                } else {
+
+                    if (data.Errors.length > 0) {
+
+                        errorHTML += '<ul>';
+
+                        data.Errors.forEach(function (item) {
+                            errorHTML += '<li>' + item + '</li>';
+                        });
+
+                        errorHTML += '</ul>';
+                    }
+                    else if (data.Errors.length === 1)
+                    {
+                        errorHTML = data.Errors[0];
+                    }
+                    else
+                    {
+                        errorHTML = 'Could not create session. Please contact support';
+                    }
+                 
+                }
+
+                $('#form-error-label').html(errorHTML);
+                $('#form-error-label').show();
+                $('#register-form').show();
+                $('#spinner-loading').hide();
+
+            }
+        }
+
+        var handleResult = function (result) {
+            if (result.error) {
+                //TODO:
+                //showErrorMessage(result.error.message);
+                //$('#spinner-loading').hide();
+            }
+        };
+
+    </script>
+    
+}

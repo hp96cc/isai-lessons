@@ -3,6 +3,11 @@
     var visitorId =  null;
     var baseUrl = '/api/lessonapp/';
     var customer = null;
+    var lesson = null;
+    var subscriptions = null;
+    var customerdevices = null;
+    var customeractivity = null;
+
 
     var login = async function (username, password) {
 
@@ -56,12 +61,40 @@
 
     };
 
-    
-    var register = async function (registerRequest) {
+   
+    var createCustomerPaymentSession = async function (paymentSessionObject) {
 
-        var result = false;
-        var url = this.baseUrl + "register";
-        var requestData = JSON.stringify(registerRequest);
+        var result = null;
+        var url = this.baseUrl + "createcustomerpaymentsession";
+        
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(paymentSessionObject),
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            result = data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+        return result;
+
+
+    };
+
+    var confirmSignup = async function (sessionId) {
+
+        var url = this.baseUrl + "confirmcustomersubscription";
+        var requestData = JSON.stringify({
+            SessionId: sessionId
+        });
 
         try {
 
@@ -72,7 +105,7 @@
                 contentType: 'application/json',
             });
 
-            result = true;
+            location.href = '/plans/confirmed'
 
         } catch (error) {
 
@@ -80,25 +113,114 @@
 
         }
 
-        return result;
-
     };
 
-    
-
     var getLesson = async function (lessonId) {
+
+        var url = this.baseUrl + "lesson";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            this.lesson = data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
 
     };
 
     var getSubscriptions = async function () {
 
+        var url = this.baseUrl + "subscriptions";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            this.subscriptions = data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+    };
+
+    var subscriptionPortal = async function () {
+
+        var url = this.baseUrl + "subscriptionportal";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            var redirectUrl = data.url;
+            window.location.href = redirectUrl;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
     };
 
     var getCustomerDevices = async function () {
 
+        var url = this.baseUrl + "customerdevices";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            this.customerdevices = data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
     };
 
     var getCustomerActivity = async function () {
+
+        var url = this.baseUrl + "customeractivity";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            this.customerdevices = data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
 
     };
 
@@ -108,10 +230,25 @@
 
     var logout = async function() {
 
-        this.customerToken = null;
-        Cookies.remove('customerToken');
 
-        window.location.href = '/account/';
+        var url = this.baseUrl + "logout";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            window.location.href = '/account/';
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
 
     };
 
@@ -120,15 +257,21 @@
         visitorId: visitorId,
         baseUrl: baseUrl,
         customer: customer,
+        lesson: lesson, 
+        subscriptions: subscriptions,
+        customerdevices: customerdevices,
+        customeractivity: customeractivity,
         login: login,
-        register: register,
         getCustomer: getCustomer,
         getLesson: getLesson,
         getSubscriptions: getSubscriptions,
         getCustomerDevices: getCustomerDevices,
         getCustomerActivity: getCustomerActivity,
         sendResetPassword: sendResetPassword,
-        logout: logout
+        logout: logout,
+        createCustomerPaymentSession: createCustomerPaymentSession,
+        confirmSignup: confirmSignup,
+        subscriptionPortal: subscriptionPortal
 
     }
 
@@ -136,3 +279,5 @@
 };
 
 var lessonsApp = new LessonsApp();
+
+
