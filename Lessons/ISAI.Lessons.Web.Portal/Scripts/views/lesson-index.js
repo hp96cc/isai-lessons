@@ -141,19 +141,32 @@ function InitGrid() {
                 }
             },
 
+
+
             {
-                field: 'LessonNotes',
-                headerText: '(Do not Use)',
-                width: 120,
+                field: 'SourceUrl',
+                headerText: 'Pickup File Name',
+                width: 200,
                 allowSorting: false
+            },
+            {
+                field: 'PendingDownload',
+                headerText: 'Mark for Processing?',
+                displayAsCheckBox: true,
+                editType: "booleanedit",
+                allowEditing: true,
+                allowSorting: false,
+                width: 120
+
             },
 
 
             {
                 field: 'AssetId',
-                headerText: '(Do not Use)',
+                headerText: 'AssetId',
                 width: 120,
-                allowSorting: false
+                allowSorting: false,
+                allowEditing: false,
             },
 
          
@@ -166,24 +179,6 @@ function InitGrid() {
                 width: 100
             },
 
-
-
-            {
-
-                field: 'Id',
-                headerText: '',
-                width: 250,
-                disableHtmlEncode: false,
-                valueAccessor: function (field, data, column) {
-
-                    if (data.HasSubGroups) {
-                        return "<a class='btn btn-primary btn-sm m-n' href='/lesson/index?parentlessonId=" + data.Id + "'>View Sub Groups</a>&nbsp;&nbsp;&nbsp;"
-                    } else {
-                        return "<a class='btn btn-primary btn-sm m-n' href='/lesson/index?lessonId=" + data.Id + "'>View Lessons</a>&nbsp;&nbsp;&nbsp;";
-                    }
-
-                }
-            },
 
 
 

@@ -124,6 +124,7 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="LessonsDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ApiService.cs" />
     <Compile Include="Services\Base64StringEncodingService.cs" />
     <Compile Include="Services\CodeGenerationService.cs" />
     <Compile Include="Services\EmailService.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="ViewModels\Stripe\StripeOptions.cs" />
     <Compile Include="ViewModels\Stripe\StripePublicKeyResponse.cs" />
     <Compile Include="ViewModels\Stripe\StripeSetupResponse.cs" />
+    <Compile Include="ViewModels\TokenResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

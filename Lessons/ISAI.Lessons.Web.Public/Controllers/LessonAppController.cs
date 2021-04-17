@@ -1,4 +1,5 @@
 ﻿using ISAI.Lessons.EntityFramework.Models;
+using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
 using Newtonsoft.Json;
@@ -24,6 +25,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         const string _accessCookieName = "lessons_access_token";
         const int _appId = 1;
 
+        ApiService _apiService;
         HttpClient _httpClient;
         Auth _auth;
 
@@ -31,6 +33,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
         {
             _baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
             _baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
+
+            _apiService = new ApiService();
         }
 
         [Route("api/lessonapp/login")]
@@ -74,7 +78,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<Customer> Customer()
         {
-            await SetHttpAuthClient();
+            _httpClient = await _apiService.SetHttpAuthClient(_auth);
 
             try
             {
@@ -104,7 +108,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<Lesson> Lesson(int lessonId)
         {
-            await SetHttpAuthClient();
+            _httpClient = await _apiService.SetHttpAuthClient(_auth);
 
             try
             {
@@ -141,7 +145,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<List<Subscription>> Subscriptions()
         {
-            await SetHttpAuthClient();
+            _httpClient = await _apiService.SetHttpAuthClient(_auth);
 
             try
             {
@@ -172,7 +176,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<List<CustomerDevice>> CustomerDevices()
         {
-            await SetHttpAuthClient();
+            _httpClient = await _apiService.SetHttpAuthClient(_auth);
 
             try
             {
@@ -202,7 +206,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<List<CustomerActivity>> CustomerActivity()
         {
-            await SetHttpAuthClient();
+            _httpClient = await _apiService.SetHttpAuthClient(_auth);
 
             try
             {
@@ -231,7 +235,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<Stripe.BillingPortal.Session> StripeCustomerPortal()
         {
-            await SetHttpAuthClient();
+            _httpClient = await _apiService.SetHttpAuthClient(_auth);
 
             try
             {
@@ -273,7 +277,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task ForgotPassword()
         {
-            await SetHttpAuthClient();
+            _httpClient = await _apiService.SetHttpAuthClient(_auth);
 
             try
             {
@@ -385,35 +389,9 @@ namespace ISAI.Lessons.Web.Public.Controllers
         async Task GetAuthToken(HttpContext context, string username, string password, string postRegistrationAccessCode)
         {
 
-            _auth = null;
+            _auth = await _apiService.GetAuthToken(username, password, postRegistrationAccessCode);
 
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(_baseUrl);
-            var request = new HttpRequestMessage(HttpMethod.Post, "token");
-
-            var keyValues = new List<KeyValuePair<string, string>>();
-            keyValues.Add(new KeyValuePair<string, string>("grant_type", "password"));
-            keyValues.Add(new KeyValuePair<string, string>("username", username));
-            keyValues.Add(new KeyValuePair<string, string>("password", password));
-
-            if(postRegistrationAccessCode != null)
-            {
-                keyValues.Add(new KeyValuePair<string, string>("postRegistrationAccessCode", postRegistrationAccessCode));
-            }
-
-            keyValues.Add(new KeyValuePair<string, string>("appid", _appId.ToString()));
-            
-            request.Content = new FormUrlEncodedContent(keyValues);
-
-            var response = await client.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
-            {
-
-                var serialisedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                _auth = JsonConvert.DeserializeObject<Auth>(serialisedContent);
-
-                if (_auth != null)
+            if (_auth != null)
             {
                 context.Response.Cookies.Add(new HttpCookie(_refreshCookieName, _auth.RefreshToken)
                 {
@@ -429,8 +407,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
                     Secure = true
                 });
             }
-            }
-
 
         }
 
@@ -456,44 +432,26 @@ namespace ISAI.Lessons.Web.Public.Controllers
             if (refreshToken != null)
             {
 
-                var client = new HttpClient();
-                client.BaseAddress = new Uri(_baseUrl);
-                var request = new HttpRequestMessage(HttpMethod.Post, "token");
-
-                var keyValues = new List<KeyValuePair<string, string>>();
-                keyValues.Add(new KeyValuePair<string, string>("grant_type", "refresh_token"));
-                keyValues.Add(new KeyValuePair<string, string>("refresh_token", refreshToken));
-                keyValues.Add(new KeyValuePair<string, string>("appid", _appId.ToString()));
-
-                request.Content = new FormUrlEncodedContent(keyValues);
-
-                Console.WriteLine("RefreshToken ATTEMPT - {0}", refreshToken);
-
-                var response = await client.SendAsync(request);
-
-                if (response.IsSuccessStatusCode)
+                _auth = await _apiService.RefreshToken(new Auth()
                 {
+                    RefreshToken = refreshToken
+                });
 
-                    var serialisedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    _auth = JsonConvert.DeserializeObject<Auth>(serialisedContent);
-
-                    if (_auth != null)
+                if (_auth != null)
+                {
+                    HttpContext.Current.Response.Cookies.Add(new HttpCookie(_refreshCookieName, _auth.RefreshToken)
                     {
-                        HttpContext.Current.Response.Cookies.Add(new HttpCookie(_refreshCookieName, _auth.RefreshToken)
-                        {
-                            Path = "/",
-                            HttpOnly = true,
-                            Secure = true
-                        });
+                        Path = "/",
+                        HttpOnly = true,
+                        Secure = true
+                    });
 
-                        HttpContext.Current.Response.Cookies.Add(new HttpCookie(_accessCookieName, _auth.AccessToken)
-                        {
-                            Path = "/",
-                            HttpOnly = true,
-                            Secure = true
-                        });
-                    }
-
+                    HttpContext.Current.Response.Cookies.Add(new HttpCookie(_accessCookieName, _auth.AccessToken)
+                    {
+                        Path = "/",
+                        HttpOnly = true,
+                        Secure = true
+                    });
                 }
 
             }
@@ -501,36 +459,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-        async Task SetHttpAuthClient()
-        {
-
-            if(_auth == null) await RefreshToken();
-
-            if (_auth != null && _auth.AccessToken != null)
-            {
-
-                _httpClient = new HttpClient()
-                {
-
-                    MaxResponseContentBufferSize = int.MaxValue,
-                    Timeout = TimeSpan.FromSeconds(30),
-                    BaseAddress = new Uri(_baseUrl)
-
-
-                };
-
-                ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
-
-                _httpClient.DefaultRequestHeaders.Accept.Clear();
-                _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                _httpClient.DefaultRequestHeaders.Add("Keep-Alive", "true");
-
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _auth.AccessToken);
-              
-            }
-
-
-        }
 
         void SetHttpClient()
         {

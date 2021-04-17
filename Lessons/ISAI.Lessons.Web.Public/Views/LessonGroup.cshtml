@@ -14,39 +14,39 @@
 
         <h4> @lessonGroup.Title</h4>
 
-       @if (lessonGroup.Children != null && lessonGroup.Children.Count() > 0)
+        @if (lessonGroup.Children != null && lessonGroup.Children.Count() > 0)
         {
 
-        var childLessons = lessonGroup.Children<LessonItem>
-            ();
+            var childLessons = lessonGroup.Children<LessonItem>
+                ();
 
             if (childLessons != null && childLessons.Count() > 0)
             {
 
-            <ul>
+                <ul>
 
-                @foreach (var childLesson in childLessons)
-                {
-                    <li><i class="fas fa-chalkboard-teacher m-2"></i>&nbsp;<u><a href="@childLesson.Url()">@childLesson.Title</a></u></li>
-                }
+                    @foreach (var childLesson in childLessons)
+                    {
+                        <li><i class="fas fa-chalkboard-teacher m-2"></i>&nbsp;<u><a href="@childLesson.Url()">@childLesson.Title</a></u></li>
+                    }
 
-            </ul>
+                </ul>
             }
             else
             {
 
-            var childLessonGroups = lessonGroup.Children<LessonGroup>
-                ();
+                var childLessonGroups = lessonGroup.Children<LessonGroup>
+                    ();
 
                 foreach (var childLessonGroup in childLessonGroups)
                 {
-                @RenderChildren(childLessonGroup);
+                    @RenderChildren(childLessonGroup);
                 }
 
-                }
+            }
 
 
-                }
+        }
 
     </div>
 
@@ -56,6 +56,9 @@
 <!-- start page title section -->
 <section class="page-title-section bg-img cover-background bg-yellow  p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
     <div class="container">
+
+
+
         <div class="page-title">
             <h1>@Model.Title</h1>
             <div class="page-link">
@@ -99,6 +102,8 @@
     <section>
         <div class="container">
 
+
+
             <div class="section-heading mb-2">
                 <h3>@Model.Title</h3>
 
@@ -116,12 +121,12 @@
 
                     if (childLessonGroups != null && childLessonGroups.Count() > 0)
                     {
-              
 
-                            foreach (LessonGroup childLessonGroup in childLessonGroups)
-                            {
-                                @RenderChildren(childLessonGroup);
-                            }
+
+                        foreach (LessonGroup childLessonGroup in childLessonGroups)
+                        {
+                            @RenderChildren(childLessonGroup);
+                        }
 
                     }
 
@@ -147,7 +152,15 @@ else
                 <h3>@Model.Title</h3>
 
                 @Model.HTmlcontent
-                <span class="title-separator"></span>
+                <span class="title-separator mb-3"></span>
+
+                @if (Model.ShowSampleVideo)
+                {
+                    <div class="embed-responsive embed-responsive-item embed-responsive-16by9">
+                        <iframe src="@Model.SampleVideoUrl" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
+
+                    </div>
+                }
             </div>
 
             <div class="row no-gutters">

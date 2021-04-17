@@ -30,6 +30,12 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string AssetId { get; set; }
 
+        public string SourceUrl{ get; set; }
+
+        public bool PendingDownload { get; set; }
+
+
+
 
     }
 }

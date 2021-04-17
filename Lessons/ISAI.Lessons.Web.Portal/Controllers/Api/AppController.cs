@@ -247,7 +247,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     SessionId = session.Id,
                 };
-            }
+        }
             catch (StripeException e)
             {
                 Console.WriteLine(e.StripeError.Message);
@@ -261,7 +261,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 throw new HttpResponseException(errorMessage);
 
 
-            }
+    }
             catch (Exception ex)
             {
 
@@ -275,7 +275,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 throw new HttpResponseException(errorMessage);
 
 
-            }
+}
 
         }
 
@@ -451,7 +451,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             }
 
             int customerId;
-            string subscriptionId;
 
             switch (stripeEvent.Type)
             {
@@ -459,7 +458,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                     var checkOutComplete = stripeEvent.Data.Object as Stripe.Checkout.Session;
                     customerId = Convert.ToInt32(checkOutComplete.ClientReferenceId);
-                    subscriptionId = "";
                     var customer = await db.Customer.FirstAsync(x => x.Id == customerId);
                     customer.StripeCustomerId = checkOutComplete.CustomerId;
                     await CreateCustomerSubscription(customer, checkOutComplete);
