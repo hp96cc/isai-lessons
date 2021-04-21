@@ -1,15 +1,25 @@
 ﻿using System;
-
 using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using MediaManager;
+using Xamarin.Forms;
+using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Mobile.Droid.Helpers;
+using Plugin.CurrentActivity;
+using Android.Content;
 
 namespace ISAI.Lessons.Mobile.Droid
 {
-    [Activity(Label = "ISAI.Lessons.Mobile", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    [Activity(
+        Label = "ISAI.Lessons.Mobile", 
+        Icon = "@mipmap/icon", 
+        Theme = "@style/MainTheme", 
+        MainLauncher = true, 
+        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -19,8 +29,17 @@ namespace ISAI.Lessons.Mobile.Droid
 
             base.OnCreate(savedInstanceState);
 
+            DependencyService.Register<IStatusBar, StatusBar>();
+            DependencyService.Register<IVideoDownload, VideoDownload>();
+          
+            CrossCurrentActivity.Current.Init(this, savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            //CrossMediaManager.Current.Init(this);
+
+            DownloadBrodacast downloadBrodacast = new DownloadBrodacast();
+            RegisterReceiver(downloadBrodacast, new IntentFilter(DownloadManager.ActionDownloadComplete));
+
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

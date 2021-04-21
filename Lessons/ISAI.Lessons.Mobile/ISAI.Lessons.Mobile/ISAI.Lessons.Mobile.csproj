@@ -6,12 +6,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Plugin.MediaManager.Forms" Version="1.0.8" />
+    <PackageReference Include="Xam.Plugin.Hud" Version="1.0.5" />
+    <PackageReference Include="Xamarin.CommunityToolkit" Version="1.1.0" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />  
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj" />
+    <ProjectReference Include="..\..\ISAI.Lessons.Models\ISAI.Lessons.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\LessonsPage.xaml.cs">
+      <DependentUpon>LessonsPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="Views\DownloadsPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ForgotPasswordPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\LessonGroupPage.xaml">

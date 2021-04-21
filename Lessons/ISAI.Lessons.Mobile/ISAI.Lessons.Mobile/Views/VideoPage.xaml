@@ -1,12 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ISAI.Lessons.Mobile.Views.VideoPage">
+             x:Class="ISAI.Lessons.Mobile.Views.VideoPage"
+             Title="{Binding Title}"
+              xmlns:mm="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
+             xmlns:local="clr-namespace:ISAI.Lessons.Mobile.ViewModels"  
+             xmlns:model="clr-namespace:ISAI.Lessons.EntityFramework.Models;assembly=ISAI.Lessons.Models"  
+             >
+
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
+        <mm:VideoView 
+            AutoPlay="True"
+            ShowControls="True"
+            VerticalOptions="FillAndExpand" 
+            VideoAspect="AspectFit"
+            BackgroundColor="Black"
+            />
     </ContentPage.Content>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Done"  />
+    </ContentPage.ToolbarItems>
 </ContentPage>
+
+
+

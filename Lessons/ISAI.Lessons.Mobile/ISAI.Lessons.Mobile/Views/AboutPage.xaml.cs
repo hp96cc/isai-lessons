@@ -11,5 +11,12 @@ namespace ISAI.Lessons.Mobile.Views
         {
             InitializeComponent();
         }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+
+        }
     }
 }

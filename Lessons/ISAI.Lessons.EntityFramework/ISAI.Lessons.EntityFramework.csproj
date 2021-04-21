@@ -110,54 +110,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\AllowSearchAttribute.cs" />
-    <Compile Include="Interfaces\IBaseInterface.cs" />
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Auth.cs" />
-    <Compile Include="Models\CustomerActivity.cs" />
-    <Compile Include="Models\Lesson.cs" />
-    <Compile Include="Models\LessonGroup.cs" />
-    <Compile Include="Models\App.cs" />
-    <Compile Include="Models\BaseModel.cs" />
-    <Compile Include="Models\CustomerDevice.cs" />
-    <Compile Include="Models\Subscription.cs" />
-    <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="LessonsDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\ApiService.cs" />
-    <Compile Include="Services\Base64StringEncodingService.cs" />
-    <Compile Include="Services\CodeGenerationService.cs" />
     <Compile Include="Services\EmailService.cs" />
-    <Compile Include="Services\EnumExtensions.cs" />
-    <Compile Include="Services\MimeHelper.cs" />
-    <Compile Include="Services\NotificationService.cs" />
-    <Compile Include="Services\PasswordCheckService.cs" />
-    <Compile Include="Services\PasswordService.cs" />
-    <Compile Include="Services\ValidationService.cs" />
-    <Compile Include="ViewModels\ContactViewModel.cs" />
-    <Compile Include="ViewModels\Stripe\ConfirmCustomerSubscriptionRequest.cs" />
-    <Compile Include="ViewModels\Stripe\CreateCustomerPayemntSessionRequest.cs" />
-    <Compile Include="ViewModels\Stripe\CreateCustomerPayemntSessionResponse.cs" />
-    <Compile Include="ViewModels\FileUpload.cs" />
-    <Compile Include="ViewModels\LessonRequestViewModel.cs" />
-    <Compile Include="ViewModels\LoginRequestViewModel.cs" />
-    <Compile Include="ViewModels\RegisterRequestViewModel.cs" />
-    <Compile Include="ViewModels\LoginResponseViewModel.cs" />
-    <Compile Include="ViewModels\RegisterResponseViewModel.cs" />
-    <Compile Include="ViewModels\Stripe\StripeCustomerPortalRequest.cs" />
-    <Compile Include="ViewModels\Stripe\StripeErrorResponse.cs" />
-    <Compile Include="ViewModels\Stripe\StripeInvoicePaidWebHook.cs" />
-    <Compile Include="ViewModels\Stripe\StripeOptions.cs" />
-    <Compile Include="ViewModels\Stripe\StripePublicKeyResponse.cs" />
-    <Compile Include="ViewModels\Stripe\StripeSetupResponse.cs" />
-    <Compile Include="ViewModels\TokenResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Enum\" />
+    <ProjectReference Include="..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
+      <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
+      <Name>ISAI.Lessons.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ISAI.Lessons.Models\ISAI.Lessons.Models.csproj">
+      <Project>{d455984f-df60-481e-aba3-ec76630c7355}</Project>
+      <Name>ISAI.Lessons.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

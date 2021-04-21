@@ -7,8 +7,44 @@
              x:Class="ISAI.Lessons.Mobile.Views.LoginPage"
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
-        <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
-            <Button VerticalOptions="Center" Text="Login" Command="{Binding LoginCommand}"/>
+        <StackLayout Padding="20" VerticalOptions="CenterAndExpand">
+
+
+            <Image
+                    Source="logo.png"
+                    WidthRequest="250"
+                    Margin="10"
+                
+                    />
+
+            <Entry
+                Margin="10"
+                Placeholder="Email"
+                Keyboard="Email"
+                VerticalOptions="Center" />
+
+            <Entry
+                Margin="10"
+                IsPassword="True"
+                Keyboard="Text"
+                Placeholder="Password"
+                VerticalOptions="Center" />
+
+            <Button 
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Sign In" 
+                Command="{Binding LoginCommand}" />
+
+
+            <Button 
+                TextColor="{StaticResource Primary}"
+                BackgroundColor="Transparent"
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Forgot Password?" 
+                Command="{Binding ForgotPasswordCommand}" />
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

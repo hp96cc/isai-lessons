@@ -2777,9 +2777,17 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
+      <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
+      <Name>ISAI.Lessons.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.EntityFramework\ISAI.Lessons.EntityFramework.csproj">
       <Project>{8eb5db26-d0cf-4fe2-bf84-533c55cf0e6b}</Project>
       <Name>ISAI.Lessons.EntityFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ISAI.Lessons.Models\ISAI.Lessons.Models.csproj">
+      <Project>{d455984f-df60-481e-aba3-ec76630c7355}</Project>
+      <Name>ISAI.Lessons.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\Timber.Ecommerce.BisTrack\Timber.Ecommerce.BisTrack.csproj">
       <Project>{45036051-8c30-4511-96fe-ec089262b128}</Project>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using ISAI.Lessons.Models.Interfaces;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
@@ -32,14 +33,14 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         [JsonIgnore]
         [ForeignKey("ModifiedUserId")]
-        public User ModifiedUser { get; set; }
+        public IUser ModifiedUser { get; set; }
 
         [JsonIgnore]
         public string CreatedUserId { get; set; }
 
         [JsonIgnore]
         [ForeignKey("CreatedUserId")]
-        public User CreatedUser { get; set; }
+        public IUser CreatedUser { get; set; }
 
 
     }

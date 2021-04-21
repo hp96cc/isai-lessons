@@ -637,9 +637,17 @@
     <Folder Include="Views\LessonApp\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
+      <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
+      <Name>ISAI.Lessons.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.EntityFramework\ISAI.Lessons.EntityFramework.csproj">
       <Project>{8eb5db26-d0cf-4fe2-bf84-533c55cf0e6b}</Project>
       <Name>ISAI.Lessons.EntityFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ISAI.Lessons.Models\ISAI.Lessons.Models.csproj">
+      <Project>{d455984f-df60-481e-aba3-ec76630c7355}</Project>
+      <Name>ISAI.Lessons.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

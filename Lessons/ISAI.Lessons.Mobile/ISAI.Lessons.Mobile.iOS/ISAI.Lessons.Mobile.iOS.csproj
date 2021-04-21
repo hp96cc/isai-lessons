@@ -63,6 +63,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Helpers\StatusBar.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
@@ -132,14 +133,24 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Xam.Plugin.Hud">
+      <Version>1.0.5</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\ISAI.Lessons.Models\ISAI.Lessons.Models.csproj">
+      <Project>{d455984f-df60-481e-aba3-ec76630c7355}</Project>
+      <Name>ISAI.Lessons.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.csproj">
       <Project>{C0EE1A01-1FB4-46FB-A169-E52D3AEA5F13}</Project>
       <Name>ISAI.Lessons.Mobile</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\logo.png" />
   </ItemGroup>
 </Project>

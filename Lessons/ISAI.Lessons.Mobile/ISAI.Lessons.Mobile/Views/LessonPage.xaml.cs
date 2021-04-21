@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ISAI.Lessons.Mobile.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,9 +13,14 @@ namespace ISAI.Lessons.Mobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LessonPage : ContentPage
     {
-        public LessonPage()
+        LessonViewModel _viewModel;
+
+        public LessonPage(int lessonId)
         {
             InitializeComponent();
+            BindingContext = _viewModel = new LessonViewModel(lessonId);
         }
+
+
     }
 }

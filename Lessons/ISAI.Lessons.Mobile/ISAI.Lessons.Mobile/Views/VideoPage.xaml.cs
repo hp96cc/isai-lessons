@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ISAI.Lessons.Mobile.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,9 +13,29 @@ namespace ISAI.Lessons.Mobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class VideoPage : ContentPage
     {
-        public VideoPage()
+        VideoViewModel _viewModel;
+
+        public VideoPage(int lessonId)
         {
             InitializeComponent();
+            BindingContext = _viewModel = new VideoViewModel(lessonId);
+
         }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _viewModel.OnAppearing();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            _viewModel.OnDisappearing();
+        }
+
+
     }
 }
+
+

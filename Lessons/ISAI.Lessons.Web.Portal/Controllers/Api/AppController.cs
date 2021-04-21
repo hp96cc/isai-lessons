@@ -85,6 +85,27 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+        [AllowAnonymous]
+        [Route("api/app/lessons")]
+        [HttpPost]
+        public async Task<List<Lesson>> Lessons()
+        {
+            var lesson = await db.Lesson.Where(x => x.Deleted == false).ToListAsync();
+            return lesson;
+
+        }
+
+        [AllowAnonymous]
+        [Route("api/app/lessongroups")]
+        [HttpPost]
+        public async Task<List<LessonGroup>> LessonGroups()
+        {
+            var lessonGroups = await db.LessonGroup.Where(x => x.Deleted == false).ToListAsync();
+            return lessonGroups;
+
+        }
+
+
 
         [Route("api/app/subscriptions")]
         [HttpPost]

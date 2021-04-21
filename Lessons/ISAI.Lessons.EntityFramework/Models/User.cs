@@ -6,7 +6,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class User : IdentityUser
+    public class User : IdentityUser, ISAI.Lessons.Models.Interfaces.IUser
     {
 
         public User()
