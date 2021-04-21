@@ -14,11 +14,13 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public int AppId { get; set; }
 
+        [SQLite.Ignore]
         [ForeignKey("AppId")]
         public App App { get; set; }
 
         public int? ParentLessonGroupId { get; set; }
 
+        [SQLite.Ignore]
         [ForeignKey("ParentLessonGroupId")]
         public LessonGroup ParentLessonGroup { get; set; }
 

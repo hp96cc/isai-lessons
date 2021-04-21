@@ -3,6 +3,7 @@ using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.Mobile.Models;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,20 +29,24 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
             _lessonGroupId = lessonGroupId;
             Items = new ObservableCollection<Lesson>();
-            LoadItemsCommand = new Command(DisplayLessons);
+            LoadItemsCommand = new Command(async () => await DisplayLessons());
             ItemTapped = new Command<Lesson>(OnItemSelected);
 
         }
 
 
-        void DisplayLessons()
+        async Task DisplayLessons()
         {
 
             IsBusy = true;
 
             Items.Clear();
 
-            foreach (var item in App.Lessons)
+            var lessons = (await DependencyService.Get<ISqliteService>().GetLessonsAsync(_lessonGroupId))
+                        .OrderBy(x => x.ListOrder)
+                        .ToList();
+
+            foreach (var item in lessons)
             {
                 if (item.LessonGroupId == _lessonGroupId)
                 {
@@ -53,9 +58,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
         }
 
 
-        public void OnAppearing()
+        public async void OnAppearing()
         {
-            Title = App.LessonsGroups.First(x => x.Id == _lessonGroupId).Name;
+            Title = Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_lessonGroupId)).Name;
             IsBusy = true;
             SelectedItem = null;
         }

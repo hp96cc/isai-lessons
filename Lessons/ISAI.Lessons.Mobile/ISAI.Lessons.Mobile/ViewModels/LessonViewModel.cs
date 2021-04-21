@@ -27,11 +27,16 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public LessonViewModel(int lessonId)
         {
             _lessonId = lessonId;
-            _lesson = App.Lessons.First(x => x.Id == _lessonId);
-            Title = _lesson.Name;
+
 
             WatchCommand = new Command(OnWatchClicked);
             DownloadCommand = new Command(OnDownloadClicked);
+        }
+
+        public async void OnAppearing()
+        {
+            _lesson = await DependencyService.Get<ISqliteService>().GetLessonAsync(_lessonId);
+            Title = _lesson.Name;
         }
 
         async void OnWatchClicked(object obj)

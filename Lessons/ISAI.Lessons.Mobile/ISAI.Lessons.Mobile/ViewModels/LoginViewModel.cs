@@ -1,6 +1,7 @@
 ﻿using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
 using Plugin.Hud;
 using Plugin.Hud.Abstractions;
 using System;
@@ -65,11 +66,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                 if (lessonGroupResponse.Status == ResponseStatus.OK)
                 {
-                    App.LessonsGroups = lessonGroupResponse.Content
-                        .OrderBy(x => x.ParentLessonGroupId)
-                        .ThenBy(x => x.ListOrder)
-                        .ToList();
-
+                    await DependencyService.Get<ISqliteService>().SaveLessonGroupsAsync(lessonGroupResponse.Content);
                 }
                 else
                 {
@@ -79,10 +76,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                 if (lessonResponse.Status == ResponseStatus.OK)
                 {
-                    App.Lessons = lessonResponse.Content
-                        .OrderBy(x => x.ListOrder)
-                        .ToList();
-
+                    await DependencyService.Get<ISqliteService>().SaveLessonsAsync(lessonResponse.Content);
                 }
                 else
                 {

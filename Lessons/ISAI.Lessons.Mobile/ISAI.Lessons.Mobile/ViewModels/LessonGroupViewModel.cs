@@ -3,6 +3,7 @@ using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.Mobile.Models;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,32 +37,37 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         public LessonGroupViewModel(int? parentId)
         {
+            Title = string.Empty;
+            _parentId = parentId;
+            Items = new ObservableCollection<LessonGroup>();
+            LoadItemsCommand = new Command(async () => await DisplayLessonGroups());
+            ItemTapped = new Command<LessonGroup>(OnItemSelected);
 
-            if (parentId.HasValue)
+        }
+
+
+        async Task DisplayLessonGroups()
+        {
+
+            if (_parentId.HasValue)
             {
-                Title = App.LessonsGroups.First(x => x.Id == parentId.Value).Name;
+                Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_parentId.Value)).Name;
             }
             else
             {
                 Title = "Lessons";
             }
 
-            ParentId = parentId;
-            Items = new ObservableCollection<LessonGroup>();
-            LoadItemsCommand = new Command(DisplayLessonGroups);
-            ItemTapped = new Command<LessonGroup>(OnItemSelected);
-
-        }
-
-
-        void DisplayLessonGroups()
-        {
-
             IsBusy = true;
 
             Items.Clear();
 
-            foreach (var item in App.LessonsGroups)
+            var lessonGroups = (await DependencyService.Get<ISqliteService>().GetLessonGroupsAsync(_parentId))
+                .OrderBy(x => x.ParentLessonGroupId)
+                        .ThenBy(x => x.ListOrder)
+                        .ToList();
+
+            foreach (var item in lessonGroups)
             {
                 if (item.ParentLessonGroupId == _parentId)
                 {

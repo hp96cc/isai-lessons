@@ -16,6 +16,7 @@ namespace ISAI.Lessons.EntityFramework.Models
         public bool StripeUseSandbox { get; set; }
 
         public string StripeTestPublishApiKey { get; set; }
+
         public string StripeTestSecretApiKey { get; set; }
 
         public string StripeLivePublishApiKey { get; set; }

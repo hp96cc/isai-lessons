@@ -12,11 +12,13 @@ namespace ISAI.Lessons.EntityFramework.Models
         
         public int AppId { get; set; }
 
+        [SQLite.Ignore]
         [ForeignKey("AppId")]
         public App App { get; set; }
 
         public int LessonGroupId { get; set; }
 
+        [SQLite.Ignore]
         [ForeignKey("LessonGroupId")]
         public LessonGroup LessonGroup { get; set; }
 
@@ -33,6 +35,9 @@ namespace ISAI.Lessons.EntityFramework.Models
         public string SourceUrl{ get; set; }
 
         public bool PendingDownload { get; set; }
+
+        [NotMapped]
+        public long DownloadVideoId { get; set; }
 
 
 

@@ -21,6 +21,12 @@ namespace ISAI.Lessons.Mobile.Views
             BindingContext = _viewModel = new LessonViewModel(lessonId);
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _viewModel.OnAppearing();
+        }
+
 
     }
 }

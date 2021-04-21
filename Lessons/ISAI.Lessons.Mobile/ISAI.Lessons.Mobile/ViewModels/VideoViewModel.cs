@@ -28,14 +28,13 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public VideoViewModel(int lessonId)
         {
             _lessonId = lessonId;
-            _lesson = App.Lessons.First(x => x.Id == _lessonId);
-            Title = _lesson.Name;
-     
         }
 
         public async void OnAppearing()
         {
-
+            _lesson = await DependencyService.Get<ISqliteService>().GetLessonAsync(_lessonId);
+            Title = _lesson.Name;
+            
             DependencyService.Get<IStatusBar>().HideStatusBar();
 
             CrossHud.Current.Show();

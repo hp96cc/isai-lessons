@@ -60,6 +60,9 @@
     <PackageReference Include="Plugin.MediaManager.Forms">
       <Version>1.0.8</Version>
     </PackageReference>
+    <PackageReference Include="sqlite-net-pcl">
+      <Version>1.7.335</Version>
+    </PackageReference>
     <PackageReference Include="Xam.Plugin.Hud">
       <Version>1.0.5</Version>
     </PackageReference>
@@ -104,6 +107,10 @@
     <AndroidResource Include="Resources\drawable\icon_feed.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
+      <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
+      <Name>ISAI.Lessons.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ISAI.Lessons.Models\ISAI.Lessons.Models.csproj">
       <Project>{d455984f-df60-481e-aba3-ec76630c7355}</Project>
       <Name>ISAI.Lessons.Models</Name>

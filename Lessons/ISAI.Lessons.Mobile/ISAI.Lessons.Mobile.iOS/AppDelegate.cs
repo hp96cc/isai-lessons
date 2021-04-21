@@ -6,6 +6,7 @@ using Foundation;
 using ISAI.Lessons.Models.Interfaces;
 using UIKit;
 using Xamarin.Forms;
+using ISAI.Lessons.Core.Services;
 
 namespace ISAI.Lessons.Mobile.iOS
 {
@@ -25,6 +26,7 @@ namespace ISAI.Lessons.Mobile.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
 
+            DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.Register<IStatusBar, StatusBar>();
 
             global::Xamarin.Forms.Forms.SetFlags("CollectionView_Experimental");

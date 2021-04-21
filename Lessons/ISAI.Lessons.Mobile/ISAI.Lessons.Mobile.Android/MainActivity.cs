@@ -11,6 +11,7 @@ using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Mobile.Droid.Helpers;
 using Plugin.CurrentActivity;
 using Android.Content;
+using ISAI.Lessons.Core.Services;
 
 namespace ISAI.Lessons.Mobile.Droid
 {
@@ -31,7 +32,8 @@ namespace ISAI.Lessons.Mobile.Droid
 
             DependencyService.Register<IStatusBar, StatusBar>();
             DependencyService.Register<IVideoDownload, VideoDownload>();
-          
+            DependencyService.Register<ISqliteService, SqliteService>();
+
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);

@@ -17,6 +17,7 @@ namespace ISAI.Lessons.EntityFramework.Models
             DateModified = DateTime.UtcNow;
         }
 
+        [SQLite.PrimaryKey]
         public int Id { get; set; }
 
         [JsonIgnore]
@@ -31,6 +32,7 @@ namespace ISAI.Lessons.EntityFramework.Models
         [JsonIgnore]
         public string ModifiedUserId { get; set; }
 
+        [SQLite.Ignore]
         [JsonIgnore]
         [ForeignKey("ModifiedUserId")]
         public IUser ModifiedUser { get; set; }
@@ -38,6 +40,7 @@ namespace ISAI.Lessons.EntityFramework.Models
         [JsonIgnore]
         public string CreatedUserId { get; set; }
 
+        [SQLite.Ignore]
         [JsonIgnore]
         [ForeignKey("CreatedUserId")]
         public IUser CreatedUser { get; set; }
