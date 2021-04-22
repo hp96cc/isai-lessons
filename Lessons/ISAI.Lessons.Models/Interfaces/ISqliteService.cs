@@ -1,4 +1,5 @@
 ﻿using ISAI.Lessons.EntityFramework.Models;
+using ISAI.Lessons.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +17,16 @@ namespace ISAI.Lessons.Models.Interfaces
         Task SaveLessonGroupsAsync(List<LessonGroup> lessongroups);
 
         Task<List<Lesson>> GetLessonsAsync(int lessonGroupId);
+
+        Task<List<VideoDownload>> GetVideoDownloadsAsync();
+
+        Task<VideoDownload> GetVideoDownloadForLessonAsync(int lessonId);
+
+        Task DeleteVideoDownloadAsync(VideoDownload videoDownload);
+
+        Task DeleteAllVideoDownloadsAsync();
+
+        Task SaveVideoDownloadAsync(VideoDownload videoDownload);
 
         Task<Lesson> GetLessonAsync(int lessonId);
 

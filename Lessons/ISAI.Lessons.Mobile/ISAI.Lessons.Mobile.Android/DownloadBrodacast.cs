@@ -38,8 +38,6 @@ namespace ISAI.Lessons.Mobile.Droid
                         String downloadTitle = c.GetString(c.GetColumnIndex(DownloadManager.ColumnTitle));
                         c.Close();
       
-                        //Update database
-
 
                     }
                     else if (status == (int)DownloadStatus.Failed)

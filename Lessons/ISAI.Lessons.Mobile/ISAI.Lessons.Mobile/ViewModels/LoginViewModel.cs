@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace ISAI.Lessons.Mobile.ViewModels
@@ -24,7 +25,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public LoginViewModel()
         {
             LoginCommand = new Command(OnLoginClicked);
-            ForgotPasswordCommand = new Command(OnForgotPasswordClicked);
+            ForgotPasswordCommand = new Command(async () => await OnForgotPasswordClicked());
             _apiService = new ApiService();
         }
 
@@ -32,7 +33,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
             if (App.IsLoggedIn)
             {
-                await Shell.Current.GoToAsync($"//{nameof(LessonGroupPage)}");
+                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
             }
 
         }
@@ -40,18 +41,21 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async void OnLoginClicked(object obj)
         {
 
+            var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
+            var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
+
             CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
             await DownloadLessonData();
             App.IsLoggedIn = true;
             CrossHud.Current.Dismiss();
 
-           await Shell.Current.GoToAsync($"//{nameof(LessonGroupPage)}", true);
+           await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
         }
 
 
-        async void OnForgotPasswordClicked(object obj)
+        async Task OnForgotPasswordClicked()
         {
-            await Shell.Current.GoToAsync($"{nameof(ForgotPasswordPage)}", true);
+            await Browser.OpenAsync("https://scottishonlinelessons.com/forgotpassword");
         }
 
 

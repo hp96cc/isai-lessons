@@ -11,8 +11,9 @@
         <StackLayout Padding="20" >
             <Label 
                 FontSize="20"
-                Text="Lesson Name"
+                Text="{Binding Title}"
                 Margin="10"
+
                 />
             
             <Label 
@@ -30,7 +31,10 @@
                 Margin="10"
                 VerticalOptions="Center" 
                 Text="Download Lesson"
-                Command="{Binding DownloadCommand}" />
+                Command="{Binding DownloadCommand}"
+                IsEnabled="{Binding CanDownload}"
+                
+                />
             
         </StackLayout>
     </ContentPage.Content>

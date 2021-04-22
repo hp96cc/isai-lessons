@@ -33,16 +33,30 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public async void OnAppearing()
         {
             _lesson = await DependencyService.Get<ISqliteService>().GetLessonAsync(_lessonId);
-            Title = _lesson.Name;
-            
+             Title = _lesson.Name;
+
             DependencyService.Get<IStatusBar>().HideStatusBar();
 
             CrossHud.Current.Show();
             CrossMediaManager.Current.Init();
+            CrossMediaManager.Current.Notification.Enabled = false;
 
             CrossMediaManager.Current.StateChanged += Current_StateChanged;
-            var item = await CrossMediaManager.Current.Extractor.CreateMediaItem("https://lessonsmedia-ukso1.streaming.media.azure.net/52e672d1-95c9-479b-9fa7-c4d8ad152746/Using Commas.ism/manifest(format=m3u8-aapl)");
-            item.MediaType = MediaType.Hls;
+
+            var videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
+            IMediaItem item;
+
+
+            if (videoDownload != null)
+            {
+                var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(videoDownload);
+                item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
+            } else
+            {
+                item = await CrossMediaManager.Current.Extractor.CreateMediaItem("https://lessonsmedia-ukso1.streaming.media.azure.net/52e672d1-95c9-479b-9fa7-c4d8ad152746/Using Commas.ism/manifest(format=m3u8-aapl)");
+                item.MediaType = MediaType.Hls;
+            }
+
             item.Title = _lesson.Name;
 
             await CrossMediaManager.Current.Play(item);

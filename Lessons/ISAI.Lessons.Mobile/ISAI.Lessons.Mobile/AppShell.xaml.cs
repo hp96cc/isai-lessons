@@ -13,8 +13,9 @@ namespace ISAI.Lessons.Mobile
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
-            Routing.RegisterRoute(nameof(ForgotPasswordPage), typeof(ForgotPasswordPage));
             Routing.RegisterRoute(nameof(LessonsPage), typeof(LessonsPage));
+            Routing.RegisterRoute(nameof(LessonDownloadsPage), typeof(LessonDownloadsPage));
+            Routing.RegisterRoute(nameof(LessonGroupPage), typeof(LessonGroupPage));
 
         }
 

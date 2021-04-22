@@ -1,6 +1,7 @@
 ﻿using ISAI.Lessons.Core.Extensions;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Models.Models;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace ISAI.Lessons.Core.Services
 {
     public class SqliteService : ISqliteService
     {
-        public const string DatabaseFilename = "Lessons_v2.db3";
+        public const string DatabaseFilename = "Lessons_v4.db3";
 
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
@@ -54,6 +55,11 @@ namespace ISAI.Lessons.Core.Services
                     await Database.CreateTableAsync<Lesson>(CreateFlags.None).ConfigureAwait(false);
                 }
 
+                if (!Database.TableMappings.Any(m => m.MappedType.Name == typeof(VideoDownload).Name))
+                {
+                    await Database.CreateTableAsync<VideoDownload>(CreateFlags.None).ConfigureAwait(false);
+                }
+
 
                 initialized = true;
             }
@@ -66,6 +72,7 @@ namespace ISAI.Lessons.Core.Services
 
             await Database.DeleteAllAsync<LessonGroup>().ConfigureAwait(false);
             await Database.DeleteAllAsync<Lesson>().ConfigureAwait(false);
+            await Database.DeleteAllAsync<VideoDownload>().ConfigureAwait(false);
 
             Console.WriteLine("Database deleted");
 
@@ -88,10 +95,34 @@ namespace ISAI.Lessons.Core.Services
             return await Database.Table<Lesson>().Where(x => x.LessonGroupId == lessonGroupId).ToListAsync();
         }
 
+        public async Task<List<VideoDownload>> GetVideoDownloadsAsync()
+        {
+            return await Database.Table<VideoDownload>().OrderBy(x => x.LessonName).ToListAsync();
+        }
+
+        public async Task<VideoDownload> GetVideoDownloadForLessonAsync(int lessonId) {
+
+            return await Database.Table<VideoDownload>().FirstOrDefaultAsync(x => x.LessonId == lessonId);
+        }
+
+        public async Task DeleteVideoDownloadAsync(VideoDownload videoDownload)
+        {
+            await Database.DeleteAsync<VideoDownload>(videoDownload.Id);
+        }
+
+        public async Task DeleteAllVideoDownloadsAsync()
+        {
+            await Database.DeleteAllAsync<VideoDownload>().ConfigureAwait(false);
+        }
+
+        public async Task SaveVideoDownloadAsync(VideoDownload videoDownload)
+        {
+            await Database.InsertOrReplaceAsync(videoDownload);
+        }
+
         public async Task<Lesson> GetLessonAsync(int lessonId)
         {
-            return await Database.Table<Lesson>().FirstAsync(x => x.Id == lessonId);
-
+            return await Database.Table<Lesson>().FirstOrDefaultAsync(x => x.Id == lessonId);
         }
         public async Task SaveLessonGroupsAsync(List<LessonGroup> lessongroups)
         {
@@ -103,6 +134,7 @@ namespace ISAI.Lessons.Core.Services
         {
             await Database.DeleteAllAsync<Lesson>();
             await Database.InsertAllAsync(lessons);
+
         }
 
         public async Task SaveLessonAsync(Lesson lesson)

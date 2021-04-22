@@ -36,11 +36,7 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public bool PendingDownload { get; set; }
 
-        [NotMapped]
-        public long DownloadVideoId { get; set; }
-
-
-
+       
 
     }
 }

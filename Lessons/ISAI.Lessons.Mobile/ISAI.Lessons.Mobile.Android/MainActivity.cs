@@ -31,7 +31,7 @@ namespace ISAI.Lessons.Mobile.Droid
             base.OnCreate(savedInstanceState);
 
             DependencyService.Register<IStatusBar, StatusBar>();
-            DependencyService.Register<IVideoDownload, VideoDownload>();
+            DependencyService.Register<IVideoDownloadService, VideoDownloadService>();
             DependencyService.Register<ISqliteService, SqliteService>();
 
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
