@@ -14,7 +14,7 @@ namespace ISAI.Lessons.Core.Services
 {
     public class SqliteService : ISqliteService
     {
-        public const string DatabaseFilename = "Lessons_v4.db3";
+        public const string DatabaseFilename = "Lessons_v6.db3";
 
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
@@ -60,6 +60,10 @@ namespace ISAI.Lessons.Core.Services
                     await Database.CreateTableAsync<VideoDownload>(CreateFlags.None).ConfigureAwait(false);
                 }
 
+                if (!Database.TableMappings.Any(m => m.MappedType.Name == typeof(AppUser).Name))
+                {
+                    await Database.CreateTableAsync<AppUser>(CreateFlags.None).ConfigureAwait(false);
+                }
 
                 initialized = true;
             }
@@ -73,11 +77,26 @@ namespace ISAI.Lessons.Core.Services
             await Database.DeleteAllAsync<LessonGroup>().ConfigureAwait(false);
             await Database.DeleteAllAsync<Lesson>().ConfigureAwait(false);
             await Database.DeleteAllAsync<VideoDownload>().ConfigureAwait(false);
+            await Database.DeleteAllAsync<AppUser>().ConfigureAwait(false);
 
             Console.WriteLine("Database deleted");
 
         }
 
+        public async Task<AppUser> GetUserAsync()
+        {
+            return await Database.Table<AppUser>().FirstOrDefaultAsync();
+        }
+
+        public async Task DeleteUserAsync(AppUser appUser)
+        {
+            await Database.DeleteAsync<AppUser>(appUser.Id);
+        }
+
+        public async Task SaveUserAsync(AppUser appUser)
+        {
+            await Database.InsertOrReplaceAsync(appUser);
+        }
 
         public async Task<List<LessonGroup>> GetLessonGroupsAsync(int? parentId = null)
         {

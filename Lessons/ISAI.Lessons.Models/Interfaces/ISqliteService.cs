@@ -10,6 +10,12 @@ namespace ISAI.Lessons.Models.Interfaces
     public interface ISqliteService
     {
 
+        Task<AppUser> GetUserAsync();
+
+        Task DeleteUserAsync(AppUser appUser);
+
+        Task SaveUserAsync(AppUser appUser);
+
         Task<List<LessonGroup>> GetLessonGroupsAsync(int? parentId = null);
 
         Task<LessonGroup> GetLessonGroupAsync(int lessonGroupId);

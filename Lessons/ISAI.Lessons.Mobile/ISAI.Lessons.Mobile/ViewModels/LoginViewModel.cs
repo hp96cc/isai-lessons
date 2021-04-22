@@ -2,6 +2,7 @@
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Models.Models;
 using Plugin.Hud;
 using Plugin.Hud.Abstractions;
 using System;
@@ -22,34 +23,88 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public Command LoginCommand { get; }
         public Command ForgotPasswordCommand { get; }
 
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                SetProperty(ref _email, value);
+            }
+        }
+        string _email;
+
+
+        public string Password
+        {
+            get => _password;
+            set
+            {
+                SetProperty(ref _password, value);
+            }
+        }
+        string _password;
+
+
+
         public LoginViewModel()
         {
-            LoginCommand = new Command(OnLoginClicked);
+            LoginCommand = new Command(async () => await OnLoginClicked());
             ForgotPasswordCommand = new Command(async () => await OnForgotPasswordClicked());
             _apiService = new ApiService();
         }
 
         public async void OnAppearing()
         {
-            if (App.IsLoggedIn)
-            {
-                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
-            }
+
+            //var appUser = await DependencyService.Get<ISqliteService>().GetUserAsync();
+
+            //if (appUser != null)
+            //{
+            //    await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+            //}
 
         }
 
-        async void OnLoginClicked(object obj)
+        async Task OnLoginClicked()
         {
 
-            var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
-            var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
+            var apiService = new ApiService();
+            var loginResponse = await apiService.Login(new EntityFramework.ViewModels.LoginRequestViewModel()
+            {
+                Email = _email,
+                Password = _password
+            });
 
-            CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
-            await DownloadLessonData();
-            App.IsLoggedIn = true;
-            CrossHud.Current.Dismiss();
+            if (loginResponse.Status == ResponseStatus.OK)
+            {
+                CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black);
+            }
+            else
+            {
 
-           await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
+                var appUser = new AppUser()
+                {
+                    Id = Guid.NewGuid(),
+                    Email = _email,
+                    Password = _password,
+                    AccessToken = loginResponse.Content.AccessToken,
+                    RefreshToken = loginResponse.Content.RefreshToken,
+                    MaxFileDownloads = 3
+                };
+
+                await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
+
+                var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
+                var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
+
+                CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
+                await DownloadLessonData();
+                CrossHud.Current.Dismiss();
+
+                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
+            }
+
+
         }
 
 

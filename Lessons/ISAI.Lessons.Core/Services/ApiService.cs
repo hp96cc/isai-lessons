@@ -29,8 +29,8 @@ namespace ISAI.Lessons.EntityFramework.Services
         {
             //_baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
             //_baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
-            _baseUrl = "https://app.scottishonlinelessons.com/api/";
-            _baseReturnUrl = "https://scottishonlinelessons.com/api/";
+            _baseUrl = "https://localhost:44392/";
+            _baseReturnUrl = "https://localhost:44306/";
 
             //TODO: remove this
             _auth = new Auth()
@@ -41,21 +41,28 @@ namespace ISAI.Lessons.EntityFramework.Services
         }
 
 
-        public async Task<LoginResponseViewModel> Login(LoginRequestViewModel model)
+        public async Task<ResponseData<LoginResponseViewModel>> Login(LoginRequestViewModel model)
         {
+
+            var response = new ResponseData<LoginResponseViewModel>();
 
             await GetAuthToken(model.Email, model.Password, null);
 
             if (_auth != null)
             {
-                return new LoginResponseViewModel()
+                response.Status = ResponseStatus.OK;
+                response.Content =  new LoginResponseViewModel()
                 {
                     RefreshToken = _auth.RefreshToken,
                     AccessToken = _auth.AccessToken
                 };
             }
+            else
+            {
+                response.Status = ResponseStatus.Failed;
+            }
 
-            return null;
+            return response;
 
         }
 

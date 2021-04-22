@@ -2789,10 +2789,6 @@
       <Project>{d455984f-df60-481e-aba3-ec76630c7355}</Project>
       <Name>ISAI.Lessons.Models</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Timber.Ecommerce.BisTrack\Timber.Ecommerce.BisTrack.csproj">
-      <Project>{45036051-8c30-4511-96fe-ec089262b128}</Project>
-      <Name>Timber.Ecommerce.BisTrack</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

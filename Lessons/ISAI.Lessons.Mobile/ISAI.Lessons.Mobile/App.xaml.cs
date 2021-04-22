@@ -12,8 +12,6 @@ namespace ISAI.Lessons.Mobile
 {
     public partial class App : Application
     {
-        public static bool IsLoggedIn { get; set; }
-
         public App()
         {
             InitializeComponent();

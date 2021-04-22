@@ -1,5 +1,4 @@
 ﻿using ISAI.Lessons.Web.Portal.Controllers.Api;
-using Square;
 using System.IO;
 using System.Web.Http;
 using System.Web.Http.Cors;
