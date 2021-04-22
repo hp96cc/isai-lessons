@@ -84,15 +84,15 @@
         https://docs.microsoft.com/dotnet/api/xamarin.forms.shellgroupitem.flyoutdisplayoptions?view=xamarin-forms
     -->
 
-    <FlyoutItem Title="About" Icon="icon_about.png">
+    <FlyoutItem Title="Home">
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     </FlyoutItem>
     
-    <FlyoutItem Title="Lessons" Icon="icon_about.png">
+    <FlyoutItem Title="Lessons">
         <ShellContent Route="LessonGroupPage" ContentTemplate="{DataTemplate local:LessonGroupPage}" />
     </FlyoutItem>
     
-    <FlyoutItem Title="Lesson Downloads" Icon="icon_about.png">
+    <FlyoutItem Title="Lesson Downloads">
         <ShellContent Route="LessonDownloadsPage" ContentTemplate="{DataTemplate local:LessonDownloadsPage}" />
     </FlyoutItem>
     

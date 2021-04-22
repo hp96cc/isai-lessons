@@ -15,10 +15,17 @@
                 <DataTemplate>
                     <StackLayout Padding="10" x:DataType="model:Lesson">
                         <Label Text="{Binding Name}" 
-                            LineBreakMode="NoWrap" 
+                            LineBreakMode="WordWrap" 
                             Style="{DynamicResource ListItemTextStyle}" 
-                            FontSize="16" />
-                  
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Margin="5,5,5,10"   
+                               />
+
+                        <BoxView HeightRequest="0.5"
+                                BackgroundColor="LightGray"
+                                VerticalOptions="End"/>
+
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer 
                                 NumberOfTapsRequired="1"

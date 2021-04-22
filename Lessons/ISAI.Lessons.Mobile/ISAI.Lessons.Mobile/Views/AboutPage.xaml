@@ -10,13 +10,13 @@
     </ContentPage.BindingContext>
 
     <ContentPage.Content>
-        <StackLayout Padding="20" VerticalOptions="CenterAndExpand">
+        <StackLayout Padding="20" VerticalOptions="StartAndExpand">
 
 
             <Image
                     Source="logo.png"
                     WidthRequest="250"
-                    Margin="10"
+                    Margin="10,50,10,50"
                 
                     />
 
@@ -29,8 +29,7 @@
 
 
             <Button 
-                TextColor="{StaticResource Primary}"
-                BackgroundColor="Transparent"
+
                 Margin="10"
                 VerticalOptions="Center" 
                 Text="Downloaded Lessons" 
