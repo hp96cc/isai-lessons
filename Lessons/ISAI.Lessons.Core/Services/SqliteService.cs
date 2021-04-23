@@ -13,7 +13,7 @@ namespace ISAI.Lessons.Core.Services
 {
     public class SqliteService : ISqliteService
     {
-        public const string DatabaseFilename = "Lessons_v6.db3";
+        public const string DatabaseFilename = "Lessons_v8.db3";
 
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
@@ -37,10 +37,10 @@ namespace ISAI.Lessons.Core.Services
 
         public SqliteService()
         {
-            InitializeAsync().SafeFireAndForget(false);
+            //InitializeAsync().SafeFireAndForget(false);
         }
 
-        async Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             if (!initialized)
             {

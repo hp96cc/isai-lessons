@@ -4,7 +4,7 @@
              x:Class="ISAI.Lessons.Mobile.Views.LessonGroupPage"
              Title="{Binding Title}"
              xmlns:local="clr-namespace:ISAI.Lessons.Mobile.ViewModels"  
-             xmlns:model="clr-namespace:ISAI.Lessons.EntityFramework.Models;assembly=ISAI.Lessons.Models"  
+             xmlns:model="clr-namespace:ISAI.Lessons.Models.Models;assembly=ISAI.Lessons.Models"  
              >
 
     <RefreshView x:DataType="local:LessonGroupViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">

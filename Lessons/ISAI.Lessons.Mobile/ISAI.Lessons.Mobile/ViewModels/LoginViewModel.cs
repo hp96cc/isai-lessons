@@ -19,7 +19,6 @@ namespace ISAI.Lessons.Mobile.ViewModels
     public class LoginViewModel : BaseViewModel
     {
 
-        ApiService _apiService;
         public Command LoginCommand { get; }
         public Command ForgotPasswordCommand { get; }
 
@@ -50,60 +49,67 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
             LoginCommand = new Command(async () => await OnLoginClicked());
             ForgotPasswordCommand = new Command(async () => await OnForgotPasswordClicked());
-            _apiService = new ApiService(true);
         }
 
-        public async void OnAppearing()
+        public void OnAppearing()
         {
-
-            //var appUser = await DependencyService.Get<ISqliteService>().GetUserAsync();
-
-            //if (appUser != null)
-            //{
-            //    await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
-            //}
-
+      
         }
+
+
+        
 
         async Task OnLoginClicked()
         {
 
-            var apiService = new ApiService(true);
-            var loginResponse = await apiService.Login(new EntityFramework.ViewModels.LoginRequestViewModel()
-            {
-                Email = _email,
-                Password = _password
-            });
 
-            if (loginResponse.Status == ResponseStatus.OK)
-            {
-                CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black);
-            }
-            else
+            CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
+
+
+            try
             {
 
-                var appUser = new AppUser()
+                var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
+                var loginResponse = await apiService.Login(new EntityFramework.ViewModels.LoginRequestViewModel()
                 {
-                    Id = Guid.NewGuid(),
                     Email = _email,
-                    Password = _password,
-                    AccessToken = loginResponse.Content.AccessToken,
-                    RefreshToken = loginResponse.Content.RefreshToken,
-                    MaxFileDownloads = 3
-                };
+                    Password = _password
+                });
 
-                await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
+                if (loginResponse.Status == ResponseStatus.OK)
+                {
+          
+                    var appUser = new AppUser()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Email = _email,
+                        Password = _password,
+                        AccessToken = loginResponse.Content.AccessToken,
+                        RefreshToken = loginResponse.Content.RefreshToken,
+                        MaxFileDownloads = 3
+                    };
 
-                var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
-                var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
+                    await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
 
-                CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
-                await DownloadLessonData();
-                CrossHud.Current.Dismiss();
+                    CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
+                    await DownloadLessonData();
+                    CrossHud.Current.Dismiss();
 
-                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
+                    var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
+                    var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
+
+                    await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
+
+                    return;
+                }
+
+            } catch(Exception ex)
+            {
+                Debug.WriteLine(ex.StackTrace);
             }
 
+            CrossHud.Current.Dismiss();
+            CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
 
         }
 
@@ -117,41 +123,30 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async Task DownloadLessonData()
         {
 
-            try
+            var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
+            var lessonGroupResponse = await apiService.GetLessonGroupsAsync();
+
+            if (lessonGroupResponse.Status == ResponseStatus.OK)
             {
-                var lessonGroupResponse = await _apiService.GetLessonGroupsAsync();
-                var lessonResponse = await _apiService.GetLessonsAsync();
-
-
-                if (lessonGroupResponse.Status == ResponseStatus.OK)
-                {
-                    await DependencyService.Get<ISqliteService>().SaveLessonGroupsAsync(lessonGroupResponse.Content);
-                }
-                else
-                {
-                    //Handle error
-
-                }
-
-                if (lessonResponse.Status == ResponseStatus.OK)
-                {
-                    await DependencyService.Get<ISqliteService>().SaveLessonsAsync(lessonResponse.Content);
-                }
-                else
-                {
-                    //Handle error
-
-                }
+                await DependencyService.Get<ISqliteService>().SaveLessonGroupsAsync(lessonGroupResponse.Content);
             }
-            catch (Exception ex)
+            else
             {
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-             
+                throw new Exception("Could not download Lesson Groups");
             }
 
+            var lessonResponse = await apiService.GetLessonsAsync();
+
+            if (lessonResponse.Status == ResponseStatus.OK)
+            {
+                await DependencyService.Get<ISqliteService>().SaveLessonsAsync(lessonResponse.Content);
+            }
+            else
+            {
+                throw new Exception("Could not download Lessons");
+            }
+
+        
         }
     }
 }

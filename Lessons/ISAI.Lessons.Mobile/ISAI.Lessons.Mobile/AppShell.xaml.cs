@@ -1,5 +1,6 @@
 ﻿using ISAI.Lessons.Mobile.ViewModels;
 using ISAI.Lessons.Mobile.Views;
+using ISAI.Lessons.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
@@ -20,7 +21,8 @@ namespace ISAI.Lessons.Mobile
 
         private async void OnMenuItemClicked(object sender, EventArgs e)
         {
-            //await Shell.Current.GoToAsync("//LoginPage");
+            await DependencyService.Get<ISqliteService>().DeleteDatabaseAsync();
+            await Shell.Current.GoToAsync("//LoginPage");
         }
     }
 }

@@ -9,6 +9,8 @@ namespace ISAI.Lessons.Models.Interfaces
     public interface ISqliteService
     {
 
+        Task InitializeAsync();
+
         Task<AppUser> GetUserAsync();
 
         Task DeleteUserAsync(AppUser appUser);

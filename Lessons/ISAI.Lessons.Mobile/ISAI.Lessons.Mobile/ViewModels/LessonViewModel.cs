@@ -1,6 +1,4 @@
-﻿using ISAI.Lessons.EntityFramework.Models;
-using ISAI.Lessons.EntityFramework.Services;
-using ISAI.Lessons.Mobile.Models;
+﻿using ISAI.Lessons.Mobile.Models;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;

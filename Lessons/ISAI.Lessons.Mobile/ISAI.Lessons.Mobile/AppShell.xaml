@@ -75,7 +75,7 @@
     </Shell.Resources>
 
 
-    <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}">
+    <ShellContent Route="LaunchPage" ContentTemplate="{DataTemplate local:LaunchPage}">
     </ShellContent>
 
     <!-- 

@@ -16,9 +16,9 @@ using ISAI.Lessons.Core.Services;
 namespace ISAI.Lessons.Mobile.Droid
 {
     [Activity(
-        Label = "ISAI.Lessons.Mobile", 
-        Icon = "@mipmap/icon", 
+        Label = "Scottish Online Lessons", 
         Theme = "@style/MainTheme", 
+        Icon = "@mipmap/icon",
         MainLauncher = true, 
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
@@ -37,7 +37,6 @@ namespace ISAI.Lessons.Mobile.Droid
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            //CrossMediaManager.Current.Init(this);
 
             DownloadBrodacast downloadBrodacast = new DownloadBrodacast();
             RegisterReceiver(downloadBrodacast, new IntentFilter(DownloadManager.ActionDownloadComplete));

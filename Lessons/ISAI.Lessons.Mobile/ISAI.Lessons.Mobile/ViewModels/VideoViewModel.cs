@@ -1,9 +1,8 @@
-﻿using ISAI.Lessons.EntityFramework.Models;
-using ISAI.Lessons.EntityFramework.Services;
-using ISAI.Lessons.Mobile.Models;
+﻿using ISAI.Lessons.Mobile.Models;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Models.Models;
 using MediaManager;
 using MediaManager.Library;
 using MediaManager.Player;

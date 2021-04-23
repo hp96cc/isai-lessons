@@ -1,7 +1,5 @@
 ﻿using ISAI.Lessons.Core.Services;
-using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.Mobile.Services;
-using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,13 +14,15 @@ namespace ISAI.Lessons.Mobile
         {
             InitializeComponent();
 
-            DependencyService.Register<MockDataStore>();
             DependencyService.Register<ISqliteService, SqliteService>();
+            DependencyService.RegisterSingleton<IAuthService>(new AuthService());
+
             MainPage = new AppShell();
         }
 
-        protected override void OnStart()
+        protected  override async void OnStart()
         {
+            await DependencyService.Get<ISqliteService>().InitializeAsync();
         }
 
         protected override void OnSleep()

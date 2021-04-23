@@ -1,5 +1,6 @@
 ﻿using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using Newtonsoft.Json;
 using System;
@@ -22,14 +23,12 @@ namespace ISAI.Lessons.EntityFramework.Services
         const int _appId = 1;
 
         HttpClient _httpClient;
-        Func<Auth> _getAuth;
-        Action<Auth> _setAuth;
+        IAuthService _authService;
 
-        public ApiService(bool isDevelopment, Func<Auth> getAuth, Action<Auth> setAuth)
+        public ApiService(bool isDevelopment, IAuthService authService)
         {
 
-            _getAuth = getAuth;
-            _setAuth = setAuth;
+            _authService = authService;
 
             if (isDevelopment)
             {
@@ -83,7 +82,7 @@ namespace ISAI.Lessons.EntityFramework.Services
             try
             {
 
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("app/lessons", null).ConfigureAwait(false);
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessons", null).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
@@ -124,7 +123,7 @@ namespace ISAI.Lessons.EntityFramework.Services
             try
             {
 
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("app/lessongroups", null).ConfigureAwait(false);
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessongroups", null).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
@@ -183,7 +182,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
                 var serialisedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var auth = JsonConvert.DeserializeObject<Auth>(serialisedContent);
-                _setAuth(auth);
+                await _authService.SetAuth(auth);
                 return auth;
 
             }
@@ -196,7 +195,7 @@ namespace ISAI.Lessons.EntityFramework.Services
         public async Task<Auth> RefreshToken()
         {
 
-            var auth = _getAuth();
+            var auth = await _authService.GetAuth();
 
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseUrl);
@@ -218,7 +217,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
                 var serialisedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 auth = JsonConvert.DeserializeObject<Auth>(serialisedContent);
-                _setAuth(auth);
+                await _authService.SetAuth(auth);
                 return auth;
 
             }

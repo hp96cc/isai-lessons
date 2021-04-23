@@ -17,7 +17,7 @@ using System.Web.Http;
 
 namespace ISAI.Lessons.Web.Public.Controllers
 {
-    public class LessonAppController : ApiController
+    public class LessonAppController : ApiController, IAuthService
     {
 
         string _baseUrl;
@@ -37,13 +37,37 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
             _baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
             _baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
-            _apiService = new ApiService(true, GetAuth, SetAuth);
             _context = HttpContext.Current;
 
-            GetAuth();
+            if (_baseUrl.Contains("localhost"))
+            {
+                _apiService = new ApiService(true, this);
+            }
+            else
+            {
+                _apiService = new ApiService(false, this);
+            }
+
 
         }
 
+
+        [Route("api/lessonapp/test")]
+        [HttpGet]
+        public async Task<Customer> Test()
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+
+           HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/customer", null).ConfigureAwait(false);
+
+
+            var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var customer = JsonConvert.DeserializeObject<Customer>(serialisedContent);
+            return customer;
+
+    
+        }
 
 
         [Route("api/lessonapp/login")]
@@ -399,7 +423,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
             return auth;
         }
 
-        void SetAuth(Auth auth)
+        public async Task SetAuth(Auth auth)
         {
 
             if (auth != null)
@@ -424,7 +448,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-        Auth GetAuth()
+        public async Task<Auth> GetAuth()
         {
 
             var cookies = _context.Request.Cookies;
@@ -495,7 +519,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         }
 
-
-
+        
     }
 }

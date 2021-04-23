@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ISAI.Lessons.Mobile.Views.LessonPage"
              Title="{Binding Title}"
-             xmlns:local="clr-namespace:ISAI.Lessons.Mobile.ViewModels"  
-             xmlns:model="clr-namespace:ISAI.Lessons.EntityFramework.Models;assembly=ISAI.Lessons.Models"  
              >
  
     <ContentPage.Content>
