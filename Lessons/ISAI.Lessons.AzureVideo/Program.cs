@@ -71,17 +71,59 @@ namespace ISAI.Lessons.AzureVideo
                 {
 
                     //try
-                   // {
+                    // {
 
 
-                        var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        var jsonObject = JsonConvert.DeserializeObject<dynamic>(serialisedContent);
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var jsonObject = JsonConvert.DeserializeObject<dynamic>(serialisedContent);
 
-                        System.Console.WriteLine(jsonObject.access_token.ToString());
-                        authToken = jsonObject.access_token;
+                    System.Console.WriteLine(jsonObject.access_token.ToString());
+                    authToken = jsonObject.access_token;
 
-                        GraphServiceClient graphClient = GetAuthenticatedClient();
-                        var uploadDriveItems = await graphClient.Drives["b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I"].Items["017W5IPYD74ZP36CAV7BAYCWK5HCICDXIH"].Children.Request().GetAsync();
+                    GraphServiceClient graphClient = GetAuthenticatedClient();
+
+                    var message = new Message
+                    {
+                        Subject = "Meet for lunch?",
+                        Body = new ItemBody
+                        {
+                            ContentType = BodyType.Text,
+                            Content = "The new cafeteria is open."
+                        },
+                        ToRecipients = new List<Recipient>()
+                        {
+                            new Recipient
+                            {
+                                EmailAddress = new EmailAddress
+                                {
+                                    Address = "craig@isai.co.uk"
+                                }
+                            }
+                        },
+                                            CcRecipients = new List<Recipient>()
+                        {
+                            new Recipient
+                            {
+                                EmailAddress = new EmailAddress
+                                {
+                                    Address = "craig@isai.co.uk"
+                                }
+                            }
+                        }
+                    };
+
+                    var saveToSentItems = true;
+
+                    await graphClient.Users["craig.champion@scottishonlinelessons.com"]
+                        .SendMail(message, saveToSentItems)
+                        .Request()
+                        .PostAsync();
+
+
+                    return;
+
+
+                    var uploadDriveItems = await graphClient.Drives["b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I"].Items["017W5IPYD74ZP36CAV7BAYCWK5HCICDXIH"].Children.Request().GetAsync();
 
                     foreach (var item in uploadDriveItems)
                     {
@@ -109,13 +151,11 @@ namespace ISAI.Lessons.AzureVideo
                             else
                             {
                                 Console.WriteLine("Could not Match Lesson:  file {0}", item.Name);
-                               // await graphClient.Drives["b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I"].Items[item.Id].Request().DeleteAsync();
+                                // await graphClient.Drives["b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I"].Items[item.Id].Request().DeleteAsync();
 
                             }
 
                         }
-
-
 
                     }
 
