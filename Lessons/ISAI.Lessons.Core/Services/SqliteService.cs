@@ -1,5 +1,4 @@
 ﻿using ISAI.Lessons.Core.Extensions;
-using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using SQLite;

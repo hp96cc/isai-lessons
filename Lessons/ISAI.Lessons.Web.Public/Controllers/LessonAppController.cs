@@ -1,7 +1,8 @@
-﻿using ISAI.Lessons.EntityFramework.Models;
-using ISAI.Lessons.EntityFramework.Services;
+﻿using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
+using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Models.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,30 +22,38 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         string _baseUrl;
         string _baseReturnUrl;
+
         const string _refreshCookieName = "lessons_refresh_token";
         const string _accessCookieName = "lessons_access_token";
+
         const int _appId = 1;
 
         ApiService _apiService;
         HttpClient _httpClient;
-        Auth _auth;
+        HttpContext _context;
 
         public LessonAppController()
         {
+
             _baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
             _baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
+            _apiService = new ApiService(true, GetAuth, SetAuth);
+            _context = HttpContext.Current;
 
-            _apiService = new ApiService();
+            GetAuth();
+
         }
+
+
 
         [Route("api/lessonapp/login")]
         [HttpPost]
         public async Task Login(LoginRequestViewModel model)
         {
 
-            await GetAuthToken(HttpContext.Current, model.Email, model.Password, null);
+            var auth = await GetAuthToken(model.Email, model.Password, null);
 
-            if (_auth == null)
+            if (auth == null)
             {
                 throw new HttpResponseException(HttpStatusCode.Unauthorized);
             }
@@ -78,7 +87,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<Customer> Customer()
         {
-            _httpClient = await _apiService.SetHttpAuthClient(_auth);
+            _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
@@ -108,7 +117,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<Lesson> Lesson(int lessonId)
         {
-            _httpClient = await _apiService.SetHttpAuthClient(_auth);
+            _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
@@ -145,7 +154,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<List<Subscription>> Subscriptions()
         {
-            _httpClient = await _apiService.SetHttpAuthClient(_auth);
+            _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
@@ -176,7 +185,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<List<CustomerDevice>> CustomerDevices()
         {
-            _httpClient = await _apiService.SetHttpAuthClient(_auth);
+            _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
@@ -206,7 +215,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<List<CustomerActivity>> CustomerActivity()
         {
-            _httpClient = await _apiService.SetHttpAuthClient(_auth);
+            _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
@@ -235,7 +244,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<Stripe.BillingPortal.Session> StripeCustomerPortal()
         {
-            _httpClient = await _apiService.SetHttpAuthClient(_auth);
+            _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
@@ -271,13 +280,13 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-        
+
 
         [Route("api/lessonapp/forgotpassword")]
         [HttpPost]
         public async Task ForgotPassword()
         {
-            _httpClient = await _apiService.SetHttpAuthClient(_auth);
+            _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
@@ -343,10 +352,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<Customer> ConfirmCustomerSubscription(ConfirmCustomerSubscriptionRequest request)
         {
-            
-            SetHttpClient();
 
-            var context = HttpContext.Current;
+            SetHttpClient();
 
             try
             {
@@ -363,7 +370,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var customer = JsonConvert.DeserializeObject<Customer>(serialisedContent);
 
-                    await GetAuthToken(context, customer.Email, string.Empty, customer.PostRegistrationAccessCode);
+                    await GetAuthToken(customer.Email, string.Empty, customer.PostRegistrationAccessCode);
 
                     return customer;
                 }
@@ -381,26 +388,30 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         }
 
-        
+
 
 
         #region Auth Methods
 
-        async Task GetAuthToken(HttpContext context, string username, string password, string postRegistrationAccessCode)
+        async Task<Auth> GetAuthToken(string username, string password, string postRegistrationAccessCode)
+        {
+            var auth = await _apiService.GetAuthToken(username, password, postRegistrationAccessCode);
+            return auth;
+        }
+
+        void SetAuth(Auth auth)
         {
 
-            _auth = await _apiService.GetAuthToken(username, password, postRegistrationAccessCode);
-
-            if (_auth != null)
+            if (auth != null)
             {
-                context.Response.Cookies.Add(new HttpCookie(_refreshCookieName, _auth.RefreshToken)
+                _context.Response.Cookies.Add(new HttpCookie(_refreshCookieName, auth.RefreshToken)
                 {
                     Path = "/",
                     HttpOnly = true,
                     Secure = true
                 });
 
-                context.Response.Cookies.Add(new HttpCookie(_accessCookieName, _auth.AccessToken)
+                _context.Response.Cookies.Add(new HttpCookie(_accessCookieName, auth.AccessToken)
                 {
                     Path = "/",
                     HttpOnly = true,
@@ -408,56 +419,42 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 });
             }
 
+
+
         }
 
-        async Task RefreshToken()
+
+        Auth GetAuth()
         {
 
-            string refreshToken = null;
-            var cookies = Request.Headers.GetCookies();
+            var cookies = _context.Request.Cookies;
 
             if (cookies != null && cookies.Count > 0)
             {
+                cookies.Get(_accessCookieName);
 
-                var refreshCookie = cookies[0].Cookies.FirstOrDefault(x => x.Name.Equals(_refreshCookieName));
+                var auth = new Auth();
+
+                var accessCookie = cookies.Get(_accessCookieName);
+
+                if (accessCookie != null)
+                {
+                    auth.AccessToken = accessCookie.Value;
+                }
+
+                var refreshCookie = cookies.Get(_refreshCookieName);
 
                 if (refreshCookie != null)
                 {
-                    refreshToken = refreshCookie.Value;
+                    auth.RefreshToken = refreshCookie.Value;
                 }
+
+                return auth;
 
             }
 
-
-            if (refreshToken != null)
-            {
-
-                _auth = await _apiService.RefreshToken(new Auth()
-                {
-                    RefreshToken = refreshToken
-                });
-
-                if (_auth != null)
-                {
-                    HttpContext.Current.Response.Cookies.Add(new HttpCookie(_refreshCookieName, _auth.RefreshToken)
-                    {
-                        Path = "/",
-                        HttpOnly = true,
-                        Secure = true
-                    });
-
-                    HttpContext.Current.Response.Cookies.Add(new HttpCookie(_accessCookieName, _auth.AccessToken)
-                    {
-                        Path = "/",
-                        HttpOnly = true,
-                        Secure = true
-                    });
-                }
-
-            }
-
+            return null;
         }
-
 
 
         void SetHttpClient()

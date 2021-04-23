@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.EntityFramework.Models
 {
     public class CustomerActivity : BaseModel
     {

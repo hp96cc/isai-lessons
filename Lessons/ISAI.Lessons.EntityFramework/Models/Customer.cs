@@ -1,10 +1,10 @@
-﻿using ISAI.Lessons.Models.Interfaces;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using ISAI.Lessons.Models.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.EntityFramework.Models
 {
     public class Customer : BaseModel, ICustomer
     {

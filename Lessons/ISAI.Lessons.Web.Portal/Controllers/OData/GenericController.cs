@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using ISAI.Lessons.Models.Interfaces;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.OData;
-using ISAI.Lessons.EntityFramework.Interfaces;
 using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;

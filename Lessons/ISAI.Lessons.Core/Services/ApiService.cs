@@ -1,5 +1,4 @@
-﻿using ISAI.Lessons.EntityFramework.Models;
-using ISAI.Lessons.EntityFramework.ViewModels;
+﻿using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Models;
 using Newtonsoft.Json;
@@ -23,21 +22,28 @@ namespace ISAI.Lessons.EntityFramework.Services
         const int _appId = 1;
 
         HttpClient _httpClient;
-        public Auth _auth;
+        Func<Auth> _getAuth;
+        Action<Auth> _setAuth;
 
-        public ApiService()
+        public ApiService(bool isDevelopment, Func<Auth> getAuth, Action<Auth> setAuth)
         {
-            //_baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
-            //_baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
-            _baseUrl = "https://localhost:44392/";
-            _baseReturnUrl = "https://localhost:44306/";
 
-            //TODO: remove this
-            _auth = new Auth()
+            _getAuth = getAuth;
+            _setAuth = setAuth;
+
+            if (isDevelopment)
             {
-                AccessToken = string.Empty,
-                RefreshToken = string.Empty
-            };
+                _baseUrl = "https://localhost:44392/";
+                _baseReturnUrl = "https://localhost:44306/";
+            }
+            else
+            {
+                _baseUrl = "https://app.scottishonlinelessons.com/";
+                _baseReturnUrl = "https://scottishonlinelessons/";
+            }
+
+
+
         }
 
 
@@ -46,15 +52,15 @@ namespace ISAI.Lessons.EntityFramework.Services
 
             var response = new ResponseData<LoginResponseViewModel>();
 
-            await GetAuthToken(model.Email, model.Password, null);
+            var auth = await GetAuthToken(model.Email, model.Password, null);
 
-            if (_auth != null)
+            if (auth != null)
             {
                 response.Status = ResponseStatus.OK;
                 response.Content =  new LoginResponseViewModel()
                 {
-                    RefreshToken = _auth.RefreshToken,
-                    AccessToken = _auth.AccessToken
+                    RefreshToken = auth.RefreshToken,
+                    AccessToken = auth.AccessToken
                 };
             }
             else
@@ -70,7 +76,7 @@ namespace ISAI.Lessons.EntityFramework.Services
         public async Task<ResponseData<List<Lesson>>> GetLessonsAsync()
         {
 
-            _httpClient = await SetHttpAuthClient(_auth);
+            _httpClient = await SetHttpAuthClient();
 
             var response = new ResponseData<List<Lesson>>();
 
@@ -111,7 +117,7 @@ namespace ISAI.Lessons.EntityFramework.Services
         public async Task<ResponseData<List<LessonGroup>>> GetLessonGroupsAsync()
         {
 
-            _httpClient = await SetHttpAuthClient(_auth);
+            _httpClient = await SetHttpAuthClient();
 
             var response = new ResponseData<List<LessonGroup>>();
 
@@ -152,8 +158,6 @@ namespace ISAI.Lessons.EntityFramework.Services
         public async Task<Auth> GetAuthToken(string username, string password, string postRegistrationAccessCode)
         {
 
-            _auth = null;
-
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseUrl);
             var request = new HttpRequestMessage(HttpMethod.Post, "token");
@@ -178,18 +182,21 @@ namespace ISAI.Lessons.EntityFramework.Services
             {
 
                 var serialisedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                _auth = JsonConvert.DeserializeObject<Auth>(serialisedContent);
-                return _auth;
+                var auth = JsonConvert.DeserializeObject<Auth>(serialisedContent);
+                _setAuth(auth);
+                return auth;
 
             }
 
-            return null;
+            throw new Exception("No Authorisation");
 
         }
 
 
-        public async Task<Auth> RefreshToken(Auth auth)
+        public async Task<Auth> RefreshToken()
         {
+
+            var auth = _getAuth();
 
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseUrl);
@@ -211,19 +218,20 @@ namespace ISAI.Lessons.EntityFramework.Services
 
                 var serialisedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 auth = JsonConvert.DeserializeObject<Auth>(serialisedContent);
+                _setAuth(auth);
                 return auth;
 
             }
 
-            return null;            
+            throw new Exception("No Authorisation");       
 
         }
 
 
-        public async Task<HttpClient> SetHttpAuthClient(Auth auth)
+        public async Task<HttpClient> SetHttpAuthClient()
         {
 
-            if (auth == null) await RefreshToken(auth);
+            var auth = await RefreshToken();
 
             if (auth != null && auth.AccessToken != null)
             {
@@ -244,13 +252,13 @@ namespace ISAI.Lessons.EntityFramework.Services
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 httpClient.DefaultRequestHeaders.Add("Keep-Alive", "true");
 
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _auth.AccessToken);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", auth.AccessToken);
 
                 return httpClient;
 
             }
 
-            return null;
+            throw new Exception("Authorisaton failed");
 
 
         }

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ISAI.Lessons.EntityFramework.Interfaces
-{
+namespace ISAI.Lessons.Models.Interfaces
+{ 
+
     public interface IBaseInterface
     {
         int Id { get; set; }

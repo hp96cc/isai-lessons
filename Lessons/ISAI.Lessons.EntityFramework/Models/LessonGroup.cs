@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.EntityFramework.Models
 {
     public class LessonGroup : BaseModel
     {
@@ -14,7 +14,13 @@ namespace ISAI.Lessons.Models.Models
 
         public int AppId { get; set; }
 
+        [ForeignKey("AppId")]
+        public App App { get; set; }
+
         public int? ParentLessonGroupId { get; set; }
+
+        [ForeignKey("ParentLessonGroupId")]
+        public LessonGroup ParentLessonGroup { get; set; }
 
         public int ListOrder { get; set; }
 

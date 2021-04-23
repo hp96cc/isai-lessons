@@ -1,4 +1,5 @@
-﻿using ISAI.Lessons.EntityFramework.Models;
+﻿using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
     public class RegisterResponseViewModel
     {
 
-        public Customer Customer { get; set; }
+        public ICustomer Customer { get; set; }
 
         public List<string> Errors { get; set; }
     }

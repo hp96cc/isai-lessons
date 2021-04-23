@@ -114,6 +114,14 @@
   <ItemGroup>
     <Compile Include="Attributes\AllowSearchAttribute.cs" />
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\App.cs" />
+    <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\CustomerActivity.cs" />
+    <Compile Include="Models\CustomerDevice.cs" />
+    <Compile Include="Models\Lesson.cs" />
+    <Compile Include="Models\LessonGroup.cs" />
+    <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="LessonsDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,10 +133,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
-      <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
-      <Name>ISAI.Lessons.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.Models\ISAI.Lessons.Models.csproj">
       <Project>{d455984f-df60-481e-aba3-ec76630c7355}</Project>
       <Name>ISAI.Lessons.Models</Name>

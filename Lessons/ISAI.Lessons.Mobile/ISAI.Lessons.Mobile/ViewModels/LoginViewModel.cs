@@ -50,7 +50,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
             LoginCommand = new Command(async () => await OnLoginClicked());
             ForgotPasswordCommand = new Command(async () => await OnForgotPasswordClicked());
-            _apiService = new ApiService();
+            _apiService = new ApiService(true);
         }
 
         public async void OnAppearing()
@@ -68,7 +68,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async Task OnLoginClicked()
         {
 
-            var apiService = new ApiService();
+            var apiService = new ApiService(true);
             var loginResponse = await apiService.Login(new EntityFramework.ViewModels.LoginRequestViewModel()
             {
                 Email = _email,

@@ -1,8 +1,5 @@
-﻿using ISAI.Lessons.EntityFramework.Models;
-using ISAI.Lessons.Models.Enums;
+﻿using ISAI.Lessons.Models.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ISAI.Lessons.Models.Models
 {

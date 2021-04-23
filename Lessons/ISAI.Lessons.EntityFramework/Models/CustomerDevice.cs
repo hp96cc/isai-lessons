@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.EntityFramework.Models
 {
     public class CustomerDevice : BaseModel
     {
@@ -15,7 +15,7 @@ namespace ISAI.Lessons.Models.Models
 
         public int CustomerId { get; set; }
 
-     
+        [ForeignKey("CustomerId")]
         public Customer Customer { get; set; }
 
 

@@ -1,5 +1,4 @@
-﻿using ISAI.Lessons.EntityFramework.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,10 +11,6 @@ namespace ISAI.Lessons.Models.Interfaces
          string Firstname { get; set; }
 
          string Surname { get; set; }
-
-         bool IsSalesUser { get; set; }
-
-         string Position { get; set; }
 
          string Role { get; set; }
 

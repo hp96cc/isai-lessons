@@ -1,8 +1,12 @@
-﻿using ISAI.Lessons.Models.Interfaces;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using ISAI.Lessons.EntityFramework.Models;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
+using ISAI.Lessons.Models.Interfaces;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.EntityFramework.Models
 {
     public abstract class BaseModel : IBaseInterface
     {
@@ -12,7 +16,6 @@ namespace ISAI.Lessons.Models.Models
             DateModified = DateTime.UtcNow;
         }
 
-        [SQLite.PrimaryKey]
         public int Id { get; set; }
 
         [JsonIgnore]
@@ -27,10 +30,14 @@ namespace ISAI.Lessons.Models.Models
         [JsonIgnore]
         public string ModifiedUserId { get; set; }
 
+        [ForeignKey("ModifiedUserId")]
+        public User ModifiedUser { get; set; }
+
         [JsonIgnore]
         public string CreatedUserId { get; set; }
 
-       
+        [ForeignKey("CreatedUserId")]
+        public User CreatedUser { get; set; }
 
 
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.EntityFramework.Models
 {
     public class Subscription : BaseModel
     {
@@ -15,6 +15,9 @@ namespace ISAI.Lessons.Models.Models
         public string Name { get; set; }
 
         public string StripeSubscriptionId { get; set; }
+
+        [ForeignKey("CustomerId")]
+        public Customer Customer { get; set; }
 
         public DateTimeOffset StartDate { get; set; }
 

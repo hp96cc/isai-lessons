@@ -6,7 +6,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class User : IdentityUser, ISAI.Lessons.Models.Interfaces.IUser
+    public class User : IdentityUser, Lessons.Models.Interfaces.IUser
     {
 
         public User()
@@ -36,10 +36,6 @@ namespace ISAI.Lessons.EntityFramework.Models
         public string Firstname { get; set; }
 
         public string Surname { get; set; }
-
-        public bool IsSalesUser { get; set; }
-
-        public string Position { get; set; }
 
         public string Role { get; set; }
 
