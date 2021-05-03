@@ -3,11 +3,13 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CSharp;
 
 namespace ISAI.Lessons.Core.Services
 {
@@ -85,6 +87,94 @@ namespace ISAI.Lessons.Core.Services
 
 
         }
+
+        public async Task DeleteFileAsync(string driveId, string itemId)
+        {
+            GraphServiceClient graphClient = await GetAuthenticatedClient();
+
+            await graphClient.Drives[driveId].Items[itemId].Request().DeleteAsync();
+
+        }
+
+        public async Task DownloadFileInChunks(DriveItem driveItem, string downloadDirectory)
+        {
+
+            const long DefaultChunkSize = 1000 * 1024; // 50 KB, TODO: change chunk size to make it realistic for a large file.
+            long ChunkSize = DefaultChunkSize;
+            long offset = 0;         // cursor location for updating the Range header.
+            byte[] bytesInStream;                    // bytes in range returned by chunk download.
+
+            // Get the download URL. This URL is preauthenticated and has a short TTL.
+            object downloadUrl;
+            driveItem.AdditionalData.TryGetValue("@microsoft.graph.downloadUrl", out downloadUrl);
+
+            // Get the number of bytes to download. calculate the number of chunks and determine
+            // the last chunk size.
+            long size = (long)driveItem.Size;
+            int numberOfChunks = Convert.ToInt32(size / DefaultChunkSize);
+            // We are incrementing the offset cursor after writing the response stream to a file after each chunk. 
+            // Subtracting one since the size is 1 based, and the range is 0 base. There should be a better way to do
+            // this but I haven't spent the time on that.
+            int lastChunkSize = Convert.ToInt32(size % DefaultChunkSize) - numberOfChunks - 1;
+            if (lastChunkSize > 0) { numberOfChunks++; }
+
+            // Create a file stream to contain the downloaded file.
+            using (FileStream fileStream = System.IO.File.Create(Path.Combine(downloadDirectory, driveItem.Name)))
+            {
+
+
+                for (int i = 0; i < numberOfChunks; i++)
+                {
+
+                    Console.WriteLine("Downloading {0} - Chunk {1} of {2}", driveItem.Name, i, numberOfChunks);
+
+                    // Setup the last chunk to request. This will be called at the end of this loop.
+                    if (i == numberOfChunks - 1)
+                    {
+                        ChunkSize = lastChunkSize;
+                    }
+
+                    // Create the request message with the download URL and Range header.
+                    HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, (string)downloadUrl);
+                    req.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(offset, ChunkSize + offset);
+
+                    // We can use the the client library to send this although it does add an authentication cost.
+                    // HttpResponseMessage response = await graphClient.HttpProvider.SendAsync(req);
+                    // Since the download URL is preauthenticated, and we aren't deserializing objects, 
+                    // we'd be better to make the request with HttpClient.
+                    var client = new HttpClient();
+                    HttpResponseMessage response = await client.SendAsync(req);
+
+                    using (Stream responseStream = await response.Content.ReadAsStreamAsync())
+                    {
+                        bytesInStream = new byte[ChunkSize];
+                        int read;
+                        do
+                        {
+                            read = responseStream.Read(bytesInStream, 0, (int)bytesInStream.Length);
+                            if (read > 0)
+                                fileStream.Write(bytesInStream, 0, read);
+                        }
+                        while (read > 0);
+                    }
+                    offset += ChunkSize + 1; // Move the offset cursor to the next chunk.
+                }
+            }
+            return;
+
+        }
+
+
+        public static void CopyStream(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[8 * 1024];
+            int len;
+            while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, len);
+            }
+        }
+
 
         async Task<GraphServiceClient> GetAuthenticatedClient()
         {
