@@ -4,6 +4,7 @@ using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using Plugin.CurrentActivity;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
             long downloadId = manager.Enqueue(request);
 
             videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Running;
-            videoDownload.DownloadId = downloadId;
+            videoDownload.DownloadId = downloadId.ToString();
 
             return videoDownload;
 
@@ -42,7 +43,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
             var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);
             
-            var videoUri = manager.GetUriForDownloadedFile(videoDownload.DownloadId);
+            var videoUri = manager.GetUriForDownloadedFile(Convert.ToInt64(videoDownload.DownloadId));
             return videoUri.ToString();
 
         }
@@ -51,7 +52,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
         {
             var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);
             var query = new DownloadManager.Query();
-            query.SetFilterById(new long[] { videoDownload.DownloadId });
+            query.SetFilterById(new long[] { Convert.ToInt64(videoDownload.DownloadId) });
             var cursor = manager.InvokeQuery(query);
 
             if (cursor.MoveToFirst())

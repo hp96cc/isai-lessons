@@ -7,6 +7,9 @@ using ISAI.Lessons.Models.Interfaces;
 using UIKit;
 using Xamarin.Forms;
 using ISAI.Lessons.Core.Services;
+using Plugin.DownloadManager;
+using Plugin.DownloadManager.Abstractions;
+using System.IO;
 
 namespace ISAI.Lessons.Mobile.iOS
 {
@@ -28,12 +31,26 @@ namespace ISAI.Lessons.Mobile.iOS
 
             DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.Register<IStatusBar, StatusBar>();
+            DependencyService.Register<IVideoDownloadService, VideoDownloadService>();
 
             global::Xamarin.Forms.Forms.SetFlags("CollectionView_Experimental");
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 
+       
+   
+
             return base.FinishedLaunching(app, options);
+        }
+
+
+        /**
+         * Save the completion-handler we get when the app opens from the background.
+         * This method informs iOS that the app has finished all internal processing and can sleep again.
+         */
+        public override void HandleEventsForBackgroundUrl(UIApplication application, string sessionIdentifier, Action completionHandler)
+        {
+            CrossDownloadManager.BackgroundSessionCompletionHandler = completionHandler;
         }
     }
 }

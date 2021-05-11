@@ -20,12 +20,12 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
 
         public void HideStatusBar()
         {
-            UIApplication.SharedApplication.StatusBarHidden = true;
+           // UIApplication.SharedApplication.StatusBarHidden = true;
         }
 
         public void ShowStatusBar()
         {
-            UIApplication.SharedApplication.StatusBarHidden = false;
+           // UIApplication.SharedApplication.StatusBarHidden = false;
         }
 
         #endregion
