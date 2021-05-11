@@ -84,22 +84,22 @@
         https://docs.microsoft.com/dotnet/api/xamarin.forms.shellgroupitem.flyoutdisplayoptions?view=xamarin-forms
     -->
 
-    <FlyoutItem Title="Home">
-        <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
+    <FlyoutItem Title="Home" Icon="outline_home_black_18.png">
+        <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}"  />
     </FlyoutItem>
-    
-    <FlyoutItem Title="Lessons">
-        <ShellContent Route="LessonGroupPage" ContentTemplate="{DataTemplate local:LessonGroupPage}" />
+
+    <FlyoutItem Title="Lessons" Icon="outline_cast_for_education_black_18.png">
+        <ShellContent Route="LessonGroupPage" ContentTemplate="{DataTemplate local:LessonGroupPage}"  />
     </FlyoutItem>
-    
-    <FlyoutItem Title="Lesson Downloads">
-        <ShellContent Route="LessonDownloadsPage" ContentTemplate="{DataTemplate local:LessonDownloadsPage}" />
+
+    <FlyoutItem Title="Lesson Downloads" Icon="outline_file_download_black_18.png">
+        <ShellContent Route="LessonDownloadsPage" ContentTemplate="{DataTemplate local:LessonDownloadsPage}"  />
     </FlyoutItem>
     
     
 
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
-    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
+    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked" Icon="outline_logout_black_18.png">
     </MenuItem>
 
     <!--

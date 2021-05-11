@@ -16,10 +16,7 @@ using ISAI.Lessons.Core.Services;
 namespace ISAI.Lessons.Mobile.Droid
 {
     [Activity(
-        Label = "Scottish Online Lessons", 
         Theme = "@style/MainTheme", 
-        Icon = "@mipmap/icon",
-        MainLauncher = true, 
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {

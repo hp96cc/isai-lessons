@@ -107,6 +107,8 @@ namespace ISAI.Lessons.Mobile.ViewModels
             {
                 var lessonGroupPage = new LessonGroupPage(_selectedItem.Id);
                 await Shell.Current.Navigation.PushAsync(lessonGroupPage, true);
+
+                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
             }
             else
             {

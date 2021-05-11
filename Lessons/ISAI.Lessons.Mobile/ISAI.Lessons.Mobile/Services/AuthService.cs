@@ -22,6 +22,8 @@ namespace ISAI.Lessons.Mobile.Services
 
                 return new Auth()
                 {
+                    Email = user.Email,
+                    Password = user.Password,
                     AccessToken = user.AccessToken,
                     RefreshToken = user.RefreshToken
                 };

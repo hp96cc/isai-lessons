@@ -24,5 +24,11 @@ namespace ISAI.Lessons.Models.Models
         [JsonProperty("refresh_token")]
         public string RefreshToken { get; set; }
 
+        [JsonIgnore]
+        public string Email { get; set; }
+
+        [JsonIgnore]
+        public string Password { get; set; }
+
     }
 }

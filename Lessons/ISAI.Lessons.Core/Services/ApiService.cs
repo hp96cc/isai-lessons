@@ -75,14 +75,13 @@ namespace ISAI.Lessons.EntityFramework.Services
 
         public async Task<ResponseData<List<Lesson>>> GetLessonsAsync()
         {
-
-            _httpClient = await SetHttpAuthClient();
-
             var response = new ResponseData<List<Lesson>>();
 
             try
             {
 
+                _httpClient = await SetHttpAuthClient();
+   
                 HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessons", null).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
@@ -116,12 +115,11 @@ namespace ISAI.Lessons.EntityFramework.Services
         public async Task<ResponseData<LessonStreamingResponse>> GetLessonStreamingUrlAsync(int lessonId)
         {
 
-            _httpClient = await SetHttpAuthClient();
-
             var response = new ResponseData<LessonStreamingResponse>();
 
             try
             {
+                _httpClient = await SetHttpAuthClient();
 
                 var request = new LessonRequestViewModel()
                 {
@@ -162,12 +160,14 @@ namespace ISAI.Lessons.EntityFramework.Services
         public async Task<ResponseData<LessonDownloadResponse>> GetLessonDownloadUrlAsync(int lessonId)
         {
 
-            _httpClient = await SetHttpAuthClient();
-
+           
             var response = new ResponseData<LessonDownloadResponse>();
 
             try
             {
+
+                _httpClient = await SetHttpAuthClient();
+
 
                 var request = new LessonRequestViewModel()
                 {
@@ -210,12 +210,14 @@ namespace ISAI.Lessons.EntityFramework.Services
         public async Task<ResponseData<List<LessonGroup>>> GetLessonGroupsAsync()
         {
 
-            _httpClient = await SetHttpAuthClient();
-
+          
             var response = new ResponseData<List<LessonGroup>>();
 
             try
             {
+
+                _httpClient = await SetHttpAuthClient();
+
 
                 HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessongroups", null).ConfigureAwait(false);
 
@@ -281,7 +283,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
             }
 
-            throw new Exception("No Authorisation");
+            throw new Exception("Authorisaton failed");
 
         }
 
@@ -314,9 +316,30 @@ namespace ISAI.Lessons.EntityFramework.Services
                 await _authService.SetAuth(auth);
                 return auth;
 
+            } else if(!string.IsNullOrWhiteSpace(auth.Email) && !string.IsNullOrWhiteSpace(auth.Password))
+            {
+                //Refresh token as a last report if email and password are available
+                var loginResponse = await Login(new LoginRequestViewModel()
+                {
+                    Email = auth.Email,
+                    Password = auth.Password
+                });
+
+                if(loginResponse.Status == ResponseStatus.OK)
+                {
+                    auth = new Auth()
+                    {
+                        AccessToken = loginResponse.Content.AccessToken,
+                        RefreshToken = loginResponse.Content.RefreshToken
+                    };
+
+                    await _authService.SetAuth(auth);
+                    return auth;
+                }
+
             }
 
-            throw new Exception("No Authorisation");       
+            throw new Exception("Authorisaton failed");
 
         }
 
@@ -335,7 +358,6 @@ namespace ISAI.Lessons.EntityFramework.Services
                     MaxResponseContentBufferSize = int.MaxValue,
                     Timeout = TimeSpan.FromSeconds(30),
                     BaseAddress = new Uri(_baseUrl)
-
 
                 };
 
