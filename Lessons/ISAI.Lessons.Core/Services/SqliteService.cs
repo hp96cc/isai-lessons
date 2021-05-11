@@ -102,6 +102,21 @@ namespace ISAI.Lessons.Core.Services
             return await Database.Table<LessonGroup>().Where(x => x.ParentLessonGroupId == parentId).ToListAsync();
         }
 
+        public async Task<List<LessonGroup>> GetLessonGroupHierarchyAsync(int lessonGroupId)
+        {
+            var lessonGroups = new List<LessonGroup>();
+            int? currentLessonGroupId = lessonGroupId;
+
+            while (currentLessonGroupId.HasValue)
+            {
+                var lessonGroup = await Database.Table<LessonGroup>().Where(x => x.Id == currentLessonGroupId.Value).FirstAsync();
+                lessonGroups.Add(lessonGroup);
+                currentLessonGroupId = lessonGroup.ParentLessonGroupId;
+            }
+
+            return lessonGroups;
+        }
+
         public async Task<LessonGroup> GetLessonGroupAsync(int lessonGroupId)
         {
             return await Database.Table<LessonGroup>().FirstAsync(x => x.Id == lessonGroupId);

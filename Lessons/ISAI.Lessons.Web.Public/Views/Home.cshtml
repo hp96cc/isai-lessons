@@ -22,7 +22,7 @@
                             <img src="@scrollerItem.BackgroundImage.MediaUrl()" alt="@scrollerItem.Title" data-bgrepeat="no-repeat" data-bgfit="cover" class="rev-slidebg" style="opacity: 0.5 !important;">
 
 
-                            @if (scrollerCounter == 0)
+                            @if (scrollerCounter == 1)
                             {
                                 <!-- HERO SUBTITLE -->
                                 <div class="tp-caption text-pink alt-font font-weight-700 xs-text-center" data-x="[30,0,0,0]" data-y="[center]" data-voffset="[-180,-150,-150,-120]" data-fontsize="[32,30,32,28]" data-lineheight="34" data-width="[700,650,400,350]" data-whitespace="normal" data-frames='[{
@@ -44,7 +44,7 @@
                                 </div>
 
                                 <!-- HERO TITLE -->
-                                <div class="tp-caption font-weight-800 text-sky alt-font xs-text-center pt-10" data-x="30" data-y="center" data-voffset="[-65,-45,-55,-35]" data-fontsize="[72,60,48,36]" data-lineheight="[80,70,60,48]" data-width="[700, 650, 400, 350]" data-whitespace="normal" data-frames='[{
+                                <div class="tp-caption font-weight-800 text-sky alt-font xs-text-center pt-10" style="color:#3b18ff;" data-x="30" data-y="center" data-voffset="[-65,-45,-55,-35]" data-fontsize="[48,36,30,24]" data-lineheight="[58,46,40,34]" data-width="[700, 650, 400, 350]" data-whitespace="normal" data-frames='[{
                                         "delay":0,
                                         "speed":2000,
                                         "frame":"0",
@@ -79,7 +79,7 @@
                                     <a href='@scrollerItem.ButtonLink.Url()' class='butn yellow'><span>@scrollerItem.ButtonText</span></a>
                                 </div>
                             }
-                            else if (scrollerCounter == 1)
+                            else if (scrollerCounter == 3)
                             {
 
                                 <!-- HERO SUBTITLE -->
@@ -102,7 +102,7 @@
                                 </div>
 
                                 <!-- HERO TITLE -->
-                        <div class="tp-caption font-weight-800 text-sky alt-font text-center" data-x="center" data-y="center" data-voffset="[-65,-45,-55,-35]" data-fontsize="[72,60,48,36]" data-lineheight="[80,70,60,48]" data-width="[700, 650, 400, 350]" data-whitespace="normal" data-frames='[{
+                        <div class="tp-caption font-weight-800 text-sky alt-font text-center" style="color:#3b18ff;" data-x="center" data-y="center" data-voffset="[-65,-45,-55,-35]" data-fontsize="[48,36,30,24]" data-lineheight="[58,46,40,34]" data-width="[700, 650, 400, 350]" data-whitespace="normal" data-frames='[{
                                                 "delay":0,
                                                 "speed":2000,
                                                 "frame":"0",
@@ -159,7 +159,7 @@
                                 </div>
 
                                 <!-- HERO TITLE -->
-                        <div class="tp-caption font-weight-800 text-sky alt-font text-right xs-text-center" data-x="['right','right','right','center']" data-y="center" data-voffset="[-65,-45,-55,-35]" data-fontsize="[72,60,48,36]" data-lineheight="[80,70,60,48]" data-hoffset="['30','30','30','0']" data-width="[700, 650, 400, 350]" data-whitespace="normal" data-frames='[{
+                        <div class="tp-caption font-weight-800 text-sky alt-font text-right xs-text-center" style="color:#3b18ff;" data-x="['right','right','right','center']" data-y="center" data-voffset="[-65,-45,-55,-35]" data-fontsize="[48,36,30,24]" data-lineheight="[58,46,40,34]" data-hoffset="['30','30','30','0']" data-width="[700, 650, 400, 350]" data-whitespace="normal" data-frames='[{
                                     "delay":0,
                                     "speed":2000,
                                     "frame":"0",
@@ -281,6 +281,8 @@
     </div>
 </section>
 <!-- end features section -->
+
+@*
 <!-- start our courses section -->
 <section class="no-padding-top">
     <div class="container">
@@ -356,6 +358,8 @@
     </div>
 </section>
 <!-- end our courses section -->
+
+*@
 <!-- start about section -->
 <section class="parallax no-padding-bottom background-position-center-center" data-background="@Model.BackgroundImage.MediaUrl()">
     <div class="container padding-90px-top md-padding-70px-top sm-padding-50px-top xs-padding-15px-top">

@@ -29,6 +29,14 @@ namespace ISAI.Lessons.Core.Services
         string _armEndpoint = "https://management.azure.com";
         string _adaptiveStreamingTransformName = "ScottishOnlineLessonsWithAdaptiveStreamingPreset";
 
+
+        string _issuer = "ScottishOnlineLessons";
+        string _audience = "ScottishOnlineLessonsUsers";
+        string _primaryKey = "BcrcZvgOBUx1H6JsiIN5lS98NaYxBRAMPwB3PYwqIVv5UoisjMRs0g==";
+
+
+
+
         public async Task<EncodeVideoOutput> EncodeFile(string jobId, string inputFilePath, string outputFileName)
         {
 
@@ -36,7 +44,7 @@ namespace ISAI.Lessons.Core.Services
 
             // Set the polling interval for long running operations to 2 seconds.
             // The default value is 30 seconds for the .NET client SDK
-            client.LongRunningOperationRetryTimeout = 2;
+            client.LongRunningOperationRetryTimeout = 5;
 
             // Creating a unique suffix so that we don't have name collisions if you run the sample
             // multiple times without cleaning up.
@@ -408,12 +416,19 @@ namespace ISAI.Lessons.Core.Services
         /// <param name="locatorName">The name of the StreamingLocator that was created.</param>
         /// <returns></returns>
         // <GetStreamingURLs>
-        private async Task<IList<string>> GetStreamingUrlsAsync(
+        public async Task<IList<string>> GetStreamingUrlsAsync(
             IAzureMediaServicesClient client,
             string resourceGroupName,
             string accountName,
-            String locatorName)
+            String locatorName,
+            StreamingPolicyStreamingProtocol protocol)
         {
+
+            if(client == null) client = await CreateMediaServicesClientAsync();
+            if (resourceGroupName == null) resourceGroupName = _resourceGroup;
+            if (resourceGroupName == null) resourceGroupName = _resourceGroup;
+            if (accountName == null) accountName = _accountName;
+
             const string DefaultStreamingEndpointName = "default";
 
             IList<string> streamingUrls = new List<string>();
@@ -430,17 +445,62 @@ namespace ISAI.Lessons.Core.Services
 
             ListPathsResponse paths = await client.StreamingLocators.ListPathsAsync(resourceGroupName, accountName, locatorName);
 
-            foreach (StreamingPath path in paths.StreamingPaths)
-            {
-                UriBuilder uriBuilder = new UriBuilder
-                {
-                    Scheme = "https",
-                    Host = streamingEndpoint.HostName,
 
-                    Path = path.Paths[0]
-                };
-                streamingUrls.Add(uriBuilder.ToString());
+   
+
+            if (locatorName.Contains("download"))
+            {
+
+                foreach (string path in paths.DownloadPaths)
+                {
+                    UriBuilder uriBuilder = new UriBuilder
+                    {
+                        Scheme = "https",
+                        Host = streamingEndpoint.HostName,
+
+                        Path = path
+                    };
+
+                    streamingUrls.Add(uriBuilder.ToString());
+
+                }
+
+            } else
+            {
+
+                foreach (StreamingPath path in paths.StreamingPaths)
+                {
+                    UriBuilder uriBuilder = new UriBuilder
+                    {
+                        Scheme = "https",
+                        Host = streamingEndpoint.HostName,
+
+                        Path = path.Paths[0]
+                    };
+
+                    if (path.StreamingProtocol == protocol)
+                    {
+                        streamingUrls.Add(uriBuilder.ToString());
+                    }
+
+                    //if (protocol != null)
+                    //{
+                    //    if (path.StreamingProtocol == protocol)
+                    //    {
+                    //        streamingUrls.Add(uriBuilder.ToString());
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    streamingUrls.Add(uriBuilder.ToString());
+                    //}
+
+
+                }
             }
+      
+
+           
 
             return streamingUrls;
         }

@@ -9,15 +9,16 @@
         <StackLayout Padding="20" >
             <Label 
                 FontSize="20"
-                Text="{Binding Title}"
-                Margin="10"
+                Text="{Binding Lesson.Name}"
+                Margin="10,0,0,0"
 
                 />
             
             <Label 
-                Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis fringilla, nisl eu blandit rutrum, orci quam aliquet nisi, a posuere leo dolor id leo. Duis euismod lacus arcu, vel faucibus ante eleifend non. Nam feugiat sit amet sem eget convallis. Etiam arcu tortor, pellentesque eget tellus sed, varius semper risus. In cursus metus ut urna finibus, mattis malesuada diam viverra. Vivamus euismod erat id lacus facilisis scelerisque."
+                Text="{Binding Breadcrumb}"
                 FontSize="14"
-                Margin="10"/>
+                FontAttributes="Bold"
+                Margin="10,0,0,30"/>
 
             <Button
                 Margin="10"

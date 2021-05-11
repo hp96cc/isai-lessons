@@ -22,11 +22,13 @@ namespace ISAI.Lessons.Mobile.ViewModels
     {
         int _lessonId;
         Lesson _lesson;
+        string _streamingUrl;
 
 
-        public VideoViewModel(int lessonId)
+        public VideoViewModel(int lessonId, string streamingUrl)
         {
             _lessonId = lessonId;
+            _streamingUrl = streamingUrl;
         }
 
         public async void OnAppearing()
@@ -52,7 +54,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
             } else
             {
-                item = await CrossMediaManager.Current.Extractor.CreateMediaItem("https://lessonsmedia-ukso1.streaming.media.azure.net/52e672d1-95c9-479b-9fa7-c4d8ad152746/Using Commas.ism/manifest(format=m3u8-aapl)");
+                item = await CrossMediaManager.Current.Extractor.CreateMediaItem(_streamingUrl);
                 item.MediaType = MediaType.Hls;
             }
 

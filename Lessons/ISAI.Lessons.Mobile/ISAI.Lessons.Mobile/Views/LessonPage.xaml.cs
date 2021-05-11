@@ -17,8 +17,9 @@ namespace ISAI.Lessons.Mobile.Views
 
         public LessonPage(int lessonId)
         {
-            InitializeComponent();
+           
             BindingContext = _viewModel = new LessonViewModel(lessonId);
+            InitializeComponent();
         }
 
         protected override void OnAppearing()

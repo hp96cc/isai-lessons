@@ -94,7 +94,7 @@
     <link href="/assets/css/styles.css" rel="stylesheet" />
 
     <!-- Custom Styles -->
-    <link href="/css/site.css" rel="stylesheet" />
+    <link href="/css/site.css?v=1" rel="stylesheet" />
     
 
 
@@ -121,11 +121,11 @@
                     <div id="top-bar" class="top-bar">
                         <div class="container">
                             <div class="row">
-                                <div class="col-4 col-sm-4">
+                                @*<div class="col-4 col-sm-4">
 
                                     <div class="top-bar-info mt-2">
                                         <ul>
-                                            @*<li><a href="tel:@home.ContactPhone"><i class="fas fa-mobile-alt"></i><span class="d-none d-sm-inline-block vertical-align-middle padding-10px-left">@home.ContactPhone</span></a></li>
+                                            <li><a href="tel:@home.ContactPhone"><i class="fas fa-mobile-alt"></i><span class="d-none d-sm-inline-block vertical-align-middle padding-10px-left">@home.ContactPhone</span></a></li>
                                                 <li><a href="mailto:@home.ContactEmail"><i class="far fa-envelope"></i><span class="d-none d-sm-inline-block vertical-align-middle padding-10px-left">@home.ContactEmail</span></a></li>*@
 
                                             @*@if (home.SocialLinks != null)
@@ -143,13 +143,17 @@
                                             @*<li><a href="javascript:void(0)"><i class="fab fa-facebook-f"></i></a></li>
                                                 <li><a href="javascript:void(0)"><i class="fab fa-twitter"></i></a></li>
                                                 <li><a href="javascript:void(0)"><i class="fab fa-youtube"></i></a></li>
-                                                <li><a href="javascript:void(0)"><i class="fab fa-linkedin-in"></i></a></li>*@
+                                                <li><a href="javascript:void(0)"><i class="fab fa-linkedin-in"></i></a></li>
                                         </ul>
                                     </div>
 
-                                </div>
-                                <div class="col-8 col-sm-8">
+                                </div>*@
+                                <div class="col-12 col-sm-12">
+                                    
+                                    
                                     <div class="top-right-bar">
+                                        <div class="justify-content-center h3 text-white  float-left">**Launching 1st June 2021**</div>
+                                        @*
 
                                         @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                                         {
@@ -164,9 +168,9 @@
                                             <a href="/account/" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
 
                                         }
+*@
 
-
-
+   <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
                                     </div>
                                 </div>
                             </div>

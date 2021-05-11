@@ -1,8 +1,11 @@
-﻿using ISAI.Lessons.EntityFramework.Models;
+﻿using ISAI.Lessons.Core.Services;
+using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
+using ISAI.Lessons.Models.ViewModels;
 using ISAI.Lessons.Web.Portal.Helpers;
+using Microsoft.Azure.Management.Media.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Stripe;
@@ -85,12 +88,50 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+        //[AllowAnonymous] //remove at runtime
+        [Route("api/app/lessonstreamurl")]
+        [HttpPost]
+        public async Task<LessonStreamingResponse> LessonStreamUrl(LessonRequestViewModel lessonRequestViewModel)
+        {
+            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
+            x.Id == lessonRequestViewModel.LessonId &&
+            x.Deleted == false);
+
+            var azureMediaService = new AzureMediaService();
+            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id),  StreamingPolicyStreamingProtocol.Hls);
+
+            return new LessonStreamingResponse()
+            {
+                StreamingUrl = urls[0]
+            };
+
+        }
+
+        //[AllowAnonymous] //remove at runtime
+        [Route("api/app/lessondownloadurl")]
+        [HttpPost]
+        public async Task<LessonDownloadResponse> LessonDownloadUrl(LessonRequestViewModel lessonRequestViewModel)
+        {
+            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
+            x.Id == lessonRequestViewModel.LessonId &&
+            x.Deleted == false);
+
+            var azureMediaService = new AzureMediaService();
+            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
+
+            return new LessonDownloadResponse()
+            {
+                DownloadUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
+            };
+
+        }
+
         [AllowAnonymous]
         [Route("api/app/lessons")]
         [HttpPost]
         public async Task<List<Lesson>> Lessons()
         {
-            var lesson = await db.Lesson.Where(x => x.Deleted == false).ToListAsync();
+            var lesson = await db.Lesson.Where(x => x.Deleted == false && x.AssetId != null).ToListAsync();
             return lesson;
 
         }

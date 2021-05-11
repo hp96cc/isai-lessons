@@ -73,11 +73,18 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString HTmlcontent => this.Value<global::System.Web.IHtmlString>("hTMLContent");
 
 		///<summary>
-		/// Sample Video Url
+		/// Sample Video Url 1
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		[ImplementPropertyType("sampleVideoUrl")]
 		public string SampleVideoUrl => this.Value<string>("sampleVideoUrl");
+
+		///<summary>
+		/// Sample Video Url 2
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("sampleVideoUrl2")]
+		public string SampleVideoUrl2 => this.Value<string>("sampleVideoUrl2");
 
 		///<summary>
 		/// Show Lessons As List

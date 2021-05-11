@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,6 +46,13 @@ namespace ISAI.Lessons.AzureVideo
 
             try
             {
+                //Key sigbning create code
+                //byte[] TokenSigningKey = new byte[40];
+                //RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                //rng.GetBytes(TokenSigningKey);
+
+                //var test = Convert.ToBase64String(TokenSigningKey);
+                //var t = true;
 
                 //var azureMediaService = new AzureMediaService();
                 //string jobId = Guid.NewGuid().ToString();
@@ -80,8 +88,18 @@ namespace ISAI.Lessons.AzureVideo
                         await graphApi.DownloadFileInChunks(item, videoPath);
                     }
 
-                    //await graphApi.DeleteFileAsync("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", item.Id);
+                    await Task.Delay(2000);
 
+                    //Check file sizes match
+                    var localFileInfo = new FileInfo(filePath);
+                    if(localFileInfo.Length != item.Size)
+                    {
+                        System.Console.WriteLine("File Sizes do not match, delete local and skip {0} - {1}", localFileInfo.Length, item.Size);
+                        System.Console.ReadLine();
+                        System.IO.File.Delete(filePath);
+                        continue;
+                    }
+             
                     //Check existence in database
                     using (var db = new LessonsDbContext())
                     {
@@ -104,11 +122,12 @@ namespace ISAI.Lessons.AzureVideo
                                 db.Entry(lesson).State = EntityState.Modified;
 
                                 await db.SaveChangesAsync();
+
+                                await graphApi.DeleteFileAsync("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", item.Id);
+                                System.IO.File.Delete(filePath);
                             }
 
-                            await graphApi.DeleteFileAsync("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", item.Id);
-                            System.IO.File.Delete(filePath);
-
+                            
                         }
                         else
                         {

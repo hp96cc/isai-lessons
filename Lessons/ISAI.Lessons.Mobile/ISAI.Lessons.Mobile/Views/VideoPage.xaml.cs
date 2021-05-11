@@ -15,10 +15,10 @@ namespace ISAI.Lessons.Mobile.Views
     {
         VideoViewModel _viewModel;
 
-        public VideoPage(int lessonId)
+        public VideoPage(int lessonId, string streamingUrl)
         {
             InitializeComponent();
-            BindingContext = _viewModel = new VideoViewModel(lessonId);
+            BindingContext = _viewModel = new VideoViewModel(lessonId, streamingUrl);
 
         }
 

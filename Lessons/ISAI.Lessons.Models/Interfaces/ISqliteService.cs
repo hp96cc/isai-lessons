@@ -19,6 +19,8 @@ namespace ISAI.Lessons.Models.Interfaces
 
         Task<List<LessonGroup>> GetLessonGroupsAsync(int? parentId = null);
 
+        Task<List<LessonGroup>> GetLessonGroupHierarchyAsync(int lessonGroupId);
+
         Task<LessonGroup> GetLessonGroupAsync(int lessonGroupId);
 
         Task SaveLessonGroupsAsync(List<LessonGroup> lessongroups);
