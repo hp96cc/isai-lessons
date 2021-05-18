@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="uk.co.isai.lessons.mobile.droid">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="200" android:versionName="2.0.1" package="uk.co.isai.uteachlessons.pupil.droid">
 	<uses-sdk android:minSdkVersion="22" android:targetSdkVersion="30" />
 	<application android:theme="@style/MainTheme" android:label="Scottish Online Lessons"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
