@@ -16,6 +16,7 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidUseAapt2>true</AndroidUseAapt2>
@@ -104,7 +105,7 @@
       <Name>ISAI.Lessons.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.csproj">
-      <Project>{D2E2E10F-C9FC-45E7-B645-39938925CE19}</Project>
+      <Project>{C0EE1A01-1FB4-46FB-A169-E52D3AEA5F13}</Project>
       <Name>ISAI.Lessons.Mobile</Name>
     </ProjectReference>
   </ItemGroup>
