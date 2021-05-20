@@ -1,23 +1,35 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Foundation;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using Plugin.DownloadManager;
 using Plugin.DownloadManager.Abstractions;
+using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace ISAI.Lessons.Mobile.iOS.Helpers
 {
     public class VideoDownloadService : IVideoDownloadService
     {
 
+        string _localPath;
+
         public VideoDownloadService()
         {
+            _localPath = FileSystem.AppDataDirectory;
+
+            CrossDownloadManager.UrlSessionDownloadDelegate = new ExtendedUrlSessionDownloadDelegate();
+
             CrossDownloadManager.Current.PathNameForDownloadedFile = new System.Func<IDownloadFile, string>(file =>
             {
                 string fileName = (new NSUrl(file.Url, false)).LastPathComponent;
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), fileName);
+                var download = (DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync().Result).First(x => x.DownloadId == fileName);
+                fileName = download.LessonId.ToString() + ".mp4";
+                return Path.Combine(_localPath, fileName);
+
             });
 
             CrossDownloadManager.UrlSessionDownloadDelegate = new ExtendedUrlSessionDownloadDelegate();
@@ -28,6 +40,7 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
             var downloadManager = CrossDownloadManager.Current;
 
             var file = downloadManager.CreateDownloadFile(videoDownload.DownloadUrl);
+
             string fileName = (new NSUrl(videoDownload.DownloadUrl, false)).LastPathComponent;
  
             downloadManager.Start(file);
@@ -42,7 +55,17 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
 
         public void DeleteAllDownloads()
         {
-            throw new NotImplementedException();
+        
+        }
+
+        public void DeleteDownload(VideoDownload videoDownload)
+        {
+            var videoPath = GetLocalVideoPath(videoDownload);
+
+            if(File.Exists(videoPath))
+            {
+                File.Delete(videoPath);
+            }
         }
 
         public VideoDownload GetDownloadProgress(VideoDownload videoDownload)
@@ -53,7 +76,7 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
 
         public string GetLocalVideoPath(VideoDownload videoDownload)
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), videoDownload.DownloadId);
+            return Path.Combine(_localPath, videoDownload.LessonId + ".mp4");
         }
 
         

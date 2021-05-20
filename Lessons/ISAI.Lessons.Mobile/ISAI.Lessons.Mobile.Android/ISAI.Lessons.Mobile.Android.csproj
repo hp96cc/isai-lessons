@@ -16,7 +16,6 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidUseAapt2>true</AndroidUseAapt2>
@@ -71,6 +70,9 @@
     </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
+    <PackageReference Include="Plugin.DeviceOrientation">
+      <Version>1.0.7</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DownloadBrodacast.cs" />
@@ -105,7 +107,7 @@
       <Name>ISAI.Lessons.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.csproj">
-      <Project>{C0EE1A01-1FB4-46FB-A169-E52D3AEA5F13}</Project>
+      <Project>{D2E2E10F-C9FC-45E7-B645-39938925CE19}</Project>
       <Name>ISAI.Lessons.Mobile</Name>
     </ProjectReference>
   </ItemGroup>

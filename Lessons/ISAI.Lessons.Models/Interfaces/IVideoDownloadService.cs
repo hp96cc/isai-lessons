@@ -12,6 +12,7 @@ namespace ISAI.Lessons.Models.Interfaces
         VideoDownload StartDownload(VideoDownload videoDownload);
         VideoDownload GetDownloadProgress(VideoDownload videoDownload);
         void DeleteAllDownloads();
+        void DeleteDownload(VideoDownload videoDownload);
 
         string GetLocalVideoPath(VideoDownload videoDownload);
 

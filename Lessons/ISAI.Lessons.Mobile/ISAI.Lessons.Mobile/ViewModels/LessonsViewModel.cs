@@ -39,7 +39,6 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
 
             IsBusy = true;
-
             Items.Clear();
 
             var lessons = (await DependencyService.Get<ISqliteService>().GetLessonsAsync(_lessonGroupId))

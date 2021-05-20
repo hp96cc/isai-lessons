@@ -98,6 +98,11 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
         }
 
+        public void DeleteDownload(VideoDownload videoDownload)
+        {
+            bool b = true;
+        }
+
         public void DeleteAllDownloads()
         {
             var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);

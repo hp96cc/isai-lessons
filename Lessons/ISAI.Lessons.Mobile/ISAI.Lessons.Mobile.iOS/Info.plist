@@ -10,6 +10,7 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
@@ -23,9 +24,9 @@
 	<key>MinimumOSVersion</key>
 	<string>10.1</string>
 	<key>CFBundleDisplayName</key>
-	<string>ISAI.Lessons.Mobile</string>
+	<string>Scottish Online Lessons</string>
 	<key>CFBundleIdentifier</key>
-	<string>uk.co.isai.lessons.mobile.ios</string>
+	<string>uk.co.isai.uteachlessons.pupil.ios</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>

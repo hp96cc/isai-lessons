@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:convertor="clr-namespace:ISAI.Lessons.Mobile.Convertor"
              x:Class="ISAI.Lessons.Mobile.Views.LessonPage"
-             Title="{Binding Title}"
-             >
+             Title="{Binding Title}">
  
     <ContentPage.Content>
-        <StackLayout Padding="20" >
+         <ScrollView>
+        <StackLayout Padding="20">
             <Label 
                 FontSize="20"
                 Text="{Binding Lesson.Name}"
@@ -20,6 +21,12 @@
                 FontAttributes="Bold"
                 Margin="10,0,0,30"/>
 
+        
+            <Image                
+                Source="{Binding ImageUrl}"
+                Aspect="AspectFit"
+                HeightRequest="200"/>
+
             <Button
                 Margin="10"
                 VerticalOptions="Center" 
@@ -29,12 +36,25 @@
             <Button
                 Margin="10"
                 VerticalOptions="Center" 
-                Text="Download Lesson"
-                Command="{Binding DownloadCommand}"
-                IsEnabled="{Binding CanDownload}"
+                Text="{Binding DownloadMessage}"
+                BackgroundColor="{Binding CanDeleteDownload, Converter={convertor:BoolToButtonColourConvertor}}"
+                Command="{Binding DeleteDownload}"
+                IsEnabled="{Binding CanDeleteDownload}"
+                IsVisible="{Binding CanDownload, Converter={convertor:InverseBoolConverter}}"
                 
                 />
+
+            <Button
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="{Binding DownloadMessage}"
+                Command="{Binding DownloadCommand}"
+                IsVisible="{Binding CanDownload}"
+                
+                />
+
             
         </StackLayout>
+              </ScrollView>
     </ContentPage.Content>
 </ContentPage>
