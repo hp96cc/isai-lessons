@@ -23,36 +23,68 @@
                 SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <StackLayout Padding="10,10,10,0" x:DataType="model:VideoDownload">
-                        <Label Text="{Binding LessonName}" 
-                            LineBreakMode="WordWrap" 
-                            Style="{DynamicResource ListItemTextStyle}" 
-                            FontSize="16"
-                            FontAttributes="Bold"   
-                                 Margin="5,3,5,0"   
+
+                      <Grid
+                          Padding="10,10,10,0"
+                          x:DataType="model:VideoDownload">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+                           <Label Text="{Binding LessonName}"
+                                  Grid.Column="0"
+                                  Grid.Row="0"
+                                  LineBreakMode="WordWrap" 
+                                  Style="{DynamicResource ListItemTextStyle}" 
+                                  FontSize="16"
+                                  FontAttributes="Bold"   
+                                  Margin="5,3,5,0"   
                                />
 
-                   
-
-                        <Label Text="{Binding LessonGroup}" 
-                            LineBreakMode="WordWrap" 
-                            Style="{DynamicResource ListItemDetailTextStyle }" 
-                            FontSize="14"
-                             Margin="5,0,5,10"    
+                         <Label Text="{Binding VideoDownloadStatusCode}"
+                                    Grid.Column="1"
+                                  Grid.Row="0"
+                                LineBreakMode="WordWrap" 
+                                Style="{DynamicResource ListItemDetailTextStyle }" 
+                                FontSize="14"
+                               TextColor="Red"
+                                Margin="5,3,5,0"
+                               HorizontalOptions="EndAndExpand"
                                />
 
-                        <BoxView HeightRequest="0.5"
+
+                        <Label Text="{Binding LessonGroup}"
+                                Grid.Column="0"
+                                Grid.Row="1"
+                                LineBreakMode="WordWrap" 
+                                Style="{DynamicResource ListItemDetailTextStyle }" 
+                                FontSize="14"
+                                Margin="5,0,5,10"    
+                               />
+
+                        <BoxView
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                HeightRequest="0.5"
                                 BackgroundColor="LightGray"
                                 VerticalOptions="End"/>
 
-                        <StackLayout.GestureRecognizers>
+                        <Grid.GestureRecognizers>
                             <TapGestureRecognizer 
                                 NumberOfTapsRequired="1"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type local:LessonDownloadsViewModel}}, Path=ItemTapped}"		
                                 CommandParameter="{Binding .}">
                             </TapGestureRecognizer>
-                        </StackLayout.GestureRecognizers>
-                    </StackLayout>
+                        </Grid.GestureRecognizers>
+    </Grid>
+
+
+                  
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

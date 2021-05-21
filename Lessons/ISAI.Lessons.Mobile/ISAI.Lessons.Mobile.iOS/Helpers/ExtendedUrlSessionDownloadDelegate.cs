@@ -37,7 +37,7 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
             base.DidFinishDownloading(session, downloadTask, location);
 
 
-            var download = (DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync().Result).First(x => file.Url.Contains(x.DownloadId));
+            var download = (DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync().Result).FirstOrDefault(x => file.Url.Contains(x.DownloadId));
 
             if (download != null)
             {

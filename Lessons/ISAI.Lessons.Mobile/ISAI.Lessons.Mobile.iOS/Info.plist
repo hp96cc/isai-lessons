@@ -27,8 +27,6 @@
 	<string>Scottish Online Lessons</string>
 	<key>CFBundleIdentifier</key>
 	<string>uk.co.isai.uteachlessons.pupil.ios</string>
-	<key>CFBundleVersion</key>
-	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
@@ -42,5 +40,9 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>CFBundleShortVersionString</key>
+	<string>2.0.1</string>
+	<key>CFBundleVersion</key>
+	<string>2.0.1</string>
 </dict>
 </plist>

@@ -24,9 +24,7 @@ namespace ISAI.Lessons.Mobile.Views
         {
             InitializeComponent();
             BindingContext = _viewModel = new VideoViewModel(lessonId, streamingUrl);
-           
-            //CrossHud.Current.Show("Loading...", -1, MaskType.Black);
-
+          
         }
 
         protected override void OnAppearing()
@@ -54,7 +52,6 @@ namespace ISAI.Lessons.Mobile.Views
         void OnMediaFailed(object sender, EventArgs e)
         {
             Console.WriteLine("Media failed.");
-            //CrossHud.Current.ShowError("Could not open lesson", MaskType.Black, TimeSpan.FromSeconds(3));
         }
 
         void OnMediaEnded(object sender, EventArgs e)

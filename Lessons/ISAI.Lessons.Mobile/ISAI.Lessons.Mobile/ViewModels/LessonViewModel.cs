@@ -67,6 +67,18 @@ namespace ISAI.Lessons.Mobile.ViewModels
         }
         bool _canDeleteDownload;
 
+
+        public bool IsDownloading
+        {
+            get => _isDownloading;
+            set
+            {
+                SetProperty(ref _isDownloading, value);
+            }
+        }
+        bool _isDownloading;
+
+
         public string ImageUrl
         {
             get => _imageUrl;
@@ -76,19 +88,6 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
         }
         string _imageUrl;
-
-        public string DownloadMessage
-        {
-            get => _downloadMessage;
-            set
-            {
-                SetProperty(ref _downloadMessage, value);
-            }
-        }
-        string _downloadMessage = string.Empty;
-
-
-        
 
 
         public Lesson Lesson
@@ -143,14 +142,19 @@ namespace ISAI.Lessons.Mobile.ViewModels
             CanDownload = true;
             CanDeleteDownload = false;
 
+
             ImageUrl = string.Format("https://scottishonlinelessons.com/assets/lessonthumbs/thumb_{0}.jpg", _lessonId);
             WatchCommand = new Command(OnWatchClicked);
             DownloadCommand = new Command(OnDownloadClicked);
             DeleteDownload = new Command(OnDeleteDownloadClicked);
 
-            MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", async (sender) =>
+            MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
             {
-                await CheckDownloadStatus();
+
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await CheckDownloadStatus();
+                });
             });
 
 
@@ -176,21 +180,20 @@ namespace ISAI.Lessons.Mobile.ViewModels
             VideoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
             DownloadErrorText = string.Empty;
 
+            CanDeleteDownload = false;
+            CanDownload = false;
+            IsDownloading = false;
+
             if (VideoDownload != null)
             {
                 if (VideoDownload.VideoDownloadStatusCode == VideoDownloadStatusCode.Successful)
                 {
                     CanDeleteDownload = true;
-                    CanDownload = false;
-                    DownloadErrorText = "Video downloaded.";
-                    DownloadMessage = "Delete download";
-
-                } else
+ 
+                }
+                else
                 {
-                    CanDeleteDownload = false;
-                    CanDownload = false;
-                    DownloadErrorText = "Video downloaded.";
-                    DownloadMessage = "Downloading";
+                    IsDownloading = true;
                 }
 
             }
@@ -200,7 +203,6 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                 if (videoDownloadCount >= 3)
                 {
-                    CanDownload = false;
                     DownloadErrorText = "Maximum videos downloaded. To download this video please delete one of the videos already downloaded.";
                 }
                 else
@@ -209,8 +211,6 @@ namespace ISAI.Lessons.Mobile.ViewModels
                   
                 }
 
-                CanDeleteDownload = false;
-                DownloadMessage = "Download Lesson";
             }
     
         }
@@ -368,7 +368,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async void OnDeleteDownloadClicked(object obj)
         {
 
-            var result = await Application.Current.MainPage.DisplayAlert("Delete Download", "Are you sure you want to delete this download?", "Yes, Delete", "Cancel");
+            var result = await Application.Current.MainPage.DisplayAlert("Delete Download", "Are you sure you want to delete this download?", "Yes", "Cancel");
 
             if(result)
             {
