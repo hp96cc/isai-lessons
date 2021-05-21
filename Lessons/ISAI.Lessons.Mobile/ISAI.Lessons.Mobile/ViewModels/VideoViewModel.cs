@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace ISAI.Lessons.Mobile.ViewModels
@@ -49,47 +50,58 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         public async void OnAppearing()
         {
-            _lesson = await DependencyService.Get<ISqliteService>().GetLessonAsync(_lessonId);
-             Title = _lesson.Name;
+  
 
-            //DependencyService.Get<IStatusBar>().HideStatusBar();
+            if (DeviceInfo.Platform == DevicePlatform.Android)
+            {
 
-            //CrossHud.Current.Show();
-            //CrossMediaManager.Current.Init();
-            //CrossMediaManager.Current.Notification.Enabled = false;
+                _lesson = await DependencyService.Get<ISqliteService>().GetLessonAsync(_lessonId);
+                Title = _lesson.Name;
 
-            //CrossMediaManager.Current.StateChanged += Current_StateChanged;
+                DependencyService.Get<IStatusBar>().HideStatusBar();
 
-            //var videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
-            //IMediaItem item;
+                CrossHud.Current.Show();
+                CrossMediaManager.Current.Init();
+                CrossMediaManager.Current.Notification.Enabled = false;
 
-            //if (videoDownload != null)
-            //{
-            //    var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(videoDownload);
-            //    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
-            //}
-            //else
-            //{
-            //    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(_streamingUrl);
-            //    item.MediaType = MediaType.Hls;
-            //}
+                CrossMediaManager.Current.StateChanged += Current_StateChanged;
+
+                var videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
+                IMediaItem item;
+
+                if (videoDownload != null)
+                {
+                    var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(videoDownload);
+                    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
+                }
+                else
+                {
+                    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(_streamingUrl);
+                    item.MediaType = MediaType.Hls;
+                }
 
 
-            //item.Title = _lesson.Name;
+                item.Title = _lesson.Name;
 
-            //await CrossMediaManager.Current.Play(item);
+                await CrossMediaManager.Current.Play(item);
+
+            }
 
         }
 
         public async void OnDisappearing()
         {
-            CrossHud.Current.Dismiss();
-            //DependencyService.Get<IStatusBar>().HideStatusBar();
 
-           
-            CrossMediaManager.Current.StateChanged -= Current_StateChanged;
-            await CrossMediaManager.Current.Stop();
-            CrossMediaManager.Current.Dispose();
+            if (DeviceInfo.Platform == DevicePlatform.Android)
+            {
+                CrossHud.Current.Dismiss();
+                DependencyService.Get<IStatusBar>().HideStatusBar();
+
+                CrossMediaManager.Current.StateChanged -= Current_StateChanged;
+                await CrossMediaManager.Current.Stop();
+                CrossMediaManager.Current.Dispose();
+
+            }
         }
 
         private void Current_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)

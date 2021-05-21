@@ -37,13 +37,18 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
             base.DidFinishDownloading(session, downloadTask, location);
 
 
-            var download = (DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync().Result).FirstOrDefault(x => file.Url.Contains(x.DownloadId));
+            //var download = (DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync().Result).FirstOrDefault(x => file.Url.Contains(x.DownloadId));
+
+            var videoDownloads = AsyncUtil.RunSync(() => DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync());
+            var download = videoDownloads.FirstOrDefault(x => file.Url.Contains(x.DownloadId));
+
 
             if (download != null)
             {
                 download.DateDownloaded = DateTime.UtcNow;
                 download.VideoDownloadStatusCode = VideoDownloadStatusCode.Successful;
-                DependencyService.Get<ISqliteService>().SaveVideoDownloadAsync(download);
+               // DependencyService.Get<ISqliteService>().SaveVideoDownloadAsync(download);
+                AsyncUtil.RunSync(() => DependencyService.Get<ISqliteService>().SaveVideoDownloadAsync(download));
 
                 var sender = new DownloadCompleteMessage()
                 {

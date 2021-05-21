@@ -218,99 +218,86 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async void OnWatchClicked(object obj)
         {
 
-            if (VideoDownload != null)
+            if (DeviceInfo.Platform == DevicePlatform.Android)
             {
 
-                var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(_videoDownload);
-                var fileName = Path.GetFileName(videoPath);
-
-                var lessonPage = new VideoPage(_lesson.Id, "ms-appdata:///local/" + fileName);
-                await Shell.Current.Navigation.PushAsync(lessonPage, true);
-                CrossHud.Current.Dismiss();
-            }
-            else
-            {
-                CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
-
-                var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
-
-                var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(Lesson.Id);
-
-                if (streamingUrlResponse.Status == ResponseStatus.OK)
+                if (VideoDownload != null)
                 {
-                    //SourceUrl = streamingUrlResponse.Content.StreamingUrl;
 
+                    var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(_videoDownload);
 
-
-
-
-                    //CrossHud.Current.Show();
-                    //CrossMediaManager.Current.Init();
-                    //CrossMediaManager.Current.Notification.Enabled = false;
-
-                    //CrossMediaManager.Current.StateChanged += Current_StateChanged;
-
-                    //var videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
-
-                    //IMediaItem item;
-
-                    //if (videoDownload != null)
-                    //{
-                    //    var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(videoDownload);
-                    //    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
-                    //}
-                    //else
-                    //{
-                    //    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(streamingUrlResponse.Content.StreamingUrl);
-                    //    item.MediaType = MediaType.Hls;
-                    //}
-
-
-                    //item.Title = _lesson.Name;
-
-                    //await CrossMediaManager.Current.Play(item);
+                    var lessonPage = new VideoPageAndroid(_lesson.Id, videoPath);
+                    await Shell.Current.Navigation.PushModalAsync(lessonPage, true);
+                    CrossHud.Current.Dismiss();
                 }
                 else
                 {
-                    CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black);
+
+                    CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
+
+                    var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
+
+                    var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(Lesson.Id);
+
+                    if (streamingUrlResponse.Status == ResponseStatus.OK)
+                    {
+                        var lessonPage = new VideoPageAndroid(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
+                        await Shell.Current.Navigation.PushModalAsync(lessonPage, true);
+                    }
+                    else
+                    {
+                        CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black);
+                    }
+
+                    CrossHud.Current.Dismiss();
+
+                }                  
+
+            }
+            else if (DeviceInfo.Platform == DevicePlatform.iOS)
+            {
+
+                if (VideoDownload != null)
+                {
+
+                    var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(_videoDownload);
+                    var fileName = Path.GetFileName(videoPath);
+
+                    var lessonPage = new VideoPage(_lesson.Id, "ms-appdata:///local/" + fileName);
+                    await Shell.Current.Navigation.PushAsync(lessonPage, true);
+                    CrossHud.Current.Dismiss();
+                }
+                else
+                {
+                    CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
+
+                    var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
+
+                    var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(Lesson.Id);
+
+                    if (streamingUrlResponse.Status == ResponseStatus.OK)
+                    {
+                        var lessonPage = new VideoPage(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
+                        await Shell.Current.Navigation.PushAsync(lessonPage, true);
+                    }
+                    else
+                    {
+                        CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black);
+                    }
+
+
+                    CrossHud.Current.Dismiss();
+
                 }
 
-
-                CrossHud.Current.Dismiss();
-               
-
-
-                var lessonPage = new VideoPage(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
-
-                await Shell.Current.Navigation.PushAsync(lessonPage, true);
-                
             }
-
-        
 
         }
 
-        public async void OnDisappearing()
+        public void OnDisappearing()
         {
             CrossHud.Current.Dismiss();
-            //DependencyService.Get<IStatusBar>().HideStatusBar();
 
-
-            CrossMediaManager.Current.StateChanged -= Current_StateChanged;
-            await CrossMediaManager.Current.Stop();
-            CrossMediaManager.Current.Dispose();
-        }
-
-        private void Current_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
-        {
-            if (e.State == MediaPlayerState.Buffering)
-            {
-                CrossHud.Current.Show();
-            }
-            else
-            {
-                CrossHud.Current.Dismiss();
-            }
         }
 
 
