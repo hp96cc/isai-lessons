@@ -1,16 +1,22 @@
 ﻿using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.Mobile.Models;
+using ISAI.Lessons.Mobile.Models.Messages;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using MediaManager;
+using MediaManager.Library;
+using MediaManager.Player;
+using Plugin.DeviceOrientation;
+using Plugin.DeviceOrientation.Abstractions;
 using Plugin.Hud;
 using Plugin.Hud.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
@@ -22,21 +28,66 @@ namespace ISAI.Lessons.Mobile.ViewModels
     public class LessonViewModel : BaseViewModel
     {
         int _lessonId;
-       
-        VideoDownload _videoDownload;
 
+   
         public Command WatchCommand { get; }
         public Command DownloadCommand { get; }
+        public Command DeleteDownload { get; }
+
+
+
+        public VideoDownload VideoDownload
+        {
+            get => _videoDownload;
+            set
+            {
+                SetProperty(ref _videoDownload, value);
+            }
+        }
+        VideoDownload _videoDownload;
 
         public bool CanDownload
         {
-            get => _videoDownload == null;
+            get => _canDownload;
             set
             {
                 SetProperty(ref _canDownload, value);
             }
         }
         bool _canDownload;
+
+
+        public bool CanDeleteDownload
+        {
+            get => _canDeleteDownload;
+            set
+            {
+                SetProperty(ref _canDeleteDownload, value);
+            }
+        }
+        bool _canDeleteDownload;
+
+
+        public bool IsDownloading
+        {
+            get => _isDownloading;
+            set
+            {
+                SetProperty(ref _isDownloading, value);
+            }
+        }
+        bool _isDownloading;
+
+
+        public string ImageUrl
+        {
+            get => _imageUrl;
+            set
+            {
+                SetProperty(ref _imageUrl, value);
+            }
+        }
+        string _imageUrl;
 
 
         public Lesson Lesson
@@ -61,13 +112,51 @@ namespace ISAI.Lessons.Mobile.ViewModels
         }
         string _breadcrumb = string.Empty;
 
+        public string DownloadErrorText
+        {
+            get => _downloadErrorText;
+            set
+            {
+                SetProperty(ref _downloadErrorText, value);
+
+            }
+        }
+        string _downloadErrorText = string.Empty;
+
+
+        public string SourceUrl
+        {
+            get => _sourceUrl;
+            set
+            {
+                SetProperty(ref _sourceUrl, value);
+
+            }
+        }
+        string _sourceUrl = "https://scottishonlinelessons.com/";
+
+
         public LessonViewModel(int lessonId)
         {
             _lessonId = lessonId;
             CanDownload = true;
+            CanDeleteDownload = false;
 
+
+            ImageUrl = string.Format("https://scottishonlinelessons.com/assets/lessonthumbs/thumb_{0}.jpg", _lessonId);
             WatchCommand = new Command(OnWatchClicked);
             DownloadCommand = new Command(OnDownloadClicked);
+            DeleteDownload = new Command(OnDeleteDownloadClicked);
+
+            MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
+            {
+
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await CheckDownloadStatus();
+                });
+            });
+
 
         }
 
@@ -76,36 +165,154 @@ namespace ISAI.Lessons.Mobile.ViewModels
             var db = DependencyService.Get<ISqliteService>();
 
             Lesson = await db.GetLessonAsync(_lessonId);
-            _videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
-            CanDownload = _videoDownload == null;
+
+            await CheckDownloadStatus();
+
             Title = Lesson.Name;
 
             var lessongroupHierarchy = await db.GetLessonGroupHierarchyAsync(Lesson.LessonGroupId);
-            Breadcrumb = string.Join(" > ", lessongroupHierarchy.Select(x => x.Name)); 
+            Breadcrumb = string.Join(" > ", lessongroupHierarchy.Select(x => x.Name));
 
+        }
+
+        async Task CheckDownloadStatus() {
+
+            VideoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
+            DownloadErrorText = string.Empty;
+
+            CanDeleteDownload = false;
+            CanDownload = false;
+            IsDownloading = false;
+
+            if (VideoDownload != null)
+            {
+                if (VideoDownload.VideoDownloadStatusCode == VideoDownloadStatusCode.Successful)
+                {
+                    CanDeleteDownload = true;
+ 
+                }
+                else
+                {
+                    IsDownloading = true;
+                }
+
+            }
+            else
+            {
+                var videoDownloadCount = (await DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync()).Count;
+
+                if (videoDownloadCount >= 3)
+                {
+                    DownloadErrorText = "Maximum videos downloaded. To download this video please delete one of the videos already downloaded.";
+                }
+                else
+                {
+                    CanDownload = true;
+                  
+                }
+
+            }
+    
         }
 
         async void OnWatchClicked(object obj)
         {
 
-            CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
-
-            var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
-
-            var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(Lesson.Id);
-
-            if (streamingUrlResponse.Status == ResponseStatus.OK)
+            if (VideoDownload != null)
             {
-                var lessonPage = new VideoPage(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
-                await Shell.Current.Navigation.PushModalAsync(lessonPage, true);
+
+                var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(_videoDownload);
+                var fileName = Path.GetFileName(videoPath);
+
+                var lessonPage = new VideoPage(_lesson.Id, "ms-appdata:///local/" + fileName);
+                await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 CrossHud.Current.Dismiss();
             }
             else
             {
-                CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black);
+                CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
+
+                var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
+
+                var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(Lesson.Id);
+
+                if (streamingUrlResponse.Status == ResponseStatus.OK)
+                {
+                    //SourceUrl = streamingUrlResponse.Content.StreamingUrl;
+
+
+
+
+
+                    //CrossHud.Current.Show();
+                    //CrossMediaManager.Current.Init();
+                    //CrossMediaManager.Current.Notification.Enabled = false;
+
+                    //CrossMediaManager.Current.StateChanged += Current_StateChanged;
+
+                    //var videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
+
+                    //IMediaItem item;
+
+                    //if (videoDownload != null)
+                    //{
+                    //    var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(videoDownload);
+                    //    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
+                    //}
+                    //else
+                    //{
+                    //    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(streamingUrlResponse.Content.StreamingUrl);
+                    //    item.MediaType = MediaType.Hls;
+                    //}
+
+
+                    //item.Title = _lesson.Name;
+
+                    //await CrossMediaManager.Current.Play(item);
+                }
+                else
+                {
+                    CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black);
+                }
+
+
+                CrossHud.Current.Dismiss();
+               
+
+
+                var lessonPage = new VideoPage(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
+
+                await Shell.Current.Navigation.PushAsync(lessonPage, true);
+                
             }
 
+        
+
         }
+
+        public async void OnDisappearing()
+        {
+            CrossHud.Current.Dismiss();
+            //DependencyService.Get<IStatusBar>().HideStatusBar();
+
+
+            CrossMediaManager.Current.StateChanged -= Current_StateChanged;
+            await CrossMediaManager.Current.Stop();
+            CrossMediaManager.Current.Dispose();
+        }
+
+        private void Current_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
+        {
+            if (e.State == MediaPlayerState.Buffering)
+            {
+                CrossHud.Current.Show();
+            }
+            else
+            {
+                CrossHud.Current.Dismiss();
+            }
+        }
+
 
         async void OnDownloadClicked(object obj)
         {
@@ -127,19 +334,20 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 if (downloadUrlResponse.Status == ResponseStatus.OK)
                 {
 
-                    _videoDownload = new VideoDownload()
+                    VideoDownload = new VideoDownload()
                     {
                         Id = Guid.NewGuid(),
                         LessonId = _lesson.Id,
                         LessonName = _lesson.Name,
                         LessonGroup = lessonGroup.Name,
                         DownloadUrl = downloadUrlResponse.Content.DownloadUrl,
+                        VideoDownloadStatusCode = VideoDownloadStatusCode.Running
                     };
 
-                    _videoDownload = DependencyService.Get<IVideoDownloadService>().StartDownload(_videoDownload);
+                    VideoDownload = DependencyService.Get<IVideoDownloadService>().StartDownload(VideoDownload);
 
-                    await db.SaveVideoDownloadAsync(_videoDownload);
-                    CanDownload = false;
+                    await db.SaveVideoDownloadAsync(VideoDownload);
+                    await CheckDownloadStatus();
                     CrossHud.Current.Dismiss();
 
 
@@ -156,6 +364,26 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
 
         }
+
+        async void OnDeleteDownloadClicked(object obj)
+        {
+
+            var result = await Application.Current.MainPage.DisplayAlert("Delete Download", "Are you sure you want to delete this download?", "Yes", "Cancel");
+
+            if(result)
+            {
+                DependencyService.Get<IVideoDownloadService>().DeleteDownload(_videoDownload);
+                await DependencyService.Get<ISqliteService>().DeleteVideoDownloadAsync(_videoDownload);
+                await CheckDownloadStatus();
+            }
+
+           
+
+
+        }
+
+
+
 
     }
 }

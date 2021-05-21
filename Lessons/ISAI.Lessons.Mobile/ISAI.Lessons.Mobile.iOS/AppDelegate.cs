@@ -10,6 +10,7 @@ using ISAI.Lessons.Core.Services;
 using Plugin.DownloadManager;
 using Plugin.DownloadManager.Abstractions;
 using System.IO;
+using Plugin.DeviceOrientation;
 
 namespace ISAI.Lessons.Mobile.iOS
 {
@@ -51,6 +52,12 @@ namespace ISAI.Lessons.Mobile.iOS
         public override void HandleEventsForBackgroundUrl(UIApplication application, string sessionIdentifier, Action completionHandler)
         {
             CrossDownloadManager.BackgroundSessionCompletionHandler = completionHandler;
+        }
+
+        [Export("application:supportedInterfaceOrientationsForWindow:")]
+        public UIInterfaceOrientationMask GetSupportedInterfaceOrientations(UIApplication application, IntPtr forWindow)
+        {
+            return DeviceOrientationImplementation.SupportedInterfaceOrientations;
         }
     }
 }

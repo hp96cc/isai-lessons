@@ -1,4 +1,5 @@
 ﻿using ISAI.Lessons.Mobile.Models;
+using ISAI.Lessons.Mobile.Models.Messages;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
@@ -9,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace ISAI.Lessons.Mobile.ViewModels
@@ -22,6 +24,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public Command DeleteAllCommand { get; }
         public Command<VideoDownload> ItemTapped { get; }
 
+
         public LessonDownloadsViewModel()
         {
             Items = new ObservableCollection<VideoDownload>();
@@ -29,6 +32,15 @@ namespace ISAI.Lessons.Mobile.ViewModels
             ItemTapped = new Command<VideoDownload>(OnItemSelected);
             DeleteAllCommand = new Command(async () => await DeleteAllVideoDownloads());
             Title = "Lesson Downloads";
+
+            MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await DisplayVideoDownloads();
+                });
+              
+            });
         }
 
 
@@ -68,9 +80,17 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         async Task DeleteAllVideoDownloads()
         {
-            DependencyService.Get<IVideoDownloadService>().DeleteAllDownloads();
-            await DependencyService.Get<ISqliteService>().DeleteAllVideoDownloadsAsync();
-            await DisplayVideoDownloads();
+
+            var result = await Application.Current.MainPage.DisplayAlert("Delete All Downloads", "Are you sure you want to delete all downloads?", "Yes", "Cancel");
+
+            if (result)
+            {
+                DependencyService.Get<IVideoDownloadService>().DeleteAllDownloads();
+                await DependencyService.Get<ISqliteService>().DeleteAllVideoDownloadsAsync();
+                await DisplayVideoDownloads();
+            }
+
+
         }
 
         async void OnItemSelected(VideoDownload item)

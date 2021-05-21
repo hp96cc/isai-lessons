@@ -4,22 +4,45 @@
              x:Class="ISAI.Lessons.Mobile.Views.VideoPage"
              Title="{Binding Title}"
               xmlns:mm="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
-             xmlns:local="clr-namespace:ISAI.Lessons.Mobile.ViewModels"  
-             xmlns:model="clr-namespace:ISAI.Lessons.EntityFramework.Models;assembly=ISAI.Lessons.Models"  
+              xmlns:local="clr-namespace:ISAI.Lessons.Mobile.ViewModels"
+              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+              xmlns:xct="clr-namespace:Xamarin.CommunityToolkit.UI.Views;assembly=Xamarin.CommunityToolkit"
+              BackgroundColor="Black"
              >
 
     <ContentPage.Content>
-        <mm:VideoView 
+           <StackLayout>
+
+        <!--<mm:VideoView 
             AutoPlay="True"
             ShowControls="True"
-            VerticalOptions="FillAndExpand" 
+            HorizontalOptions="FillAndExpand" 
             VideoAspect="AspectFit"
             BackgroundColor="Black"
-            />
+            WidthRequest="300"
+            HeightRequest="300"
+       
+            />-->
+
+                <xct:MediaElement
+                      x:Name="MediaElement"
+                      Source="{Binding SourceUrl}"
+                      BackgroundColor="Black"
+                      VerticalOptions="CenterAndExpand"
+                      AutoPlay="True"
+                      ShowsPlaybackControls="True"
+                      MinimumHeightRequest="300"
+                      MediaOpened="OnMediaOpened"
+                      MediaFailed="OnMediaFailed"
+                      MediaEnded="OnMediaEnded"
+                      SeekCompleted="OnSeekCompleted"
+                      
+                 />
+
+
+                  </StackLayout>  
     </ContentPage.Content>
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Done"  />
-    </ContentPage.ToolbarItems>
+   
 </ContentPage>
 
 

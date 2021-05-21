@@ -1,4 +1,5 @@
 ﻿using ISAI.Lessons.Mobile.Models;
+using ISAI.Lessons.Mobile.Models.Messages;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
@@ -25,10 +26,25 @@ namespace ISAI.Lessons.Mobile.ViewModels
         string _streamingUrl;
 
 
+        public string SourceUrl
+        {
+            get => _sourceUrl;
+            set
+            {
+                SetProperty(ref _sourceUrl, value);
+
+            }
+        }
+        string _sourceUrl = "https://scottishonlinelessons.com/";
+
+
         public VideoViewModel(int lessonId, string streamingUrl)
         {
             _lessonId = lessonId;
             _streamingUrl = streamingUrl;
+            SourceUrl = streamingUrl;
+
+      
         }
 
         public async void OnAppearing()
@@ -36,38 +52,41 @@ namespace ISAI.Lessons.Mobile.ViewModels
             _lesson = await DependencyService.Get<ISqliteService>().GetLessonAsync(_lessonId);
              Title = _lesson.Name;
 
-            DependencyService.Get<IStatusBar>().HideStatusBar();
+            //DependencyService.Get<IStatusBar>().HideStatusBar();
 
-            CrossHud.Current.Show();
-            CrossMediaManager.Current.Init();
-            CrossMediaManager.Current.Notification.Enabled = false;
+            //CrossHud.Current.Show();
+            //CrossMediaManager.Current.Init();
+            //CrossMediaManager.Current.Notification.Enabled = false;
 
-            CrossMediaManager.Current.StateChanged += Current_StateChanged;
+            //CrossMediaManager.Current.StateChanged += Current_StateChanged;
 
-            var videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
-            IMediaItem item;
+            //var videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
+            //IMediaItem item;
+
+            //if (videoDownload != null)
+            //{
+            //    var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(videoDownload);
+            //    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
+            //}
+            //else
+            //{
+            //    item = await CrossMediaManager.Current.Extractor.CreateMediaItem(_streamingUrl);
+            //    item.MediaType = MediaType.Hls;
+            //}
 
 
-            if (videoDownload != null)
-            {
-                var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(videoDownload);
-                item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
-            } else
-            {
-                item = await CrossMediaManager.Current.Extractor.CreateMediaItem(_streamingUrl);
-                item.MediaType = MediaType.Hls;
-            }
+            //item.Title = _lesson.Name;
 
-            item.Title = _lesson.Name;
-
-            await CrossMediaManager.Current.Play(item);
+            //await CrossMediaManager.Current.Play(item);
 
         }
 
         public async void OnDisappearing()
         {
             CrossHud.Current.Dismiss();
-            DependencyService.Get<IStatusBar>().HideStatusBar();
+            //DependencyService.Get<IStatusBar>().HideStatusBar();
+
+           
             CrossMediaManager.Current.StateChanged -= Current_StateChanged;
             await CrossMediaManager.Current.Stop();
             CrossMediaManager.Current.Dispose();

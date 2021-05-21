@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Foundation;
+using ISAI.Lessons.Mobile.Models.Messages;
+using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
 using Plugin.DownloadManager;
+using Xamarin.Forms;
 
 namespace ISAI.Lessons.Mobile.iOS.Helpers
 {
@@ -30,6 +35,24 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
 
             // This base-method sets the state to "COMPLETED" and moves the file if `PathNameForDownloadedFile` is set.
             base.DidFinishDownloading(session, downloadTask, location);
+
+
+            var download = (DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync().Result).FirstOrDefault(x => file.Url.Contains(x.DownloadId));
+
+            if (download != null)
+            {
+                download.DateDownloaded = DateTime.UtcNow;
+                download.VideoDownloadStatusCode = VideoDownloadStatusCode.Successful;
+                DependencyService.Get<ISqliteService>().SaveVideoDownloadAsync(download);
+
+                var sender = new DownloadCompleteMessage()
+                {
+                     LessonId = download.LessonId,
+                     VideoDownloadStatusCode = VideoDownloadStatusCode.Successful
+                };
+
+                MessagingCenter.Send(sender, "DownloadComplete");
+            }
 
             // If you don't set `PathNameForDownloadedFile`, you can do what you want with the file now.
             System.Diagnostics.Debug.WriteLine(location.AbsoluteString);
