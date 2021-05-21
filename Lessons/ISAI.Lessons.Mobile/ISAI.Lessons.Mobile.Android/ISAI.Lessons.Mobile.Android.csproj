@@ -42,6 +42,12 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>C:\Development\Lessons\Keys\uteach.keystore</AndroidSigningKeyStore>
+    <AndroidSigningStorePass>uteach123@@**</AndroidSigningStorePass>
+    <AndroidSigningKeyPass>uteach123@@**</AndroidSigningKeyPass>
+    <AndroidSigningKeyAlias>uteach</AndroidSigningKeyAlias>
+    <AndroidLinkMode>Full</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -53,6 +59,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication">
+      <Version>2.4.1</Version>
+    </PackageReference>
     <PackageReference Include="Plugin.CurrentActivity">
       <Version>2.1.0.4</Version>
     </PackageReference>
