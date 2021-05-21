@@ -45,39 +45,11 @@ namespace Umbraco.Web.PublishedModels
 		// properties
 
 		///<summary>
-		/// Address Label Text
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("addressLabelText")]
-		public string AddressLabelText => this.Value<string>("addressLabelText");
-
-		///<summary>
-		/// Address Text
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("addressText")]
-		public string AddressText => this.Value<string>("addressText");
-
-		///<summary>
 		/// Background Image
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		[ImplementPropertyType("backgroundImage")]
 		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent BackgroundImage => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("backgroundImage");
-
-		///<summary>
-		/// Email Label Text
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("emailLabelText")]
-		public string EmailLabelText => this.Value<string>("emailLabelText");
-
-		///<summary>
-		/// Email Text
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("emailText")]
-		public string EmailText => this.Value<string>("emailText");
 
 		///<summary>
 		/// Message Title
@@ -87,24 +59,17 @@ namespace Umbraco.Web.PublishedModels
 		public string MessageTitle => this.Value<string>("messageTitle");
 
 		///<summary>
-		/// Phone Label Text
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("phoneLabelText")]
-		public string PhoneLabelText => this.Value<string>("phoneLabelText");
-
-		///<summary>
-		/// Phone Text
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("phoneText")]
-		public string PhoneText => this.Value<string>("phoneText");
-
-		///<summary>
 		/// Title
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		[ImplementPropertyType("title")]
 		public string Title => this.Value<string>("title");
+
+		///<summary>
+		/// Top Icon Links
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("topIconLinks")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContactElement> TopIconLinks => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContactElement>>("topIconLinks");
 	}
 }

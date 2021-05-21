@@ -561,6 +561,7 @@
     <Compile Include="App_Data\Models\AccountInfo.generated.cs" />
     <Compile Include="App_Data\Models\AccountLogout.generated.cs" />
     <Compile Include="App_Data\Models\AccountSubscriptions.generated.cs" />
+    <Compile Include="App_Data\Models\ContactElement.generated.cs" />
     <Compile Include="App_Data\Models\ContactPage.generated.cs" />
     <Compile Include="App_Data\Models\ContentBoxWithLink.generated.cs" />
     <Compile Include="App_Data\Models\ContentPage.generated.cs" />

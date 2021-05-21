@@ -19,44 +19,51 @@ using Umbraco.ModelsBuilder.Embedded;
 
 namespace Umbraco.Web.PublishedModels
 {
-	/// <summary>Sign Up Choose Plan</summary>
-	[PublishedModel("signUpChoosePlan")]
-	public partial class SignUpChoosePlan : PublishedContentModel
+	/// <summary>Contact Element</summary>
+	[PublishedModel("contactElement")]
+	public partial class ContactElement : PublishedElementModel
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		public new const string ModelTypeAlias = "signUpChoosePlan";
+		public new const string ModelTypeAlias = "contactElement";
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		public new static IPublishedContentType GetModelContentType()
 			=> PublishedModelUtility.GetModelContentType(ModelItemType, ModelTypeAlias);
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<SignUpChoosePlan, TValue>> selector)
+		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<ContactElement, TValue>> selector)
 			=> PublishedModelUtility.GetModelPropertyType(GetModelContentType(), selector);
 #pragma warning restore 0109
 
 		// ctor
-		public SignUpChoosePlan(IPublishedContent content)
+		public ContactElement(IPublishedElement content)
 			: base(content)
 		{ }
 
 		// properties
 
 		///<summary>
-		/// HTML Content
+		/// Icon Reference
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("hTMLContent")]
-		public global::System.Web.IHtmlString HTmlcontent => this.Value<global::System.Web.IHtmlString>("hTMLContent");
+		[ImplementPropertyType("iconReference")]
+		public string IconReference => this.Value<string>("iconReference");
 
 		///<summary>
-		/// Subtitle
+		/// Link: Include full URL (i.e. https: / http: / mailto: tel: )
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("subtitle")]
-		public string Subtitle => this.Value<string>("subtitle");
+		[ImplementPropertyType("link")]
+		public string Link => this.Value<string>("link");
+
+		///<summary>
+		/// Link Text
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("linkText")]
+		public string LinkText => this.Value<string>("linkText");
 
 		///<summary>
 		/// Title
