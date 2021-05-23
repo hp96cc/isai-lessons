@@ -57,6 +57,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Convertor\" />
-    <Folder Include="Models\Messages\" />
   </ItemGroup>
 </Project>

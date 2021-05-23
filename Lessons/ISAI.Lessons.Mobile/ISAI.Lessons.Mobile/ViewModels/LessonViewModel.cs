@@ -150,11 +150,19 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
             {
-
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     await CheckDownloadStatus();
                 });
+            });
+
+            MessagingCenter.Subscribe<DownloadDidUpdateMessage>(this, "DownloadUpdate", (sender) =>
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await CheckDownloadStatus();
+                });
+
             });
 
 

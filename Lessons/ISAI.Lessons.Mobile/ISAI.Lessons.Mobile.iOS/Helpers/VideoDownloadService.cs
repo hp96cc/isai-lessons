@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Foundation;
+using ISAI.Lessons.Core.Helpers;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
@@ -70,8 +71,11 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
 
         public VideoDownload GetDownloadProgress(VideoDownload videoDownload)
         {
-            return new VideoDownload();
-            
+            var videoDownloads = AsyncUtil.RunSync(() => DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync();
+            videoDownload = videoDownloads.FirstOrDefault(x => videoDownload.Id == x.Id);
+            return videoDownload;
+
+
         }
 
         public string GetLocalVideoPath(VideoDownload videoDownload)
