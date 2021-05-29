@@ -22,6 +22,8 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication" Version="2.4.1" />
     <PackageReference Include="Plugin.DeviceOrientation" Version="1.0.7" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.2.0" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>
