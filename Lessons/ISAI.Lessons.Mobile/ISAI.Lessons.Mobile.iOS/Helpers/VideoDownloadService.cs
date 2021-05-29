@@ -71,7 +71,7 @@ namespace ISAI.Lessons.Mobile.iOS.Helpers
 
         public VideoDownload GetDownloadProgress(VideoDownload videoDownload)
         {
-            var videoDownloads = AsyncUtil.RunSync(() => DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync();
+            var videoDownloads = AsyncUtil.RunSync(() => DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync());
             videoDownload = videoDownloads.FirstOrDefault(x => videoDownload.Id == x.Id);
             return videoDownload;
 
