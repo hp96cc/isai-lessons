@@ -43,14 +43,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
             });
 
 
-            MessagingCenter.Subscribe<DownloadDidUpdateMessage>(this, "DownloadUpdate", (sender) =>
-            {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    LoadItemsCommand.Execute(null);
-                });
+            //MessagingCenter.Subscribe<DownloadDidUpdateMessage>(this, "DownloadUpdate", (sender) =>
+            //{
+            //    MainThread.BeginInvokeOnMainThread(() =>
+            //    {
+            //        LoadItemsCommand.Execute(null);
+            //    });
 
-            });
+            //});
 
 
         }

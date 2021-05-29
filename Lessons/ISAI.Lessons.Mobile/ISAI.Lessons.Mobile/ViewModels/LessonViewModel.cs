@@ -156,14 +156,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 });
             });
 
-            MessagingCenter.Subscribe<DownloadDidUpdateMessage>(this, "DownloadUpdate", (sender) =>
-            {
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await CheckDownloadStatus();
-                });
+            //MessagingCenter.Subscribe<DownloadDidUpdateMessage>(this, "DownloadUpdate", (sender) =>
+            //{
+            //    MainThread.BeginInvokeOnMainThread(async () =>
+            //    {
+            //        await CheckDownloadStatus();
+            //    });
 
-            });
+            //});
 
 
         }
