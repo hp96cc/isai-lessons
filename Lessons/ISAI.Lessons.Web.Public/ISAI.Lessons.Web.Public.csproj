@@ -561,6 +561,7 @@
     <Compile Include="App_Data\Models\AccountInfo.generated.cs" />
     <Compile Include="App_Data\Models\AccountLogout.generated.cs" />
     <Compile Include="App_Data\Models\AccountSubscriptions.generated.cs" />
+    <Compile Include="App_Data\Models\ContactElement.generated.cs" />
     <Compile Include="App_Data\Models\ContactPage.generated.cs" />
     <Compile Include="App_Data\Models\ContentBoxWithLink.generated.cs" />
     <Compile Include="App_Data\Models\ContentPage.generated.cs" />
@@ -665,6 +666,10 @@
     <Folder Include="Views\LessonApp\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ISAI.Lessons.Azure\ISAI.Lessons.Azure.csproj">
+      <Project>{162f6ec3-466f-4ed3-aa00-e3f2a3f94961}</Project>
+      <Name>ISAI.Lessons.Azure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
       <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
       <Name>ISAI.Lessons.Core</Name>

@@ -73,6 +73,20 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString HTmlcontent => this.Value<global::System.Web.IHtmlString>("hTMLContent");
 
 		///<summary>
+		/// Parent Image: W:690 x H:472
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("parentImage")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent ParentImage => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("parentImage");
+
+		///<summary>
+		/// Parent Summary
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("parentSummary")]
+		public global::System.Web.IHtmlString ParentSummary => this.Value<global::System.Web.IHtmlString>("parentSummary");
+
+		///<summary>
 		/// Sample Video Url 1
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]

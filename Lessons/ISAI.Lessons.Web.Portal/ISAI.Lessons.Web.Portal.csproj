@@ -137,8 +137,8 @@
     <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Graph, Version=3.31.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Graph.3.31.0\lib\net461\Microsoft.Graph.dll</HintPath>
+    <Reference Include="Microsoft.Graph, Version=3.33.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Graph.3.33.0\lib\net461\Microsoft.Graph.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Graph.Core, Version=1.25.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Graph.Core.1.25.1\lib\net45\Microsoft.Graph.Core.dll</HintPath>
@@ -2821,6 +2821,10 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ISAI.Lessons.Azure\ISAI.Lessons.Azure.csproj">
+      <Project>{162f6ec3-466f-4ed3-aa00-e3f2a3f94961}</Project>
+      <Name>ISAI.Lessons.Azure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
       <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
       <Name>ISAI.Lessons.Core</Name>

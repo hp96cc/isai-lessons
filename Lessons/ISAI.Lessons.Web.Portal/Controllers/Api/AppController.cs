@@ -126,6 +126,48 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+        [AllowAnonymous] //remove at runtime
+        [Route("api/app/downloadscreenshots")]
+        [HttpPost]
+        public async Task DownloadScreenShots()
+        {
+
+            var lessons = await db.Lesson.Where(x =>
+            x.AssetId != null &&
+            x.Deleted == false).ToListAsync();
+
+
+            foreach (var lesson in lessons)
+            {
+
+                try
+                {
+
+                    var azureMediaService = new AzureMediaService();
+                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, "download-locator-" + lesson.Id.ToString(), StreamingPolicyStreamingProtocol.Download);
+
+                    var url = urls.First(x => x.Contains(".jpg"));
+
+                    var saveFilePath = @"C:\Temp\thumbs\thumb_" + lesson.Id + ".jpg"; 
+
+                    HttpClient client = new HttpClient();
+                    var response = await client.GetAsync(url);
+                    using (var fs = new FileStream(
+                        saveFilePath,
+                        FileMode.CreateNew))
+                    {
+                        await response.Content.CopyToAsync(fs);
+                    }
+
+                } catch (Exception ex)
+                {
+
+                }
+
+            }
+
+        }
+
         [AllowAnonymous]
         [Route("api/app/lessons")]
         [HttpPost]

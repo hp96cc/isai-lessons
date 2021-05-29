@@ -10,44 +10,73 @@
 
 @helper RenderChildren(LessonGroup lessonGroup)
 {
-    <div class="col-4">
 
-        <h4> @lessonGroup.Title</h4>
+   
 
-       @if (lessonGroup.Children != null && lessonGroup.Children.Count() > 0)
+    <div class="row">
+
+        <div class="col-12 text-center">
+            <h3> @lessonGroup.Title</h3>
+            <span class="title-separator"></span>
+        </div>
+
+        @if (lessonGroup.Children != null && lessonGroup.Children.Count() > 0)
         {
 
-        var childLessons = lessonGroup.Children<LessonItem>
-            ();
+            var childLessons = lessonGroup.Children<LessonItem>
+                ();
 
             if (childLessons != null && childLessons.Count() > 0)
             {
 
-            <ul>
 
-                @foreach (var childLesson in childLessons)
+
+                foreach (var childLesson in childLessons)
                 {
-                   @* <li><i class="fas fa-chalkboard-teacher m-2"></i>&nbsp;<u><a href="@childLesson.Url()">@childLesson.Title</a></u></li>*@
-                     <li><i class="fas fa-chalkboard-teacher m-2"></i>&nbsp;@childLesson.Title</li>
+
+                    <div class="col-md-6 col-lg-4 margin-25px-bottom xs-margin-15px-bottom">
+                        <div class="courses-block">
+                            <div class="courses-pic">
+                                <a href="course-details.html">
+                                    <img src="/assets/lessonthumbs/thumb_@(childLesson.MediaId).jpg" alt="@childLesson.Title" />
+                                </a>
+                            </div>
+                            <div class="course-desc">
+                                <h4><a href="#">@childLesson.Title</a></h4>
+                                @*<p>Our kids extracurricular activities and games that children love after school activities.</p>*@
+                            </div>
+                            @*<div class="course-details">
+                                    <ul>
+                                        <li>
+                                            <strong>Age: </strong>2-4 years
+                                        </li>
+                                        <li>
+                                            <strong>Time: </strong>09:00-11:00
+                                        </li>
+                                    </ul>
+                                </div>*@
+                        </div>
+                    </div>
+
                 }
 
-            </ul>
+
             }
             else
             {
 
-            var childLessonGroups = lessonGroup.Children<LessonGroup>
-                ();
+                var childLessonGroups = lessonGroup.Children<LessonGroup>
+                    ();
 
                 foreach (var childLessonGroup in childLessonGroups)
                 {
-                @RenderChildren(childLessonGroup);
+                    @RenderChildren(childLessonGroup);
                 }
 
-                }
+            }
 
 
-                }
+        }
 
     </div>
 
@@ -58,7 +87,7 @@
 <section class="page-title-section bg-img cover-background bg-yellow  p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
     <div class="container">
 
-       
+
 
         <div class="page-title">
             <h1>@Model.Title</h1>
@@ -103,19 +132,19 @@
     <section>
         <div class="container">
 
-            
 
-            <div class="section-heading mb-2">
-               @* <h3>@Model.Title</h3>*@
 
-              
+            @*<div class="section-heading mb-2">
+                <h3>@Model.Title</h3>
+
+
                 <span class="title-separator"></span>
-            </div>
+            </div>*@
 
             <div class="row no-gutters">
-                
+
                 <div class="col"> @Model.HTmlcontent</div>
- 
+
 
 
                 @{
@@ -124,12 +153,12 @@
 
                     if (childLessonGroups != null && childLessonGroups.Count() > 0)
                     {
-              
 
-                            foreach (LessonGroup childLessonGroup in childLessonGroups)
-                            {
-                                @RenderChildren(childLessonGroup);
-                            }
+
+                        foreach (LessonGroup childLessonGroup in childLessonGroups)
+                        {
+                            @RenderChildren(childLessonGroup);
+                        }
 
                     }
 
@@ -152,40 +181,42 @@ else
         <div class="container">
 
             @* <div class="section-heading">
-               <h3>@Model.Title</h3>
- <span class="title-separator mb-3"></span>
-              
-            </div>*@
-            
-            <div class="row"> <div class="col"> @Model.HTmlcontent</div></div>
-            
-             <div class="row"><span class="title-separator mb-3"></span></div>
+                              <h3>@Model.Title</h3>
+                <span class="title-separator mb-3"></span>
 
-          
-                @if (Model.ShowSampleVideo)
-                {
-                 <div class="row mt-3 mb-4">
-                
-                <div class="col-6">
-                    <div class="embed-responsive embed-responsive-item embed-responsive-16by9">
-                      
-                        <iframe src="@Model.SampleVideoUrl" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
-</div>
-                    </div>
-                    
-                     
-                    
+                           </div>*@
+
+            <div class="row"> <div class="col"> @Model.HTmlcontent</div></div>
+
+            <div class="row"><span class="title-separator mb-3"></span></div>
+
+
+            @if (Model.ShowSampleVideo)
+            {
+                <div class="row mt-3 mb-4">
+
                     <div class="col-6">
-                    <div class="embed-responsive embed-responsive-item embed-responsive-16by9">
-                      
-                      
-                        <iframe src="@Model.SampleVideoUrl2" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
-</div>
+                        <div class="embed-responsive embed-responsive-item embed-responsive-16by9">
+
+                            <iframe src="@Model.SampleVideoUrl" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
+                        </div>
                     </div>
-                     </div>
-                }
-                
-                  <div class="row"><span class="title-separator mb-3"></span></div>
+
+
+
+                    <div class="col-6">
+                        <div class="embed-responsive embed-responsive-item embed-responsive-16by9">
+
+
+                            <iframe src="@Model.SampleVideoUrl2" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row"><span class="title-separator mb-3"></span></div>
+            }
+
+
 
             <div class="row">
 
@@ -225,17 +256,23 @@ else
 
 
 
-
                             <div class="col-md-6 col-lg-6 margin-25px-bottom xs-margin-15px-bottom">
                                 <div class="courses-block @courseColour">
-                                    @*<div class="courses-pic">
+
+
+                                    @if (childLessonGroup.ParentImage != null)
+                                    {
+                                        <div class="courses-pic">
+
                                             <a href="course-details.html">
-                                                <img src="img/courses/courses-1.jpg" alt="" />
+                                                <img src="@childLessonGroup.ParentImage.MediaUrl()" alt="@childLessonGroup.Title" />
                                             </a>
-                                        </div>*@
+                                        </div>
+                                    }
+
                                     <div class="course-desc">
                                         <h4><a href="@childLessonGroup.Url()">@childLessonGroup.Title</a></h4>
-                                        @childLessonGroup.HTmlcontent
+                                        @childLessonGroup.ParentSummary
                                     </div>
                                     <div class="course-details">
                                         <ul>

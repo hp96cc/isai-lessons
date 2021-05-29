@@ -4,11 +4,11 @@
 	Layout = "Master.cshtml";
 }
 
-<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/qz0hs2bw/bg1.jpg" style="background-image: url(&quot;/media/qz0hs2bw/bg1.jpg&quot;);">
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png" style="background-image: url('/media/1f3fd5lm/blue-header-background.png');">
     <div class="container">
         <div class="page-title">
-            <h1>Our Plans</h1>
-            <p><strong>To use our platform please select one of the plans below.</strong></p>
+            <h1>@Model.Title</h1>
+            <p><strong>@Model.Subtitle</strong></p>
         </div>
     </div>
 </section>
@@ -17,6 +17,7 @@
     <div class="container">
         <div class="section-heading">
     
+            @Model.HTmlcontent
            
             <span class="title-separator"></span>
         </div>

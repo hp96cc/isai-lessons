@@ -7,7 +7,7 @@
 
 
 	<!-- start page title section -->
-	<section class="page-title-section bg-img cover-background bg-yellow" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
+	<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
 		<div class="container">
 			<div class="page-title">
 				<h1>@Model.Title</h1>
@@ -25,55 +25,25 @@
 	<section>
 		<div class="container">
             <div class="row">
-                @*<div class="col-md-4 xs-margin-30px-bottom">
-            <div class="contact-detail text-center">
-                <div class="contact-icon bg-sky">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
-                <h5 class="text-uppercase margin-5px-bottom margin-25px-top sm-margin-20px-top font-size20 md-font-size18 sm-font-size16">@Model.AddressLabelText</h5>
-                <p class="no-margin-bottom">
-                    @Model.AddressText
-                </p>
-            </div>
-        </div>
 
-        <div class="col-md-4 xs-margin-30px-bottom">
-            <div class="contact-detail text-center">
-                <div class="contact-icon bg-yellow yellow-border">
-                    <i class="fas fa-phone"></i>
-                </div>
-                <h5 class="text-uppercase margin-5px-bottom margin-25px-top sm-margin-20px-top font-size20 md-font-size18 sm-font-size16">@Model.PhoneLabelText</h5>
-                <p class="no-margin-bottom">
-                    @Model.PhoneText
-                </p>
-            </div>
-        </div>*@
+                @foreach (var iconLink in Model.TopIconLinks)
+                {
 
-                <div class="col-md-6">
-                    <div class="contact-detail text-center">
-                        <div class="contact-icon bg-pink pink-border">
-                            <i class="far fa-envelope"></i>
+                    <div class="col-md-3">
+                        <div class="contact-detail text-center">
+                            <div class="contact-icon bg-pink pink-border">
+                                <i class="@iconLink.IconReference"></i>
+                            </div>
+                            <h5 class="text-uppercase margin-5px-bottom margin-25px-top sm-margin-20px-top font-size20 md-font-size18 sm-font-size16">@iconLink.Title</h5>
+                            <p class="no-margin-bottom">
+                                <a href="@iconLink.Link">@iconLink.LinkText</a>
+
+                            </p>
                         </div>
-                        <h5 class="text-uppercase margin-5px-bottom margin-25px-top sm-margin-20px-top font-size20 md-font-size18 sm-font-size16">@Model.EmailLabelText</h5>
-                        <p class="no-margin-bottom">
-                            <a href="mailto:@Model.EmailText">@Model.EmailText</a>
-
-                        </p>
                     </div>
-                </div>
 
-                <div class="col-md-6">
-                    <div class="contact-detail text-center">
-                        <div class="contact-icon bg-pink pink-border">
-                            <i class="fab fa-facebook"></i>
-                        </div>
-                        <h5 class="text-uppercase margin-5px-bottom margin-25px-top sm-margin-20px-top font-size20 md-font-size18 sm-font-size16">Facebook</h5>
-                        <p class="no-margin-bottom">
-                            <a href="http://www.facebook.com">Go to Facebook</a>
+                }
 
-                        </p>
-                    </div>
-                </div>
 
 
             </div>
@@ -84,7 +54,7 @@
 	<section class="no-padding-top">
 		<div class="container">
 			<div class="section-heading">
-				<h3>Send Your Message</h3>
+				<h3>@Model.MessageTitle</h3>
 				<span class="title-separator"></span>
 			</div>
 			<div class="row">

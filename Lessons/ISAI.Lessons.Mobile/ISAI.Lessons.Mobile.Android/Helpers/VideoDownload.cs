@@ -100,7 +100,9 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
         public void DeleteDownload(VideoDownload videoDownload)
         {
-            bool b = true;
+            var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);
+            long[] ids = new long[long.Parse(videoDownload.DownloadId)];
+            manager.Remove(ids);
         }
 
         public void DeleteAllDownloads()
@@ -109,7 +111,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
             var query = new DownloadManager.Query();
             query.SetFilterByStatus(DownloadStatus.Successful);
             var cursor = manager.InvokeQuery(query);
-           var ids = new List<long>();
+            var ids = new List<long>();
 
             if (cursor.MoveToFirst())
             {

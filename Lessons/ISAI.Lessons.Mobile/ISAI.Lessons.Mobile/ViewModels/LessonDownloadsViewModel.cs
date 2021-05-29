@@ -35,12 +35,24 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
             {
-                MainThread.BeginInvokeOnMainThread(async () =>
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    await DisplayVideoDownloads();
+                    LoadItemsCommand.Execute(null);
                 });
               
             });
+
+
+            //MessagingCenter.Subscribe<DownloadDidUpdateMessage>(this, "DownloadUpdate", (sender) =>
+            //{
+            //    MainThread.BeginInvokeOnMainThread(() =>
+            //    {
+            //        LoadItemsCommand.Execute(null);
+            //    });
+
+            //});
+
+
         }
 
 
