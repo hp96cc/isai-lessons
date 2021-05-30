@@ -62,54 +62,63 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async Task OnLoginClicked()
         {
 
+            var allowTracking = await DependencyService.Get<IAppTrackingService>().RequestAppTracking();
 
-            CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
-
-
-            try
+            if(allowTracking)
             {
+                CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
 
-                var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
-                var loginResponse = await apiService.Login(new EntityFramework.ViewModels.LoginRequestViewModel()
+                try
                 {
-                    Email = _email,
-                    Password = _password
-                });
 
-                if (loginResponse.Status == ResponseStatus.OK)
-                {
-          
-                    var appUser = new AppUser()
+                    var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
+                    var loginResponse = await apiService.Login(new EntityFramework.ViewModels.LoginRequestViewModel()
                     {
-                        Id = Guid.NewGuid().ToString(),
                         Email = _email,
-                        Password = _password,
-                        AccessToken = loginResponse.Content.AccessToken,
-                        RefreshToken = loginResponse.Content.RefreshToken,
-                        MaxFileDownloads = 3
-                    };
+                        Password = _password
+                    });
 
-                    await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
+                    if (loginResponse.Status == ResponseStatus.OK)
+                    {
 
-                    CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
-                    await DownloadLessonData();
-                    CrossHud.Current.Dismiss();
+                        var appUser = new AppUser()
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            Email = _email,
+                            Password = _password,
+                            AccessToken = loginResponse.Content.AccessToken,
+                            RefreshToken = loginResponse.Content.RefreshToken,
+                            MaxFileDownloads = 3
+                        };
 
-                    var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
-                    var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
+                        await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
 
-                    await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
+                        CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
+                        await DownloadLessonData();
+                        CrossHud.Current.Dismiss();
 
-                    return;
+                        var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
+                        var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
+
+                        await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
+
+                        return;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.StackTrace);
                 }
 
-            } catch(Exception ex)
-            {
-                Debug.WriteLine(ex.StackTrace);
-            }
+                CrossHud.Current.Dismiss();
+                CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
 
-            CrossHud.Current.Dismiss();
-            CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
+            } else
+            {
+                CrossHud.Current.ShowError("We must be able to track this device in order for you to use this app.", MaskType.Black, TimeSpan.FromSeconds(3));
+
+            }
 
         }
 

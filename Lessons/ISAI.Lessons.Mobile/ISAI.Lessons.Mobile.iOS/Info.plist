@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>App uses an identifier from this device to manage access to your account</string>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
@@ -41,8 +43,8 @@
 		<true/>
 	</dict>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.5</string>
+	<string>2.0.6</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.5</string>
+	<string>2.0.6</string>
 </dict>
 </plist>
