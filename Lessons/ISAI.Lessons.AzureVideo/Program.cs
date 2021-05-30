@@ -81,11 +81,12 @@ namespace ISAI.Lessons.AzureVideo
 
                     if (System.IO.File.Exists(filePath))
                     {
-                        Console.WriteLine("Filename: {0} exists, skipping", item.Name);
+                        Console.WriteLine("Filename: {0} exists, converting", item.Name);
                     }
                     else
                     {
-                        await graphApi.DownloadFileInChunks(item, videoPath);
+                        continue;
+                        //await graphApi.DownloadFileInChunks(item, videoPath);
                     }
 
                     await Task.Delay(2000);
