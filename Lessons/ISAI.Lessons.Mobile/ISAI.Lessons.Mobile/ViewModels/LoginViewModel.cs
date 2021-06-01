@@ -57,68 +57,60 @@ namespace ISAI.Lessons.Mobile.ViewModels
         }
 
 
-        
+
 
         async Task OnLoginClicked()
         {
 
-            var allowTracking = await DependencyService.Get<IAppTrackingService>().RequestAppTracking();
 
-            if(allowTracking)
+            CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
+
+            try
             {
-                CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
 
-                try
+                var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
+                var loginResponse = await apiService.Login(new EntityFramework.ViewModels.LoginRequestViewModel()
+                {
+                    Email = _email,
+                    Password = _password
+                });
+
+                if (loginResponse.Status == ResponseStatus.OK)
                 {
 
-                    var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
-                    var loginResponse = await apiService.Login(new EntityFramework.ViewModels.LoginRequestViewModel()
+                    var appUser = new AppUser()
                     {
+                        Id = Guid.NewGuid().ToString(),
                         Email = _email,
-                        Password = _password
-                    });
+                        Password = _password,
+                        AccessToken = loginResponse.Content.AccessToken,
+                        RefreshToken = loginResponse.Content.RefreshToken,
+                        MaxFileDownloads = 3
+                    };
 
-                    if (loginResponse.Status == ResponseStatus.OK)
-                    {
+                    await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
 
-                        var appUser = new AppUser()
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Email = _email,
-                            Password = _password,
-                            AccessToken = loginResponse.Content.AccessToken,
-                            RefreshToken = loginResponse.Content.RefreshToken,
-                            MaxFileDownloads = 3
-                        };
+                    CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
+                    await DownloadLessonData();
+                    CrossHud.Current.Dismiss();
 
-                        await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
+                    var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
+                    var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
 
-                        CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
-                        await DownloadLessonData();
-                        CrossHud.Current.Dismiss();
+                    await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
 
-                        var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
-                        var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
-
-                        await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
-
-                        return;
-                    }
-
+                    return;
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.StackTrace);
-                }
-
-                CrossHud.Current.Dismiss();
-                CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
-
-            } else
-            {
-                CrossHud.Current.ShowError("We must be able to track this device in order for you to use this app.", MaskType.Black, TimeSpan.FromSeconds(3));
 
             }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.StackTrace);
+            }
+
+            CrossHud.Current.Dismiss();
+            CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
+
 
         }
 

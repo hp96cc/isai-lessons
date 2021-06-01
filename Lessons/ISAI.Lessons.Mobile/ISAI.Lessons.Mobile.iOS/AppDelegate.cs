@@ -30,7 +30,6 @@ namespace ISAI.Lessons.Mobile.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
 
-            DependencyService.Register<IAppTrackingService, AppTrackingService>();
             DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.Register<IStatusBar, StatusBar>();
             DependencyService.Register<IVideoDownloadService, VideoDownloadService>();
