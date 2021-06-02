@@ -129,11 +129,32 @@ namespace Umbraco.Web.PublishedModels
 		public string LessonsTitle => this.Value<string>("lessonsTitle");
 
 		///<summary>
-		/// Links
+		/// Links 1
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		[ImplementPropertyType("links")]
 		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link> Links => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link>>("links");
+
+		///<summary>
+		/// Links 2
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("links2")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link> Links2 => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link>>("links2");
+
+		///<summary>
+		/// Links 2 Title
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("links3Title")]
+		public string Links3Title => this.Value<string>("links3Title");
+
+		///<summary>
+		/// Links 1 Title
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("linkTitle")]
+		public string LinkTitle => this.Value<string>("linkTitle");
 
 		///<summary>
 		/// Main Scroller

@@ -2,6 +2,14 @@
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "Master.cshtml";
+
+    string priceId = string.Empty;
+
+    if (Request.QueryString["priceId"] != null)
+    {
+        priceId = Request.QueryString["priceId"].ToString();
+    }
+
 }
 
 
@@ -30,6 +38,8 @@
                         </div>
 
                         <form method="post" id="register-form" class="needs-validation" novalidate>
+
+                            <input type="hidden" name="input-priceid" id="input-priceid" value="@priceId" />
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -84,12 +94,34 @@
                                     </div>
                                 </div>
 
+                                <div class="col-md-12">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="checkbox-accesscode" onchange="ToggleAccessCode();">
+                                        <label class="custom-control-label" for="checkbox-accesscode">I have an access code</label>
+                                        <span class="invalid-feedback">Access code invalid.</span>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12" id="div-input-accesscode" style="display:none;">
+                                    <div class="form-group">
+                                        <label>Access Code *:</label>
+                                        <input type="text"   class="form-control" id="input-accesscode" name="input-accesscode" autocomplete="none" required />
+                                        <div class="invalid-feedback">Access code is required</div>
+                                    </div>
+                                </div>
+
+
                                 <div id="form-error-label" class="col-md-12 alert alert-danger m-3 delivery-error-label" role="alert" style="display:none;">
 
                                 </div>
 
+                       
+
                                 <div class="col-md-12 margin-35px-top sm-margin-25px-top">
                                     <button type="button" id="button-checkout" onclick="GoToPayment();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Go To Payment</button>
+                                    <button type="button" id="button-activate" style="display:none;" onclick="Activate();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Activate Access Code</button>
+
                                 </div>
 
                                 <div class="col-md-12 text-center margin-25px-top">
@@ -118,6 +150,94 @@
     
     <script>
 
+        function ToggleAccessCode() {
+
+            var isAccessCodeChecked = $("#checkbox-accesscode").is(':checked');
+
+            if (isAccessCodeChecked) {
+
+                $("#button-checkout").hide();
+                $("#button-activate").show();
+                $("#div-input-accesscode").show();
+               
+
+            } else {
+
+                $("#button-checkout").show();
+                $("#button-activate").hide();
+                $("#div-input-accesscode").hide();
+
+            }
+
+        }
+
+        async function Activate() {
+
+            $('#form-error-label').text('');
+            $('#form-error-label').hide();
+
+            var form = document.getElementById("register-form");
+
+            if (form.checkValidity() === false) {
+
+                event.preventDefault();
+                event.stopPropagation();
+                form.classList.add('was-validated');
+
+            } else {
+
+                $('#register-form').hide();
+                $('#spinner-loading').show();
+                var errorHTML = '';
+
+                var registerRequestViewModel = {
+
+                    firstName: $("#input-firstname").val(),
+                    lastName: $("#input-lastname").val(),
+                    email: $("#input-email").val(),
+                    password: $("#input-password").val(),
+                    passwordConfirm: $('#input-confirmpassword').val(),
+                    acceptMarketing: $('#input-newsletter').prop("checked"),
+                    accessCode: $('#input-accesscode').val()
+
+                }
+
+                var data = await lessonsApp.signupWithAccessCode(registerRequestViewModel);
+
+                if (data.Status === 0) {
+
+                    window.location.href ='/plans/confirmed';
+                    return;
+
+                } else {
+
+                    if (data.ErrorResponse !== null && data.ErrorResponse.length > 0) {
+
+                        errorHTML += '<ul>';
+
+                        data.ErrorResponse.forEach(function (item) {
+                            errorHTML += '<li>' + item.Message + '</li>';
+                        });
+
+                        errorHTML += '</ul>';
+                    }
+                    else if (data.Errors.length === 1) {
+                        errorHTML = data.ErrorResponse[0].Message;
+                    }
+                    else {
+                        errorHTML = 'Could not activate account. Please contact support';
+                    }
+
+                }
+
+                $('#form-error-label').html(errorHTML);
+                $('#form-error-label').show();
+                $('#register-form').show();
+                $('#spinner-loading').hide();
+
+            }
+        }
+
         async function GoToPayment() {
 
             $('#form-error-label').text('');
@@ -145,7 +265,7 @@
                     password: $("#input-password").val(),
                     passwordConfirm: $('#input-confirmpassword').val(),
                     acceptMarketing: $('#input-newsletter').prop("checked"),
-
+                    priceId: $('#input-priceid').val()
                 }
 
                 

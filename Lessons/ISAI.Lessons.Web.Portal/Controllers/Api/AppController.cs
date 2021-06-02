@@ -3,6 +3,7 @@ using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
+using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.ViewModels;
 using ISAI.Lessons.Web.Portal.Helpers;
 using Microsoft.Azure.Management.Media.Models;
@@ -485,6 +486,68 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         }
 
 
+        [Route("api/app/signupaccesscode")]
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<Lessons.Models.Models.ResponseData<Customer>> SignupAccessCode(RegisterRequestViewModel request)
+        {
+            var response = new Lessons.Models.Models.ResponseData<Customer>();
+
+            try
+            {
+
+                var accessCode = request.AccessCode.Trim().ToUpper();
+                var subscriptionCode = await db.SubscriptionCode.FirstOrDefaultAsync(x =>
+                    x.Code == accessCode &&
+                    x.ValidFrom >= DateTime.UtcNow &&
+                    x.UsedDateTime.HasValue == false);
+
+                if (subscriptionCode != null)
+                {
+
+                    var register = await RegisterCustomer(request);
+
+                    if (register.Customer == null)
+                    {
+                        if(register.Errors != null && register.Errors.Count > 0)
+                        {
+                            throw new Exception(register.Errors[0]);
+                        }
+                        else
+                        {
+                            throw new Exception("Could not create customer");
+                        }
+                       
+                    }
+
+                    await CreateCustomerSubscription((Customer)register.Customer, null, subscriptionCode);
+
+                    response.Content = (Customer)register.Customer;
+                    response.Status = ResponseStatus.OK;
+
+                    return response;
+
+                }
+                else
+                {
+                    throw new Exception("Code not valid");
+                }
+
+            } catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>() { new Lessons.Models.Models.ErrorResponse () {
+                        Message = ex.Message,
+                        ErrorDescription = ex.StackTrace
+                    }
+                };
+                return response;
+            }
+
+
+        }
+
+
 
 
         [Route("api/app/stripecustomerportal")]
@@ -598,49 +661,90 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        async Task CreateCustomerSubscription(Customer customer, Session session)
+        async Task CreateCustomerSubscription(Customer customer, Session session, SubscriptionCode subscriptionCode = null)
         {
-            var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
 
-            if (subscription != null)
+            if(subscriptionCode != null)
             {
-                subscription.Name = "Monthly Subscription";
-                subscription.Active = true;
-                subscription.EndDate = subscription.EndDate.AddMonths(1);
-                subscription.DateModified = DateTime.UtcNow;
-                subscription.ModifiedUserId = _adminUserId;
 
-                db.Entry(subscription).State = EntityState.Modified;
 
-            }
-            else
-            {
-                subscription = new Subscription()
+                var subscription = new Subscription()
                 {
-                    Name = "Monthly Subscription",
+                    SubscriptionTypeId = subscriptionCode.SubscriptionTypeId,
+                    Name = "Access Code Subscription",
                     CustomerId = customer.Id,
-                    StripeSubscriptionId = session.SubscriptionId,
+                    StripeSubscriptionId = subscriptionCode.Code,
                     Active = true,
                     StartDate = DateTime.UtcNow,
-                    EndDate = DateTime.UtcNow.AddMonths(1),
+                    EndDate = DateTime.UtcNow.AddDays(subscriptionCode.LicenceDays), //TODO: need to support other
                     DateModified = DateTime.UtcNow,
                     DateCreated = DateTime.UtcNow,
                     CreatedUserId = _adminUserId,
                     ModifiedUserId = _adminUserId
                 };
-
                 db.Subscription.Add(subscription);
 
+                await db.SaveChangesAsync();
+
+                subscriptionCode.UsedDateTime = DateTime.UtcNow;
+                subscriptionCode.SubscriptionId = subscription.Id;
+                subscriptionCode.DateModified = DateTime.UtcNow;
+                subscriptionCode.ModifiedUserId = _adminUserId;
+
+                customer.StripeCustomerId = subscriptionCode.Code;
+                customer.HasCompletedCheckout = true;
+                customer.DateModified = DateTime.UtcNow;
+                customer.ModifiedUserId = _adminUserId;
+
+                db.Entry(customer).State = EntityState.Modified;
+
+                await db.SaveChangesAsync();
+            } 
+            else
+            {
+
+                var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
+
+                if (subscription != null)
+                {
+                    subscription.Name = "Monthly Subscription";
+                    subscription.Active = true;
+                    subscription.EndDate = subscription.EndDate.AddMonths(1);
+                    subscription.DateModified = DateTime.UtcNow;
+                    subscription.ModifiedUserId = _adminUserId;
+
+                    db.Entry(subscription).State = EntityState.Modified;
+
+                }
+                else
+                {
+                    subscription = new Subscription()
+                    {
+                        Name = "Monthly Subscription",
+                        CustomerId = customer.Id,
+                        StripeSubscriptionId = session.SubscriptionId,
+                        Active = true,
+                        StartDate = DateTime.UtcNow,
+                        EndDate = DateTime.UtcNow.AddMonths(1),
+                        DateModified = DateTime.UtcNow,
+                        DateCreated = DateTime.UtcNow,
+                        CreatedUserId = _adminUserId,
+                        ModifiedUserId = _adminUserId
+                    };
+
+                    db.Subscription.Add(subscription);
+
+                }
+
+                customer.StripeCustomerId = session.CustomerId;
+                customer.HasCompletedCheckout = true;
+                customer.DateModified = DateTime.UtcNow;
+                customer.ModifiedUserId = _adminUserId;
+
+                db.Entry(customer).State = EntityState.Modified;
+
+                await db.SaveChangesAsync();
             }
-
-            customer.StripeCustomerId = session.CustomerId;
-            customer.HasCompletedCheckout = true;
-            customer.DateModified = DateTime.UtcNow;
-            customer.ModifiedUserId = _adminUserId;
-
-            db.Entry(customer).State = EntityState.Modified;
-
-            await db.SaveChangesAsync();
 
         }
 

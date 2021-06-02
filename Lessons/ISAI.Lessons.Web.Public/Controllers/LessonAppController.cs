@@ -1,8 +1,10 @@
 ﻿using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
+using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
+using ISAI.Lessons.Models.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -332,6 +335,87 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         }
 
+        [Route("api/lessonapp/lessonstreamurl")]
+        [HttpPost]
+        public async Task<ResponseData<LessonStreamingResponse>> GetLessonStreamingUrlAsync(LessonRequestViewModel model)
+        {
+
+            var response = new ResponseData<LessonStreamingResponse>();
+
+            try
+            {
+                _httpClient = await _apiService.SetHttpAuthClient();
+
+                var request = new LessonRequestViewModel()
+                {
+                    LessonId = model.LessonId
+                };
+
+                var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessonstreamurl", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var lessonStreamingResponse = JsonConvert.DeserializeObject<LessonStreamingResponse>(serialisedContent);
+
+                    response.Status = ResponseStatus.OK;
+                    response.Content = lessonStreamingResponse;
+                    return response;
+                }
+                else
+                {
+                    var errorResponse = await ParseHttpError(httpResponse);
+                    throw new Exception(errorResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
+                        Message = ex.Message,
+                        ErrorDescription = ex.StackTrace
+                    }
+                };
+                return response;
+            }
+        }
+
+        [Route("api/lessonapp/signupaccesscode")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<Customer>> SignupAccessCode(RegisterRequestViewModel model)
+        {
+            SetHttpClient();
+
+            try
+            {
+                model.AppId = _appId;
+
+                var json = JsonConvert.SerializeObject(model);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/signupaccesscode", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var stripeCheckoutSessionResponse = JsonConvert.DeserializeObject<Lessons.Models.Models.ResponseData<Customer>>(serialisedContent);
+                    return stripeCheckoutSessionResponse;
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
 
         [Route("api/lessonapp/createcustomerpaymentsession")]
         [HttpPost]
@@ -342,7 +426,11 @@ namespace ISAI.Lessons.Web.Public.Controllers
             try
             {
                 model.AppId = _appId;
-                model.PriceId = "price_1IbJ0pJ81SbG6nzaIrTZGt25";
+
+                //LIVE id: 
+                //monthly: price_1IxXUFJ81SbG6nzav7NG3Vto
+                //annual: price_1IxXTvJ81SbG6nzajuriP6XZ
+
                 model.CancelUrl = _baseReturnUrl + "/plans/payment-cancel";
                 model.SuccessUrl = _baseReturnUrl + "/plans/payment-success";
 
@@ -507,6 +595,13 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         #endregion
 
+        private async Task<string> ParseHttpError(HttpResponseMessage httpResponse)
+        {
+
+            var content = await httpResponse.Content.ReadAsStringAsync();
+            return string.Format("HTTP Error Message: {0} : ErrorDescription: {1}", httpResponse.StatusCode.ToString(), content);
+
+        }
 
         protected override void Dispose(bool disposing)
         {

@@ -107,11 +107,11 @@
                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                 {
                     <div class="embed-responsive embed-responsive-16by9">
-                        <iframe src="//aka.ms/ampembed?url=%2F%2Famssamples.streaming.mediaservices.windows.net%2F3b970ae0-39d5-44bd-b3a3-3136143d6435%2FAzureMediaServicesPromo.ism%2Fmanifest" name="azuremediaplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
+                        <iframe id="lessonplayer" src="" name="lessonplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
 
                     </div>
 
-                    <div class="float-right p p-3"><a href="javascript:ToggleLessonNotes();"><i class="far fa-file"></i>&nbsp;&nbsp;<span id="notes-button-label">Show Notes</span></a></div>
+                    @*<div class="float-right p p-3"><a href="javascript:ToggleLessonNotes();"><i class="far fa-file"></i>&nbsp;&nbsp;<span id="notes-button-label">Show Notes</span></a></div>
 
 
                     <div id="lesson-notes" class="col-12 p-3 mt-5 d-none">
@@ -124,7 +124,7 @@
                             Proin aliquam venenatis cursus. Etiam non leo a velit bibendum scelerisque eu sit amet nisi. Cras quis orci ac arcu vulputate suscipit non pharetra est. Vivamus tempor gravida consectetur. Nulla finibus placerat lacus, vel ullamcorper odio. Etiam vestibulum tincidunt purus. Donec ullamcorper sem urna, eu vehicula ligula euismod sed. Donec convallis felis dapibus turpis posuere lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin sit amet leo vitae est euismod egestas sit amet a metus. Morbi sem nulla, elementum non consectetur et, tempus ut lacus. Phasellus molestie, quam ac bibendum dignissim, enim est ornare tortor, sed dignissim magna ligula eu metus. Duis aliquam nisl non mauris vehicula, non fermentum orci tincidunt. Nunc ullamcorper tortor non nisl laoreet pulvinar.
                         </p>
 
-                    </div>
+                    </div>*@
 
 
                 }
@@ -150,10 +150,15 @@
                         <li><i class="icon far fa-clock"></i> Data TBC</li>
                     </ul>*@
 
+                @if (!string.IsNullOrWhiteSpace(Model.Description.ToString()))
+                {
+
                 <div class="padding-20px-right sm-no-padding-right margin-40px-bottom margin-100px-top sm-margin-30px-bottom">
                     <h4 class="margin-15px-bottom">Course Description</h4>
                     @Model.Description
                 </div>
+
+                }
 
 
 
@@ -231,12 +236,20 @@
 </section>
 <!-- end course details section -->
 
+<button id="button-load" onclick="SetLessonUrl()">Load</button>
 
 @section Scripts {
 
 
     <script>
 
+        $(document).ready(function () {
+
+            $("#button-load").hide();
+            $("#button-load").click();
+
+
+        });
 
         function ToggleLessonNotes() {
 
@@ -249,6 +262,27 @@
             }
 
         }
+
+        async function SetLessonUrl() {
+
+          var data = await lessonsApp.lessonStreamingUrl(@Model.MediaId);
+
+            if (data != null) {
+
+                if (data.Status == 0) {
+
+                    $("#lessonplayer").attr('src', '//aka.ms/ampembed?url=' + encodeURIComponent(data.Content.StreamingUrl))
+                    return;
+                }
+
+
+            }
+
+            alert('Lesson not properly configured. Please contact support.');
+
+        }
+
+        //lessonStreamingUrl
 
     </script>
 

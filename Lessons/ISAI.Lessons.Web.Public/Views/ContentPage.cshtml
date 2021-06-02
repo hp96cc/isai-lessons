@@ -22,23 +22,60 @@
 </section>
 <!-- end page title section -->
 <!-- start service details section -->
-<section>
+<section class="pb-2">
     <div class="container">
-        
-            <div class="row">
 
-                <div class="margin-40px-bottom sm-margin-30px-bottom">
-                    <div class="row align-items-center">
-                        <div class="col-12  xs-margin-25px-bottom">
-                            <h4 class="margin-15px-bottom">@Model.SubTitle</h4>
-                       @Model.HTmlcontent </div>
+        <div class="row">
 
+            <div class="margin-40px-bottom sm-margin-30px-bottom">
+                <div class="row align-items-center">
+                    <div class="col-12  xs-margin-25px-bottom">
+                        <h4 class="margin-15px-bottom">@Model.SubTitle</h4>
+                        @Model.HTmlcontent
                     </div>
+
                 </div>
             </div>
         </div>
+    </div>
 
 
 
 </section>
+
+@if (Model.UseGallery && Model.GalleryImages != null && Model.GalleryImages.Count() > 0)
+{
+
+    <!-- start gallery section -->
+                    <section class="pt-0">
+                        <div class="container">
+                            @*<div class="section-heading">
+                                <h3>Our Gallery</h3>
+                                <span class="title-separator"></span>
+                            </div>*@
+
+                            <div class="gallery form-row">
+
+                               @foreach(var item in Model.GalleryImages) {
+
+                                <div class="col-md-3 col-6 margin-10px-top">
+                                    <div class="gallery-block">
+                                        <img src="@item.MediaUrl()?width=300&height=300&mode=crop" alt="@Model.Name">
+                                        <div class="zoom-area">
+                                            <a class="popimg" href="@item.MediaUrl()">+</a>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                }
+
+                                
+
+                            </div>
+
+                        </div>
+                    </section> <!-- end gallery section -->
+
+                                }
 <!-- end service details section -->

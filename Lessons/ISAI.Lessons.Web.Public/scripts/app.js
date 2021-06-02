@@ -89,6 +89,63 @@
 
     };
 
+
+    var signupWithAccessCode = async function (registerRequestViewModel) {
+
+        var result = null;
+        var url = this.baseUrl + "signupaccesscode";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(registerRequestViewModel),
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            result = data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+        return result;
+
+    }
+
+    var lessonStreamingUrl = async function (lessonId) {
+
+        var result = null;
+
+        var url = this.baseUrl + "lessonstreamurl";
+        var requestData = JSON.stringify({
+            LessonId: lessonId
+        });
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                data: requestData,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            result = data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+        return result;
+    };
+
+
     var confirmSignup = async function (sessionId) {
 
         var url = this.baseUrl + "confirmcustomersubscription";
@@ -114,6 +171,8 @@
         }
 
     };
+
+
 
     var getLesson = async function (lessonId) {
 
@@ -271,7 +330,9 @@
         logout: logout,
         createCustomerPaymentSession: createCustomerPaymentSession,
         confirmSignup: confirmSignup,
-        subscriptionPortal: subscriptionPortal
+        subscriptionPortal: subscriptionPortal,
+        signupWithAccessCode: signupWithAccessCode,
+        lessonStreamingUrl: lessonStreamingUrl
 
     }
 

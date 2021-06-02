@@ -25,5 +25,10 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public bool Active { get; set; }
 
+        [ForeignKey("SubscriptionTypeId")]
+        public SubscriptionType SubscriptionType { get; set; }
+
+        public int SubscriptionTypeId { get; set; }
+
     }
 }

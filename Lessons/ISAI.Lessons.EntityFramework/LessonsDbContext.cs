@@ -24,6 +24,10 @@ namespace ISAI.Lessons.EntityFramework
 
         public DbSet<Subscription> Subscription { get; set; }
 
+        public DbSet<SubscriptionCode> SubscriptionCode { get; set; }
+
+        public DbSet<SubscriptionType> SubscriptionType { get; set; }
+
         public DbSet<LessonGroup> LessonGroup { get; set; }
 
         public DbSet<Lesson> Lesson { get; set; }

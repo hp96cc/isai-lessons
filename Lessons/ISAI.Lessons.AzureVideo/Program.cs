@@ -1,5 +1,6 @@
 ﻿using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.EntityFramework;
+using ISAI.Lessons.EntityFramework.Models;
 using Microsoft.Graph;
 using Newtonsoft.Json;
 using System;
@@ -42,6 +43,28 @@ namespace ISAI.Lessons.AzureVideo
         }
         static async Task AsyncMain(string[] args)
         {
+
+            //using (var db = new LessonsDbContext())
+            //{
+
+            //    for(int i=0; i < 60; i++)
+            //    {
+            //        var code = new SubscriptionCode();
+            //        code.Code = Guid.NewGuid().ToString();
+            //        code.SubscriptionTypeId = 1;
+            //        code.ValidFrom = new DateTime(2021, 5, 1);
+            //        code.ValidFrom = new DateTime(2021, 8, 1);
+            //        code.LicenceDays = 10;
+
+            //        db.Entry(code).State = EntityState.Added;
+
+            //    }
+
+            //     await db.SaveChangesAsync();
+
+            //}
+
+            //    return;
 
 
             try

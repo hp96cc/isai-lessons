@@ -122,6 +122,8 @@
     <Compile Include="Models\Lesson.cs" />
     <Compile Include="Models\LessonGroup.cs" />
     <Compile Include="Models\Subscription.cs" />
+    <Compile Include="Models\SubscriptionCode.cs" />
+    <Compile Include="Models\SubscriptionType.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="LessonsDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

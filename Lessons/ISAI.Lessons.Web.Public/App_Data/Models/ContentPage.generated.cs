@@ -52,6 +52,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent BackgroundImage => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("backgroundImage");
 
 		///<summary>
+		/// Gallery Images
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("galleryImages")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Core.Models.PublishedContent.IPublishedContent> GalleryImages => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>>("galleryImages");
+
+		///<summary>
 		/// HTML Content
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
@@ -71,5 +78,12 @@ namespace Umbraco.Web.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		[ImplementPropertyType("title")]
 		public string Title => this.Value<string>("title");
+
+		///<summary>
+		/// Use Gallery
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("useGallery")]
+		public bool UseGallery => this.Value<bool>("useGallery");
 	}
 }

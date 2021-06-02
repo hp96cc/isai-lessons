@@ -11,7 +11,7 @@
 @helper RenderChildren(LessonGroup lessonGroup)
 {
 
-   
+
 
     <div class="row">
 
@@ -37,12 +37,12 @@
                     <div class="col-md-6 col-lg-4 margin-25px-bottom xs-margin-15px-bottom">
                         <div class="courses-block">
                             <div class="courses-pic">
-                                <a href="course-details.html">
+                                <a href="@childLesson.Url()">
                                     <img src="/assets/lessonthumbs/thumb_@(childLesson.MediaId).jpg" alt="@childLesson.Title" />
                                 </a>
                             </div>
                             <div class="course-desc">
-                                <h4><a href="#">@childLesson.Title</a></h4>
+                                <h4 style="font-family:Comic Sans MS"> <a href="@childLesson.Url()">@childLesson.Title</a></h4>
                                 @*<p>Our kids extracurricular activities and games that children love after school activities.</p>*@
                             </div>
                             @*<div class="course-details">
@@ -135,11 +135,11 @@
 
 
             @*<div class="section-heading mb-2">
-                <h3>@Model.Title</h3>
+                    <h3>@Model.Title</h3>
 
 
-                <span class="title-separator"></span>
-            </div>*@
+                    <span class="title-separator"></span>
+                </div>*@
 
             <div class="row no-gutters">
 
@@ -193,6 +193,15 @@ else
 
             @if (Model.ShowSampleVideo)
             {
+
+                <div class="row mt-3 mb-4">
+
+                    <div class="col-12 text-center">
+                        <h3>Check out our sample lessons below</h3>
+                    </div>
+
+                </div>
+
                 <div class="row mt-3 mb-4">
 
                     <div class="col-6">
@@ -264,7 +273,7 @@ else
                                     {
                                         <div class="courses-pic">
 
-                                            <a href="course-details.html">
+                                            <a href="@childLessonGroup.Url()">
                                                 <img src="@childLessonGroup.ParentImage.MediaUrl()" alt="@childLessonGroup.Title" />
                                             </a>
                                         </div>

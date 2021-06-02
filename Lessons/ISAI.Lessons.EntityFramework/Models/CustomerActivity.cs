@@ -22,7 +22,5 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public DateTimeOffset StartDateTime { get; set; }
 
-
-
     }
 }

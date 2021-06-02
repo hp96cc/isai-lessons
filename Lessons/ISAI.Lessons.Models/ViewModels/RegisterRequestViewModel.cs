@@ -31,6 +31,10 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
         [JsonProperty("acceptMarketing")]
         public bool AcceptMarketing { get; set; }
 
+        [JsonProperty("accessCode")]
+        public string AccessCode { get; set; }
 
     }
+
+
 }
