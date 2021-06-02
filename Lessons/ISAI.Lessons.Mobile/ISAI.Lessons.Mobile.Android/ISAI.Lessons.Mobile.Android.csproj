@@ -47,7 +47,8 @@
     <AndroidSigningStorePass>uteach123@@**</AndroidSigningStorePass>
     <AndroidSigningKeyPass>uteach123@@**</AndroidSigningKeyPass>
     <AndroidSigningKeyAlias>uteach</AndroidSigningKeyAlias>
-    <AndroidLinkMode>Full</AndroidLinkMode>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />

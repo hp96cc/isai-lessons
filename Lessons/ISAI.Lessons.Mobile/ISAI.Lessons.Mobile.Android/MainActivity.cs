@@ -46,5 +46,7 @@ namespace ISAI.Lessons.Mobile.Droid
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+
+   
     }
 }
