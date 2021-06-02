@@ -283,6 +283,38 @@
 
     };
 
+
+    var sendEmail = async function (emailModel) {
+
+        var result = null;
+        var url = this.baseUrl + "sendemail";
+
+        var requestData = JSON.stringify(emailModel);
+
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                data: requestData,
+                contentType: 'application/json',
+            });
+
+            result = data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+        return result;
+
+    };
+
+
+
     var sendResetPassword = async function () {
 
     };
@@ -332,7 +364,8 @@
         confirmSignup: confirmSignup,
         subscriptionPortal: subscriptionPortal,
         signupWithAccessCode: signupWithAccessCode,
-        lessonStreamingUrl: lessonStreamingUrl
+        lessonStreamingUrl: lessonStreamingUrl,
+        sendEmail: sendEmail
 
     }
 

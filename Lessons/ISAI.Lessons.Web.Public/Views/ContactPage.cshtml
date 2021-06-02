@@ -1,101 +1,167 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ContactPage>
-	@using ContentModels = Umbraco.Web.PublishedModels;
-	@{
-	Layout = "Master.cshtml";
-	}
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
 
 
 
-	<!-- start page title section -->
-	<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
-		<div class="container">
-			<div class="page-title">
-				<h1>@Model.Title</h1>
-				<div class="page-link">
-					<ul>
-						<li><a href="/">Home</a></li>
-						<li><a href="javascript:void(0)">Contact Us</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- end page title section -->
-	<!-- start contact info section -->
-	<section>
-		<div class="container">
-            <div class="row">
+<!-- start page title section -->
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
+    <div class="container">
+        <div class="page-title">
+            <h1>@Model.Title</h1>
+            <div class="page-link">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="javascript:void(0)">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title section -->
+<!-- start contact form section -->
+<section class="no-padding-top pb-5">
+    <div class="container">
+        <div class="section-heading">
+            <h3>@Model.MessageTitle</h3>
+            <span class="title-separator"></span>
+        </div>
+        <div class="row">
+            <div class="col-lg-9 center-col">
 
-                @foreach (var iconLink in Model.TopIconLinks)
-                {
 
-                    <div class="col-md-3">
-                        <div class="contact-detail text-center">
-                            <div class="contact-icon bg-pink pink-border">
-                                <i class="@iconLink.IconReference"></i>
+                <form method="post" id="contact-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Name *:</label>
+                                <input type="text" class="form-control" name="input-name" id="input-name" required />
                             </div>
-                            <h5 class="text-uppercase margin-5px-bottom margin-25px-top sm-margin-20px-top font-size20 md-font-size18 sm-font-size16">@iconLink.Title</h5>
-                            <p class="no-margin-bottom">
-                                <a href="@iconLink.Link">@iconLink.LinkText</a>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Email Address *:</label>
+                                <input type="email" class="form-control" name="input-email" id="input-email" required />
+                            </div>
+                        </div>
 
-                            </p>
+                        <div class="col-md-12">
+                            <label>Write a message *:</label>
+                            <div class="form-group">
+                                <textarea rows="4" class="form-control" name="input-message" id="input-message" required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12 text-center margin-25px-top xs-margin-15px-top">
+                            <button type="button" onclick="SendMessage();" class="butn">Submit Now</button>
                         </div>
                     </div>
+                </form>
+
+                <div class="spinner-border  mb-10" role="status" id="spinner-loading" style="display:none;">
+                    <span class="sr-only">Loading...</span>
+                </div>
+
+
+                <div id="label-sent" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
+                    Your message has been sent
+
+                </div>
+
+                <div id="label-error" class="alert alert-danger delivery-error-label  mt-4" role="alert" style="display:none;">
+                    We could not send your message at this time
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end contact form section -->
+<!-- start contact info section -->
+<section class="no-padding-top pb-5">
+    <div class="container">
+        <div class="row">
+
+            @foreach (var iconLink in Model.TopIconLinks)
+            {
+
+                <div class="col-md-3 mx-auto pt-5">
+                    <div class="contact-detail text-center">
+                        <div class="contact-icon bg-pink pink-border">
+                            <i class="@iconLink.IconReference"></i>
+                        </div>
+                        <h5 class="text-uppercase margin-5px-bottom margin-25px-top sm-margin-20px-top font-size20 md-font-size18 sm-font-size16">@iconLink.Title</h5>
+                        <p class="no-margin-bottom">
+                            <a href="@iconLink.Link">@iconLink.LinkText</a>
+
+                        </p>
+                    </div>
+                </div>
+
+            }
+
+
+
+        </div>
+    </div>
+</section>
+<!-- end contact info section -->
+
+@section Scripts {
+
+    <script>
+
+
+        async function SendMessage() {
+
+            var form = document.getElementById("contact-form");
+
+            if (form.checkValidity() === false) {
+
+                event.preventDefault();
+                event.stopPropagation();
+                form.classList.add('was-validated');
+
+            } else {
+
+                $('#contact-form').hide();
+                $('#label-error').hide();
+                $('#spinner-loading').show();
+
+                var emailModel = {
+
+                    Name: $('#input-name').val(),
+                    Email: $('#input-email').val(),
+                    Subject: "SOL Contact Form",
+                    Message: $('#input-message').val()
+
+                };
+
+                var data = await lessonsApp.sendEmail(emailModel);
+
+                if (data.Status === 0) {
+
+
+                    $('#label-sent').show();
+                    $('#spinner-loading').hide();
+
+                } else {
+
+                    //console.log(ErrorText);
+
+                    $('#contact-form').show();
+                    $('#label-error').show();
+                    $('#spinner-loading').hide();
 
                 }
 
 
+            }
 
-            </div>
-		</div>
-	</section>
-	<!-- end contact info section -->
-	<!-- start contact form section -->
-	<section class="no-padding-top">
-		<div class="container">
-			<div class="section-heading">
-				<h3>@Model.MessageTitle</h3>
-				<span class="title-separator"></span>
-			</div>
-			<div class="row">
-				<div class="col-lg-9 center-col">
+        }
 
+    </script>
 
-					<form method="post">
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label>First Name *:</label>
-									<input type="text" class="form-control" name="name" />
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label>Email Address *:</label>
-									<input type="email" class="form-control" name="email" />
-								</div>
-							</div>
-							@*<div class="col-md-12">
-								<div class="form-group">
-									<label>Subject *:</label>
-									<input type="text" class="form-control" name="name" />
-								</div>
-							</div>*@
-							<div class="col-md-12">
-								<label>Write a message *:</label>
-								<div class="form-group">
-									<textarea rows="4" class="form-control"></textarea>
-								</div>
-							</div>
-							<div class="col-md-12 text-center margin-25px-top xs-margin-15px-top">
-								<button type="submit" class="butn">Submit Now</button>
-							</div>
-						</div>
-					</form>
-
-
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- end contact form section -->
+}

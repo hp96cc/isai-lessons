@@ -169,6 +169,37 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+        [AllowAnonymous] 
+        [Route("api/app/sendemail")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<bool>> SendEmail(SendEmailRequestViewModel request)
+        {
+            var response = new Lessons.Models.Models.ResponseData<bool>();
+            var graphApi = new MicrosoftGraphApiService();
+
+            try
+            {
+                await graphApi.SendEmail("Craig.Champion@scottishonlinelessons.com", request.Subject, request.Message, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+                response.Content = true;
+                response.Status = ResponseStatus.OK;
+              
+
+            } catch(Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ISAI.Lessons.Models.Models.ErrorResponse>() { new ISAI.Lessons.Models.Models.ErrorResponse () {
+                        Message = ex.Message,
+                        ErrorDescription = ex.StackTrace
+                    }
+                };
+                return response;
+            }
+
+      
+            return response;
+
+        }
+
         [AllowAnonymous]
         [Route("api/app/lessons")]
         [HttpPost]

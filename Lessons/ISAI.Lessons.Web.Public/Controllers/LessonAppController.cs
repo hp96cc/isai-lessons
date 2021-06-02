@@ -87,6 +87,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         }
 
+       
+
 
         [Route("api/lessonapp/logout")]
         [HttpPost]
@@ -413,6 +415,50 @@ namespace ISAI.Lessons.Web.Public.Controllers
             catch (Exception ex)
             {
                 throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
+        [AllowAnonymous]
+        [Route("api/lessonapp/sendemail")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<bool>> SendEmail(SendEmailRequestViewModel request)
+        {
+            SetHttpClient();
+
+            var response = new Lessons.Models.Models.ResponseData<bool>();
+
+
+            try
+            {
+ 
+                var json = JsonConvert.SerializeObject(request);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/sendemail", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var responseContent = JsonConvert.DeserializeObject<Lessons.Models.Models.ResponseData<bool>>(serialisedContent);
+                    return responseContent;
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
+                        Message = ex.Message,
+                        ErrorDescription = ex.StackTrace
+                    }
+                };
+                return response;
             }
 
         }
