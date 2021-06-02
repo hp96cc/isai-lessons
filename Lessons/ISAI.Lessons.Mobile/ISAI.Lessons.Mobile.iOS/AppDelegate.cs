@@ -38,9 +38,6 @@ namespace ISAI.Lessons.Mobile.iOS
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 
-       
-   
-
             return base.FinishedLaunching(app, options);
         }
 

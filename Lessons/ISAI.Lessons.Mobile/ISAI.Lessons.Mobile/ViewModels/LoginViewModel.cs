@@ -57,14 +57,13 @@ namespace ISAI.Lessons.Mobile.ViewModels
         }
 
 
-        
+
 
         async Task OnLoginClicked()
         {
 
 
             CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
-
 
             try
             {
@@ -78,7 +77,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                 if (loginResponse.Status == ResponseStatus.OK)
                 {
-          
+
                     var appUser = new AppUser()
                     {
                         Id = Guid.NewGuid().ToString(),
@@ -103,13 +102,15 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     return;
                 }
 
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.StackTrace);
             }
 
             CrossHud.Current.Dismiss();
             CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
+
 
         }
 
