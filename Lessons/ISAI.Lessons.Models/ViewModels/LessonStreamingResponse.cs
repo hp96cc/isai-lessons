@@ -7,5 +7,7 @@ namespace ISAI.Lessons.Models.ViewModels
     public class LessonStreamingResponse
     {
         public string StreamingUrl { get; set; }
+
+        public string Token { get; set; }
     }
 }

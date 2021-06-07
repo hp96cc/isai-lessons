@@ -57,7 +57,7 @@
         <div class="row">
 
             <!--  start course left-->
-            <div class="col-12 sm-margin-40px-bottom ms-margin-30px-bottom">
+            <div class="col-12 sm-margin-40px-bottom ms-margin-30px-bottom text-center">
 
                 @*<div>
                         <a href="#" data-toggle="modal" data-target="#video-modal"><img class="img-fluid" src="~/Assets/img/lesson-placeholder.png" alt="Play Video" /></a>
@@ -106,25 +106,25 @@
 
                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                 {
-                    <div class="embed-responsive embed-responsive-16by9">
-                        <iframe id="lessonplayer" src="" name="lessonplayer" scrolling="no" frameborder="no" align="center" height="280px" width="500px" allowfullscreen></iframe>
+       
+                <video id="lessonplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered" controls width="640" height="400" data-setup='{"fluid": true, "logo": { "enabled": false }, "techOrder": ["azureHtml5JS", "flashSS", "silverlightSS", "html5"], "nativeControlsForTouch": false}' tabindex="0">
+                </video>
 
-                    </div>
 
                     @*<div class="float-right p p-3"><a href="javascript:ToggleLessonNotes();"><i class="far fa-file"></i>&nbsp;&nbsp;<span id="notes-button-label">Show Notes</span></a></div>
 
 
-                    <div id="lesson-notes" class="col-12 p-3 mt-5 d-none">
+                        <div id="lesson-notes" class="col-12 p-3 mt-5 d-none">
 
-                        <h4>Lesson Notes</h4>
+                            <h4>Lesson Notes</h4>
 
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vel porttitor velit. Nullam sit amet laoreet dui. Integer eleifend lacus sit amet elit mattis porta. Aenean et purus faucibus elit commodo molestie. Phasellus ac molestie lacus. Integer ullamcorper tellus odio, ut varius lorem bibendum at. Vestibulum commodo, neque eget maximus molestie, risus lacus hendrerit orci, non vestibulum nulla elit a eros. Donec fringilla dui id nibh vestibulum vestibulum vitae non orci. Morbi sit amet malesuada elit. Integer non sodales ante, nec accumsan nisl. Suspendisse accumsan sit amet risus in commodo.
-                        </p><p>
-                            Proin aliquam venenatis cursus. Etiam non leo a velit bibendum scelerisque eu sit amet nisi. Cras quis orci ac arcu vulputate suscipit non pharetra est. Vivamus tempor gravida consectetur. Nulla finibus placerat lacus, vel ullamcorper odio. Etiam vestibulum tincidunt purus. Donec ullamcorper sem urna, eu vehicula ligula euismod sed. Donec convallis felis dapibus turpis posuere lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin sit amet leo vitae est euismod egestas sit amet a metus. Morbi sem nulla, elementum non consectetur et, tempus ut lacus. Phasellus molestie, quam ac bibendum dignissim, enim est ornare tortor, sed dignissim magna ligula eu metus. Duis aliquam nisl non mauris vehicula, non fermentum orci tincidunt. Nunc ullamcorper tortor non nisl laoreet pulvinar.
-                        </p>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vel porttitor velit. Nullam sit amet laoreet dui. Integer eleifend lacus sit amet elit mattis porta. Aenean et purus faucibus elit commodo molestie. Phasellus ac molestie lacus. Integer ullamcorper tellus odio, ut varius lorem bibendum at. Vestibulum commodo, neque eget maximus molestie, risus lacus hendrerit orci, non vestibulum nulla elit a eros. Donec fringilla dui id nibh vestibulum vestibulum vitae non orci. Morbi sit amet malesuada elit. Integer non sodales ante, nec accumsan nisl. Suspendisse accumsan sit amet risus in commodo.
+                            </p><p>
+                                Proin aliquam venenatis cursus. Etiam non leo a velit bibendum scelerisque eu sit amet nisi. Cras quis orci ac arcu vulputate suscipit non pharetra est. Vivamus tempor gravida consectetur. Nulla finibus placerat lacus, vel ullamcorper odio. Etiam vestibulum tincidunt purus. Donec ullamcorper sem urna, eu vehicula ligula euismod sed. Donec convallis felis dapibus turpis posuere lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin sit amet leo vitae est euismod egestas sit amet a metus. Morbi sem nulla, elementum non consectetur et, tempus ut lacus. Phasellus molestie, quam ac bibendum dignissim, enim est ornare tortor, sed dignissim magna ligula eu metus. Duis aliquam nisl non mauris vehicula, non fermentum orci tincidunt. Nunc ullamcorper tortor non nisl laoreet pulvinar.
+                            </p>
 
-                    </div>*@
+                        </div>*@
 
 
                 }
@@ -153,10 +153,10 @@
                 @if (!string.IsNullOrWhiteSpace(Model.Description.ToString()))
                 {
 
-                <div class="padding-20px-right sm-no-padding-right margin-40px-bottom margin-100px-top sm-margin-30px-bottom">
-                    <h4 class="margin-15px-bottom">Course Description</h4>
-                    @Model.Description
-                </div>
+                    <div class="padding-20px-right sm-no-padding-right margin-40px-bottom margin-100px-top sm-margin-30px-bottom">
+                        <h4 class="margin-15px-bottom">Course Description</h4>
+                        @Model.Description
+                    </div>
 
                 }
 
@@ -238,6 +238,12 @@
 
 <button id="button-load" onclick="SetLessonUrl()">Load</button>
 
+@section Head {
+
+    <link href="//amp.azure.net/libs/amp/2.3.8/skins/amp-default/azuremediaplayer.min.css" rel="stylesheet">
+    <script src="//amp.azure.net/libs/amp/2.3.8/azuremediaplayer.min.js"></script>
+}
+
 @section Scripts {
 
 
@@ -271,7 +277,18 @@
 
                 if (data.Status == 0) {
 
-                    $("#lessonplayer").attr('src', '//aka.ms/ampembed?url=' + encodeURIComponent(data.Content.StreamingUrl))
+                    var myPlayer = amp("lessonplayer", /* Options */);
+                    myPlayer.src([{
+                        src: data.Content.StreamingUrl,
+                        type: "application/vnd.ms-sstr+xml",
+                        protectionInfo: [{
+                            type: "AES",
+                            authenticationToken: data.Content.Token
+                        }]
+                    },]
+                    );
+
+                    //$("#lessonplayer").attr('src', '//aka.ms/ampembed?url=' + encodeURIComponent(data.Content.StreamingUrl))
                     return;
                 }
 

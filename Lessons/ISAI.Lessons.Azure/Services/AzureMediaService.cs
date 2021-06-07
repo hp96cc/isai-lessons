@@ -13,6 +13,9 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
 using ISAI.Lessons.Models.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ISAI.Lessons.Core.Services
 {
@@ -35,9 +38,35 @@ namespace ISAI.Lessons.Core.Services
         string _primaryKey = "BcrcZvgOBUx1H6JsiIN5lS98NaYxBRAMPwB3PYwqIVv5UoisjMRs0g==";
 
 
+        public async Task CreateAESLocator(string assetName, string locatorName, string contentPolicyName)
+        {
+
+            IAzureMediaServicesClient client = await CreateMediaServicesClientAsync();
+
+            // Set the polling interval for long running operations to 2 seconds.
+            // The default value is 30 seconds for the .NET client SDK
+            client.LongRunningOperationRetryTimeout = 5;
 
 
-        public async Task<EncodeVideoOutput> EncodeFile(string jobId, string inputFilePath, string outputFileName)
+            var asset = await client.Assets.GetAsync(_resourceGroup, _accountName, assetName);
+
+            if(asset != null)
+            {
+                Console.WriteLine(asset.AssetId);
+                Console.WriteLine(asset.Name);
+
+                var locator = await CreateStreamingLocatorAsync(client, _resourceGroup, _accountName, asset.Name, locatorName, false, true, contentPolicyName);               
+
+            }
+
+            Console.WriteLine("Locator created.");
+
+         
+
+
+        }
+
+            public async Task<EncodeVideoOutput> EncodeFile(string jobId, string inputFilePath, string outputFileName)
         {
 
             IAzureMediaServicesClient client = await CreateMediaServicesClientAsync();
@@ -389,17 +418,49 @@ namespace ISAI.Lessons.Core.Services
             string accountName,
             string assetName,
             string locatorName, 
-            bool isDownload)
+            bool isDownload,
+            bool isEncrypted = false, 
+            string contentPolicyName = null)
         {
+
+
+            var streamingLocator = new StreamingLocator
+            {
+                AssetName = assetName,
+                StreamingPolicyName = PredefinedStreamingPolicy.DownloadOnly
+            };
+
+            if(!isDownload)
+            {
+
+
+                if (isEncrypted)
+                {
+                    streamingLocator = new StreamingLocator
+                    {
+                        AssetName = assetName,
+                        StreamingPolicyName = PredefinedStreamingPolicy.ClearKey,
+                        DefaultContentKeyPolicyName = contentPolicyName
+                    };
+
+                } else
+                {
+                    streamingLocator = new StreamingLocator
+                    {
+                        AssetName = assetName,
+                        StreamingPolicyName = PredefinedStreamingPolicy.ClearStreamingOnly
+                    };
+                }
+
+            }
+
+         
+
             StreamingLocator locator = await client.StreamingLocators.CreateAsync(
                 resourceGroup,
                 accountName,
                 locatorName,
-                new StreamingLocator
-                {
-                    AssetName = assetName,
-                    StreamingPolicyName = isDownload ? PredefinedStreamingPolicy.DownloadOnly : PredefinedStreamingPolicy.ClearStreamingOnly
-                });
+                streamingLocator);
 
             return locator;
         }
@@ -425,7 +486,6 @@ namespace ISAI.Lessons.Core.Services
         {
 
             if(client == null) client = await CreateMediaServicesClientAsync();
-            if (resourceGroupName == null) resourceGroupName = _resourceGroup;
             if (resourceGroupName == null) resourceGroupName = _resourceGroup;
             if (accountName == null) accountName = _accountName;
 
@@ -505,6 +565,35 @@ namespace ISAI.Lessons.Core.Services
             return streamingUrls;
         }
         // </GetStreamingURLs>
+
+        public async Task<Tuple<string, string>> GetEncryptedStreamingUrlsAsync(
+           IAzureMediaServicesClient client,
+           string resourceGroupName,
+           string accountName,
+           string locatorName)
+        {
+
+            if (client == null) client = await CreateMediaServicesClientAsync();
+            if (resourceGroupName == null) resourceGroupName = _resourceGroup;
+            if (accountName == null) accountName = _accountName;
+
+
+            var locator = await client.StreamingLocators.GetAsync(resourceGroupName, accountName, locatorName);
+
+            var tokenSigningKey = Convert.FromBase64String(_primaryKey);
+            string keyIdentifier = locator.ContentKeys.First().Id.ToString();
+
+            string token = GetTokenAsync(_issuer, _audience, keyIdentifier, tokenSigningKey);
+
+            string dashPath = await GetDASHStreamingUrlAsync(client, _resourceGroup, _accountName, locatorName);
+
+            return new Tuple<string, string>(dashPath, token);
+
+            //return string.Format("{0}&aes=true&aestoken=Bearer%3D{1}", dashPath, token);
+
+        }
+
+
 
         /// <summary>
         ///  Downloads the results from the specified output asset, so you can see what you got.
@@ -607,6 +696,102 @@ namespace ISAI.Lessons.Core.Services
             }
         }
         // </CleanUp>
+
+        /// <summary>
+        /// Checks if the "default" streaming endpoint is in the running state,
+        /// if not, starts it.
+        /// Then, builds the streaming URLs.
+        /// </summary>
+        /// <param name="client">The Media Services client.</param>
+        /// <param name="resourceGroupName">The name of the resource group within the Azure subscription.</param>
+        /// <param name="accountName"> The Media Services account name.</param>
+        /// <param name="locatorName">The name of the StreamingLocator that was created.</param>
+        /// <returns></returns>
+        // <GetMPEGStreamingUrl>
+        private static async Task<string> GetDASHStreamingUrlAsync(
+            IAzureMediaServicesClient client,
+            string resourceGroupName,
+            string accountName,
+            string locatorName)
+        {
+            const string DefaultStreamingEndpointName = "default";
+
+            string dashPath = "";
+
+            StreamingEndpoint streamingEndpoint = await client.StreamingEndpoints.GetAsync(resourceGroupName, accountName, DefaultStreamingEndpointName);
+
+            if (streamingEndpoint != null)
+            {
+                if (streamingEndpoint.ResourceState != StreamingEndpointResourceState.Running)
+                {
+                    await client.StreamingEndpoints.StartAsync(resourceGroupName, accountName, DefaultStreamingEndpointName);
+                }
+            }
+
+            ListPathsResponse paths = await client.StreamingLocators.ListPathsAsync(resourceGroupName, accountName, locatorName);
+
+            foreach (StreamingPath path in paths.StreamingPaths)
+            {
+                UriBuilder uriBuilder = new UriBuilder
+                {
+                    Scheme = "https",
+                    Host = streamingEndpoint.HostName
+                };
+
+                // Look for just the DASH path and generate a URL for the Azure Media Player to playback the content with the AES token to decrypt.
+                // Note that the JWT token is set to expire in 1 hour. 
+                if (path.StreamingProtocol == StreamingPolicyStreamingProtocol.Dash)
+                {
+                    uriBuilder.Path = path.Paths[0];
+
+                    dashPath = uriBuilder.ToString();
+
+                }
+            }
+
+            return dashPath;
+        }
+        // </GetMPEGStreamingUrl>
+
+        /// <summary>
+        /// Create a token that will be used to protect your stream.
+        /// Only authorized clients would be able to play the video.  
+        /// </summary>
+        /// <param name="issuer">The issuer is the secure token service that issues the token. </param>
+        /// <param name="audience">The audience, sometimes called scope, describes the intent of the token or the resource the token authorizes access to. </param>
+        /// <param name="keyIdentifier">The content key ID.</param>
+        /// <param name="tokenVerificationKey">Contains the key that the token was signed with. </param>
+        /// <returns></returns>
+        // <GetToken>
+        private static string GetTokenAsync(string issuer, string audience, string keyIdentifier, byte[] tokenVerificationKey)
+        {
+            var tokenSigningKey = new SymmetricSecurityKey(tokenVerificationKey);
+
+            SigningCredentials cred = new SigningCredentials(
+                tokenSigningKey,
+                // Use the  HmacSha256 and not the HmacSha256Signature option, or the token will not work!
+                SecurityAlgorithms.HmacSha256,
+                SecurityAlgorithms.Sha256Digest);
+
+            Claim[] claims = new Claim[]
+            {
+                new Claim(ContentKeyPolicyTokenClaim.ContentKeyIdentifierClaim.ClaimType, keyIdentifier)
+            };
+
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                notBefore: DateTime.Now.AddMinutes(-5),
+                expires: DateTime.Now.AddMinutes(40),
+                signingCredentials: cred);
+
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+
+            return handler.WriteToken(token);
+        }
+        // </GetToken>
+
 
     }
 }

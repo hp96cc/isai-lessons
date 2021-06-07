@@ -99,12 +99,20 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             x.Deleted == false);
 
             var azureMediaService = new AzureMediaService();
-            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id),  StreamingPolicyStreamingProtocol.Hls);
+            var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
 
             return new LessonStreamingResponse()
             {
-                StreamingUrl = urls[0]
+                StreamingUrl = urlTuple.Item1,
+                Token = urlTuple.Item2
             };
+
+            //var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id),  StreamingPolicyStreamingProtocol.Hls);
+
+            //return new LessonStreamingResponse()
+            //{
+            //    StreamingUrl = urls[0]
+            //};
 
         }
 
