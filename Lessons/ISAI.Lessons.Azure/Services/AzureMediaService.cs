@@ -38,15 +38,19 @@ namespace ISAI.Lessons.Core.Services
         string _primaryKey = "BcrcZvgOBUx1H6JsiIN5lS98NaYxBRAMPwB3PYwqIVv5UoisjMRs0g==";
 
 
-        public async Task CreateAESLocator(string assetName, string locatorName, string contentPolicyName)
+        public async Task CreateAESLocator(IAzureMediaServicesClient client,
+            string resourceGroup,
+            string accountName,
+            string assetName, 
+            string locatorName, 
+            string contentPolicyName)
         {
 
-            IAzureMediaServicesClient client = await CreateMediaServicesClientAsync();
+            //IAzureMediaServicesClient client = await CreateMediaServicesClientAsync();
 
-            // Set the polling interval for long running operations to 2 seconds.
-            // The default value is 30 seconds for the .NET client SDK
-            client.LongRunningOperationRetryTimeout = 5;
-
+            //// Set the polling interval for long running operations to 2 seconds.
+            //// The default value is 30 seconds for the .NET client SDK
+            //client.LongRunningOperationRetryTimeout = 5;
 
             var asset = await client.Assets.GetAsync(_resourceGroup, _accountName, assetName);
 
@@ -55,11 +59,18 @@ namespace ISAI.Lessons.Core.Services
                 Console.WriteLine(asset.AssetId);
                 Console.WriteLine(asset.Name);
 
-                var locator = await CreateStreamingLocatorAsync(client, _resourceGroup, _accountName, asset.Name, locatorName, false, true, contentPolicyName);               
+                var currentLocator = await client.StreamingLocators.GetAsync(_resourceGroup, _accountName, locatorName);
 
-            }
+                if (currentLocator != null)
+                {
+                    await client.StreamingLocators.DeleteAsync(_resourceGroup, _accountName, locatorName);
+                    Console.WriteLine("Locator Deleted.");
+                }
 
-            Console.WriteLine("Locator created.");
+                var locator = await CreateStreamingLocatorAsync(client, _resourceGroup, _accountName, asset.Name, locatorName, false, true, contentPolicyName);
+                Console.WriteLine("Locator created.");
+            } 
+          
 
          
 
@@ -78,6 +89,7 @@ namespace ISAI.Lessons.Core.Services
             // Creating a unique suffix so that we don't have name collisions if you run the sample
             // multiple times without cleaning up.
             string jobName = $"job-{jobId}";
+            string aesStreamingLocatorName = $"aes-streaming-locator-{jobId}";
             string streamingLocatorName = $"streaming-locator-{jobId}";
             string downloadLocatorName = $"download-locator-{jobId}";
             string outputAssetName = $"output-{jobId}";
@@ -114,6 +126,7 @@ namespace ISAI.Lessons.Core.Services
 
                 StreamingLocator streamingLocator = await CreateStreamingLocatorAsync(client, _resourceGroup, _accountName, outputAsset.Name, streamingLocatorName, false);
                 StreamingLocator downloadLocator = await CreateStreamingLocatorAsync(client, _resourceGroup, _accountName, outputAsset.Name, downloadLocatorName, true);
+                await CreateAESLocator(client, _resourceGroup, _accountName, outputAsset.Name, streamingLocatorName, "scottishonlinelessons");
 
                 return new EncodeVideoOutput()
                 {

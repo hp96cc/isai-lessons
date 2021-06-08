@@ -70,24 +70,24 @@ namespace ISAI.Lessons.AzureVideo
             //return;
 
             /* Start-  Create AES token **/
-            var azureMediaService = new AzureMediaService();
+            //var azureMediaService = new AzureMediaService();
 
-         
-            using (var db = new LessonsDbContext())
-            {
 
-                var lessons = await db.Lesson.Where(x => x.AssetId != null).ToListAsync();
+            //using (var db = new LessonsDbContext())
+            //{
 
-                foreach (var lesson in lessons)
-                {
-                    var streamingLocatorName = string.Format("aes-streaming-locator-{0}", lesson.Id);
-                    await azureMediaService.CreateAESLocator(string.Format("output-{0}", lesson.Id), streamingLocatorName, "scottishonlinelessons");
+            //    var lessons = await db.Lesson.Where(x => x.AssetId != null).ToListAsync();
 
-                }
+            //    foreach (var lesson in lessons)
+            //    {
+            //        var streamingLocatorName = string.Format("aes-streaming-locator-{0}", lesson.Id);
+            //        await azureMediaService.CreateAESLocator(string.Format("output-{0}", lesson.Id), streamingLocatorName, "scottishonlinelessons");
 
-                Console.ReadLine();
+            //    }
 
-            }
+            //    Console.ReadLine();
+
+            //}
 
 
 
@@ -96,110 +96,110 @@ namespace ISAI.Lessons.AzureVideo
 
             /* End-  Create AES token **/
 
-            //try
-            //{
-            //    //Key sigbning create code
-            //    //byte[] TokenSigningKey = new byte[40];
-            //    //RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            //    //rng.GetBytes(TokenSigningKey);
+            try
+            {
+                //Key sigbning create code
+                //byte[] TokenSigningKey = new byte[40];
+                //RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                //rng.GetBytes(TokenSigningKey);
 
-            //    //var test = Convert.ToBase64String(TokenSigningKey);
-            //    //var t = true;
+                //var test = Convert.ToBase64String(TokenSigningKey);
+                //var t = true;
 
-            //    //var azureMediaService = new AzureMediaService();
-            //    //string jobId = Guid.NewGuid().ToString();
-            //    //var urls = await azureMediaService.EncodeFile(jobId, @"c:\temp\test.mp4", @"c:\temp\");
+                //var azureMediaService = new AzureMediaService();
+                //string jobId = Guid.NewGuid().ToString();
+                //var urls = await azureMediaService.EncodeFile(jobId, @"c:\temp\test.mp4", @"c:\temp\");
 
-            //    //var t = true;
-            //    //foreach (var url in urls)
-            //    //{
-            //    //    Console.WriteLine(url);
-            //    //}
-
-
-            //    //Console.WriteLine("Done. Copy and paste the Streaming URL ending in '/manifest' into the Azure Media Player at 'http://aka.ms/azuremediaplayer'.");
-            //    //Console.WriteLine("See the documentation on Dynamic Packaging for additional format support, including CMAF.");
-            //    //Console.WriteLine("https://docs.microsoft.com/azure/media-services/latest/dynamic-packaging-overview");
+                //var t = true;
+                //foreach (var url in urls)
+                //{
+                //    Console.WriteLine(url);
+                //}
 
 
-            //    var graphApi = new MicrosoftGraphApiService();
-
-            //    var uploadDriveItems = await graphApi.GetFilesForFolder("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", "017W5IPYD74ZP36CAV7BAYCWK5HCICDXIH");
-
-
-            //    foreach (var item in uploadDriveItems)
-            //    {
-            //        var filePath = Path.Combine(videoPath, item.Name);
-
-            //        if (System.IO.File.Exists(filePath))
-            //        {
-            //            Console.WriteLine("Filename: {0} exists, converting", item.Name);
-            //        }
-            //        else
-            //        {
-            //            continue;
-            //            //await graphApi.DownloadFileInChunks(item, videoPath);
-            //        }
-
-            //        await Task.Delay(2000);
-
-            //        //Check file sizes match
-            //        var localFileInfo = new FileInfo(filePath);
-            //        if(localFileInfo.Length != item.Size)
-            //        {
-            //            System.Console.WriteLine("File Sizes do not match, delete local and skip {0} - {1}", localFileInfo.Length, item.Size);
-            //            System.Console.ReadLine();
-            //            System.IO.File.Delete(filePath);
-            //            continue;
-            //        }
-
-            //        //Check existence in database
-            //        using (var db = new LessonsDbContext())
-            //        {
-
-            //            var lesson = await db.Lesson.FirstOrDefaultAsync(x => x.PendingDownload == true && (x.SourceUrl == item.Name || x.SourceUrl == item.Name.Replace(".mp4", "")));
-
-            //            if (lesson != null)
-            //            {
-            //                Console.WriteLine("Match Lesson (Encodiing): {0} with file {1}", lesson.Name, item.Name);
-
-            //                var azureMediaService = new AzureMediaService();
-            //                //string jobId = Guid.NewGuid().ToString();
-            //                var encodingOutput = await azureMediaService.EncodeFile(lesson.Id.ToString(), filePath, @"c:\temp\");
-
-            //                if (encodingOutput != null)
-            //                {
-            //                    lesson.PendingDownload = false;
-            //                    lesson.AssetId = JsonConvert.SerializeObject(encodingOutput);
-            //                    lesson.DateModified = DateTime.UtcNow;
-            //                    db.Entry(lesson).State = EntityState.Modified;
-
-            //                    await db.SaveChangesAsync();
-
-            //                    await graphApi.DeleteFileAsync("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", item.Id);
-            //                    System.IO.File.Delete(filePath);
-            //                }
+                //Console.WriteLine("Done. Copy and paste the Streaming URL ending in '/manifest' into the Azure Media Player at 'http://aka.ms/azuremediaplayer'.");
+                //Console.WriteLine("See the documentation on Dynamic Packaging for additional format support, including CMAF.");
+                //Console.WriteLine("https://docs.microsoft.com/azure/media-services/latest/dynamic-packaging-overview");
 
 
-            //            }
-            //            else
-            //            {
-            //                Console.WriteLine("Could not Match Lesson:  file {0}", item.Name);
-            //                // await graphApi.DeleteFileAsync("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", item.Id);
+                var graphApi = new MicrosoftGraphApiService();
 
-            //            }
-
-            //        }
-
-            //    }
+                var uploadDriveItems = await graphApi.GetFilesForFolder("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", "017W5IPYD74ZP36CAV7BAYCWK5HCICDXIH");
 
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    System.Console.Write(ex.Message);
-            //    System.Console.Write(ex.StackTrace);
-            //}
+                foreach (var item in uploadDriveItems)
+                {
+                    var filePath = Path.Combine(videoPath, item.Name);
+
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        Console.WriteLine("Filename: {0} exists, converting", item.Name);
+                    }
+                    else
+                    {
+                        continue;
+                        //await graphApi.DownloadFileInChunks(item, videoPath);
+                    }
+
+                    await Task.Delay(2000);
+
+                    //Check file sizes match
+                    var localFileInfo = new FileInfo(filePath);
+                    if (localFileInfo.Length != item.Size)
+                    {
+                        System.Console.WriteLine("File Sizes do not match, delete local and skip {0} - {1}", localFileInfo.Length, item.Size);
+                        System.Console.ReadLine();
+                        System.IO.File.Delete(filePath);
+                        continue;
+                    }
+
+                    //Check existence in database
+                    using (var db = new LessonsDbContext())
+                    {
+
+                        var lesson = await db.Lesson.FirstOrDefaultAsync(x => x.PendingDownload == true && (x.SourceUrl == item.Name || x.SourceUrl == item.Name.Replace(".mp4", "")));
+
+                        if (lesson != null)
+                        {
+                            Console.WriteLine("Match Lesson (Encodiing): {0} with file {1}", lesson.Name, item.Name);
+
+                            var azureMediaService = new AzureMediaService();
+                            //string jobId = Guid.NewGuid().ToString();
+                            var encodingOutput = await azureMediaService.EncodeFile(lesson.Id.ToString(), filePath, @"c:\temp\");
+
+                            if (encodingOutput != null)
+                            {
+                                lesson.PendingDownload = false;
+                                lesson.AssetId = JsonConvert.SerializeObject(encodingOutput);
+                                lesson.DateModified = DateTime.UtcNow;
+                                db.Entry(lesson).State = EntityState.Modified;
+
+                                await db.SaveChangesAsync();
+
+                                await graphApi.DeleteFileAsync("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", item.Id);
+                                System.IO.File.Delete(filePath);
+                            }
+
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Could not Match Lesson:  file {0}", item.Name);
+                            // await graphApi.DeleteFileAsync("b!aVNtfIO6nkWwdDrL1WI8Vpoq8e1L-LNPvtx1zASO622kI24tnpiUT5WvCaNnZP4I", item.Id);
+
+                        }
+
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                System.Console.Write(ex.Message);
+                System.Console.Write(ex.StackTrace);
+            }
 
             System.Console.WriteLine("Complete");
             System.Console.ReadLine();
