@@ -95,6 +95,21 @@ namespace ISAI.Lessons.Core.Services
             string outputAssetName = $"output-{jobId}";
             string inputAssetName = $"input-{jobId}";
 
+            //If asset exists we need to delete ot
+            var inputAsset = await client.Assets.GetAsync(_resourceGroup, _accountName, inputAssetName);
+
+            if(inputAsset != null)
+            {
+                await client.Assets.DeleteAsync(_resourceGroup, _accountName, inputAssetName);
+            }
+
+            var outputAsset = await client.Assets.GetAsync(_resourceGroup, _accountName, outputAssetName);
+
+            if (outputAsset != null)
+            {
+                await client.Assets.DeleteAsync(_resourceGroup, _accountName, outputAssetName);
+            }
+
             // Ensure that you have the desired encoding Transform. This is really a one time setup operation.
             var transform = await GetOrCreateTransformAsync(client, _resourceGroup, _accountName, _adaptiveStreamingTransformName);
 
@@ -105,7 +120,7 @@ namespace ISAI.Lessons.Core.Services
             var jobInputAsset = new JobInputAsset(assetName: inputAssetName);
 
             // Output from the encoding Job must be written to an Asset, so let's create one
-            Asset outputAsset = await CreateOutputAssetAsync(client, _resourceGroup, _accountName, outputAssetName);
+            outputAsset = await CreateOutputAssetAsync(client, _resourceGroup, _accountName, outputAssetName);
 
             var job = await SubmitJobAsync(client, _resourceGroup, _accountName, _adaptiveStreamingTransformName, jobName, inputAssetName, outputAsset.Name);
             // In this demo code, we will poll for Job status
@@ -126,7 +141,7 @@ namespace ISAI.Lessons.Core.Services
 
                 StreamingLocator streamingLocator = await CreateStreamingLocatorAsync(client, _resourceGroup, _accountName, outputAsset.Name, streamingLocatorName, false);
                 StreamingLocator downloadLocator = await CreateStreamingLocatorAsync(client, _resourceGroup, _accountName, outputAsset.Name, downloadLocatorName, true);
-                await CreateAESLocator(client, _resourceGroup, _accountName, outputAsset.Name, streamingLocatorName, "scottishonlinelessons");
+                await CreateAESLocator(client, _resourceGroup, _accountName, outputAsset.Name, aesStreamingLocatorName, "scottishonlinelessons");
 
                 return new EncodeVideoOutput()
                 {

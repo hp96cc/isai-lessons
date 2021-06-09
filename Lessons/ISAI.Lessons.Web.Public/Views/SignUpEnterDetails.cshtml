@@ -106,7 +106,7 @@
                                 <div class="col-md-12" id="div-input-accesscode" style="display:none;">
                                     <div class="form-group">
                                         <label>Access Code *:</label>
-                                        <input type="text"   class="form-control" id="input-accesscode" name="input-accesscode" autocomplete="none" required />
+                                        <input type="text"   class="form-control" id="input-accesscode" name="input-accesscode" autocomplete="none" />
                                         <div class="invalid-feedback">Access code is required</div>
                                     </div>
                                 </div>
@@ -159,10 +159,12 @@
                 $("#button-checkout").hide();
                 $("#button-activate").show();
                 $("#div-input-accesscode").show();
+                $('#input-accesscode').attr('required', 'required');
                
 
             } else {
 
+                $('#input-accesscode').removeAttr('required');
                 $("#button-checkout").show();
                 $("#button-activate").hide();
                 $("#div-input-accesscode").hide();
@@ -273,7 +275,8 @@
 
                 if (data.sessionId != null) {
 
-                    var stripe = Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');
+                    //var stripe = Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');
+                    var stripe = Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');
                     stripe.redirectToCheckout({
                         sessionId: data.sessionId
                     }).then(handleResult);

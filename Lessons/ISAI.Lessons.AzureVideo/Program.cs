@@ -141,7 +141,7 @@ namespace ISAI.Lessons.AzureVideo
                         //await graphApi.DownloadFileInChunks(item, videoPath);
                     }
 
-                    await Task.Delay(2000);
+                    await Task.Delay(1000);
 
                     //Check file sizes match
                     var localFileInfo = new FileInfo(filePath);

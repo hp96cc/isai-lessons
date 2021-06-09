@@ -107,13 +107,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 Token = urlTuple.Item2
             };
 
-            //var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id),  StreamingPolicyStreamingProtocol.Hls);
-
-            //return new LessonStreamingResponse()
-            //{
-            //    StreamingUrl = urls[0]
-            //};
-
         }
 
         //[AllowAnonymous] //remove at runtime
