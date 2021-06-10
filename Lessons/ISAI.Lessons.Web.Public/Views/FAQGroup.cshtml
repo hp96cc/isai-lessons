@@ -1,5 +1,90 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.FAqgroup>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
-	Layout = "Master.cshtml";
+    Layout = "Master.cshtml";
+
+    var faqGroups = Model.Children<FAqgroup>();
+
 }
+
+
+<!-- start page title section -->
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png">
+    <div class="container">
+        <div class="page-title">
+            <h1>@Model.Title</h1>
+            <div class="page-link">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="javascript:void(0)">@Model.Name</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title section -->
+<!-- start faq section -->
+<section>
+    <div class="container lg-container">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="sm-margin-40px-bottom">
+                    <div id="accordion" class="accordion-style">
+
+                        @{
+
+                            string[] colours = new string[5] { "sky", "yellow", "pink", "green", "purple" };
+
+                            var counter = 1;
+
+
+                            foreach (var faqGroup in faqGroups)
+                            {
+                                <div class="card border border-width-2 border-sky">
+                                    <div class="card-header" id="heading-@counter">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link bg-@(colours[counter - 1]) @(counter == 1 ? "" : "collapsed")" data-toggle="collapse" data-target="#collapse-@counter" aria-expanded="@(counter == 1 ? "true" : "false")" aria-controls="collapse-@counter">@faqGroup.Title</button>
+                                        </h5>
+                                    </div>
+                                    <div id="collapse-@counter" class="collapse @(counter == 1 ? "show" : "")" aria-labelledby="heading-@counter" data-parent="#accordion">
+                                        <div class="card-body">
+
+                                            @{
+                                                var faqs = faqGroup.Children<FAqitem>();
+
+                                                <ul class="list-style2">
+                                                    @foreach (var faq in faqs)
+                                                    {
+                                                    <li><a href="@faq.Url()"><u>@faq.Question</u></a></li>
+
+                                                    }
+
+
+                                                </ul>
+
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                counter++;
+
+                            }
+
+
+                        }
+
+                     
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</section>
+<!-- end faq section -->

@@ -43,5 +43,19 @@ namespace Umbraco.Web.PublishedModels
 		{ }
 
 		// properties
+
+		///<summary>
+		/// Description
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("description")]
+		public global::System.Web.IHtmlString Description => this.Value<global::System.Web.IHtmlString>("description");
+
+		///<summary>
+		/// Title
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("title")]
+		public string Title => this.Value<string>("title");
 	}
 }

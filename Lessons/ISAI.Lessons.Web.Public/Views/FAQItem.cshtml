@@ -1,5 +1,45 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.FAqitem>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
-	Layout = "Master.cshtml";
+    Layout = "Master.cshtml";
 }
+
+
+<!-- start page title section -->
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png">
+    <div class="container">
+        <div class="page-title">
+            <h1>@Model.Question</h1>
+            <div class="page-link">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/faqs">FAQs</a></li>
+                    <li><a href="javascript:void(0)">@Model.Parent.Name</a></li>
+                    <li><a href="javascript:void(0)">@Model.Question</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title section -->
+<!-- start service details section -->
+<section class="pb-2">
+    <div class="container">
+
+        <div class="row">
+
+            <div class="margin-40px-bottom sm-margin-30px-bottom">
+                <div class="row align-items-center">
+                    <div class="col-12  xs-margin-25px-bottom">
+                        <h4 class="margin-15px-bottom">@Model.Question</h4>
+                        @Model.Answer
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</section>
