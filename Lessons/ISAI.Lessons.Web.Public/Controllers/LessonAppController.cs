@@ -141,6 +141,42 @@ namespace ISAI.Lessons.Web.Public.Controllers
             }
         }
 
+        [Route("api/lessonapp/savecustomer")]
+        [HttpPost]
+        public async Task<Customer> Customer(Customer customer)
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+
+                var json = JsonConvert.SerializeObject(customer);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/savecustomer", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    customer = JsonConvert.DeserializeObject<Customer>(serialisedContent);
+                    return customer;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+
+
 
         [Route("api/lessonapp/lesson")]
         [HttpPost]
@@ -355,16 +391,14 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
                 var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessonstreamurl", content).ConfigureAwait(false);
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/encryptlessonstreamurl", content).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var lessonStreamingResponse = JsonConvert.DeserializeObject<LessonStreamingResponse>(serialisedContent);
+                    var lessonStreamingResponse = JsonConvert.DeserializeObject<Lessons.Models.Models.ResponseData<LessonStreamingResponse>>(serialisedContent);
+                    return lessonStreamingResponse;
 
-                    response.Status = ResponseStatus.OK;
-                    response.Content = lessonStreamingResponse;
-                    return response;
                 }
                 else
                 {

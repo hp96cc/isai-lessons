@@ -9,7 +9,10 @@ namespace ISAI.Lessons.Models.Enums
 
         HttpError,
         Unspecified,
-        UserAlreadyExists
-    
+        UserAlreadyExists,
+        LicenceExpired,
+        InvalidLicence,
+        TooManyDevices
+
     }
 }

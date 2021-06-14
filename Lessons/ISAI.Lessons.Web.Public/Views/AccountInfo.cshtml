@@ -69,16 +69,15 @@
                             <div class="row">
 
                                 <!--<div class="col-12 ">-->
+                                <!-- Email -->
+                                <!--<div class="form-group">
+            <label for="accountFirstName">
+                Title *
+            </label>
+            <input class="form-control form-control-sm" id="accountTitle" type="text" placeholder="Title *" required>
+        </div>
 
-                                    <!-- Email -->
-                                    <!--<div class="form-group">
-                                        <label for="accountFirstName">
-                                            Title *
-                                        </label>
-                                        <input class="form-control form-control-sm" id="accountTitle" type="text" placeholder="Title *" required>
-                                    </div>
-
-                                </div>-->
+    </div>-->
 
                                 <div class="col-12">
 
@@ -122,26 +121,33 @@
                                         <label for="accountEmail">
                                             Phone Number *
                                         </label>
-                                        <input class="form-control form-control-sm" id="accountPhone" type="tel" placeholder="Phone *" required>
+                                        <input class="form-control form-control-sm" id="accountPhone" type="tel" placeholder="Phone">
                                     </div>
 
                                 </div>
 
-              
+
                                 <div class="col-12">
 
                                     <!-- Button -->
                                     <button class="butn x-small float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SaveCustomer();">Save Changes</button>
 
+                                   
+
+                                </div>
+
+                                <div class="col-12">
+                                    <div id="account-error-label" class="alert alert-danger m-3 delivery-error-label" role="alert" style="display:none;">
+                                        Cound not save details
+                                    </div>
 
                                     <div id="label-saved" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
                                         Your details have been saved
 
                                     </div>
-
                                 </div>
-                            </div>
-                            </form>
+                                </div>
+</form>
 
                       
 
@@ -186,13 +192,16 @@
             $('#accountLastName').val(lessonsApp.customer.LastName);
             $('#accountEmail').val(lessonsApp.customer.Email);
             $('#accountPhone').val(lessonsApp.customer.Telephone);
-           
+
             $('#account-panel').show();
             $('#spinner-loading').hide();
 
         }
 
-        function SaveCustomer() {
+        async function SaveCustomer() {
+
+            $("#label-saved").hide();
+            $("#account-error-label").hide();
 
             var form = document.getElementById("account-form");
 
@@ -204,33 +213,28 @@
 
             } else {
 
-                var url = baseUrl + "/api/shopping/customer";
+                var url = "/api/lessonapp/savecustomer";
 
-                customer.FirstName = $('#accountFirstName').val();
-                customer.LastName = $('#accountLastName').val();
-                customer.Email = $('#accountEmail').val();
-                customer.Telephone = $('#accountPhone').val();
+                var customer = {
+                    FirstName: $('#accountFirstName').val(),
+                    LastName: $('#accountLastName').val(),
+                    Email: $('#accountEmail').val(),
+                    Telephone: $('#accountPhone').val()
+                };
 
-                $.ajax({
-                    url: url,
-                    data: customer,
-                    type: "POST",
-                    contentType: 'application/x-www-form-urlencoded',
-                    headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
-                    success: function (data) {
+                var result = await lessonsApp.saveCustomer(customer);
 
-                        customer = data;
-                        $('#label-saved').show();
+                $('#account-panel').show();
+                $('#spinner-loading').hide();
 
-                    },
-                    error: function (xhRequest, ErrorText, thrownError) {
+            if (result) {
 
-                        console.log(ErrorText);
-                        //alert("Error: Could not load data. See browser log for details.");
-                        Logout();
-
-                    }
-                });
+                $("#label-saved").show();
+            }
+            else
+            {
+                $("#account-error-label").show();
+            }
 
 
             }

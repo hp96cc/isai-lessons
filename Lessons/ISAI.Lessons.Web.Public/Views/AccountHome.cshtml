@@ -2,6 +2,9 @@
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "Master.cshtml";
+
+    var redirectUrl = Request.QueryString["redirectUrl"] != null ? Request.QueryString["redirectUrl"].ToString() : null;
+
 }
 
 
@@ -127,13 +130,30 @@
 
             var username = $("#loginEmail").val();
             var password = $("#loginPassword").val();
+
+            $('#account-panel').hide();
+            $('#spinner-loading').show();
+
             var result = await lessonsApp.login(username, password);
 
+          
             if (result) {
-                location.href = "/account/info";
+
+                @if(string.IsNullOrWhiteSpace(redirectUrl))
+                {
+                    @:location.href = "/account/info";
+                }
+                else
+                {
+                    @:location.href = "@redirectUrl";
+                }
+
             }
             else
             {
+                $('#account-panel').show();
+                $('#spinner-loading').hide();
+
                 $("#login-error-label").show();
             }
         }

@@ -76,6 +76,45 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+        [Route("api/app/savecustomer")]
+        [HttpPost]
+        public async Task<Customer> SaveCustomer(Customer customer)
+        {
+
+            if (_customerId > 0)
+            {
+                var dbCustomer = await db.Customer.FirstOrDefaultAsync(x => x.Id == _customerId);
+
+                if(dbCustomer.Email.Trim().ToLower() != customer.Email.Trim().ToLower())
+                {
+                    var existingCustomer = await db.Customer.Where(x => dbCustomer.Id != x.Id && x.Email.Trim().ToLower() == customer.Email.Trim().ToLower()).FirstOrDefaultAsync();
+
+                    if(existingCustomer != null)
+                    {
+                        //Email aldready exists abort - TODO: improve error handling
+                        throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    }
+                }
+
+                dbCustomer.FirstName = customer.FirstName;
+                dbCustomer.LastName = customer.LastName;
+                dbCustomer.Email = customer.Email;
+                dbCustomer.Telephone = customer.Telephone;
+                dbCustomer.CompanyName = customer.CompanyName;
+
+                dbCustomer.DateModified = DateTime.UtcNow;
+
+                db.Entry(dbCustomer).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+
+                return dbCustomer;
+
+            }
+
+            throw new HttpResponseException(HttpStatusCode.NotFound);
+
+        }
+
 
         [Route("api/app/lesson")]
         [HttpPost]
@@ -89,7 +128,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        //[AllowAnonymous] //remove at runtime
         [Route("api/app/lessonstreamurl")]
         [HttpPost]
         public async Task<LessonStreamingResponse> LessonStreamUrl(LessonRequestViewModel lessonRequestViewModel)
@@ -99,17 +137,86 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             x.Deleted == false);
 
             var azureMediaService = new AzureMediaService();
-            var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
+            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Hls);
 
             return new LessonStreamingResponse()
+            {
+                StreamingUrl = urls[0]
+            };
+
+        }
+
+        [Route("api/app/encryptlessonstreamurl")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<LessonStreamingResponse>> EncryptLessonStreamUrl(LessonRequestViewModel lessonRequestViewModel)
+        {
+
+            var response = new Lessons.Models.Models.ResponseData<LessonStreamingResponse>();
+
+            //Check subscription
+            var subscription = await db.Subscription
+                .OrderByDescending(x => x.EndDate)
+                .FirstOrDefaultAsync(x => x.CustomerId == _customerId);
+
+            if (subscription == null)
+            {
+                response.Status = ResponseStatus.InvalidLicence;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                {
+                    new Lessons.Models.Models.ErrorResponse()
+                    {
+                        Message = "A valid licence does not exist"
+                    }
+                };
+
+                return response;
+            } 
+            else if (subscription.EndDate < DateTime.Today)
+            {
+                response.Status = ResponseStatus.LicenceExpired;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                {
+                    new Lessons.Models.Models.ErrorResponse()
+                    {
+                        Message = "Your licence has expired or has been cancelled. Please contact support."
+                    }
+                };
+
+                return response;
+            }
+
+            
+            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
+                x.Id == lessonRequestViewModel.LessonId &&
+                x.Deleted == false);
+
+            //var subscriptionType = await db.SubscriptionType.FirstAsync(x => x.Id == subscription.SubscriptionTypeId);
+
+
+            //if (subscriptionType.LessonGroupId != null)
+            //{
+            //    //Check lesson is valid for subscription
+                
+                
+
+            //}
+
+            var azureMediaService = new AzureMediaService();
+            var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
+
+            response.Status = ResponseStatus.OK;
+            response.Content = new LessonStreamingResponse()
             {
                 StreamingUrl = urlTuple.Item1,
                 Token = urlTuple.Item2
             };
 
+            return response;
+
         }
 
-        //[AllowAnonymous] //remove at runtime
+
+
         [Route("api/app/lessondownloadurl")]
         [HttpPost]
         public async Task<LessonDownloadResponse> LessonDownloadUrl(LessonRequestViewModel lessonRequestViewModel)

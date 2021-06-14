@@ -61,6 +61,29 @@
 
     };
 
+    var saveCustomer = async function (customer) {
+
+        var url = this.baseUrl + "savecustomer";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(customer),
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+
    
     var createCustomerPaymentSession = async function (paymentSessionObject) {
 
@@ -365,7 +388,8 @@
         subscriptionPortal: subscriptionPortal,
         signupWithAccessCode: signupWithAccessCode,
         lessonStreamingUrl: lessonStreamingUrl,
-        sendEmail: sendEmail
+        sendEmail: sendEmail,
+        saveCustomer: saveCustomer
 
     }
 

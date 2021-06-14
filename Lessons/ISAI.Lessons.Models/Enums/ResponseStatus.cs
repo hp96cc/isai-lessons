@@ -9,7 +9,10 @@ namespace ISAI.Lessons.Models.Enums
 
         OK,
         Failed,
-        UserAlreadyExists
-    
+        UserAlreadyExists,
+        LicenceExpired,
+        InvalidLicence,
+        TooManyDevices
+
     }
 }
