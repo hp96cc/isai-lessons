@@ -124,11 +124,9 @@ namespace ISAI.Lessons.EntityFramework.Services
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var lessonStreamingResponse = JsonConvert.DeserializeObject<LessonStreamingResponse>(serialisedContent);
+                    var lessonStreamingResponse = JsonConvert.DeserializeObject<ResponseData<LessonStreamingResponse>>(serialisedContent);
 
-                    response.Status = ResponseStatus.OK;
-                    response.Content = lessonStreamingResponse;
-                    return response;
+                    return lessonStreamingResponse;
                 }
                 else
                 {

@@ -260,18 +260,24 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     };
 
                     var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
+                    CrossHud.Current.Dismiss();
 
                     if (streamingUrlResponse.Status == ResponseStatus.OK)
                     {
                         var lessonPage = new VideoPageAndroid(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
                         await Shell.Current.Navigation.PushModalAsync(lessonPage, true);
                     }
+                    else if(streamingUrlResponse.ErrorResponse != null)
+                    {
+                        CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
+                    }
                     else
                     {
-                        CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black);
+                        
+                        CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
                     }
 
-                    CrossHud.Current.Dismiss();
+                   
 
                 }                  
 
@@ -314,9 +320,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
                         var lessonPage = new VideoPage(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
                         await Shell.Current.Navigation.PushAsync(lessonPage, true);
                     }
+                    else if (streamingUrlResponse.ErrorResponse != null)
+                    {
+                        CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
+                    }
                     else
                     {
-                        CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black);
+
+                        CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
                     }
 
 
@@ -362,9 +373,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     }
                 };
 
-                var downloadUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
+                var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
 
-                if (downloadUrlResponse.Status == ResponseStatus.OK)
+                if (streamingUrlResponse.Status == ResponseStatus.OK)
                 {
 
                     VideoDownload = new VideoDownload()
@@ -373,7 +384,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                         LessonId = _lesson.Id,
                         LessonName = _lesson.Name,
                         LessonGroup = lessonGroup.Name,
-                        DownloadUrl = downloadUrlResponse.Content.StreamingUrl,
+                        DownloadUrl = streamingUrlResponse.Content.StreamingUrl,
                         VideoDownloadStatusCode = VideoDownloadStatusCode.Running
                     };
 
@@ -384,9 +395,15 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     CrossHud.Current.Dismiss();
 
 
-                } else
+                }
+                else if (streamingUrlResponse.ErrorResponse != null)
                 {
-                    CrossHud.Current.ShowError("Cannot perform download at this time.", MaskType.Black);
+                    CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
+                }
+                else
+                {
+
+                    CrossHud.Current.ShowError("Cannot download at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
                 }
 
             } else
