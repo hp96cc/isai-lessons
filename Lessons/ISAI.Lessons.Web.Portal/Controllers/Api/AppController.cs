@@ -40,7 +40,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         IStripeClient client;
 
         string _adminUserId = "efef3c10-4e2c-4aca-baf7-7477377d1d73";
-
         string _base64Key = "Shnlc8favzpU3dBgpUuZ4yktIWPyB/xU3FYcEAWVAVE=";
         string _base64Iv = "GOcuDFIgvv+Sss54DFVjLN/2GFyCP1TZc9HDNKf/cxY=";
 
@@ -160,9 +159,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
 
 
-        [Route("api/app/encryptlessonstreamurl")]
+        [Route("api/app/lessonmediaurl")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<LessonStreamingResponse>> EncryptLessonStreamUrl(LessonRequestViewModel lessonRequestViewModel)
+        public async Task<Lessons.Models.Models.ResponseData<LessonStreamingResponse>> LessonMediaUrl(LessonRequestViewModel lessonRequestViewModel)
         {
 
             var response = new Lessons.Models.Models.ResponseData<LessonStreamingResponse>();
@@ -191,16 +190,72 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     return response;
                 }
 
+                var deviceRepsonse = await CheckCustomerDevice(lessonRequestViewModel.CustomerDevice);
 
-                var azureMediaService = new AzureMediaService();
-                var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
-
-                response.Status = ResponseStatus.OK;
-                response.Content = new LessonStreamingResponse()
+                if(deviceRepsonse.Status == ResponseStatus.OK)
                 {
-                    StreamingUrl = urlTuple.Item1,
-                    Token = urlTuple.Item2
-                };
+                    response.Status = deviceRepsonse.Status;
+                    response.ErrorResponse = deviceRepsonse.ErrorResponse;
+                    response.Content = null;
+                }
+
+                if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.EncryptedStream)
+                {
+                    var azureMediaService = new AzureMediaService();
+                    var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
+
+                    response.Status = ResponseStatus.OK;
+                    response.Content = new LessonStreamingResponse()
+                    {
+                        StreamingUrl = urlTuple.Item1,
+                        Token = urlTuple.Item2
+                    };
+
+                }
+                else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.StandardStream)
+                {
+
+                    var azureMediaService = new AzureMediaService();
+                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Hls);
+
+                    response.Status = ResponseStatus.OK;
+                    response.Content = new LessonStreamingResponse()
+                    {
+                        StreamingUrl = urls[0]
+                    };
+
+                    return response;
+
+                }
+                else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.Download)
+                {
+
+                    var azureMediaService = new AzureMediaService();
+                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
+
+
+                    response.Status = ResponseStatus.OK;
+                    response.Content = new LessonStreamingResponse()
+                    {
+                        StreamingUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
+                    };
+
+                    return response;
+                }
+                else
+                {
+                    response.Status = ResponseStatus.Failed;
+                    response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                    {
+                        new Lessons.Models.Models.ErrorResponse()
+                        {
+                            Message = "Invalid Remote Media Type."
+                        }
+                    };
+
+                    return response;
+
+                }
 
 
             } else
@@ -215,6 +270,52 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             return response;
 
+        }
+
+        async Task<Lessons.Models.Models.ResponseBase> CheckCustomerDevice(CustomerDeviceViewModel customerDevice)
+        {
+
+            var response = new Lessons.Models.Models.ResponseBase();
+
+            var customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
+            var customerDevices = await db.CustomerDevice.Where(x => x.CustomerId == _customerId && x.Deleted == false).ToListAsync();
+
+            var dbCustomerDevice = customerDevices.FirstOrDefault(x => x.DeviceIdentifier == customerDevice.DeviceIdentifier);
+
+            if(dbCustomerDevice != null)
+            {
+                //Device exists, allow
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+
+            if(customerDevices.Count >= customer.MaxDevicesAllowed)
+            {
+                //Maximum devices already allowed
+                response.Status = ResponseStatus.TooManyDevices;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                {
+                    new Lessons.Models.Models.ErrorResponse()
+                    {
+                        Message = string.Format("Your account already has {0} devices allocated to it. Please remove a device in your account settings to use this one.", customer.MaxDevicesAllowed)
+                    }
+                };
+                return response;
+
+            }
+
+            //Add device
+            db.CustomerDevice.Add(new CustomerDevice()
+            {
+                Name = customerDevice.Name,
+                DeviceIdentifier = customerDevice.DeviceIdentifier,
+                DeviceType = customerDevice.DeviceType
+            });
+
+            await db.SaveChangesAsync();
+
+            response.Status = ResponseStatus.OK;
+            return response;
         }
 
         async Task<Lessons.Models.Models.ResponseData<Subscription>> CheckSubscription()
@@ -761,6 +862,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     customer.PasswordHash = hashedPasswordBase64;
                     customer.AcceptMarketing = model.AcceptMarketing;
                     customer.HasCompletedCheckout = false;
+                    customer.MaxDevicesAllowed = 2;
 
                     db.Entry(customer).State = EntityState.Modified;
                 }
@@ -775,7 +877,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         PasswordSalt = saltBase64,
                         PasswordHash = hashedPasswordBase64,
                         AcceptMarketing = model.AcceptMarketing,
-                        HasCompletedCheckout = false
+                        HasCompletedCheckout = false,
+                        MaxDevicesAllowed = 2
                     };
 
                     db.Customer.Add(customer);
@@ -1137,41 +1240,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         #region Legacy App Methods
 
-        [Route("api/app/lessonstreamurl")]
-        [HttpPost]
-        public async Task<LessonStreamingResponse> LessonStreamUrl(LessonRequestViewModel lessonRequestViewModel)
-        {
-            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
-            x.Id == lessonRequestViewModel.LessonId &&
-            x.Deleted == false);
-
-            var azureMediaService = new AzureMediaService();
-            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Hls);
-
-            return new LessonStreamingResponse()
-            {
-                StreamingUrl = urls[0]
-            };
-
-        }
-
-        [Route("api/app/lessondownloadurl")]
-        [HttpPost]
-        public async Task<LessonDownloadResponse> LessonDownloadUrl(LessonRequestViewModel lessonRequestViewModel)
-        {
-            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
-            x.Id == lessonRequestViewModel.LessonId &&
-            x.Deleted == false);
-
-            var azureMediaService = new AzureMediaService();
-            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
-
-            return new LessonDownloadResponse()
-            {
-                DownloadUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
-            };
-
-        }
+       
 
         [AllowAnonymous] //remove at runtime
         [Route("api/app/downloadscreenshots")]

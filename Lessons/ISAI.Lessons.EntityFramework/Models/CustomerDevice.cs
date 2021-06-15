@@ -13,6 +13,8 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string DeviceType { get; set; }
 
+        public string DeviceIdentifier { get; set; }
+
         public int CustomerId { get; set; }
 
         [ForeignKey("CustomerId")]

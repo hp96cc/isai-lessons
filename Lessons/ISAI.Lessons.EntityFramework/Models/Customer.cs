@@ -32,6 +32,8 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string StripeCustomerId { get; set; }
 
+        public int MaxDevicesAllowed { get; set; }
+
 
         [JsonIgnore]
         public string PaymentSessionId { get; set; }

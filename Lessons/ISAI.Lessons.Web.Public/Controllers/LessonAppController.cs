@@ -420,7 +420,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
                 var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/encryptlessonstreamurl", content).ConfigureAwait(false);
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessonmediaurl", content).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
