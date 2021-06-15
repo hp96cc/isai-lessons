@@ -314,6 +314,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     };
 
                     var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
+                    CrossHud.Current.Dismiss();
 
                     if (streamingUrlResponse.Status == ResponseStatus.OK)
                     {
@@ -331,7 +332,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     }
 
 
-                    CrossHud.Current.Dismiss();
+     
 
                 }
 
