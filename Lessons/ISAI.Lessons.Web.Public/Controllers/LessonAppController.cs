@@ -55,23 +55,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-        [Route("api/lessonapp/test")]
-        [HttpGet]
-        public async Task<Customer> Test()
-        {
-            _httpClient = await _apiService.SetHttpAuthClient();
-
-
-           HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/customer", null).ConfigureAwait(false);
-
-
-            var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var customer = JsonConvert.DeserializeObject<Customer>(serialisedContent);
-            return customer;
-
-    
-        }
-
 
         [Route("api/lessonapp/login")]
         [HttpPost]
@@ -114,7 +97,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/customer")]
         [HttpPost]
-        public async Task<Customer> Customer()
+        public async Task<ResponseData<Customer>> Customer()
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
@@ -126,7 +109,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 {
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var customer = JsonConvert.DeserializeObject<Customer>(serialisedContent);
+                    var customer = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
                     return customer;
 
                 }
@@ -143,7 +126,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/savecustomer")]
         [HttpPost]
-        public async Task<Customer> Customer(Customer customer)
+        public async Task<ResponseData<Customer>> Customer(Customer customer)
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
@@ -160,8 +143,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 {
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    customer = JsonConvert.DeserializeObject<Customer>(serialisedContent);
-                    return customer;
+                    var savedCustomer = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
+                    return savedCustomer;
 
                 }
                 else
@@ -180,16 +163,12 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/lesson")]
         [HttpPost]
-        public async Task<Lesson> Lesson(int lessonId)
+        public async Task<ResponseData<Lesson>> Lesson(LessonRequestViewModel model)
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
-                var model = new LessonRequestViewModel()
-                {
-                    LessonId = lessonId
-                };
 
                 var json = JsonConvert.SerializeObject(model);
                 HttpContent content = new StringContent(json);
@@ -200,7 +179,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var lesson = JsonConvert.DeserializeObject<Lesson>(serialisedContent);
+                    var lesson = JsonConvert.DeserializeObject<ResponseData<Lesson>>(serialisedContent);
                     return lesson;
                 }
                 else
@@ -217,7 +196,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/subscriptions")]
         [HttpPost]
-        public async Task<List<Subscription>> Subscriptions()
+        public async Task<ResponseData<List<Subscription>>> Subscriptions()
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
@@ -229,7 +208,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 {
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var subscriptions = JsonConvert.DeserializeObject<List<Subscription>>(serialisedContent);
+                    var subscriptions = JsonConvert.DeserializeObject<ResponseData<List<Subscription>>>(serialisedContent);
                     return subscriptions;
 
                 }

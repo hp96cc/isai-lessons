@@ -62,24 +62,32 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         }
 
 
-      
+
         [Route("api/app/customer")]
         [HttpPost]
-        public async Task<Customer> Customer()
+        public async Task<Lessons.Models.Models.ResponseData<Customer>> Customer()
         {
-            var customer = await db.Customer.FirstOrDefaultAsync(x =>
-            x.Id == _customerId &&
-            x.AppId == _appId &&
-            x.Deleted == false);
 
-            return customer;
+            var response = new Lessons.Models.Models.ResponseData<Customer>();
+
+            var customer = await db.Customer.FirstOrDefaultAsync(x =>
+               x.Id == _customerId &&
+               x.AppId == _appId &&
+               x.Deleted == false);
+
+            response.Content = customer;
+            response.Status = ResponseStatus.OK;
+
+            return response;
 
         }
 
         [Route("api/app/savecustomer")]
         [HttpPost]
-        public async Task<Customer> SaveCustomer(Customer customer)
+        public async Task<Lessons.Models.Models.ResponseData<Customer>> SaveCustomer(Customer customer)
         {
+
+            var response = new Lessons.Models.Models.ResponseData<Customer>();
 
             if (_customerId > 0)
             {
@@ -91,8 +99,17 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                     if(existingCustomer != null)
                     {
-                        //Email aldready exists abort - TODO: improve error handling
-                        throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+                        response.Status = ResponseStatus.UserAlreadyExists;
+                        response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        {
+                            new Lessons.Models.Models.ErrorResponse()
+                            {
+                                Message = "This email cannot be used as it is already in use."
+                            }
+                        };
+
+                        return response;
                     }
                 }
 
@@ -107,7 +124,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 db.Entry(dbCustomer).State = EntityState.Modified;
                 await db.SaveChangesAsync();
 
-                return dbCustomer;
+                response.Content = customer;
+                response.Status = ResponseStatus.OK;
+
+                return response;
 
             }
 
@@ -118,33 +138,22 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/lesson")]
         [HttpPost]
-        public async Task<Lesson> Lesson(LessonRequestViewModel lessonRequestViewModel)
+        public async Task<Lessons.Models.Models.ResponseData<Lesson>> Lesson(LessonRequestViewModel lessonRequestViewModel)
         {
+            var response = new Lessons.Models.Models.ResponseData<Lesson>();
+
             var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
             x.Id == lessonRequestViewModel.LessonId &&
             x.Deleted == false);
 
-            return lesson;
+            response.Content = lesson;
+            response.Status = ResponseStatus.OK;
+
+            return response;
 
         }
 
-        [Route("api/app/lessonstreamurl")]
-        [HttpPost]
-        public async Task<LessonStreamingResponse> LessonStreamUrl(LessonRequestViewModel lessonRequestViewModel)
-        {
-            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
-            x.Id == lessonRequestViewModel.LessonId &&
-            x.Deleted == false);
 
-            var azureMediaService = new AzureMediaService();
-            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Hls);
-
-            return new LessonStreamingResponse()
-            {
-                StreamingUrl = urls[0]
-            };
-
-        }
 
         [Route("api/app/encryptlessonstreamurl")]
         [HttpPost]
@@ -152,6 +161,61 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         {
 
             var response = new Lessons.Models.Models.ResponseData<LessonStreamingResponse>();
+
+            var licenceResponse = await CheckSubscription();
+
+            if (licenceResponse.Status == ResponseStatus.OK)
+            {
+
+                var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
+                    x.Id == lessonRequestViewModel.LessonId &&
+                    x.Deleted == false);
+
+                //If licence is not full access, compare access of lesson
+                if (licenceResponse.Content.SubscriptionTypeId > 1 && licenceResponse.Content.SubscriptionTypeId != lesson.SubscriptionTypeId)
+                {
+                    response.Status = ResponseStatus.InvalidLicence;
+                    response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                    {
+                        new Lessons.Models.Models.ErrorResponse()
+                        {
+                            Message = "You do not have a licence to access this content."
+                        }
+                    };
+
+                    return response;
+                }
+
+
+                var azureMediaService = new AzureMediaService();
+                var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
+
+                response.Status = ResponseStatus.OK;
+                response.Content = new LessonStreamingResponse()
+                {
+                    StreamingUrl = urlTuple.Item1,
+                    Token = urlTuple.Item2
+                };
+
+
+            } else
+            {
+
+                response.Status = licenceResponse.Status;
+                response.ErrorResponse = licenceResponse.ErrorResponse;
+                response.Content = null;
+
+
+            }
+
+            return response;
+
+        }
+
+        async Task<Lessons.Models.Models.ResponseData<Subscription>> CheckSubscription()
+        {
+
+            var response = new Lessons.Models.Models.ResponseData<Subscription>();
 
             //Check subscription
             var subscription = await db.Subscription
@@ -165,12 +229,13 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     new Lessons.Models.Models.ErrorResponse()
                     {
-                        Message = "A valid licence does not exist"
+                        Message = "A valid licence does not exist. Please contact support."
                     }
                 };
 
                 return response;
-            } 
+
+            }
             else if (subscription.EndDate < DateTime.Today)
             {
                 response.Status = ResponseStatus.LicenceExpired;
@@ -183,99 +248,20 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 };
 
                 return response;
+
             }
 
-            
-            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
-                x.Id == lessonRequestViewModel.LessonId &&
-                x.Deleted == false);
-
-            //var subscriptionType = await db.SubscriptionType.FirstAsync(x => x.Id == subscription.SubscriptionTypeId);
-
-
-            //if (subscriptionType.LessonGroupId != null)
-            //{
-            //    //Check lesson is valid for subscription
-                
-                
-
-            //}
-
-            var azureMediaService = new AzureMediaService();
-            var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
-
+            response.Content = subscription;
             response.Status = ResponseStatus.OK;
-            response.Content = new LessonStreamingResponse()
-            {
-                StreamingUrl = urlTuple.Item1,
-                Token = urlTuple.Item2
-            };
-
             return response;
 
         }
 
 
 
-        [Route("api/app/lessondownloadurl")]
-        [HttpPost]
-        public async Task<LessonDownloadResponse> LessonDownloadUrl(LessonRequestViewModel lessonRequestViewModel)
-        {
-            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
-            x.Id == lessonRequestViewModel.LessonId &&
-            x.Deleted == false);
+        
 
-            var azureMediaService = new AzureMediaService();
-            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
-
-            return new LessonDownloadResponse()
-            {
-                DownloadUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
-            };
-
-        }
-
-        [AllowAnonymous] //remove at runtime
-        [Route("api/app/downloadscreenshots")]
-        [HttpPost]
-        public async Task DownloadScreenShots()
-        {
-
-            var lessons = await db.Lesson.Where(x =>
-            x.AssetId != null &&
-            x.Deleted == false).ToListAsync();
-
-
-            foreach (var lesson in lessons)
-            {
-
-                try
-                {
-
-                    var azureMediaService = new AzureMediaService();
-                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, "download-locator-" + lesson.Id.ToString(), StreamingPolicyStreamingProtocol.Download);
-
-                    var url = urls.First(x => x.Contains(".jpg"));
-
-                    var saveFilePath = @"C:\Temp\thumbs\thumb_" + lesson.Id + ".jpg"; 
-
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetAsync(url);
-                    using (var fs = new FileStream(
-                        saveFilePath,
-                        FileMode.CreateNew))
-                    {
-                        await response.Content.CopyToAsync(fs);
-                    }
-
-                } catch (Exception ex)
-                {
-
-                }
-
-            }
-
-        }
+      
 
         [AllowAnonymous] 
         [Route("api/app/sendemail")]
@@ -308,32 +294,90 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        [AllowAnonymous]
         [Route("api/app/lessons")]
         [HttpPost]
-        public async Task<List<Lesson>> Lessons()
+        public async Task<Lessons.Models.Models.ResponseData<List<Lesson>>> Lessons()
         {
-            var lesson = await db.Lesson.Where(x => x.Deleted == false && x.AssetId != null).ToListAsync();
-            return lesson;
+            var response = new Lessons.Models.Models.ResponseData<List<Lesson>>();
+
+            var licenceResponse = await CheckSubscription();
+
+            if (licenceResponse.Status == ResponseStatus.OK)
+            {
+
+                if (licenceResponse.Content.SubscriptionTypeId == 1)
+                {
+                    var lessons = await db.Lesson.Where(x => x.Deleted == false && x.AssetId != null).ToListAsync();
+
+                    response.Content = lessons;
+                    response.Status = ResponseStatus.OK;
+                    return response;
+                }
+                else
+                {
+                    var lessons = await db.Lesson.Where(x => x.Deleted == false && x.AssetId != null && x.SubscriptionTypeId == x.SubscriptionTypeId).ToListAsync();
+
+                    response.Content = lessons;
+                    response.Status = ResponseStatus.OK;
+                    return response;
+                }
+
+            } else
+            {
+                response.Status = licenceResponse.Status;
+                response.ErrorResponse = licenceResponse.ErrorResponse;
+                return response;
+            }
 
         }
 
         [AllowAnonymous]
         [Route("api/app/lessongroups")]
         [HttpPost]
-        public async Task<List<LessonGroup>> LessonGroups()
+        public async Task<Lessons.Models.Models.ResponseData<List<LessonGroup>>> LessonGroups()
         {
-            var lessonGroups = await db.LessonGroup.Where(x => x.Deleted == false).ToListAsync();
-            return lessonGroups;
 
+            var response = new Lessons.Models.Models.ResponseData<List<LessonGroup>>();
+
+            var licenceResponse = await CheckSubscription();
+
+            if (licenceResponse.Status == ResponseStatus.OK)
+            {
+
+                if (licenceResponse.Content.SubscriptionTypeId == 1)
+                {
+                    var lessonGroups = await db.LessonGroup.Where(x => x.Deleted == false).ToListAsync();
+                    response.Content = lessonGroups;
+                    response.Status = ResponseStatus.OK;
+                    return response;
+                }
+                else
+                {
+                    var lessonGroups = await db.LessonGroup.Where(x => x.Deleted == false && x.SubscriptionTypeId == licenceResponse.Content.SubscriptionTypeId).ToListAsync();
+                    response.Content = lessonGroups;
+                    response.Status = ResponseStatus.OK;
+                    return response;
+                }
+
+            }
+            else
+            {
+                response.Status = licenceResponse.Status;
+                response.ErrorResponse = licenceResponse.ErrorResponse;
+                return response;
+            }
+
+  
         }
 
 
 
         [Route("api/app/subscriptions")]
         [HttpPost]
-        public async Task<List<Subscription>> Subscriptions()
+        public async Task<Lessons.Models.Models.ResponseData<List<Subscription>>> Subscriptions()
         {
+
+            var response = new Lessons.Models.Models.ResponseData<List<Subscription>>();
 
             var dateTimeNow = DateTime.UtcNow;
 
@@ -345,19 +389,24 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             x.EndDate >= dateTimeNow
             ).ToListAsync();
 
-            return subscriptions;
+            response.Content = subscriptions;
+            response.Status = ResponseStatus.OK;
+
+            return response;
 
         }
 
 
         [Route("api/app/cancelsubscriptions")]
         [HttpPost]
-        public async Task<List<Subscription>> CancelSubscriptions()
+        public async Task<Lessons.Models.Models.ResponseBase> CancelSubscriptions()
         {
+
+            var response = new Lessons.Models.Models.ResponseBase();
 
             var subscriptions = await Subscriptions();
 
-            foreach(var subscription in subscriptions)
+            foreach(var subscription in subscriptions.Content)
             {
                 subscription.Active = false;
                 subscription.DateModified = DateTime.UtcNow;
@@ -367,18 +416,20 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             await db.SaveChangesAsync();
 
-            return subscriptions;
+            response.Status = ResponseStatus.OK;
+            return response;
 
         }
 
         [Route("api/app/restoresubscriptions")]
         [HttpPost]
-        public async Task<List<Subscription>> RestoreSubscriptions()
+        public async Task<Lessons.Models.Models.ResponseData<List<Subscription>>> RestoreSubscriptions()
         {
+            var response = new Lessons.Models.Models.ResponseData<List<Subscription>>();
 
             var subscriptions = await Subscriptions();
 
-            foreach (var subscription in subscriptions)
+            foreach (var subscription in subscriptions.Content)
             {
                 subscription.Active = true;
                 subscription.DateModified = DateTime.UtcNow;
@@ -388,7 +439,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             await db.SaveChangesAsync();
 
-            return subscriptions;
+            response.Content = subscriptions.Content;
+            response.Status = ResponseStatus.OK;
+            return response;
 
         }
 
@@ -396,22 +449,30 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/customerdevices")]
         [HttpPost]
-        public async Task<List<CustomerDevice>> CustomerDevices()
+        public async Task<Lessons.Models.Models.ResponseData<List<CustomerDevice>>> CustomerDevices()
         {
+
+            var response = new Lessons.Models.Models.ResponseData<List<CustomerDevice>>();
 
             var devices = await db.CustomerDevice.Where(x =>
             x.CustomerId == _customerId &&
             x.Deleted == false
             ).ToListAsync();
 
-            return devices;
+            response.Content = devices;
+            response.Status = ResponseStatus.OK;
+
+            return response;
         }
 
 
         [Route("api/app/customeractivity")]
         [HttpPost]
-        public async Task<List<CustomerActivity>> CustomerActivity()
+        public async Task<Lessons.Models.Models.ResponseData<List<CustomerActivity>>> CustomerActivity()
         {
+
+            var response = new Lessons.Models.Models.ResponseData<List<CustomerActivity>>();
+
 
             var activity = await db.CustomerActivity
                 .Include(x => x.CustomerDevice)
@@ -420,7 +481,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 x.Deleted == false
             ).ToListAsync();
 
-            return activity;
+            response.Content = activity;
+            response.Status = ResponseStatus.OK;
+
+            return response;
         }
 
         [Route("api/app/forgotpassword")]
@@ -447,30 +511,30 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var register = await RegisterCustomer(request);
 
-            if (register.Customer == null)
-            {
-                return new CreateCustomerPayemntSessionResponse()
+                if (register.Customer == null)
                 {
-                    SessionId = null,
-                    Errors = register.Errors
-                };
-            }
+                    return new CreateCustomerPayemntSessionResponse()
+                    {
+                        SessionId = null,
+                        Errors = register.Errors
+                    };
+                }
 
 
-            var options = new SessionCreateOptions
-            {
-                // See https://stripe.com/docs/api/checkout/sessions/create
-                //SuccessUrl = "https://example.com/success.html?session_id={CHECKOUT_SESSION_ID}",
-                //CancelUrl = "https://example.com/canceled.html",
-                ClientReferenceId = register.Customer.Id.ToString(),
-                SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
-                CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
-                PaymentMethodTypes = new List<string>
+                var options = new SessionCreateOptions
+                {
+                    // See https://stripe.com/docs/api/checkout/sessions/create
+                    //SuccessUrl = "https://example.com/success.html?session_id={CHECKOUT_SESSION_ID}",
+                    //CancelUrl = "https://example.com/canceled.html",
+                    ClientReferenceId = register.Customer.Id.ToString(),
+                    SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                    CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                    PaymentMethodTypes = new List<string>
                 {
                     "card",
                 },
-                Mode = "subscription",
-                LineItems = new List<SessionLineItemOptions>
+                    Mode = "subscription",
+                    LineItems = new List<SessionLineItemOptions>
                 {
                     new SessionLineItemOptions
                     {
@@ -478,9 +542,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         Quantity = 1,
                     },
                 },
-            };
-            var service = new SessionService(this.client);
-           
+                };
+                var service = new SessionService(this.client);
+
                 var session = await service.CreateAsync(options);
 
                 register.Customer.PaymentSessionId = session.Id;
@@ -491,7 +555,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     SessionId = session.Id,
                 };
-        }
+            }
             catch (StripeException e)
             {
                 Console.WriteLine(e.StripeError.Message);
@@ -505,11 +569,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 throw new HttpResponseException(errorMessage);
 
 
-    }
+            }
             catch (Exception ex)
             {
 
-                
+
                 var errorMessage = new HttpResponseMessage()
                 {
                     StatusCode = HttpStatusCode.BadRequest,
@@ -519,11 +583,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 throw new HttpResponseException(errorMessage);
 
 
-}
+            }
 
         }
 
-        public async Task<RegisterResponseViewModel> RegisterCustomer(RegisterRequestViewModel model)
+        async Task<RegisterResponseViewModel> RegisterCustomer(RegisterRequestViewModel model)
         {
             var customer = await db.Customer.FirstOrDefaultAsync(x => x.AppId == model.AppId && x.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase));
             var errors = new List<string>();
@@ -616,6 +680,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             var service = new SessionService(this.client);
             var session = await service.GetAsync(request.SessionId);
+          
 
 
             await CreateCustomerSubscription(customer, session);
@@ -844,11 +909,45 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
 
+                string subscriptionName;
+                int subscriptionTypeId;
+                int subscriptionMonths;
+
+                switch (session.LineItems.ElementAt(0).Price.Id)
+                {
+
+                    case "price_1J0LLgJ81SbG6nzad3BrKr0L":
+                        subscriptionName = "Secondary Annual Subscription";
+                        subscriptionTypeId = 2;
+                        subscriptionMonths = 12;
+                        break;
+
+                    case "price_1J0LLMJ81SbG6nzasmeqA5KF":
+                        subscriptionName = "Secondary Monthly Subscription";
+                        subscriptionTypeId = 2;
+                        subscriptionMonths = 1;
+                        break;
+
+                    case "price_1IxXUFJ81SbG6nzav7NG3Vto":
+                        subscriptionName = "Primary Monthly Subscription";
+                        subscriptionTypeId = 1;
+                        subscriptionMonths = 1;
+                        break;
+
+                    case "price_1IxXTvJ81SbG6nzajuriP6XZ":
+                    default:
+                        subscriptionName = "Primary Annual Subscription";
+                        subscriptionTypeId = 1;
+                        subscriptionMonths = 12;
+                        break;
+                }
+
                 if (subscription != null)
                 {
-                    subscription.Name = "Monthly Subscription";
+                    subscription.Name = subscriptionName;
                     subscription.Active = true;
-                    subscription.EndDate = subscription.EndDate.AddMonths(1);
+                    subscription.SubscriptionTypeId = subscriptionTypeId;
+                    subscription.EndDate = subscription.EndDate.AddMonths(subscriptionMonths);
                     subscription.DateModified = DateTime.UtcNow;
                     subscription.ModifiedUserId = _adminUserId;
 
@@ -859,12 +958,13 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     subscription = new Subscription()
                     {
-                        Name = "Monthly Subscription",
+                        Name = subscriptionName,
                         CustomerId = customer.Id,
                         StripeSubscriptionId = session.SubscriptionId,
+                        SubscriptionTypeId = subscriptionTypeId,
                         Active = true,
                         StartDate = DateTime.UtcNow,
-                        EndDate = DateTime.UtcNow.AddMonths(1),
+                        EndDate = DateTime.UtcNow.AddMonths(subscriptionMonths),
                         DateModified = DateTime.UtcNow,
                         DateCreated = DateTime.UtcNow,
                         CreatedUserId = _adminUserId,
@@ -902,6 +1002,91 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             db.Entry(subscription).State = EntityState.Modified;
 
         }
+
+
+        #region Legacy App Methods
+
+        [Route("api/app/lessonstreamurl")]
+        [HttpPost]
+        public async Task<LessonStreamingResponse> LessonStreamUrl(LessonRequestViewModel lessonRequestViewModel)
+        {
+            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
+            x.Id == lessonRequestViewModel.LessonId &&
+            x.Deleted == false);
+
+            var azureMediaService = new AzureMediaService();
+            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Hls);
+
+            return new LessonStreamingResponse()
+            {
+                StreamingUrl = urls[0]
+            };
+
+        }
+
+        [Route("api/app/lessondownloadurl")]
+        [HttpPost]
+        public async Task<LessonDownloadResponse> LessonDownloadUrl(LessonRequestViewModel lessonRequestViewModel)
+        {
+            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
+            x.Id == lessonRequestViewModel.LessonId &&
+            x.Deleted == false);
+
+            var azureMediaService = new AzureMediaService();
+            var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
+
+            return new LessonDownloadResponse()
+            {
+                DownloadUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
+            };
+
+        }
+
+        [AllowAnonymous] //remove at runtime
+        [Route("api/app/downloadscreenshots")]
+        [HttpPost]
+        public async Task DownloadScreenShots()
+        {
+
+            var lessons = await db.Lesson.Where(x =>
+            x.AssetId != null &&
+            x.Deleted == false).ToListAsync();
+
+
+            foreach (var lesson in lessons)
+            {
+
+                try
+                {
+
+                    var azureMediaService = new AzureMediaService();
+                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, "download-locator-" + lesson.Id.ToString(), StreamingPolicyStreamingProtocol.Download);
+
+                    var url = urls.First(x => x.Contains(".jpg"));
+
+                    var saveFilePath = @"C:\Temp\thumbs\thumb_" + lesson.Id + ".jpg";
+
+                    HttpClient client = new HttpClient();
+                    var response = await client.GetAsync(url);
+                    using (var fs = new FileStream(
+                        saveFilePath,
+                        FileMode.CreateNew))
+                    {
+                        await response.Content.CopyToAsync(fs);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+
+        }
+
+
+        #endregion
 
     }
 

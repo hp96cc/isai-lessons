@@ -83,8 +83,20 @@
 
 }
 
+@{
+
+    string backgroundImage = "/media/1f3fd5lm/blue-header-background.png";
+
+    if (Model.BackgroundImage != null)
+    {
+        backgroundImage = Model.BackgroundImage.MediaUrl();
+    }
+
+}
+
+
 <!-- start page title section -->
-<section class="page-title-section bg-img cover-background bg-yellow  p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
+<section class="page-title-section bg-img cover-background  p-5" data-overlay-dark="0" data-background="@backgroundImage">
     <div class="container">
 
 

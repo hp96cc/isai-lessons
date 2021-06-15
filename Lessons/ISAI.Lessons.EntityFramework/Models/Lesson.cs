@@ -20,6 +20,11 @@ namespace ISAI.Lessons.EntityFramework.Models
         [ForeignKey("LessonGroupId")]
         public LessonGroup LessonGroup { get; set; }
 
+        public int? SubscriptionTypeId { get; set; }
+
+        [ForeignKey("SubscriptionTypeId")]
+        public SubscriptionType SubscriptionType { get; set; }
+
         public string Name { get; set; }
 
         public string Description { get; set; }

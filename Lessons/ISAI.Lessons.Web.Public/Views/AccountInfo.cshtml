@@ -170,14 +170,20 @@
 
         });
 
+        var customer;
 
         async function GetCustomer() {
 
-            await lessonsApp.getCustomer();
+            var data = await lessonsApp.getCustomer();
 
-            if (lessonsApp.customer == null) {
+            //if (lessonsApp.customer == null) {
+            if (!data) {
+                lessonsApp.logout();
+            }
+            else if (data.Status !== 0) {
                 location.href = '/account/'
             } else {
+                customer = data.Content;
                 DisplayCustomer();
             }
 
@@ -188,10 +194,10 @@
         function DisplayCustomer() {
 
             //$('#accountTitle').val(lessonsApp.customer.FirstName);
-            $('#accountFirstName').val(lessonsApp.customer.FirstName);
-            $('#accountLastName').val(lessonsApp.customer.LastName);
-            $('#accountEmail').val(lessonsApp.customer.Email);
-            $('#accountPhone').val(lessonsApp.customer.Telephone);
+            $('#accountFirstName').val(customer.FirstName);
+            $('#accountLastName').val(customer.LastName);
+            $('#accountEmail').val(customer.Email);
+            $('#accountPhone').val(customer.Telephone);
 
             $('#account-panel').show();
             $('#spinner-loading').hide();
@@ -222,17 +228,25 @@
                     Telephone: $('#accountPhone').val()
                 };
 
-                var result = await lessonsApp.saveCustomer(customer);
+                var data = await lessonsApp.saveCustomer(customer);
 
                 $('#account-panel').show();
                 $('#spinner-loading').hide();
 
-            if (result) {
+            //if (result) {
+            if (data.Status === 0) {
 
                 $("#label-saved").show();
             }
             else
             {
+                var errorMessage = 'Could not save details';
+
+                if (data.ErrorResponse !== null && data.ErrorResponse.length > 0) {
+                    errorMessage = data.ErrorResponse[0].Message;
+                } 
+
+                $("#account-error-label").text(errorMessage);
                 $("#account-error-label").show();
             }
 

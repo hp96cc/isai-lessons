@@ -177,7 +177,7 @@
                                 {
 
                                     <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
-                                    <a href="/account/" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
+                                    <a href="/account/?redirectUrl=@(Url.Encode(Model.Url()))" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
 
                                 }
 
@@ -373,7 +373,7 @@
     <!-- custom scripts -->
     <script src="/assets/js/main.js"></script>
 
-    <script src="~/scripts/app.js?v=4"></script>
+    <script src="~/scripts/app.js?v=5"></script>
 
     <script>
 

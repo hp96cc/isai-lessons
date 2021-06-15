@@ -76,6 +76,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             try
             {
 
+                var lessonGroup = await db.LessonGroup.FirstAsync(x => x.Id == Lesson.LessonGroupId);
+
+                Lesson.SubscriptionTypeId = lessonGroup.SubscriptionTypeId;
                 Lesson.DateModified = DateTime.UtcNow;
                 Lesson.DateCreated = DateTime.UtcNow;
                 Lesson.CreatedUserId = User.Identity.GetUserId();

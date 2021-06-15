@@ -99,19 +99,24 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
 
-                    return;
+                } 
+                else
+                {
+                    CrossHud.Current.Dismiss();
+                    CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
                 }
+
+                return;
 
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.StackTrace);
+
             }
 
             CrossHud.Current.Dismiss();
-            CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
-
-
+ 
         }
 
 
@@ -133,6 +138,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
             else
             {
+                CrossHud.Current.Dismiss();
+                CrossHud.Current.ShowError(lessonGroupResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(3));
+                await Task.Delay(3000);
                 throw new Exception("Could not download Lesson Groups");
             }
 
@@ -144,6 +152,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
             else
             {
+                CrossHud.Current.Dismiss();
+                CrossHud.Current.ShowError(lessonResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(3));
+                await Task.Delay(3000);
                 throw new Exception("Could not download Lessons");
             }
 

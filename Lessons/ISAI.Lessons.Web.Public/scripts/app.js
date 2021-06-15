@@ -2,11 +2,11 @@
 
     var visitorId =  null;
     var baseUrl = '/api/lessonapp/';
-    var customer = null;
+    //var customer = null;
     var lesson = null;
-    var subscriptions = null;
-    var customerdevices = null;
-    var customeractivity = null;
+    //var subscriptions = null;
+    //var customerdevices = null;
+    //var customeractivity = null;
 
 
     var login = async function (username, password) {
@@ -51,7 +51,8 @@
                 contentType: 'application/json',
             });
 
-            this.customer = data;
+            //this.customer = data;
+            return data;
 
         } catch (error) {
 
@@ -203,7 +204,12 @@
 
         try {
 
+            var requestData = JSON.stringify({
+                LessonId: lessonId
+            });
+
             var data = await $.ajax({
+                data: requestData,
                 url: url,
                 type: "POST",
                 contentType: 'application/json',
@@ -231,7 +237,7 @@
                 contentType: 'application/json',
             });
 
-            this.subscriptions = data;
+            return data;
 
         } catch (error) {
 
@@ -274,7 +280,7 @@
                 contentType: 'application/json',
             });
 
-            this.customerdevices = data;
+            return data;
 
         } catch (error) {
 
@@ -296,7 +302,7 @@
                 contentType: 'application/json',
             });
 
-            this.customerdevices = data;
+            return data;
 
         } catch (error) {
 
@@ -370,11 +376,11 @@
     return {
         visitorId: visitorId,
         baseUrl: baseUrl,
-        customer: customer,
+        //customer: customer,
         lesson: lesson, 
-        subscriptions: subscriptions,
-        customerdevices: customerdevices,
-        customeractivity: customeractivity,
+        //subscriptions: subscriptions,
+        //customerdevices: customerdevices,
+        //customeractivity: customeractivity,
         login: login,
         getCustomer: getCustomer,
         getLesson: getLesson,

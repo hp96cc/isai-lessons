@@ -41,8 +41,63 @@ namespace ISAI.Lessons.AzureVideo
                 await AsyncMain(args);
             }).GetAwaiter().GetResult();
         }
+
+        static async Task UpdateLessonGroup(LessonsDbContext db, LessonGroup parent)
+        {
+            var lessonGroups = await db.LessonGroup.Where(x => x.ParentLessonGroupId == parent.Id).ToListAsync();
+
+            foreach(var lessonGroup in lessonGroups)
+            {
+                lessonGroup.SubscriptionTypeId = parent.SubscriptionTypeId;
+                db.Entry(lessonGroup).State = EntityState.Modified;
+                Console.WriteLine("Updating {0}", lessonGroup.Name);
+
+                var lessons = await db.Lesson.Where(x => x.LessonGroupId == lessonGroup.Id).ToListAsync();
+
+                foreach (var lesson in lessons)
+                {
+
+                    lesson.SubscriptionTypeId = parent.SubscriptionTypeId;
+                    db.Entry(lesson).State = EntityState.Modified;
+                    Console.WriteLine("Updating Lesson {0}", lesson.Name);
+                }
+
+                await db.SaveChangesAsync();
+
+                await UpdateLessonGroup(db, lessonGroup);
+            }
+
+        }
+
         static async Task AsyncMain(string[] args)
         {
+
+            //Assign Subsctioion Ids to lesson groups
+            using (var db = new LessonsDbContext())
+            {
+
+                var primary = await db.LessonGroup.FirstAsync(x => x.Id == 1);
+                var secondary = await db.LessonGroup.FirstAsync(x => x.Id == 2);
+
+                primary.SubscriptionTypeId = 2;
+                db.Entry(primary).State = EntityState.Modified;
+                Console.WriteLine("Updating {0}", primary.Name);
+
+                secondary.SubscriptionTypeId = 3;
+                db.Entry(secondary).State = EntityState.Modified;
+                Console.WriteLine("Updating {0}", secondary.Name);
+
+                await db.SaveChangesAsync();
+
+                await UpdateLessonGroup(db, primary);
+                await UpdateLessonGroup(db, secondary);
+
+
+     
+
+            }
+
+            return;
 
             //using (var db = new LessonsDbContext())
             //{

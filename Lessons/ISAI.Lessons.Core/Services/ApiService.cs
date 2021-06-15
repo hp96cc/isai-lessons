@@ -42,8 +42,6 @@ namespace ISAI.Lessons.EntityFramework.Services
                 _baseReturnUrl = "https://scottishonlinelessons/";
             }
 
-
-
         }
 
 
@@ -87,10 +85,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var lessons = JsonConvert.DeserializeObject<List<Lesson>>(serialisedContent);
-
-                    response.Status = ResponseStatus.OK;
-                    response.Content = lessons;
+                    response = JsonConvert.DeserializeObject<ResponseData<List<Lesson>>>(serialisedContent);
                     return response;
                 }
                 else
@@ -210,24 +205,18 @@ namespace ISAI.Lessons.EntityFramework.Services
         public async Task<ResponseData<List<LessonGroup>>> GetLessonGroupsAsync()
         {
 
-          
             var response = new ResponseData<List<LessonGroup>>();
 
             try
             {
-
                 _httpClient = await SetHttpAuthClient();
-
 
                 HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessongroups", null).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var lessonGroups = JsonConvert.DeserializeObject<List<LessonGroup>>(serialisedContent);
-
-                    response.Status = ResponseStatus.OK;
-                    response.Content = lessonGroups;
+                    response = JsonConvert.DeserializeObject<ResponseData<List<LessonGroup>>>(serialisedContent);
                     return response;
                 }
                 else

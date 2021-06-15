@@ -555,6 +555,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Data\Models\AboutPage.generated.cs" />
     <Compile Include="App_Data\Models\AccountActivity.generated.cs" />
     <Compile Include="App_Data\Models\AccountDevices.generated.cs" />
     <Compile Include="App_Data\Models\AccountHome.generated.cs" />
@@ -570,12 +571,14 @@
     <Compile Include="App_Data\Models\FAqitem.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />
+    <Compile Include="App_Data\Models\ForgotPassword.generated.cs" />
     <Compile Include="App_Data\Models\Home.generated.cs" />
     <Compile Include="App_Data\Models\HomeScroller.generated.cs" />
     <Compile Include="App_Data\Models\Image.generated.cs" />
     <Compile Include="App_Data\Models\LessonGroup.generated.cs" />
     <Compile Include="App_Data\Models\LessonItem.generated.cs" />
     <Compile Include="App_Data\Models\Member.generated.cs" />
+    <Compile Include="App_Data\Models\ResetPassword.generated.cs" />
     <Compile Include="App_Data\Models\Review.generated.cs" />
     <Compile Include="App_Data\Models\SEO.generated.cs" />
     <Compile Include="App_Data\Models\SignUpChoosePlan.generated.cs" />
@@ -655,6 +658,8 @@
     <Content Include="Views\SignUpEnterDetails.cshtml" />
     <Content Include="Views\SignUpPaymentFailed.cshtml" />
     <Content Include="Views\SignUpPaymentSuccess.cshtml" />
+    <Content Include="Views\ForgotPassword.cshtml" />
+    <Content Include="Views\ResetPassword.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

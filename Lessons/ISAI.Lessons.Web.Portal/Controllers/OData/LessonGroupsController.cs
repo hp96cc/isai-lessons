@@ -75,6 +75,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
 
             try
             {
+                if (LessonGroup.ParentLessonGroupId != null)
+                {
+                    var lessonParentGroup = await db.LessonGroup.FirstAsync(x => x.Id == LessonGroup.ParentLessonGroupId);
+                    LessonGroup.SubscriptionTypeId = lessonParentGroup.SubscriptionTypeId;
+                }
 
                 LessonGroup.DateModified = DateTime.UtcNow;
                 LessonGroup.DateCreated = DateTime.UtcNow;

@@ -16,10 +16,6 @@ namespace ISAI.Lessons.EntityFramework.Models
         [ForeignKey("AppId")]
         public App App { get; set; }
 
-        public int? LessonGroupId { get; set; }
-
-        [ForeignKey("LessonGroupId")]
-        public LessonGroup LessonGroup { get; set; }
 
     }
 }

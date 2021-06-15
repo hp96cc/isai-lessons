@@ -162,7 +162,7 @@
 
     <script>
 
-
+        var subscriptions;
 
         $(document).ready(function () {
 
@@ -172,11 +172,12 @@
 
         async function GetSubscriptions() {
 
-            await lessonsApp.getSubscriptions();
+            var data = await lessonsApp.getSubscriptions();
 
-            if (lessonsApp.subscriptions === null) {
-                //location.href = '/account/'
+            if (!data || data.Status !== 0) {
+                lessonsApp.logout();
             } else {
+                subscriptions = data.Content;
                 DisplaySubscriptions();
             }
 
@@ -198,7 +199,7 @@
 
         function DisplaySubscriptions() {
 
-            var subscription = lessonsApp.subscriptions[0];
+            var subscription = subscriptions[0];
 
             $('#label-subscription-type').text(subscription.Name);
             $('#label-subscription-expires').text(new Date(subscription.EndDate).toLocaleDateString());

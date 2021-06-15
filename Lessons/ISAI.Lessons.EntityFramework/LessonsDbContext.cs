@@ -36,6 +36,7 @@ namespace ISAI.Lessons.EntityFramework
 
         public DbSet<CustomerDevice> CustomerDevice { get; set; }
 
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 
