@@ -1,6 +1,8 @@
 ﻿using ISAI.Lessons.EntityFramework.Services;
+using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.Mobile.Models;
 using ISAI.Lessons.Mobile.Models.Messages;
+using ISAI.Lessons.Mobile.Services;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
@@ -245,7 +247,19 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
 
-                    var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(Lesson.Id);
+                    var lessonRequestViewModel = new LessonRequestViewModel()
+                    {
+                        LessonId = _lesson.Id,
+                        RemoteMediaType = RemoteMediaType.StandardStream,
+                        CustomerDevice = new CustomerDeviceViewModel()
+                        {
+                            DeviceIdentifier = AppIdService.GetAppId(),
+                            DeviceType = DeviceInfo.Platform.ToString(),
+                            Name = string.Format("{0} ({1} {2})", DeviceInfo.Name, DeviceInfo.Manufacturer, DeviceInfo.Model).Trim()
+                        }
+                    };
+
+                    var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
 
                     if (streamingUrlResponse.Status == ResponseStatus.OK)
                     {
@@ -281,7 +295,19 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
 
-                    var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(Lesson.Id);
+                    var lessonRequestViewModel = new LessonRequestViewModel()
+                    {
+                        LessonId = _lesson.Id,
+                        RemoteMediaType = RemoteMediaType.StandardStream,
+                        CustomerDevice = new CustomerDeviceViewModel()
+                        {
+                            DeviceIdentifier = AppIdService.GetAppId(),
+                            DeviceType = DeviceInfo.Platform.ToString(),
+                            Name = string.Format("{0} ({1} {2})", DeviceInfo.Name, DeviceInfo.Manufacturer, DeviceInfo.Model).Trim()
+                        }
+                    };
+
+                    var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
 
                     if (streamingUrlResponse.Status == ResponseStatus.OK)
                     {
@@ -324,7 +350,19 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 var lessonGroup = await db.GetLessonGroupAsync(_lesson.LessonGroupId);
                 var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
 
-                var downloadUrlResponse = await apiService.GetLessonDownloadUrlAsync(Lesson.Id);
+                var lessonRequestViewModel = new LessonRequestViewModel()
+                {
+                    LessonId = _lesson.Id,
+                    RemoteMediaType = RemoteMediaType.Download,
+                    CustomerDevice = new CustomerDeviceViewModel()
+                    {
+                        DeviceIdentifier = AppIdService.GetAppId(),
+                        DeviceType = DeviceInfo.Platform.ToString(),
+                        Name = string.Format("{0} ({1} {2})", DeviceInfo.Name, DeviceInfo.Manufacturer, DeviceInfo.Model).Trim()
+                    }
+                };
+
+                var downloadUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
 
                 if (downloadUrlResponse.Status == ResponseStatus.OK)
                 {
@@ -335,7 +373,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                         LessonId = _lesson.Id,
                         LessonName = _lesson.Name,
                         LessonGroup = lessonGroup.Name,
-                        DownloadUrl = downloadUrlResponse.Content.DownloadUrl,
+                        DownloadUrl = downloadUrlResponse.Content.StreamingUrl,
                         VideoDownloadStatusCode = VideoDownloadStatusCode.Running
                     };
 

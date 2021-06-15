@@ -184,14 +184,12 @@
 
     }
 
-    var lessonStreamingUrl = async function (lessonId) {
+    var lessonStreamingUrl = async function (model) {
 
         var result = null;
 
         var url = this.baseUrl + "lessonstreamurl";
-        var requestData = JSON.stringify({
-            LessonId: lessonId
-        });
+        var requestData = JSON.stringify(model);
 
         try {
 

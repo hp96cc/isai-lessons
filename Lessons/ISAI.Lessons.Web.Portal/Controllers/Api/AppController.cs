@@ -163,89 +163,94 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [HttpPost]
         public async Task<Lessons.Models.Models.ResponseData<LessonStreamingResponse>> LessonMediaUrl(LessonRequestViewModel lessonRequestViewModel)
         {
-
             var response = new Lessons.Models.Models.ResponseData<LessonStreamingResponse>();
 
-            var licenceResponse = await CheckSubscription();
 
-            if (licenceResponse.Status == ResponseStatus.OK)
+            try
             {
 
-                var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
-                    x.Id == lessonRequestViewModel.LessonId &&
-                    x.Deleted == false);
+             
+                var licenceResponse = await CheckSubscription();
 
-                //If licence is not full access, compare access of lesson
-                if (licenceResponse.Content.SubscriptionTypeId > 1 && licenceResponse.Content.SubscriptionTypeId != lesson.SubscriptionTypeId)
+                if (licenceResponse.Status == ResponseStatus.OK)
                 {
-                    response.Status = ResponseStatus.InvalidLicence;
-                    response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+
+                    var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
+                        x.Id == lessonRequestViewModel.LessonId &&
+                        x.Deleted == false);
+
+                    //If licence is not full access, compare access of lesson
+                    if (licenceResponse.Content.SubscriptionTypeId > 1 && licenceResponse.Content.SubscriptionTypeId != lesson.SubscriptionTypeId)
                     {
-                        new Lessons.Models.Models.ErrorResponse()
+                        response.Status = ResponseStatus.InvalidLicence;
+                        response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
                         {
-                            Message = "You do not have a licence to access this content."
-                        }
-                    };
+                            new Lessons.Models.Models.ErrorResponse()
+                            {
+                                Message = "You do not have a licence to access this content."
+                            }
+                        };
 
-                    return response;
-                }
+                        return response;
+                    }
 
-                var deviceRepsonse = await CheckCustomerDevice(lessonRequestViewModel.CustomerDevice);
+                    var deviceRepsonse = await CheckCustomerDevice(lessonRequestViewModel.CustomerDevice);
 
-                if(deviceRepsonse.Status == ResponseStatus.OK)
-                {
-                    response.Status = deviceRepsonse.Status;
-                    response.ErrorResponse = deviceRepsonse.ErrorResponse;
-                    response.Content = null;
-                }
-
-                if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.EncryptedStream)
-                {
-                    var azureMediaService = new AzureMediaService();
-                    var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
-
-                    response.Status = ResponseStatus.OK;
-                    response.Content = new LessonStreamingResponse()
+                    if (deviceRepsonse.Status != ResponseStatus.OK)
                     {
-                        StreamingUrl = urlTuple.Item1,
-                        Token = urlTuple.Item2
-                    };
+                        response.Status = deviceRepsonse.Status;
+                        response.ErrorResponse = deviceRepsonse.ErrorResponse;
+                        response.Content = null;
+                        return response;
+                    }
 
-                }
-                else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.StandardStream)
-                {
-
-                    var azureMediaService = new AzureMediaService();
-                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Hls);
-
-                    response.Status = ResponseStatus.OK;
-                    response.Content = new LessonStreamingResponse()
+                    if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.EncryptedStream)
                     {
-                        StreamingUrl = urls[0]
-                    };
+                        var azureMediaService = new AzureMediaService();
+                        var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
 
-                    return response;
+                        response.Status = ResponseStatus.OK;
+                        response.Content = new LessonStreamingResponse()
+                        {
+                            StreamingUrl = urlTuple.Item1,
+                            Token = urlTuple.Item2
+                        };
 
-                }
-                else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.Download)
-                {
-
-                    var azureMediaService = new AzureMediaService();
-                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
-
-
-                    response.Status = ResponseStatus.OK;
-                    response.Content = new LessonStreamingResponse()
+                    }
+                    else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.StandardStream)
                     {
-                        StreamingUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
-                    };
 
-                    return response;
-                }
-                else
-                {
-                    response.Status = ResponseStatus.Failed;
-                    response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        var azureMediaService = new AzureMediaService();
+                        var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Hls);
+
+                        response.Status = ResponseStatus.OK;
+                        response.Content = new LessonStreamingResponse()
+                        {
+                            StreamingUrl = urls[0]
+                        };
+
+                        return response;
+
+                    }
+                    else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.Download)
+                    {
+
+                        var azureMediaService = new AzureMediaService();
+                        var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
+
+
+                        response.Status = ResponseStatus.OK;
+                        response.Content = new LessonStreamingResponse()
+                        {
+                            StreamingUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
+                        };
+
+                        return response;
+                    }
+                    else
+                    {
+                        response.Status = ResponseStatus.Failed;
+                        response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
                     {
                         new Lessons.Models.Models.ErrorResponse()
                         {
@@ -253,22 +258,37 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         }
                     };
 
-                    return response;
+                        return response;
+
+                    }
+
+
+                }
+                else
+                {
+
+                    response.Status = licenceResponse.Status;
+                    response.ErrorResponse = licenceResponse.ErrorResponse;
+                    response.Content = null;
+
 
                 }
 
+                return response;
 
-            } else
+            } catch(Exception ex)
             {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        {
+                            new Lessons.Models.Models.ErrorResponse()
+                            {
+                                Message = ex.Message
+                            }
+                        };
 
-                response.Status = licenceResponse.Status;
-                response.ErrorResponse = licenceResponse.ErrorResponse;
-                response.Content = null;
-
-
+                return response;
             }
-
-            return response;
 
         }
 
@@ -297,7 +317,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     new Lessons.Models.Models.ErrorResponse()
                     {
-                        Message = string.Format("Your account already has {0} devices allocated to it. Please remove a device in your account settings to use this one.", customer.MaxDevicesAllowed)
+                        Message = string.Format("Your account already has {0} devices allocated to it. Please remove a device in 'My Account' to use this one.", customer.MaxDevicesAllowed)
                     }
                 };
                 return response;
@@ -309,7 +329,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             {
                 Name = customerDevice.Name,
                 DeviceIdentifier = customerDevice.DeviceIdentifier,
-                DeviceType = customerDevice.DeviceType
+                DeviceType = customerDevice.DeviceType,
+                CustomerId = _customerId
             });
 
             await db.SaveChangesAsync();

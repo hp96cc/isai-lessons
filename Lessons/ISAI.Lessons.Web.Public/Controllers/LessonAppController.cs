@@ -413,12 +413,28 @@ namespace ISAI.Lessons.Web.Public.Controllers
             {
                 _httpClient = await _apiService.SetHttpAuthClient();
 
-                var request = new LessonRequestViewModel()
-                {
-                    LessonId = model.LessonId
-                };
+                var browser = new Kong.Browser(string.Join(" ", Request.Headers.GetValues("User-Agent")));
 
-                var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+                var browserName = "";
+
+                if(browser.Windows)
+                {
+                    browserName = "Microsoft Windows " + browser.OSVersion;
+                } 
+                else if(browser.Mac)
+                {
+                    browserName = "MacOS " + browser.OSVersion;
+                }
+                else if (browser.Linux)
+                {
+                    browserName = "Linux " + browser.OSVersion;
+                }
+
+                model.CustomerDevice.DeviceType = "Web";
+                model.CustomerDevice.Name = string.Format("{0} ({1}) - {2}", browser.Name, browser.Version, browserName);
+                model.RemoteMediaType = RemoteMediaType.EncryptedStream;
+
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
                 HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessonmediaurl", content).ConfigureAwait(false);
 

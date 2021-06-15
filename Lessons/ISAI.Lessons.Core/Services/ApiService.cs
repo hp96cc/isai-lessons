@@ -107,7 +107,7 @@ namespace ISAI.Lessons.EntityFramework.Services
         }
 
 
-        public async Task<ResponseData<LessonStreamingResponse>> GetLessonStreamingUrlAsync(int lessonId)
+        public async Task<ResponseData<LessonStreamingResponse>> GetLessonStreamingUrlAsync(LessonRequestViewModel lessonRequestViewModel)
         {
 
             var response = new ResponseData<LessonStreamingResponse>();
@@ -116,14 +116,10 @@ namespace ISAI.Lessons.EntityFramework.Services
             {
                 _httpClient = await SetHttpAuthClient();
 
-                var request = new LessonRequestViewModel()
-                {
-                    LessonId = lessonId
-                };
 
-                var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+                var content = new StringContent(JsonConvert.SerializeObject(lessonRequestViewModel), Encoding.UTF8, "application/json");
 
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessonstreamurl", content).ConfigureAwait(false);
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessonmediaurl", content).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
@@ -151,56 +147,6 @@ namespace ISAI.Lessons.EntityFramework.Services
                 return response;
             }
         }
-
-        public async Task<ResponseData<LessonDownloadResponse>> GetLessonDownloadUrlAsync(int lessonId)
-        {
-
-           
-            var response = new ResponseData<LessonDownloadResponse>();
-
-            try
-            {
-
-                _httpClient = await SetHttpAuthClient();
-
-
-                var request = new LessonRequestViewModel()
-                {
-                    LessonId = lessonId
-                };
-
-                var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/lessondownloadurl", content).ConfigureAwait(false);
-
-                if (httpResponse.IsSuccessStatusCode)
-                {
-                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var lessonStreamingResponse = JsonConvert.DeserializeObject<LessonDownloadResponse>(serialisedContent);
-
-                    response.Status = ResponseStatus.OK;
-                    response.Content = lessonStreamingResponse;
-                    return response;
-                }
-                else
-                {
-                    var errorResponse = await ParseHttpError(httpResponse);
-                    throw new Exception(errorResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
-                        Message = ex.Message,
-                        ErrorDescription = ex.StackTrace
-                    }
-                };
-                return response;
-            }
-        }
-
-
 
         public async Task<ResponseData<List<LessonGroup>>> GetLessonGroupsAsync()
         {

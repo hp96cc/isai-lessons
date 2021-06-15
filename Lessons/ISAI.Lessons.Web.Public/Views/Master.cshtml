@@ -369,27 +369,14 @@
     <script src="~/scripts/js.cookie.min.js"></script>
     <script src="~/scripts/mustache.js"></script>
     <script src="~/scripts/luxon.min.js"></script>
+    <script src="~/scripts/browser-detect.js"></script>
 
     <!-- custom scripts -->
     <script src="/assets/js/main.js"></script>
 
-    <script src="~/scripts/app.js?v=5"></script>
+    <script src="~/scripts/app.js?v=6"></script>
 
-    <script>
-
-        function initFingerprintJS() {
-            FingerprintJS.load().then(fp => {
-                fp.get().then(result => {
-                    LessonsApp.visitorId = result.visitorId;
-                    console.log(LessonsApp.visitorId);
-                });
-            });
-        }
-
-    </script>
-    <script async
-            src="~/scripts/fp.min.js"
-            onload="initFingerprintJS()"></script>
+   
 
     @RenderSection("Scripts", required: false)
 
