@@ -326,29 +326,79 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
 
 
-        [Route("api/lessonapp/forgotpassword")]
+        [Route("api/lessonapp/sendresetpasswordemail")]
         [HttpPost]
-        public async Task ForgotPassword()
+        public async Task<Lessons.Models.Models.ResponseBase> SendResetPasswordEmail(SendResetPasswordEmailViewModel model)
         {
-            _httpClient = await _apiService.SetHttpAuthClient();
+
+            var response = new ResponseBase();
+            SetHttpClient();
 
             try
             {
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/forgotpassword", null).ConfigureAwait(false);
+                model.AppId = _appId;
+
+                var json = JsonConvert.SerializeObject(model);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/sendresetpasswordemail", content).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
-                    return;
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    response = JsonConvert.DeserializeObject<ResponseBase>(serialisedContent);
+                    return response;
+
                 }
                 else
                 {
-                    throw new HttpResponseException(httpResponse.StatusCode);
+                    response.Status = ResponseStatus.Failed;
                 }
             }
             catch (Exception ex)
             {
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                response.Status = ResponseStatus.Failed;
             }
+
+            return response;
+
+        }
+
+
+        [Route("api/lessonapp/updatepassword")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseBase> UpdatePassword(UpdatePasswordViewModel model)
+        {
+
+            var response = new ResponseBase();
+            SetHttpClient();
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(model);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/updatepassword", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    response = JsonConvert.DeserializeObject<ResponseBase>(serialisedContent);
+                    return response;
+
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+            }
+
+            return response;
 
         }
 

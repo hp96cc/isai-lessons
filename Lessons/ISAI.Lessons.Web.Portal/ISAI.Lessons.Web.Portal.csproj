@@ -1590,6 +1590,7 @@
     <Content Include="Content\logo.png" />
     <Content Include="Content\payment.css" />
     <Content Include="Content\taskflow.css" />
+    <Content Include="Email Templates\ResetPasswordEmailTemplate.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />

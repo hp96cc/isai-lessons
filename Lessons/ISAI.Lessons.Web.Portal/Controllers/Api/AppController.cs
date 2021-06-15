@@ -1,4 +1,5 @@
-﻿using ISAI.Lessons.Core.Services;
+﻿using Effortless.Net.Encryption;
+using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
@@ -20,6 +21,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Customer = ISAI.Lessons.EntityFramework.Models.Customer;
 using Subscription = ISAI.Lessons.EntityFramework.Models.Subscription;
@@ -38,6 +40,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         IStripeClient client;
 
         string _adminUserId = "efef3c10-4e2c-4aca-baf7-7477377d1d73";
+
+        string _base64Key = "Shnlc8favzpU3dBgpUuZ4yktIWPyB/xU3FYcEAWVAVE=";
+        string _base64Iv = "GOcuDFIgvv+Sss54DFVjLN/2GFyCP1TZc9HDNKf/cxY=";
 
         public AppController()
         {
@@ -273,7 +278,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             try
             {
-                await graphApi.SendEmail("Craig.Champion@scottishonlinelessons.com", request.Subject, request.Message, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+                await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, request.Message, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
                 response.Content = true;
                 response.Status = ResponseStatus.OK;
               
@@ -487,15 +492,141 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             return response;
         }
 
-        [Route("api/app/forgotpassword")]
+        [AllowAnonymous]
+        [Route("api/app/sendresetpasswordemail")]
         [HttpPost]
-        public async Task ForgotPassword()
+        public async Task<Lessons.Models.Models.ResponseBase> SendResetPasswordEmail(SendResetPasswordEmailViewModel model)
         {
-            var customer = await Customer();
 
-            //TODO: send password email
+            var response = new Lessons.Models.Models.ResponseBase();
+            var customer = await db.Customer.FirstOrDefaultAsync(x => x.AppId == model.AppId && x.Email.Trim().ToLower() == model.Email.Trim().ToLower());
+
+            if(customer != null)
+            {
+                var digest = string.Format("{0}|{1}|{2}", customer.Id, customer.AppId, DateTime.UtcNow.AddMinutes(60).Ticks);
+
+                byte[] key = Convert.FromBase64String(_base64Key);
+                byte[] iv = Convert.FromBase64String(_base64Iv);
+                string encryptedDigest = Strings.Encrypt(digest, key, iv);
+
+                var passwordResetLink = "https://scottishonlinelessons.com/reset-password?digest=" + HttpUtility.UrlEncode(encryptedDigest);
+
+                var templateHtml = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath("~/Email Templates/ResetPasswordEmailTemplate.html"));
+                templateHtml = templateHtml.Replace("{{name}}", string.Format("{0} {1}", customer.FirstName, customer.LastName));
+                templateHtml = templateHtml.Replace("{{link}}", passwordResetLink);
+
+                MicrosoftGraphApiService graphService = new MicrosoftGraphApiService();
+                await graphService.SendEmail(
+                        "noreply@scottishonlinelessons.com",
+                        "Reset Password - Scottish Online Lessons",
+                        templateHtml,
+                        new List<string>() { customer.Email },
+                        null,
+                        new List<string>() { "sysadmin@isai.co.uk" },
+                        true);
+
+            }
+
+            response.Status = ResponseStatus.OK;
+            return response;
 
         }
+
+        [AllowAnonymous]
+        [Route("api/app/updatepassword")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseBase> UpdatePassword(UpdatePasswordViewModel model)
+        {
+
+            var response = new Lessons.Models.Models.ResponseBase();
+
+            byte[] key = Convert.FromBase64String(_base64Key);
+            byte[] iv = Convert.FromBase64String(_base64Iv);
+            var digest = Strings.Decrypt(model.Digest, key, iv).Split("|".ToCharArray());
+            var customerId = Convert.ToInt32(digest[0]);
+            var appId = Convert.ToInt32(digest[1]);
+            var expiry = new DateTime(Convert.ToInt64(digest[2]), DateTimeKind.Utc);
+
+            if(DateTime.UtcNow > expiry)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                {
+                    new Lessons.Models.Models.ErrorResponse()
+                    {
+                        Message = "Email password link has expired"
+                    }
+                };
+                return response;
+            }
+
+            var customer = await db.Customer.FirstOrDefaultAsync(x => x.AppId == appId && x.Id == customerId);
+
+            if(customer == null)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                {
+                    new Lessons.Models.Models.ErrorResponse()
+                    {
+                        Message = "Customer does not exist"
+                    }
+                };
+                return response;
+            }
+
+
+            if (model.Password != model.ConfirmPassword)
+            {
+              
+               response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                {
+                    new Lessons.Models.Models.ErrorResponse()
+                    {
+                        Message = "Passwords do not match"
+                    }
+                };
+                return response;
+            }
+
+            if (!PasswordCheckService.IsStrongPassword(model.Password))
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                {
+                    new Lessons.Models.Models.ErrorResponse()
+                    {
+                        Message = "Password is not strong enough. Passwords must be a minimum of 8 characters and contain a lowercase characters, an upper case characters and a number or symbol ."
+                    }
+                };
+                return response;
+
+            }
+
+            var email = customer.Email.ToLower().Trim();
+            var credentials = new Savage.Credentials.Credentials(email, model.Password);
+            var saltAndHashedPassword = credentials.CreateSaltAndHashedPassword();
+
+            var salt = saltAndHashedPassword.Salt;
+            var hashedPassword = saltAndHashedPassword.HashedPassword;
+
+            var saltBase64 = Convert.ToBase64String(salt);
+            var hashedPasswordBase64 = Convert.ToBase64String(hashedPassword);
+
+            customer.PasswordSalt = saltBase64;
+            customer.PasswordHash = hashedPasswordBase64;
+            customer.DateModified = DateTime.UtcNow;
+
+            db.Entry(customer).State = EntityState.Modified;
+
+            await db.SaveChangesAsync();
+
+            response.Status = ResponseStatus.OK;
+            return response;
+
+        }
+
 
 
         #region Stripe Integration

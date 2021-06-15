@@ -2,11 +2,7 @@
 
     var visitorId =  null;
     var baseUrl = '/api/lessonapp/';
-    //var customer = null;
     var lesson = null;
-    //var subscriptions = null;
-    //var customerdevices = null;
-    //var customeractivity = null;
 
 
     var login = async function (username, password) {
@@ -71,6 +67,54 @@
             var data = await $.ajax({
                 url: url,
                 data: JSON.stringify(customer),
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+
+
+    var sendPasswordResetEmail = async function (model) {
+
+        var url = this.baseUrl + "sendresetpasswordemail";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(model),
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+
+
+    var updatePassword = async function (model) {
+
+        var url = this.baseUrl + "updatepassword";
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(model),
                 type: "POST",
                 contentType: 'application/json',
             });
@@ -344,9 +388,6 @@
 
 
 
-    var sendResetPassword = async function () {
-
-    };
 
     var logout = async function() {
 
@@ -376,18 +417,15 @@
     return {
         visitorId: visitorId,
         baseUrl: baseUrl,
-        //customer: customer,
         lesson: lesson, 
-        //subscriptions: subscriptions,
-        //customerdevices: customerdevices,
-        //customeractivity: customeractivity,
+        sendPasswordResetEmail: sendPasswordResetEmail,
+        updatePassword: updatePassword,
         login: login,
         getCustomer: getCustomer,
         getLesson: getLesson,
         getSubscriptions: getSubscriptions,
         getCustomerDevices: getCustomerDevices,
         getCustomerActivity: getCustomerActivity,
-        sendResetPassword: sendResetPassword,
         logout: logout,
         createCustomerPaymentSession: createCustomerPaymentSession,
         confirmSignup: confirmSignup,

@@ -122,7 +122,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         async Task OnForgotPasswordClicked()
         {
-            await Browser.OpenAsync("https://scottishonlinelessons.com/forgotpassword", BrowserLaunchMode.External);
+            await Browser.OpenAsync("https://scottishonlinelessons.com/forgot-password", BrowserLaunchMode.External);
         }
 
 
