@@ -220,6 +220,20 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link> TopMenu => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.Models.Link>>("topMenu");
 
 		///<summary>
+		/// Top Message Link
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("topMessageLink")]
+		public global::Umbraco.Web.Models.Link TopMessageLink => this.Value<global::Umbraco.Web.Models.Link>("topMessageLink");
+
+		///<summary>
+		/// Top Message Text
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("topMessageText")]
+		public string TopMessageText => this.Value<string>("topMessageText");
+
+		///<summary>
 		/// META Description
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]

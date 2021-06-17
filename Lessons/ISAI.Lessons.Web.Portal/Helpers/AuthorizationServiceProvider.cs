@@ -66,7 +66,7 @@ namespace Timber.Ecommerce.Web.Portal.Helpers
                 int appId = Convert.ToInt32(context.OwinContext.Get<string>("AppId"));
 
      
-                var customer = await db.Customer.FirstOrDefaultAsync(x => x.Email == context.UserName && x.AppId == appId);
+                var customer = await db.Customer.FirstOrDefaultAsync(x => x.Email.ToLower().Trim() == context.UserName.ToLower().Trim() && x.AppId == appId);
 
              
                 if (customer == null)

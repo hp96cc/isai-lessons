@@ -76,13 +76,9 @@
                 <div id="panel-nolicence">
 
                     <div class="alert alert-danger" role="alert" id="alert-nolicence">
-                        
+
                     </div>
 
-
-                    <div>
-                        <a href="/contact"><img class="img-fluid" src="/assets/lessonthumbs/thumb_@(Model.MediaId).jpg" alt="@Model.Name - Contact Support" /></a>
-                    </div>
 
                 </div>
 
@@ -142,14 +138,9 @@
 
         <script>
 
-    $(document).ready(function () {
+            $(document).ready(function () {
 
-
-        $("#panel-nolicence").hide();
-
-        //$("#button-load").hide();
-        //$("#button-load").click();
-
+            $("#panel-nolicence").hide();
 
     });
 
@@ -221,7 +212,7 @@
                     return;
                 }
 
-            } 
+            }
 
 
             $("#lessonplayer").hide();
@@ -240,5 +231,18 @@
                 onload="initFingerprintJS()"></script>
 
     }
+    else
+    {
+        <script>
 
-}
+            $(document).ready(function () {
+
+                $("#panel-nolicence").hide();
+
+            });
+
+
+        </script>
+    }
+
+} 
