@@ -84,6 +84,19 @@
 
                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                 {
+                    <div id="iphone-redirect">
+                        <div class="p-5 h4">
+                            To view this lesson, please  <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><u>download our app from the Apple App Store</u></a>
+
+
+                        </div>
+
+
+                        <div class="h4">
+                            <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><img alt="Download in the App Store" src="/media/gkhevzea/apple-download.svg" style="height:100px;padding:15px;"></a>
+
+                        </div>
+                    </div>
 
                     <video id="lessonplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered" controls width="640" height="400" data-setup='{"fluid": true, "logo": { "enabled": false }, "techOrder": ["azureHtml5JS", "flashSS", "silverlightSS", "html5"], "nativeControlsForTouch": false}' tabindex="0">
                     </video>
@@ -112,14 +125,15 @@
                 }
 
 
-
-
             </div>
 
         </div>
     </div>
 </section>
 <!-- end course details section -->
+
+<div><h1 id="test"></h1></div>
+
 
 
 @section Head {
@@ -133,26 +147,47 @@
 @section Scripts {
 
 
+
     @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
     {
 
         <script>
 
+            function isIphoneMobileSafari() {
+                return navigator.userAgent.match(/(iPod|iPhone)/) && navigator.userAgent.match(/AppleWebKit/)
+            }
+
             $(document).ready(function () {
 
-            $("#panel-nolicence").hide();
+                $("#panel-nolicence").hide();
 
-    });
+               
+
+            });
 
     function initFingerprintJS() {
         FingerprintJS.load().then(fp => {
             fp.get().then(result => {
                 LessonsApp.visitorId = result.visitorId;
-                console.log(LessonsApp.visitorId);
-                SetLessonUrl();
+                //console.log(LessonsApp.visitorId);
+                LoadLesson();
             });
         });
-    }
+            }
+
+            function LoadLesson() {
+
+                if (isIphoneMobileSafari()) {
+
+                    $("#iphone-redirect").show();
+                    $("#lessonplayer").hide();
+
+                } else {
+
+                    $("#iphone-redirect").hide();
+                    SetLessonUrl();
+                }
+            }
 
         function ToggleLessonNotes() {
 
