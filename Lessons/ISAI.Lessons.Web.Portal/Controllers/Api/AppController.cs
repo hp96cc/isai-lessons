@@ -347,7 +347,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             //Check subscription
             var subscription = await db.Subscription
                 .OrderByDescending(x => x.EndDate)
-                .FirstOrDefaultAsync(x => x.CustomerId == _customerId);
+                .FirstOrDefaultAsync(x => 
+                    x.CustomerId == _customerId && 
+                    x.Deleted == false && 
+                    x.Active == true);
 
             if (subscription == null)
             {
@@ -400,7 +403,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             try
             {
-                await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, request.Message, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+
+                var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p>", request.Name, request.Email, request.Message);
+
+
+                await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
                 response.Content = true;
                 response.Status = ResponseStatus.OK;
               
@@ -509,11 +516,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             var dateTimeNow = DateTime.UtcNow;
 
             var subscriptions = await db.Subscription.Where(x =>
-            x.CustomerId == _customerId &&
-            x.Deleted == false &&
-            x.Active == true &&
-            x.StartDate <= dateTimeNow &&
-            x.EndDate >= dateTimeNow
+                x.CustomerId == _customerId &&
+                x.Deleted == false &&
+                x.Active == true &&
+                x.StartDate <= dateTimeNow &&
+                x.EndDate >= dateTimeNow
             ).ToListAsync();
 
             response.Content = subscriptions;
@@ -592,6 +599,29 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             return response;
         }
 
+
+        [Route("api/app/deletedevice")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseBase> DeleteDevice(CustomerDevice customerDevice)
+        {
+
+            var response = new Lessons.Models.Models.ResponseBase ();
+
+            var device = await db.CustomerDevice.FirstOrDefaultAsync(x => x.Id == customerDevice.Id && x.Deleted == false);
+
+            if(device != null)
+            {
+                device.Deleted = true;
+                device.DateModified = DateTime.UtcNow;
+                db.Entry(device).State = EntityState.Modified;
+
+                await db.SaveChangesAsync();
+            }
+
+            response.Status = ResponseStatus.OK;
+
+            return response;
+        }
 
         [Route("api/app/customeractivity")]
         [HttpPost]
@@ -783,9 +813,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
                     CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
                     PaymentMethodTypes = new List<string>
-                {
-                    "card",
-                },
+                    {
+                        "card",
+                    },
                     Mode = "subscription",
                     LineItems = new List<SessionLineItemOptions>
                 {
@@ -803,6 +833,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 register.Customer.PaymentSessionId = session.Id;
                 db.Entry(register.Customer).State = EntityState.Modified;
                 await db.SaveChangesAsync();
+
+                await CreateCustomerSubscription((Customer)register.Customer, request.PriceId);
 
                 return new CreateCustomerPayemntSessionResponse
                 {
@@ -924,25 +956,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        [Route("api/app/confirmcustomersubscription")]
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<Customer> ConfirmCustomerSubscription(ConfirmCustomerSubscriptionRequest request)
-        {
-            var postRegistrationAccessCode = Guid.NewGuid().ToString();
-            var customer = await db.Customer.FirstAsync(x => x.PaymentSessionId == request.SessionId && x.AppId == request.AppId);
-            customer.PostRegistrationAccessCode = postRegistrationAccessCode;
-
-            var service = new SessionService(this.client);
-            var session = await service.GetAsync(request.SessionId);
-          
-
-
-            await CreateCustomerSubscription(customer, session);
-
-            return customer;
-
-        }
 
 
         [Route("api/app/signupaccesscode")]
@@ -1085,8 +1098,20 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     var checkOutComplete = stripeEvent.Data.Object as Stripe.Checkout.Session;
                     customerId = Convert.ToInt32(checkOutComplete.ClientReferenceId);
                     var customer = await db.Customer.FirstAsync(x => x.Id == customerId);
+                    
+                    //Add Stripe customer ID
                     customer.StripeCustomerId = checkOutComplete.CustomerId;
-                    await CreateCustomerSubscription(customer, checkOutComplete);
+                    db.Entry(customer).State = EntityState.Modified;
+
+                    //Add Stripe SubsctioiniD
+                    var subscription = await db.Subscription
+                            .OrderByDescending(x => x.Id)
+                            .FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
+
+                    subscription.StripeSubscriptionId = checkOutComplete.SubscriptionId;
+                    db.Entry(subscription).State = EntityState.Modified;
+
+                    await db.SaveChangesAsync();
 
                     break;
                 case "invoice.paid":
@@ -1094,7 +1119,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     // Store the status in your database and check when a user accesses your service.
                     // This approach helps you avoid hitting rate limits.
                     var paidInvoice = stripeEvent.Data.Object as Stripe.Invoice;
-                    await UpdateCustomerSubscription(paidInvoice.SubscriptionId, true);
+                    await UpdateCustomerSubscription(paidInvoice.SubscriptionId, true, paidInvoice);
 
                     break;
                 case "invoice.payment_failed":
@@ -1120,7 +1145,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        async Task CreateCustomerSubscription(Customer customer, Session session, SubscriptionCode subscriptionCode = null)
+        async Task CreateCustomerSubscription(Customer customer, string priceId, SubscriptionCode subscriptionCode = null)
         {
 
             if(subscriptionCode != null)
@@ -1161,48 +1186,44 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             } 
             else
             {
-
+                
                 var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
 
                 string subscriptionName;
                 int subscriptionTypeId;
-                int subscriptionMonths;
 
-                switch (session.LineItems.ElementAt(0).Price.Id)
+                switch (priceId)
                 {
 
                     case "price_1J0LLgJ81SbG6nzad3BrKr0L":
                         subscriptionName = "Secondary Annual Subscription";
-                        subscriptionTypeId = 2;
-                        subscriptionMonths = 12;
+                        subscriptionTypeId = 3;
                         break;
 
                     case "price_1J0LLMJ81SbG6nzasmeqA5KF":
                         subscriptionName = "Secondary Monthly Subscription";
-                        subscriptionTypeId = 2;
-                        subscriptionMonths = 1;
+                        subscriptionTypeId = 3;
                         break;
 
                     case "price_1IxXUFJ81SbG6nzav7NG3Vto":
                         subscriptionName = "Primary Monthly Subscription";
-                        subscriptionTypeId = 1;
-                        subscriptionMonths = 1;
+                        subscriptionTypeId = 2;
                         break;
 
                     case "price_1IxXTvJ81SbG6nzajuriP6XZ":
                     default:
                         subscriptionName = "Primary Annual Subscription";
-                        subscriptionTypeId = 1;
-                        subscriptionMonths = 12;
+                        subscriptionTypeId = 2;
                         break;
                 }
 
                 if (subscription != null)
                 {
                     subscription.Name = subscriptionName;
-                    subscription.Active = true;
+                    subscription.Active = false;
+                    subscription.StartDate = DateTime.UtcNow;
+                    subscription.EndDate = DateTime.UtcNow;
                     subscription.SubscriptionTypeId = subscriptionTypeId;
-                    subscription.EndDate = subscription.EndDate.AddMonths(subscriptionMonths);
                     subscription.DateModified = DateTime.UtcNow;
                     subscription.ModifiedUserId = _adminUserId;
 
@@ -1215,11 +1236,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     {
                         Name = subscriptionName,
                         CustomerId = customer.Id,
-                        StripeSubscriptionId = session.SubscriptionId,
                         SubscriptionTypeId = subscriptionTypeId,
-                        Active = true,
+                        Active = false,
                         StartDate = DateTime.UtcNow,
-                        EndDate = DateTime.UtcNow.AddMonths(subscriptionMonths),
+                        EndDate = DateTime.UtcNow,
                         DateModified = DateTime.UtcNow,
                         DateCreated = DateTime.UtcNow,
                         CreatedUserId = _adminUserId,
@@ -1230,7 +1250,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 }
 
-                customer.StripeCustomerId = session.CustomerId;
+              
                 customer.HasCompletedCheckout = true;
                 customer.DateModified = DateTime.UtcNow;
                 customer.ModifiedUserId = _adminUserId;
@@ -1244,17 +1264,68 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
 
 
-        async Task UpdateCustomerSubscription(string subscriptionId, bool isActive)
+        async Task UpdateCustomerSubscription(string subscriptionId, bool isActive, Stripe.Invoice invoice = null)
         {
 
             var subscription = await db.Subscription.FirstAsync(x => x.StripeSubscriptionId == subscriptionId && x.Deleted == false);
 
-            subscription.Active = isActive ? true : false;
-            subscription.EndDate = isActive ? subscription.EndDate.AddMonths(1) : DateTime.UtcNow;
-            subscription.DateModified = DateTime.UtcNow;
-            subscription.ModifiedUserId = _adminUserId;
+            if (isActive == false)
+            {
 
-            db.Entry(subscription).State = EntityState.Modified;
+                subscription.Active = false;
+                subscription.DateModified = DateTime.UtcNow;
+                subscription.ModifiedUserId = _adminUserId;
+
+                db.Entry(subscription).State = EntityState.Modified;
+
+
+            } else {
+
+                string subscriptionName;
+                int subscriptionTypeId;
+                int subscriptionMonths;
+
+                switch (invoice.Lines.ElementAt(0).Plan.Id)
+                {
+
+                    case "price_1J0LLgJ81SbG6nzad3BrKr0L":
+                        subscriptionName = "Secondary Annual Subscription";
+                        subscriptionTypeId = 3;
+                        subscriptionMonths = 12;
+                        break;
+
+                    case "price_1J0LLMJ81SbG6nzasmeqA5KF":
+                        subscriptionName = "Secondary Monthly Subscription";
+                        subscriptionTypeId = 3;
+                        subscriptionMonths = 1;
+                        break;
+
+                    case "price_1IxXUFJ81SbG6nzav7NG3Vto":
+                        subscriptionName = "Primary Monthly Subscription";
+                        subscriptionTypeId = 2;
+                        subscriptionMonths = 1;
+                        break;
+
+                    case "price_1IxXTvJ81SbG6nzajuriP6XZ":
+                    default:
+                        subscriptionName = "Primary Annual Subscription";
+                        subscriptionTypeId = 2;
+                        subscriptionMonths = 12;
+                        break;
+                }
+
+                subscription.Name = subscriptionName;
+                subscription.SubscriptionTypeId = subscriptionTypeId;
+                subscription.Active = true;
+                subscription.EndDate = subscription.EndDate.AddMonths(subscriptionMonths);
+                subscription.DateModified = DateTime.UtcNow;
+                subscription.ModifiedUserId = _adminUserId;
+
+                db.Entry(subscription).State = EntityState.Modified;
+
+            }
+
+            await db.SaveChangesAsync();
 
         }
 

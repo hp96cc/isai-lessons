@@ -73,50 +73,50 @@ namespace ISAI.Lessons.AzureVideo
         {
 
 
-            //Assign Subsctioion Ids to lesson groups
-            using (var db = new LessonsDbContext())
-            {
+            ////Assign Subsctioion Ids to lesson groups
+            //using (var db = new LessonsDbContext())
+            //{
 
-                var primary = await db.LessonGroup.FirstAsync(x => x.Id == 1);
-                var secondary = await db.LessonGroup.FirstAsync(x => x.Id == 2);
+            //    var primary = await db.LessonGroup.FirstAsync(x => x.Id == 1);
+            //    var secondary = await db.LessonGroup.FirstAsync(x => x.Id == 2);
 
-                primary.SubscriptionTypeId = 2;
-                db.Entry(primary).State = EntityState.Modified;
-                Console.WriteLine("Updating {0}", primary.Name);
+            //    primary.SubscriptionTypeId = 2;
+            //    db.Entry(primary).State = EntityState.Modified;
+            //    Console.WriteLine("Updating {0}", primary.Name);
 
-                secondary.SubscriptionTypeId = 3;
-                db.Entry(secondary).State = EntityState.Modified;
-                Console.WriteLine("Updating {0}", secondary.Name);
+            //    secondary.SubscriptionTypeId = 3;
+            //    db.Entry(secondary).State = EntityState.Modified;
+            //    Console.WriteLine("Updating {0}", secondary.Name);
 
-                await db.SaveChangesAsync();
+            //    await db.SaveChangesAsync();
 
-                await UpdateLessonGroup(db, primary);
-                await UpdateLessonGroup(db, secondary);
+            //    await UpdateLessonGroup(db, primary);
+            //    await UpdateLessonGroup(db, secondary);
 
-            }
+            //}
 
-            return;
+            //return;
 
             //using (var db = new LessonsDbContext())
             //{
 
-            //    for (int i = 0; i < 200; i++)
+            //    for (int i = 0; i < 2000; i++)
             //    {
             //        var code = new SubscriptionCode();
             //        code.Code = Guid.NewGuid().ToString();
-            //        code.IssuedTo = "Testing - Batch 2";
+            //        code.IssuedTo = "Charity Codes - Issue 15/06/2021";
             //        code.SubscriptionTypeId = 1;
             //        code.ValidFrom = new DateTime(2021, 5, 1);
             //        code.ValidFrom = new DateTime(2021, 8, 1);
-            //        code.LicenceDays = 10;
+            //        code.LicenceDays = 365;
 
             //        db.Entry(code).State = EntityState.Added;
 
-            //        Console.WriteLine("Adding {0}", code.Code);
-
+            //        Console.WriteLine("Adding {0}", code.IssuedTo + code.Code);
+            //        await db.SaveChangesAsync();
             //    }
 
-            //    await db.SaveChangesAsync();
+            
 
             //}
 

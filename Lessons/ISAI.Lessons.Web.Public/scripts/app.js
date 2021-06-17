@@ -212,34 +212,7 @@
     };
 
 
-    var confirmSignup = async function (sessionId) {
-
-        var url = this.baseUrl + "confirmcustomersubscription";
-        var requestData = JSON.stringify({
-            SessionId: sessionId
-        });
-
-        try {
-
-            var data = await $.ajax({
-                url: url,
-                data: requestData,
-                type: "POST",
-                contentType: 'application/json',
-            });
-
-            location.href = '/plans/confirmed'
-
-        } catch (error) {
-
-            console.log(error);
-
-        }
-
-    };
-
-
-
+   
     var getLesson = async function (lessonId) {
 
         var url = this.baseUrl + "lesson";
@@ -331,6 +304,31 @@
         }
 
     };
+
+    var deleteCustomerDevice = async function (customerDevice) {
+
+        var url = this.baseUrl + "deletedevice";
+        var requestData = JSON.stringify(customerDevice);
+
+        try {
+
+            var data = await $.ajax({
+                url: url,
+                data: requestData,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
+
 
     var getCustomerActivity = async function () {
 
@@ -426,12 +424,12 @@
         getCustomerActivity: getCustomerActivity,
         logout: logout,
         createCustomerPaymentSession: createCustomerPaymentSession,
-        confirmSignup: confirmSignup,
         subscriptionPortal: subscriptionPortal,
         signupWithAccessCode: signupWithAccessCode,
         lessonStreamingUrl: lessonStreamingUrl,
         sendEmail: sendEmail,
-        saveCustomer: saveCustomer
+        saveCustomer: saveCustomer,
+        deleteCustomerDevice: deleteCustomerDevice
 
     }
 

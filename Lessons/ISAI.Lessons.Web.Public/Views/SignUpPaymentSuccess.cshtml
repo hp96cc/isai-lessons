@@ -6,45 +6,14 @@
     Layout = "Master.cshtml";
 
 
-    //try
-    //{
-
-    //var controller = new LessonAppController();
-    //var request = new ConfirmCustomerSubscriptionRequest()
-    //{
-    //    SessionId = Request.QueryString["session_id"]
-    //};
-
-    //controller.ConfirmCustomerSubscription(request).Wait();
-
-    //Response.Redirect("/plans/confirmed", true);
-
-
-    // } catch(Exception ex)
-    // {
-    //Payment failed or illegal use of page, redirect to home
-    //     Response.Redirect("/", true);
-    //}
-
 }
 
 @section Scripts { 
 
-<script>
+    <script>
 
-    $(document).ready(function () {
+        location.href = '/plans/confirmed';
 
-        ConfirmSignup('@Request.QueryString["session_id"].ToString()');
-
-    });
-
-
-    async function ConfirmSignup(sessionId) {
-
-        await lessonsApp.confirmSignup(sessionId);
-
-    }
-
-</script>
+    </script>
 
     }

@@ -56,7 +56,7 @@
 
                                     <!-- Heading -->
                                     <h3 class="mb-10 mt-3">My Devices</h3>
-                                    <p>The table below shows your registered devices. You can register up to 3 devices at any one time.</p>
+                                    <p>The table below shows your registered devices. You can register up to 2 devices at any one time.</p>
 
 
 
@@ -74,21 +74,21 @@
             </div>
 </section>
 
-<div class="modal fade" id="deleteAddressModal" tabindex="-1" role="dialog" aria-labelledby="deleteAddressModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteDeviceModal" tabindex="-1" role="dialog" aria-labelledby="deleteDeviceModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteAddressModalLabel">Delete Device</h5>
+                <h5 class="modal-title" id="deleteDeviceModalLabel">Delete Device</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Are you sure you wish to delete this device? You will no longer be able to access any lesson content after it has been deleted.
+                Are you sure you wish to delete this device? You will no longer be able to access any lesson content on this device after it has been deleted.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-primary" onclick="DeleteDevice();">Yes</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="DeleteDevice();">Yes</button>
             </div>
         </div>
     </div>
@@ -106,35 +106,35 @@
                 <div class="card card-sm">
                     <div class="card-body bg-light">
                         <div class="row">
-                            <div class="col-5">
+                            <div class="col-10">
 
                                 <!-- Heading -->
                                 <h6 class="heading-xxxs text-muted">Device Name:</h6>
 
                                 <!-- Text -->
                                 <p class="mb-lg-0 font-size-sm font-weight-bold">
-                                    CCUS-{{Id}}
+                                    {{Name}}
                                 </p>
 
                             </div>
-                            <div class="col-5">
+                            <!--<div class="col-3">-->
 
                                 <!-- Heading -->
-                                <h6 class="heading-xxxs text-muted">Date Registered:</h6>
+                                <!--<h6 class="heading-xxxs text-muted">Date Registered:</h6>-->
 
                                 <!-- Text -->
-                                <p class="mb-lg-0 font-size-sm font-weight-bold">
+                                <!--<p class="mb-lg-0 font-size-sm font-weight-bold">
                                     <time datetime="2019-09-07">
-                                        {{FormattedOrderDate}}
+                                        {{DateCreated}}
                                     </time>
                                 </p>
 
-                            </div>
+                            </div>-->
                             <div class="col-2 float-right">
 
                  
                                 <!-- Button -->
-                                <button class="btn btn-circle float-right p-0" data-toggle="modal" data-target="#deleteAddressModal" onclick="PromptDeleteAddress({{Id}});">
+                                <button class="btn btn-circle float-right p-0" data-toggle="modal" data-target="#deleteDeviceModal" onclick="PromptdeleteDevice({{Id}});">
                                     <i class="far fa-trash-alt delete-button"></i>
                                 </button>
 
@@ -159,39 +159,33 @@
 
         $(document).ready(function () {
 
-            //GetAddresses();
-            devices = [{}, {}, {}];
-           DisplayDevices();
+            GetDevices();
+         
 
         });
 
 
-        function GetAddresses() {
+        async function GetDevices() {
 
+            $('#account-panel').hide();
+            $('#spinner-loading').show();
 
-            var url = baseUrl + "/api/shopping/addresses/";
+            var data = await lessonsApp.getCustomerDevices();
 
-            $.ajax({
-                url: url,
-                type: "GET",
-                contentType: 'application/x-www-form-urlencoded',
-                headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
-                success: function (data) {
+            if (!data) {
+                lessonsApp.logout();
+            }
+            else if (data.Status !== 0) {
+                location.href = '/account/'
+            } else {
+                devices = data.Content;
+                DisplayDevices();
+            }
 
-                    addresses = data;
-                    DisplayAddresses();
-
-                },
-                error: function (xhRequest, ErrorText, thrownError) {
-
-                    console.log(ErrorText);
-
-                }
-            });
 
         }
 
-        function DisplayDevices() {
+        async function DisplayDevices() {
 
             $('#device-list').html('');
 
@@ -215,39 +209,30 @@
 
 
 
-        function PromptDeleteAddress(id) {
+        function PromptdeleteDevice(id) {
 
-            deleteAddressId = id;
+            deleteDeviceId = id;
 
         }
 
-        function DeleteAddress() {
+        async function DeleteDevice() {
 
-
-            $('#deleteAddressModal').modal('hide');
 
             $('#account-panel').hide();
             $('#spinner-loading').show();
 
-            var url = baseUrl + "/api/shopping/address?id=" + deleteAddressId;
+            var data = await lessonsApp.deleteCustomerDevice({ Id: deleteDeviceId});
 
-            $.ajax({
-                url: url,
-                type: "DELETE",
-                contentType: 'application/x-www-form-urlencoded',
-                headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
-                success: function (data) {
+            if (!data) {
+                lessonsApp.logout();
+            }
+            else if (data.Status !== 0) {
+                location.href = '/account/'
+            } else {
+                GetDevices();
+            }
 
-                    GetAddresses();
 
-                },
-                error: function (xhRequest, ErrorText, thrownError) {
-
-                    console.log(ErrorText);
-                    alert("Error: Could not load data. See browser log for details.");
-
-                }
-            });
 
         }
 

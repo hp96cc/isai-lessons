@@ -227,7 +227,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/customerdevices")]
         [HttpPost]
-        public async Task<List<CustomerDevice>> CustomerDevices()
+        public async Task<ResponseData<List<CustomerDevice>>> CustomerDevices()
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
@@ -239,7 +239,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 {
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var customerDevices = JsonConvert.DeserializeObject<List<CustomerDevice>>(serialisedContent);
+                    var customerDevices = JsonConvert.DeserializeObject<ResponseData<List<CustomerDevice>>> (serialisedContent);
                     return customerDevices;
 
                 }
@@ -253,6 +253,43 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
         }
+
+
+        [Route("api/lessonapp/deletedevice")]
+        [HttpPost]
+        public async Task<ResponseBase> DeleteDevice(CustomerDevice customerDevice)
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+
+                var json = JsonConvert.SerializeObject(customerDevice);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/deletedevice", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var customerDevices = JsonConvert.DeserializeObject<ResponseBase>(serialisedContent);
+                    return customerDevices;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+
 
 
         [Route("api/lessonapp/customeractivity")]
@@ -583,48 +620,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
             }
 
         }
-
-
-        [Route("api/lessonapp/confirmcustomersubscription")]
-        [HttpPost]
-        public async Task<Customer> ConfirmCustomerSubscription(ConfirmCustomerSubscriptionRequest request)
-        {
-
-            SetHttpClient();
-
-            try
-            {
-                request.AppId = _appId;
-
-                var json = JsonConvert.SerializeObject(request);
-                HttpContent content = new StringContent(json);
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/confirmcustomersubscription", content).ConfigureAwait(false);
-
-                if (httpResponse.IsSuccessStatusCode)
-                {
-                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var customer = JsonConvert.DeserializeObject<Customer>(serialisedContent);
-
-                    await GetAuthToken(customer.Email, string.Empty, customer.PostRegistrationAccessCode);
-
-                    return customer;
-                }
-                else
-                {
-                    throw new HttpResponseException(httpResponse.StatusCode);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
-            }
-
-            throw new HttpResponseException(HttpStatusCode.InternalServerError);
-
-        }
-
 
 
 
