@@ -195,7 +195,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     }
 
                     var deviceRepsonse = await CheckCustomerDevice(lessonRequestViewModel.CustomerDevice);
-
+                
                     if (deviceRepsonse.Status != ResponseStatus.OK)
                     {
                         response.Status = deviceRepsonse.Status;
@@ -203,6 +203,21 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         response.Content = null;
                         return response;
                     }
+
+
+                    //Log the view
+                    var dbCustomerDevice = db.CustomerDevice.FirstOrDefault(x => x.DeviceIdentifier == lessonRequestViewModel.CustomerDevice.DeviceIdentifier); //This is now called twice, should be refactored
+
+                    var customerActivity = new CustomerActivity()
+                    {
+                        CustomerDeviceId = dbCustomerDevice.Id,
+                        LessonId = lesson.Id,
+                        StartDateTime = DateTimeOffset.UtcNow,
+                    };
+
+                    db.CustomerActivity.Add(customerActivity);
+                    await db.SaveChangesAsync();
+
 
                     if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.EncryptedStream)
                     {
@@ -407,7 +422,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p>", request.Name, request.Email, request.Message);
 
 
-                await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+                await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com", "kboswell@uteachrecruitment.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
                 response.Content = true;
                 response.Status = ResponseStatus.OK;
               

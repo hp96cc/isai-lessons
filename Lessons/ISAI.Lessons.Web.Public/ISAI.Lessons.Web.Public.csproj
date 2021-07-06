@@ -566,11 +566,15 @@
     <Compile Include="App_Data\Models\AccountInfo.generated.cs" />
     <Compile Include="App_Data\Models\AccountLogout.generated.cs" />
     <Compile Include="App_Data\Models\AccountSubscriptions.generated.cs" />
+    <Compile Include="App_Data\Models\BlogGroup.generated.cs" />
+    <Compile Include="App_Data\Models\BlogItem.generated.cs" />
     <Compile Include="App_Data\Models\ContactElement.generated.cs" />
     <Compile Include="App_Data\Models\ContactPage.generated.cs" />
     <Compile Include="App_Data\Models\ContentBoxWithLink.generated.cs" />
     <Compile Include="App_Data\Models\ContentPage.generated.cs" />
     <Compile Include="App_Data\Models\CourseBox.generated.cs" />
+    <Compile Include="App_Data\Models\EmailTemplate.generated.cs" />
+    <Compile Include="App_Data\Models\EmailTemplateGroup.generated.cs" />
     <Compile Include="App_Data\Models\FAqgroup.generated.cs" />
     <Compile Include="App_Data\Models\FAqitem.generated.cs" />
     <Compile Include="App_Data\Models\File.generated.cs" />
@@ -664,6 +668,8 @@
     <Content Include="Views\SignUpPaymentSuccess.cshtml" />
     <Content Include="Views\ForgotPassword.cshtml" />
     <Content Include="Views\ResetPassword.cshtml" />
+    <Content Include="Views\BlogGroup.cshtml" />
+    <Content Include="Views\BlogItem.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

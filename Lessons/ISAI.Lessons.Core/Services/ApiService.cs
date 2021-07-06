@@ -3,6 +3,7 @@ using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using ISAI.Lessons.Models.ViewModels;
+using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -96,6 +97,8 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
+
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
@@ -136,6 +139,9 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
+
+                Crashes.TrackError(ex);
+
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
@@ -165,12 +171,14 @@ namespace ISAI.Lessons.EntityFramework.Services
                 }
                 else
                 {
+
                     var errorResponse = await ParseHttpError(httpResponse);
                     throw new Exception(errorResponse);
                 }
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
 
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
@@ -214,9 +222,16 @@ namespace ISAI.Lessons.EntityFramework.Services
                 await _authService.SetAuth(auth);
                 return auth;
 
+            } else
+            {
+
+                var loginData = string.Format("Authorisaton failed - Email:{0} Password:{1} Status Code:{2}", username, password, response.StatusCode);
+
+                throw new Exception(loginData);
+
             }
 
-            throw new Exception("Authorisaton failed");
+           
 
         }
 

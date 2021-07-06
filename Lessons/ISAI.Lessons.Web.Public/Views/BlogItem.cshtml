@@ -1,0 +1,209 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.BlogItem>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+
+
+<!-- start page title section -->
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()">
+    <div class="container">
+        <div class="page-title">
+            <h1>@Model.Title</h1>
+            <div class="page-link">
+                <ul>
+                    @{
+
+                        var ancestors = Model.Ancestors().Reverse().ToList();
+
+                        foreach (var ancestor in ancestors)
+                        {
+
+
+                            if (ancestor.Id == Model.Root().Id)
+                            {
+                                <li><a href="/">Home</a></li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a href="@ancestor.Url()">@ancestor.Name</a>
+                                </li>
+                            }
+
+                        }
+
+                        <li><a href="javascript:void(0)">@Model.Title</a></li>
+
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title section -->
+<!-- start blog details section -->
+<section class="blogs">
+    <div class="container">
+        <div class="row">
+
+            <!--  start blog left-->
+            <div class="col-12 sm-margin-50px-bottom">
+                <div class="posts">
+
+                    <div class="post">
+                        <div class="post-img position-relative margin-30px-bottom">
+                            <a href="javascript:void(0);" class="width-100">
+                                <img src="@Model.BlogImage.MediaUrl()" class="border-radius-5" alt="@Model.Title">
+                                <div class="date position-absolute bg-green">
+                                    <span class="display-block text-white font-size28 md-font-size26 sm-font-size24">@Model.BlogDate.Day</span>
+                                    <p class="text-white font-size16 md-font-size14 no-margin-bottom">@Model.BlogDate.ToString("MMM")</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="content">
+                            <div class="post-meta">
+                                <div class="post-title">
+                                    <h5>@Model.Title</h5>
+                                </div>
+                                <ul class="meta">
+                                    <li>
+                                        <a href="javascript:void(0);">
+                                            <i class="fa fa-user text-green" aria-hidden="true"></i> @Model.BlogAuthor
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);">
+                                            <i class="fa fa-calendar text-green" aria-hidden="true"></i>  @Model.BlogDate.ToLongDateString()
+                                        </a>
+                                    </li>
+                                    @*<li>
+                                        <a href="javascript:void(0);">
+                                            <i class="fa fa-comments text-green" aria-hidden="true"></i> 4 Comments
+                                        </a>
+                                    </li>*@
+                                </ul>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(Model.QuoteContent))
+                            {
+
+                            <div class="post-cont">
+                                @Model.ContentArea1
+                                <div class="special">
+                                    <h4 class="margin-10px-bottom font-weight-500 font-size26 sm-font-size22 xs-font-size18">@Model.QuoteContent</h4>
+                                    <span class="font-size16 text-light-pink">@Model.QuoteAuthor</span>
+                                </div>
+                                @Model.ContentArea2
+                            </div>
+
+                            }
+
+                            @*<div class="share-post">
+                                <span>Share Post</span>
+                                <ul class="no-margin-bottom">
+                                    <li><a href="javascript:void(0);"><i class="fab fa-facebook-f"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fab fa-twitter"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fab fa-pinterest-p"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fab fa-youtube"></i></a></li>
+                                    <li><a href="javascript:void(0);"><i class="fab fa-linkedin-in"></i></a></li>
+                                </ul>
+                            </div>*@
+                        </div>
+                    </div>
+
+                    <!--  start comment-->
+                    <!--<div class="comments-area">
+                        <div class="title-g margin-30px-bottom">
+                            <h3>Comments</h3>
+                        </div>
+                        <div class="comment-box">
+                            <div class="author-thumb">
+                                <img src="img/blog/01.png" alt="" class="rounded-circle width-85 xs-width-100">
+                            </div>
+                            <div class="comment-info">
+                                <h6><a href="javascript:void(0);">Alex Joyrina</a></h6>
+                                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                <div class="reply">
+                                    <a href="javascript:void(0);">
+                                        <i class="fa fa-reply" aria-hidden="true"></i> Reply
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-box">
+                            <div class="author-thumb">
+                                <img src="img/blog/02.png" alt="" class="rounded-circle width-85 xs-width-100">
+                            </div>
+                            <div class="comment-info">
+                                <h6><a href="javascript:void(0);">Jama Karleny</a></h6>
+                                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                <div class="reply">
+                                    <a href="javascript:void(0);">
+                                        <i class="fa fa-reply" aria-hidden="true"></i> Reply
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-box">
+                            <div class="author-thumb">
+                                <img src="img/blog/03.png" alt="" class="rounded-circle width-85 xs-width-100">
+                            </div>
+                            <div class="comment-info">
+                                <h6><a href="javascript:void(0);">Ivonne Drennen</a></h6>
+                                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                <div class="reply">
+                                    <a href="javascript:void(0);">
+                                        <i class="fa fa-reply" aria-hidden="true"></i> Reply
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                    <!-- end comment-->
+                    <!--  start form-->
+                    <!--<div class="comment-form">
+                        <div class="title-g">
+                            <h3>Post a Comment</h3>
+                        </div>
+                        <form>
+                            <div class="controls">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Name *:</label>
+                                            <input type="text" class="form-control" name="name" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Email Address *:</label>
+                                            <input type="email" class="form-control" name="email" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Write a message *:</label>
+                                        <div class="form-group mb-1">
+                                            <textarea rows="5" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 margin-15px-top">
+                                        <button type="submit" class="butn small"><span>Send Message</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>-->
+                    <!--  end form-->
+                </div>
+            </div>
+            <!--  end blog left-->
+        
+
+        </div>
+    </div>
+</section>
+<!-- end blog details section -->

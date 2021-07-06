@@ -3,6 +3,7 @@ using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
+using Microsoft.AppCenter.Crashes;
 using Plugin.Hud;
 using Plugin.Hud.Abstractions;
 using System;
@@ -61,9 +62,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         async Task OnLoginClicked()
         {
-
-
             CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
+
+            await Task.Delay(100);
 
             try
             {
@@ -111,6 +112,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
                 Debug.WriteLine(ex.StackTrace);
 
             }

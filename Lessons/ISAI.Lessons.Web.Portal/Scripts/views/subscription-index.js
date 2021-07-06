@@ -11,7 +11,7 @@
     }
 
     var CustomerDataManager = new ej.data.DataManager({
-        url: '/odata/customers',
+        url: '/odata/subscriptions?$expand=Customer,SubscriptionType',
         adaptor: new CustomerAdaptor(),
         crossDomain: true
     });
@@ -23,6 +23,12 @@
         width: 'auto',
         allowExcelExport: true,
         allowPdfExport: true,
+        allowGrouping: true,
+        groupSettings: { disablePageWiseAggregates: true },
+        sortSettings: { columns: [{ field: 'StartDate', direction: 'Descending' }] },
+        filterSettings: {
+            type: 'Excel'
+        },
         pageSettings: { pageCount: 4, pageSize: 50 },
         toolbar: [/*'Add'*/ 'Edit', /*'Delete',*/ 'Update', 'Cancel', 'ExcelExport', 'PdfExport', 'CsvExport'],
         actionBegin: function (args) {
@@ -30,11 +36,20 @@
 
             if (args.requestType === "beginEdit" || args.requestType === 'add') {
                 this.columns[0].visible = false;
+                this.columns[1].visible = false;
+                this.columns[2].visible = false;
+                this.columns[3].visible = false;
+                this.columns[4].visible = false;
+
 
 
             } else if (args.requestType === "save" || args.requestType === "cancel") {
                 this.columns[0].visible = true;
- 
+                this.columns[1].visible = true;
+                this.columns[2].visible = true;
+                this.columns[3].visible = true;
+                this.columns[4].visible = true;
+
             }
         },
         columns: [
@@ -50,34 +65,58 @@
                 width: 70,
             },
 
-
             {
-                field: 'FirstName',
-                headerText: 'First Name',
-                validationRules: { required: true },
-                width: 150
+                field: 'Customer.FirstName',
+                headerText: 'Customer',
+                allowEditing: false,
+                width: 150,
+                valueAccessor: function (field, data, column) {
 
+                    return data.Customer.FirstName + ' ' + data.Customer.LastName;
+
+                }
             },
 
 
             {
-                field: 'LastName',
-                headerText: 'Last Name',
-                validationRules: { required: true },
+                field: 'Name',
+                headerText: 'Name',
+                allowEditing: false,
                 width: 150
-            },
 
-
-            {
-                field: 'Email',
-                headerText: 'Email',
-                validationRules: { required: true },
-                width: 150
             },
 
             {
-                field: 'DateCreated',
-                headerText: 'Date Created',
+                field: 'SubscriptionType.Name',
+                headerText: 'Subscription Type',
+                allowEditing: false,
+                width: 120
+
+            },
+
+
+
+            
+
+            {
+                field: 'StripeSubscriptionId',
+                headerText: 'Stripe Sub Id',
+                allowEditing: false,
+                width: 150
+            },
+
+            {
+                field: 'StartDate',
+                headerText: 'Start Date',
+                width: 120,
+                editType: 'datetimepickeredit',
+                format: { type: 'dateTime', format: 'dd/MM/yyyy HH:mm' }
+
+            },
+
+            {
+                field: 'EndDate',
+                headerText: 'End Date',
                 width: 120,
                 editType: 'datetimepickeredit',
                 format: { type: 'dateTime', format: 'dd/MM/yyyy HH:mm' }
@@ -86,8 +125,8 @@
 
 
             {
-                field: 'HasCompletedCheckout',
-                headerText: 'Checkout Complete',
+                field: 'Active',
+                headerText: 'Active',
                 displayAsCheckBox: true,
                 editType: "booleanedit",
                 width: 120
@@ -95,23 +134,15 @@
             },
 
 
-            {
-                field: 'AcceptMarketing',
-                headerText: 'Accept Marketing',
-                displayAsCheckBox: true,
-                editType: "booleanedit",
-                width: 120
-
-            },
+           
 
 
-          
 
         ],
 
         toolbarClick: async function (args) {
 
-           
+
             if (args.item.id === 'Grid_pdfexport') {
                 var exportProperties = {
                     pageOrientation: 'Landscape',

@@ -514,6 +514,7 @@
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\ODataReports\BaseODataReportController.cs" />
+    <Compile Include="Controllers\OData\SubscriptionsController.cs" />
     <Compile Include="Controllers\OData\LessonController.cs" />
     <Compile Include="Controllers\OData\LessonGroupsController.cs" />
     <Compile Include="Controllers\OData\CustomersController.cs" />
@@ -523,6 +524,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OData\AppsController.cs" />
     <Compile Include="Controllers\OData\BaseODataController.cs" />
+    <Compile Include="Controllers\SubscriptionController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -2740,6 +2742,7 @@
     <Content Include="Scripts\views\lessongroup-index.js" />
     <Content Include="Scripts\views\customer-index.js" />
     <Content Include="Scripts\views\app-index.js" />
+    <Content Include="Scripts\views\subscription-index.js" />
     <Content Include="Upload\holder.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -2810,6 +2813,7 @@
     <Content Include="Views\Customer\Index.cshtml" />
     <Content Include="Views\LessonGroup\Index.cshtml" />
     <Content Include="Views\Lesson\Index.cshtml" />
+    <Content Include="Views\Subscription\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
