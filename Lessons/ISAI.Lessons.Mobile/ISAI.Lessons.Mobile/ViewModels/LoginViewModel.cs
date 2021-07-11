@@ -100,14 +100,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     await Shell.Current.GoToAsync($"//{nameof(AboutPage)}", true);
 
+                    return;
                 } 
-                else
-                {
-                    CrossHud.Current.Dismiss();
-                    CrossHud.Current.ShowError("Username and / or password are incorrect", MaskType.Black, TimeSpan.FromSeconds(3));
-                }
-
-                return;
+              
 
             }
             catch (Exception ex)
@@ -118,7 +113,8 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
 
             CrossHud.Current.Dismiss();
- 
+            CrossHud.Current.ShowError("Could not login. Please check your email and / or password. ", MaskType.Black, TimeSpan.FromSeconds(3));
+
         }
 
 

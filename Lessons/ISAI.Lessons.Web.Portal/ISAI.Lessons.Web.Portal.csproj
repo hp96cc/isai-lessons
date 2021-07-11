@@ -514,6 +514,7 @@
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\ODataReports\BaseODataReportController.cs" />
+    <Compile Include="Controllers\OData\SubscriptionTypesController.cs" />
     <Compile Include="Controllers\OData\SubscriptionsController.cs" />
     <Compile Include="Controllers\OData\LessonController.cs" />
     <Compile Include="Controllers\OData\LessonGroupsController.cs" />

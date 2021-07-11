@@ -5,6 +5,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers
 {
 
     [Authorize]
+    
     public class CustomerController : BaseAuthroizationController
     {
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

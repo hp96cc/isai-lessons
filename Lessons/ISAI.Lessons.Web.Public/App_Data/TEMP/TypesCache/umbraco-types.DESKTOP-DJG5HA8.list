@@ -616,6 +616,8 @@ Umbraco.Web.PublishedModels.AccountHome, ISAI.Lessons.Web.Public, Version=1.0.0.
 Umbraco.Web.PublishedModels.AccountInfo, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.AccountLogout, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.AccountSubscriptions, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+Umbraco.Web.PublishedModels.BlogGroup, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+Umbraco.Web.PublishedModels.BlogItem, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.ContactPage, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.ContentPage, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.EmailTemplate, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null

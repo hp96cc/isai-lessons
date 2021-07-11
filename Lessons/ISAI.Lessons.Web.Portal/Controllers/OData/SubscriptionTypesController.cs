@@ -8,34 +8,33 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.AspNet.OData.Routing;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.OData
 {
 
 
     [Authorize]
-    public class SubscriptionsController : BaseODataController
+    public class SubscriptionTypesController : BaseODataController
     {
 
-        // GET: odata/Subscription
+        // GET: odata/SubscriptionType
         [EnableQuery]
-        public IQueryable<Subscription> GetSubscriptions()
+        public IQueryable<SubscriptionType> GetSubscriptionTypes()
         {
-            return db.Subscription.Where(x => x.Deleted == false);
+            return db.SubscriptionType.Where(x => x.Deleted == false);
         }
 
 
 
-        // GET: odata/Subscription(5)
+        // GET: odata/SubscriptionType(5)
         [EnableQuery]
-        public SingleResult<Subscription> GetSubscription([FromODataUri] int key)
+        public SingleResult<SubscriptionType> GetSubscriptionType([FromODataUri] int key)
         {
-            return SingleResult.Create(db.Subscription.Where(Subscription => Subscription.Id == key));
+            return SingleResult.Create(db.SubscriptionType.Where(SubscriptionType => SubscriptionType.Id == key));
         }
 
-        // PUT: odata/Subscription(5)
-        public async Task<IHttpActionResult> Put([FromODataUri] int key, Subscription patch)
+        // PUT: odata/SubscriptionType(5)
+        public async Task<IHttpActionResult> Put([FromODataUri] int key, SubscriptionType patch)
         {
             if (!ModelState.IsValid)
             {
@@ -52,7 +51,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!db.Subscription.Any(p => p.Id == key))
+                if (!db.SubscriptionType.Any(p => p.Id == key))
                 {
                     return NotFound();
                 }
@@ -64,23 +63,23 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             return Updated(patch);
         }
 
-        // POST: odata/Subscription
-        public async Task<IHttpActionResult> Post(Subscription Subscription)
+        // POST: odata/SubscriptionType
+        public async Task<IHttpActionResult> Post(SubscriptionType SubscriptionType)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Subscription.Add(Subscription);
+            db.SubscriptionType.Add(SubscriptionType);
 
             try
             {
 
-                Subscription.DateModified = DateTime.UtcNow;
-                Subscription.DateCreated = DateTime.UtcNow;
-                Subscription.CreatedUserId = User.Identity.GetUserId();
-                Subscription.ModifiedUserId = User.Identity.GetUserId();
+                SubscriptionType.DateModified = DateTime.UtcNow;
+                SubscriptionType.DateCreated = DateTime.UtcNow;
+                SubscriptionType.CreatedUserId = User.Identity.GetUserId();
+                SubscriptionType.ModifiedUserId = User.Identity.GetUserId();
 
                 await db.SaveChangesAsync();
 
@@ -92,16 +91,17 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             }
 
 
-            return Created(Subscription);
+            return Created(SubscriptionType);
         }
 
-        public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<Subscription> patch)
+        // PATCH: odata/SubscriptionType(5)
+        public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<SubscriptionType> patch)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var entity = await db.Subscription.FindAsync(key);
+            var entity = await db.SubscriptionType.FindAsync(key);
             if (entity == null)
             {
                 return NotFound();
@@ -118,7 +118,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!db.Subscription.Any(p => p.Id == key))
+                if (!db.SubscriptionType.Any(p => p.Id == key))
                 {
                     return NotFound();
                 }
@@ -130,16 +130,16 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             return Updated(entity);
         }
 
-        // DELETE: odata/Subscription(5)
+        // DELETE: odata/SubscriptionType(5)
         public async Task<IHttpActionResult> Delete([FromODataUri] int key)
         {
-            Subscription Subscription = await db.Subscription.FindAsync(key);
-            if (Subscription == null)
+            SubscriptionType SubscriptionType = await db.SubscriptionType.FindAsync(key);
+            if (SubscriptionType == null)
             {
                 return NotFound();
             }
 
-            db.Subscription.Remove(Subscription);
+            db.SubscriptionType.Remove(SubscriptionType);
             await db.SaveChangesAsync();
 
             return StatusCode(HttpStatusCode.NoContent);
@@ -154,9 +154,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             base.Dispose(disposing);
         }
 
-        private bool SubscriptionExists(int key)
+        private bool SubscriptionTypeExists(int key)
         {
-            return db.Subscription.Count(e => e.Id == key) > 0;
+            return db.SubscriptionType.Count(e => e.Id == key) > 0;
         }
     }
 }

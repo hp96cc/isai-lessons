@@ -11,7 +11,7 @@
     }
 
     var CustomerDataManager = new ej.data.DataManager({
-        url: '/odata/subscriptions?$expand=Customer,SubscriptionType',
+        url: '/odata/subscriptions',
         adaptor: new CustomerAdaptor(),
         crossDomain: true
     });
@@ -19,6 +19,7 @@
     var CustomerGrid = new ej.grids.Grid({
         dataSource: CustomerDataManager,
         editSettings: { allowEditing: true, allowAdding: false, allowDeleting: false, mode: 'Dialog', newRowPosition: 'Top' },
+        query: new ej.data.Query().expand("Customer,SubscriptionType"),
         allowPaging: true,
         width: 'auto',
         allowExcelExport: true,
