@@ -19,58 +19,65 @@ using Umbraco.ModelsBuilder.Embedded;
 
 namespace Umbraco.Web.PublishedModels
 {
-	/// <summary>Content Box with Link</summary>
-	[PublishedModel("contentBoxWithLink")]
-	public partial class ContentBoxWithLink : PublishedElementModel
+	/// <summary>Content Page - Style 2</summary>
+	[PublishedModel("contentPageStyle2")]
+	public partial class ContentPageStyle2 : PublishedContentModel
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		public new const string ModelTypeAlias = "contentBoxWithLink";
+		public new const string ModelTypeAlias = "contentPageStyle2";
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		public new static IPublishedContentType GetModelContentType()
 			=> PublishedModelUtility.GetModelContentType(ModelItemType, ModelTypeAlias);
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<ContentBoxWithLink, TValue>> selector)
+		public static IPublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<ContentPageStyle2, TValue>> selector)
 			=> PublishedModelUtility.GetModelPropertyType(GetModelContentType(), selector);
 #pragma warning restore 0109
 
 		// ctor
-		public ContentBoxWithLink(IPublishedElement content)
+		public ContentPageStyle2(IPublishedContent content)
 			: base(content)
 		{ }
 
 		// properties
 
 		///<summary>
-		/// Button Text
+		/// Content Boxes
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("buttonText")]
-		public string ButtonText => this.Value<string>("buttonText");
+		[ImplementPropertyType("contentBoxes")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContentBoxWithLink> ContentBoxes => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContentBoxWithLink>>("contentBoxes");
 
 		///<summary>
-		/// Icon Prefix: This is not always used
+		/// Header Background Image
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("iconPrefix")]
-		public string IconPrefix => this.Value<string>("iconPrefix");
+		[ImplementPropertyType("headerBackgroundImage")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent HeaderBackgroundImage => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("headerBackgroundImage");
 
 		///<summary>
-		/// Button Link
+		/// Quote Text
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("link")]
-		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent Link => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("link");
+		[ImplementPropertyType("quoteText")]
+		public string QuoteText => this.Value<string>("quoteText");
 
 		///<summary>
-		/// Text
+		/// Text Area 1
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
-		[ImplementPropertyType("text")]
-		public global::System.Web.IHtmlString Text => this.Value<global::System.Web.IHtmlString>("text");
+		[ImplementPropertyType("textArea1")]
+		public global::System.Web.IHtmlString TextArea1 => this.Value<global::System.Web.IHtmlString>("textArea1");
+
+		///<summary>
+		/// Text Area 2
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("textArea2")]
+		public global::System.Web.IHtmlString TextArea2 => this.Value<global::System.Web.IHtmlString>("textArea2");
 
 		///<summary>
 		/// Title

@@ -572,6 +572,7 @@
     <Compile Include="App_Data\Models\ContactPage.generated.cs" />
     <Compile Include="App_Data\Models\ContentBoxWithLink.generated.cs" />
     <Compile Include="App_Data\Models\ContentPage.generated.cs" />
+    <Compile Include="App_Data\Models\ContentPageStyle2.generated.cs" />
     <Compile Include="App_Data\Models\CourseBox.generated.cs" />
     <Compile Include="App_Data\Models\EmailTemplate.generated.cs" />
     <Compile Include="App_Data\Models\EmailTemplateGroup.generated.cs" />
@@ -670,6 +671,7 @@
     <Content Include="Views\ResetPassword.cshtml" />
     <Content Include="Views\BlogGroup.cshtml" />
     <Content Include="Views\BlogItem.cshtml" />
+    <Content Include="Views\ContentPageStyle2.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

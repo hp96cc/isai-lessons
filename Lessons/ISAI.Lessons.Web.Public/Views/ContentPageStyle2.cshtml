@@ -1,0 +1,137 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ContentPageStyle2>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+
+<!-- start page title section -->
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.HeaderBackgroundImage.MediaUrl()">
+    <div class="container">
+        <div class="page-title">
+            <h1>@Model.Title</h1>
+            <div class="page-link">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="javascript:void(0)">@Model.Name</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title section -->
+
+<section class="pb-2">
+    <div class="container">
+
+        <div class="row">
+
+            <div class="margin-40px-bottom sm-margin-30px-bottom">
+                <div class="row align-items-center">
+                    <div class="col-12  xs-margin-25px-bottom">
+                        <div class="post-cont">
+                            @Model.TextArea1
+                            <div class="special">
+                                <h4 class="margin-10px-bottom font-weight-500 font-size26 sm-font-size22 xs-font-size18">@Model.QuoteText</h4>
+                                @*<span class="font-size16 text-light-pink">@Model.QuoteAuthor</span>*@
+                            </div>
+                            @Model.TextArea2
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</section>
+
+
+<!-- start service style-3 section -->
+<section class="no-padding-bottom">
+    <div class="container">
+        @*<div class="section-heading">
+                <h3>Service Style 03</h3>
+                <span class="title-separator"></span>
+            </div>*@
+        <div class="row justify-content-center">
+
+            @{
+                int contentCounter = 1;
+
+
+            }
+
+            @foreach (var contentBox in Model.ContentBoxes)
+            {
+
+                var courseColour = "";
+
+                switch (contentCounter)
+                {
+
+                    case 1:
+                        courseColour = "yellow";
+                        break;
+                    case 2:
+                        courseColour = "pink";
+                        break;
+                    case 3:
+                        courseColour = "green";
+                        break;
+                    case 4:
+                        courseColour = "orange";
+                        break;
+                    default:
+                        courseColour = "blue";
+                        break;
+                }
+
+
+                <div class="col-lg-6 col-xl-6 margin-50px-bottom sm-margin-35px-bottom">
+                    <div class="media margin-50px-right sm-no-margin-right service-one @courseColour">
+                        <div class="icon-area">
+                            <i class="fas @contentBox.IconPrefix"></i>
+                        </div>
+                        <div class="media-body">
+                            <h5>@contentBox.Title</h5>
+                            @contentBox.Text
+
+                            @if (!string.IsNullOrWhiteSpace(contentBox.ButtonText))
+                            {
+                                <a href="@contentBox.Link.Url()">@contentBox.ButtonText <i class="fas fa-arrow-circle-right margin-5px-left vertical-align-middle"></i></a>
+
+
+                            }
+
+                        </div>
+                    </div>
+                </div>
+
+
+                contentCounter++;
+
+            }
+
+
+
+
+        </div>
+    </div>
+</section>
+<!-- end service style-3 section -->
+
+
+<section class="p-3" style="background-color:#ff457e;text-transform:uppercase;">
+    <div class="container">
+
+        <div class="row justify-content-center h1">
+
+            <a href="/plans/"><u class="text-white">Sign Up Now</u></a>
+
+        </div>
+    </div>
+</section>
+

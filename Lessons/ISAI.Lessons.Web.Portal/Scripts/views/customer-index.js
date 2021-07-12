@@ -75,6 +75,14 @@
                 width: 150
             },
 
+
+            {
+                field: 'HearAbout',
+                headerText: 'Hear About',
+                validationRules: { required: true },
+                width: 150
+            },
+
             {
                 field: 'DateCreated',
                 headerText: 'Date Created',

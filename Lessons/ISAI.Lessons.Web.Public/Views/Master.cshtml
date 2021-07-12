@@ -46,7 +46,7 @@
 }
 
 
-@helper RenderMenuItem(IPublishedContent page)
+@helper RenderMenuItem(IPublishedContent page, int menudepth)
 {
 
 var lessonGroup = page as LessonGroup;
@@ -55,7 +55,8 @@ var lessonGroups = page.Children<LessonGroup>();
 var lessons = page.Children<LessonItem>();
 
 
-if (lessonGroup != null)
+
+if (lessonGroup != null && menudepth <= 1)
 {
 
 <li>
@@ -63,16 +64,22 @@ if (lessonGroup != null)
 
     @if (lessonGroups != null && lessonGroups.Count() > 0)
     {
-<ul>
+
+        if (menudepth < 1)
+        {
+
+    <ul>
     @foreach (var newlessonGroup in lessonGroups)
     {
 
-        @RenderMenuItem(newlessonGroup);
+            @RenderMenuItem(newlessonGroup, menudepth + 1);
     }
 </ul>
-            }
-            else if (lessons != null && lessons.Count() > 0)
-            {
+
+        }
+    }
+    else if (lessons != null && lessons.Count() > 0)
+    {
             <ul>
 
                 @foreach (var lesson in lessons)
@@ -299,12 +306,12 @@ if (lessonGroup != null)
                                                             if (menuItem.Name == "Primary")
                                                             {
                                                                 var item = Umbraco.Content(1104);
-                                                                @RenderMenuItem(item);
+                                                                @RenderMenuItem(item, 0);
                                                             }
                                                             else if (menuItem.Name == "Secondary")
                                                             {
                                                                 var item = Umbraco.Content(1105);
-                                                                @RenderMenuItem(item);
+                                                                @RenderMenuItem(item, 0);
                                                             }
                                                             else
                                                             {

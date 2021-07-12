@@ -620,6 +620,7 @@ Umbraco.Web.PublishedModels.BlogGroup, ISAI.Lessons.Web.Public, Version=1.0.0.0,
 Umbraco.Web.PublishedModels.BlogItem, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.ContactPage, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.ContentPage, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+Umbraco.Web.PublishedModels.ContentPageStyle2, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.EmailTemplate, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.EmailTemplateGroup, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.FAqgroup, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null

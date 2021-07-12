@@ -931,6 +931,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     customer.AcceptMarketing = model.AcceptMarketing;
                     customer.HasCompletedCheckout = false;
                     customer.MaxDevicesAllowed = 2;
+                    customer.HearAbout = model.HearAbout;
 
                     db.Entry(customer).State = EntityState.Modified;
                 }
@@ -946,7 +947,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         PasswordHash = hashedPasswordBase64,
                         AcceptMarketing = model.AcceptMarketing,
                         HasCompletedCheckout = false,
-                        MaxDevicesAllowed = 2
+                        MaxDevicesAllowed = 2,
+                        HearAbout = model.HearAbout
                     };
 
                     db.Customer.Add(customer);

@@ -34,6 +34,8 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public int MaxDevicesAllowed { get; set; }
 
+        public string HearAbout { get; set; }
+
 
         [JsonIgnore]
         public string PaymentSessionId { get; set; }

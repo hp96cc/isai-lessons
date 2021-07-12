@@ -41,7 +41,7 @@
                 this.columns[2].visible = false;
                 this.columns[3].visible = false;
                 this.columns[4].visible = false;
-
+                this.columns[5].visible = false;
 
 
             } else if (args.requestType === "save" || args.requestType === "cancel") {
@@ -50,6 +50,7 @@
                 this.columns[2].visible = true;
                 this.columns[3].visible = true;
                 this.columns[4].visible = true;
+                this.columns[5].visible = true;
 
             }
         },
@@ -67,6 +68,14 @@
             },
 
             {
+                field: 'CustomerId',
+                headerText: 'Customer Id',
+                allowEditing: false,
+                defaultValue: 0,
+                width: 70,
+            },
+
+            {
                 field: 'Customer.FirstName',
                 headerText: 'Customer',
                 allowEditing: false,
@@ -77,6 +86,8 @@
 
                 }
             },
+
+           
 
 
             {

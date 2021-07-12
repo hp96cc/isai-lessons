@@ -66,7 +66,7 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.DateTime BlogDate => this.Value<global::System.DateTime>("blogDate");
 
 		///<summary>
-		/// Blog Image
+		/// Blog Image: 9W50 x H665
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		[ImplementPropertyType("blogImage")]

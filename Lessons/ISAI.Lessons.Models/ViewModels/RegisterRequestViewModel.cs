@@ -34,6 +34,10 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
         [JsonProperty("accessCode")]
         public string AccessCode { get; set; }
 
+
+        [JsonProperty("hearAbout")]
+        public string HearAbout { get; set; }
+
     }
 
 

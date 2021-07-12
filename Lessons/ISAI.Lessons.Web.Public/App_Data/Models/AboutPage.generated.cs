@@ -19,7 +19,7 @@ using Umbraco.ModelsBuilder.Embedded;
 
 namespace Umbraco.Web.PublishedModels
 {
-	/// <summary>About Page</summary>
+	/// <summary>Why Us</summary>
 	[PublishedModel("aboutPage")]
 	public partial class AboutPage : PublishedContentModel
 	{
