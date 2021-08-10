@@ -1,10 +1,12 @@
-﻿using Effortless.Net.Encryption;
+﻿using createsend_dotnet;
+using Effortless.Net.Encryption;
 using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
 using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.ViewModels;
 using ISAI.Lessons.Web.Portal.Helpers;
 using Microsoft.Azure.Management.Media.Models;
@@ -14,6 +16,7 @@ using Stripe;
 using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Data.Entity;
 using System.IO;
@@ -413,6 +416,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [HttpPost]
         public async Task<Lessons.Models.Models.ResponseData<bool>> SendEmail(SendEmailRequestViewModel request)
         {
+
+            if(request.CreateFreeTrial)
+            {
+                return await CreateFreeTrail(request);
+            }
+
             var response = new Lessons.Models.Models.ResponseData<bool>();
             var graphApi = new MicrosoftGraphApiService();
 
@@ -440,6 +449,143 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
       
             return response;
+
+        }
+
+
+        async Task<SubscriptionCode> GenerateTrialCode()
+        {
+            var code = new SubscriptionCode();
+            code.Code = Guid.NewGuid().ToString();
+            code.IssuedTo = "August 2021 - 30 Day Free Trial";
+            code.SubscriptionTypeId = 1;
+            code.ValidFrom = new DateTime(2021, 7, 1);
+            code.ValidTo = new DateTime(2021, 9, 1);
+            code.LicenceDays = 30;
+
+            db.Entry(code).State = EntityState.Added;
+            await db.SaveChangesAsync();
+
+            return code;
+        }
+
+        public async Task<Lessons.Models.Models.ResponseData<bool>> CreateFreeTrail(SendEmailRequestViewModel request)
+        {
+            var response = new Lessons.Models.Models.ResponseData<bool>();
+            
+            try
+            {
+
+                var code = await GenerateTrialCode();
+
+
+                if (request.UseMobileForTrial)
+                {
+
+
+                    String message = HttpUtility.UrlEncode(string.Format("Hi {0}, Welcome to Scottish Online Lessons Free Trial. Your access code is:\n\n {1} \n\n Sign up here: https://scottishonlinelessons.com/plans/signup/", request.Name, code.Code));
+                    using (var wb = new WebClient())
+                    {
+                        byte[] smsResponse = wb.UploadValues("https://api.txtlocal.com/send/", new NameValueCollection()
+                    {
+                    {"apikey" , "NzI2ZDM4MzA0NTM0NTk1MzY3NDc3MDM2NjQ3NjY0NTU="},
+                    {"numbers" , "44" + request.Email.Trim().TrimStart("0".ToCharArray()) },
+                    {"message" , message},
+                    {"sender" , "Scottish Online Lessons"}
+                    });
+                        string result = System.Text.Encoding.UTF8.GetString(smsResponse);
+                        //return result;
+
+
+                        var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been sent the following SMS message: <br />{3}</p>", request.Name, request.Email, request.Message, message);
+                        var graphApi = new MicrosoftGraphApiService();
+                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com", "kboswell@uteachrecruitment.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+
+                        response.Content = true;
+                        response.Status = ResponseStatus.OK;
+
+                        return response;
+                    }
+
+                }
+                else
+                {
+
+                    //var clientId = "6ad5bfe4fdd0aed4f49c077d062dd58b";
+                    var apiKey = "373gQZV6QcQAMEFTKtaVKYlOlEAE2qUloFWowSvdqF4hM1wbYNmPjbvASTeNiJ19yJOTsb8b8B7+LVUTBYHE2U+XsEXgbOyoZpcekmudIMfjQhJF5dG6LCWNyUqSB6vD95rgmD/iddmq55L99em2Dg==";
+                    var listId = "666d699af51cdf4ba54574dd36553817";
+
+                    AuthenticationDetails auth = new ApiKeyAuthenticationDetails(apiKey);
+                    var general = new General(auth);
+                    var clients = general.Clients();
+
+                    Subscriber subscriber = new Subscriber(auth, listId);
+
+                    try
+                    {
+                        List<SubscriberCustomField> customFields = new List<SubscriberCustomField>();
+                        customFields.Add(new SubscriberCustomField() { Key = "Name", Value = request.Name });
+                        customFields.Add(new SubscriberCustomField() { Key = "ActivationCode", Value = code.Code });
+
+                        string newSubscriberID = subscriber.Add(request.Email, request.Name, customFields, false, ConsentToTrack.Unchanged);
+
+                        var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been added to Campaign Monitor</p>", request.Name, request.Email, request.Message);
+
+                        var graphApi = new MicrosoftGraphApiService();
+                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com", "kboswell@uteachrecruitment.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+
+                        response.Content = true;
+                        response.Status = ResponseStatus.OK;
+
+                        return response;
+
+
+                    }
+                    catch (CreatesendException ex)
+                    {
+                        ErrorResult error = (ErrorResult)ex.Data["ErrorResult"];
+                        Console.WriteLine(error.Code);
+                        Console.WriteLine(error.Message);
+
+                        response.Status = ResponseStatus.Failed;
+                        response.ErrorResponse = new List<ISAI.Lessons.Models.Models.ErrorResponse>() { new ISAI.Lessons.Models.Models.ErrorResponse () {
+                                Message = ex.Message,
+                                ErrorDescription = ex.StackTrace
+                            }
+                        };
+                        return response;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle some other failure
+                        Console.WriteLine(ex.ToString());
+
+
+                        response.Status = ResponseStatus.Failed;
+                        response.ErrorResponse = new List<ISAI.Lessons.Models.Models.ErrorResponse>() { new ISAI.Lessons.Models.Models.ErrorResponse () {
+                                Message = ex.Message,
+                                ErrorDescription = ex.StackTrace
+                            }
+                        };
+                        return response;
+                    }
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ISAI.Lessons.Models.Models.ErrorResponse>() { new ISAI.Lessons.Models.Models.ErrorResponse () {
+                            Message = ex.Message,
+                            ErrorDescription = ex.StackTrace
+                        }
+                    };
+                return response;
+            }
+
+
 
         }
 
@@ -807,16 +953,31 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             try
             {
 
-                var register = await RegisterCustomer(request);
+                ICustomer customer;
 
-                if (register.Customer == null)
-                {
-                    return new CreateCustomerPayemntSessionResponse()
-                    {
-                        SessionId = null,
-                        Errors = register.Errors
-                    };
+                if (User.Identity.IsAuthenticated) { 
+              
+                    customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
                 }
+                else
+                {
+                    var register = await RegisterCustomer(request);
+
+                    if (register.Customer == null)
+                    {
+                        return new CreateCustomerPayemntSessionResponse()
+                        {
+                            SessionId = null,
+                            Errors = register.Errors
+                        };
+                    }
+
+                    customer = register.Customer;
+                }
+
+                
+
+             
 
 
                 var options = new SessionCreateOptions
@@ -824,7 +985,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     // See https://stripe.com/docs/api/checkout/sessions/create
                     //SuccessUrl = "https://example.com/success.html?session_id={CHECKOUT_SESSION_ID}",
                     //CancelUrl = "https://example.com/canceled.html",
-                    ClientReferenceId = register.Customer.Id.ToString(),
+                    ClientReferenceId = customer.Id.ToString(),
                     SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
                     CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
                     PaymentMethodTypes = new List<string>
@@ -845,11 +1006,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var session = await service.CreateAsync(options);
 
-                register.Customer.PaymentSessionId = session.Id;
-                db.Entry(register.Customer).State = EntityState.Modified;
+                customer.PaymentSessionId = session.Id;
+                db.Entry(customer).State = EntityState.Modified;
                 await db.SaveChangesAsync();
 
-                await CreateCustomerSubscription((Customer)register.Customer, request.PriceId);
+                await CreateCustomerSubscription((Customer)customer, request.PriceId);
 
                 return new CreateCustomerPayemntSessionResponse
                 {
@@ -985,11 +1146,22 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             try
             {
 
-                var accessCode = request.AccessCode.Trim().ToUpper();
-                var subscriptionCode = await db.SubscriptionCode.FirstOrDefaultAsync(x =>
-                    x.Code == accessCode &&
-                    x.ValidFrom >= DateTime.UtcNow &&
-                    x.UsedDateTime.HasValue == false);
+                SubscriptionCode subscriptionCode = null;
+
+                if (request.AccessCode.Trim().ToUpper().Equals("AUG30TRIAL"))
+                {
+                    subscriptionCode = await GenerateTrialCode();
+                }
+                else
+                {
+
+                    var accessCode = request.AccessCode.Trim().ToUpper();
+                    subscriptionCode = await db.SubscriptionCode.FirstOrDefaultAsync(x =>
+                        x.Code == accessCode &&
+                        x.ValidFrom <= DateTime.UtcNow &&
+                        x.UsedDateTime.HasValue == false);
+
+                }
 
                 if (subscriptionCode != null)
                 {
@@ -1200,6 +1372,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 db.Entry(customer).State = EntityState.Modified;
 
                 await db.SaveChangesAsync();
+
             } 
             else
             {

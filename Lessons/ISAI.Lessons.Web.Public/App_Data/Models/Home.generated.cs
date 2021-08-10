@@ -94,6 +94,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContentBoxWithLink> ContextBoxes => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContentBoxWithLink>>("contextBoxes");
 
 		///<summary>
+		/// Counter
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("counter")]
+		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.Counter> Counter => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.Counter>>("counter");
+
+		///<summary>
 		/// Courses
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]

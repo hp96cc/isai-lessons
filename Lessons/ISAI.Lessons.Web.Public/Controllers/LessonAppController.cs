@@ -583,8 +583,19 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [HttpPost]
         public async Task<CreateCustomerPayemntSessionResponse> CreateCustomerPaymentSession(CreateCustomerPayemntSessionRequest model)
         {
-            SetHttpClient();
 
+            var auth = await GetAuth();
+
+            if (auth == null)
+            {
+                SetHttpClient();
+            }
+            else
+            {
+                _httpClient = await _apiService.SetHttpAuthClient();
+            }
+
+          
             try
             {
                 model.AppId = _appId;

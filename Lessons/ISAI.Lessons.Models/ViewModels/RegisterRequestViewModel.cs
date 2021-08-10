@@ -38,6 +38,7 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
         [JsonProperty("hearAbout")]
         public string HearAbout { get; set; }
 
+
     }
 
 

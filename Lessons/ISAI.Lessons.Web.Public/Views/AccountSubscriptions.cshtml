@@ -39,6 +39,36 @@
             </div>
         </div>
 
+
+        <div class="row" id="account-nosubscription" style="display:none;">
+            <div class="col-12 col-md-3">
+
+                <!-- Nav -->
+                @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "subscriptions" } })
+
+
+            </div>
+            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                <div class="row">
+
+
+                    <div class="col-12 text-center">
+
+                        <!-- Heading -->
+                        <h3 class="mb-10 mt-3">Subscriptions</h3>
+                        <p>You currently have no Subscriptions.</p>
+
+                        <a href="/plans/" class="butn x-small pink  p-2 pl-4 pr-4 ml-4 mb-2 mt-3">Subscribe Now</a>
+
+
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+
         <div class="row" id="account-panel" style="display:none;">
             <div class="col-12 col-md-3">
 
@@ -85,7 +115,7 @@
                                                 <div class="col-6">
 
                                                     <!-- Heading -->
-                                                    <h6 class="heading-xxxs text-muted">Subscription Staus:</h6>
+                                                    <h6 class="heading-xxxs text-muted">Subscription Status:</h6>
 
                                                     <!-- Text -->
                                                     <p class="mb-lg-0 font-size-sm font-weight-bold">
@@ -93,16 +123,7 @@
                                                     </p>
 
                                                 </div>
-                                                <!--<div class="col-12 mt-3">-->
-                                                <!-- Heading -->
-                                                <!--<h6 class="heading-xxxs text-muted">Subscription Renewal</h6>-->
-                                                <!-- Text -->
-                                                <!--<div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" id="terms-condition" checked>
-                                                        <label class="custom-control-label" for="terms-condition">Renew my subscription automatically?</label>
-                                                    </div>
 
-                                                </div>-->
 
                                             </div>
                                         </div>
@@ -117,12 +138,8 @@
                         <div class="col-12">
 
                             <!-- Button -->
-                            @*<button class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="PromptCancelSubscription();">Cancel Subscription</button>*@
-
-                            <button class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SubscriptionPortal();">Manage Billing</button>
-
+                            <button id="button-manage-subscription" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SubscriptionPortal();">Manage Subscription</button>
                             <div id="label-cancelled" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
-
 
                             </div>
 
@@ -135,27 +152,28 @@
     </div>
 </section>
 
-<!-- Modal -->
-<!--<div class="modal fade" id="cancelSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="cancelSubscriptionModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cancelSubscriptionModalLabel">Cancel Subscription</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you wish to cancel your subscription? 
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="butn x-small float-left p-2 pl-4 pr-4 ml-4 mb-2 mt-3" data-dismiss="modal">No, I want to keep it</button>
-                <button type="button" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3">Yes, Cancel My Subscription</button>
+@*
+    <!-- Modal -->
+    <div class="modal fade" id="cancelSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="cancelSubscriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelSubscriptionModalLabel">Cancel Subscription</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you wish to cancel your subscription?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="butn x-small float-left p-2 pl-4 pr-4 ml-4 mb-2 mt-3" data-dismiss="modal">No, I want to keep it</button>
+                    <button type="button" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3">Yes, Cancel My Subscription</button>
+                </div>
             </div>
         </div>
     </div>
-</div>-->
-
+*@
 
 @section Scripts {
 
@@ -190,24 +208,43 @@
 
         }
 
+        function DisplaySubscriptions() {
 
+            if (subscriptions && subscriptions.length > 0) {
+                var subscription = subscriptions[0];
+
+                $('#label-subscription-type').text(subscription.Name);
+                $('#label-subscription-expires').text(new Date(subscription.EndDate).toLocaleDateString());
+
+                if (subscription.StripeSubscriptionId && subscription.StripeSubscriptionId.startsWith('sub_')) {
+                    $('#button-manage-subscription').show();
+                }
+                else {
+                    $('#button-manage-subscription').hide();
+                }
+
+
+                $('#account-panel').show();
+
+            } else {
+
+                $('#account-nosubscription').show();
+            }
+
+
+
+            $('#spinner-loading').hide();
+
+
+        }
+
+        @*
         //function PromptCancelSubscription() {
 
         //    $('#cancelSubscriptionModal').modal('show')
 
         //}
-
-        function DisplaySubscriptions() {
-
-            var subscription = subscriptions[0];
-
-            $('#label-subscription-type').text(subscription.Name);
-            $('#label-subscription-expires').text(new Date(subscription.EndDate).toLocaleDateString());
-
-            $('#account-panel').show();
-            $('#spinner-loading').hide();
-
-        }
+        *@
 
 
     </script>

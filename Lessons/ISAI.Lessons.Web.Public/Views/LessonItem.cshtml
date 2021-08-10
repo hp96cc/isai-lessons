@@ -80,6 +80,11 @@
                     </div>
 
 
+
+                </div>
+
+                <div class="row" id="panel-plans" style="display:none;">
+                    @Html.Partial("Partials/_Plans")
                 </div>
 
                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
@@ -314,10 +319,12 @@
 
 
             $("#lessonplayer").hide();
-            var errorHtml = 'You do not have a licence to view this lesson. To upgrade your licence please <a href="/contact"><u>contact us</u></a>';
+            var errorHtml = 'You do not have a licence to view this lesson or your trial licence has expired. To get a licence please, <a href="/plans"><u>Subscribe Here</u></a>';
             $("#alert-nolicence").html(errorHtml);
             $("#alert-nolicence").show();
-            $("#panel-nolicence").show();
+            $("#panel-nolicence").show(); 
+
+            $("#panel-plans").show();
 
         }
 

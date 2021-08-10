@@ -602,6 +602,7 @@ Umbraco.Core.Models.PublishedContent.PublishedElementModel
 
 Umbraco.Web.PublishedModels.ContactElement, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.ContentBoxWithLink, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+Umbraco.Web.PublishedModels.Counter, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.CourseBox, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.HomeScroller, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Umbraco.Web.PublishedModels.Review, ISAI.Lessons.Web.Public, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null

@@ -328,3 +328,8 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+Lessons/ISAI.Lessons.Web.Public/App_Data/cache/
+Lessons/ISAI.Lessons.Web.Public/App_Data/Logs/UmbracoTraceLog.LessonsVM.20210520.json
+Lessons/ISAI.Lessons.Web.Public/App_Data/Logs/
+Lessons/ISAI.Lessons.Web.Public/App_Data/TEMP/ExamineIndexes/
+Lessons/ISAI.Lessons.Web.Public/App_Data/TEMP/

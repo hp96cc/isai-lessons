@@ -4,7 +4,7 @@
     Layout = "Master.cshtml";
 }
 
-<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png" style="background-image: url('/media/1f3fd5lm/blue-header-background.png');">
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()" style="background-image: url('@Model.BackgroundImage.MediaUrl()');">
     <div class="container">
         <div class="page-title">
             <h1>@Model.Title</h1>
@@ -21,66 +21,21 @@
 
             <span class="title-separator"></span>
         </div>
+
         <div class="row">
-            <div class="col-lg-6 col-12 md-margin-30px-bottom">
-                <div class="pricing-block-2 padding-40px-lr padding-40px-top padding-50px-bottom md-padding-25px-all text-center border-radius-10">
-                    <h4 class="margin-5px-bottom font-weight-600">Primary Lessons</h4>
-                    <p class="margin-10px-bottom md-margin-10px-bottom sm-margin-10px-bottom"></p>
-                    <div class="pricing-price bg-purple">
-                        <div class="text-white font-size40 md-font-size38 sm-font-size36 xs-font-size34 no-margin-bottom">&pound;<span class="padding-10px-left sm-padding-5px-left">50</span></div>
-                    </div>
-                    <p class="margin-10px-top md-margin-10px-top sm-margin-10px-top">per year<br />(or £5 a month, billed monthly)</p>
-
-                    <ul class="list-style9 margin-35px-tb md-margin-30px-tb sm-margin-25px-tb">
-                        <li>All Scottish Primary Lessons</li>
-                        <li>Up to 2 devices</li>
-                        <li>Android mobile app</li>
-                        <li>Apple iOS mobile app</li>
-
-                    </ul>
-
-                    <a href="/plans/signup/?priceId=price_1IxXTvJ81SbG6nzajuriP6XZ" class="butn purple small  p-2 pl-4 pr-4 mb-2 mt-2">Signup Now - Annual Payment</a>
-
-                    <a href="/plans/signup/?priceId=price_1IxXUFJ81SbG6nzav7NG3Vto" class="butn purple small  p-2 pl-4 pr-4 mb-2 mt-2">Signup Now - Monthly Payment</a>
-                </div>
-            </div>
-            <div class="col-lg-6 col-12 md-margin-30px-bottom">
-                <div class="pricing-block-2 padding-40px-lr padding-40px-top padding-50px-bottom md-padding-25px-all text-center border-radius-10">
-                    <h4 class="margin-5px-bottom font-weight-600">Secondary Lessons</h4>
-                    <p class="margin-10px-bottom md-margin-10px-bottom sm-margin-10px-bottom"></p>
-                    <div class="pricing-price bg-sky">
-                        <div class="text-white font-size40 md-font-size38 sm-font-size36 xs-font-size34 no-margin-bottom">&pound;<span class="padding-10px-left sm-padding-5px-left">50</span></div>
-                    </div>
-                    <p class="margin-10px-top md-margin-10px-top sm-margin-10px-top">per year<br />(or £5 a month, billed monthly)</p>
-
-                    <ul class="list-style9 margin-35px-tb md-margin-30px-tb sm-margin-25px-tb">
-                        <li>All Scottish Secondary Lessons</li>
-                        <li>Up to 2 devices</li>
-                        <li>Android mobile app</li>
-                        <li>Apple iOS mobile app</li>
-
-                    </ul>
-
-
-
-                    <a href="/plans/signup/?priceId=price_1J0LLgJ81SbG6nzad3BrKr0L" class="butn sky small  p-2 pl-4 pr-4 mb-2 mt-2">Signup Now - Annual Payment</a>
-
-                    <a href="/plans/signup/?priceId=price_1J0LLMJ81SbG6nzasmeqA5KF" class="butn sky small  p-2 pl-4 pr-4 mb-2 mt-2">Signup Now - Monthly Payment</a>
-                </div>
-            </div>
-
+            @Html.Partial("Partials/_Plans")
         </div>
-        <div class="row pt-5">
+            <div class="row pt-5">
 
-            <div class="col-6 text-center">
-                <a target="_blank" href="https://play.google.com/store/apps/details?id=uk.co.isai.uteachlessons.pupil.droid&amp;pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" style="height:100px;"></a>
+                <div class="col-6 text-center">
+                    <a target="_blank" href="https://play.google.com/store/apps/details?id=uk.co.isai.uteachlessons.pupil.droid&amp;pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" style="height:100px;"></a>
+                </div>
+
+
+                <div class="col-6  text-center">
+                    <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><img alt="Download in the App Store" src="/media/gkhevzea/apple-download.svg" style="height:100px;padding:15px;"></a>
+                </div>
+
             </div>
-
-
-            <div class="col-6  text-center">
-                <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><img alt="Download in the App Store" src="/media/gkhevzea/apple-download.svg" style="height:100px;padding:15px;"></a>
-            </div>
-
         </div>
-    </div>
 </section>

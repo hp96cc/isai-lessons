@@ -14,7 +14,7 @@
             <div class="page-link">
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="javascript:void(0)">Contact Us</a></li>
+                    <li><a href="javascript:void(0)">@Model.MessageTitle</a></li>
                 </ul>
             </div>
         </div>
@@ -44,15 +44,27 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Email Address *:</label>
-                                <input type="email" class="form-control" name="input-email" id="input-email" required />
+
+
+                                @if (Model.IsFreeTrialRequest && Model.UseMobileForTrial)
+                                {
+                                    <label>Mobile Number *:</label>
+                                    <input type="tel" class="form-control" name="input-email" id="input-email" required />
+                                }
+                                else
+                                {
+                                    <label>Email Address *:</label>
+                                    <input type="email" class="form-control" name="input-email" id="input-email" required />
+                                }
+
+
                             </div>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-12" style="@(Model.IsFreeTrialRequest ? "display:none" : "")">
                             <label>Write a message *:</label>
                             <div class="form-group">
-                                <textarea rows="4" class="form-control" name="input-message" id="input-message" required></textarea>
+                                <textarea rows="4" class="form-control" name="input-message" id="input-message" @(Model.IsFreeTrialRequest ? "" : "required")></textarea>
                             </div>
                         </div>
                         <div class="col-md-12 text-center margin-25px-top xs-margin-15px-top">
@@ -67,7 +79,7 @@
 
 
                 <div id="label-sent" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
-                    Your message has been sent
+                    @Model.FormCompleteMessage
 
                 </div>
 
@@ -86,7 +98,10 @@
     <div class="container">
         <div class="row">
 
-            @foreach (var iconLink in Model.TopIconLinks)
+            @if (Model.ShowLinks)
+            {
+
+            foreach (var iconLink in Model.TopIconLinks)
             {
 
                 <div class="col-md-3 mx-auto pt-5">
@@ -101,6 +116,8 @@
                         </p>
                     </div>
                 </div>
+
+            }
 
             }
 
@@ -136,15 +153,16 @@
 
                     Name: $('#input-name').val(),
                     Email: $('#input-email').val(),
-                    Subject: "SOL Contact Form",
-                    Message: $('#input-message').val()
+                    Subject: '@Model.EmailSubject',
+                    Message: $('#input-message').val(),
+                    CreateFreeTrial: @(Model.IsFreeTrialRequest ? "true" : "false"),
+                    UseMobileForTrial: @(Model.UseMobileForTrial ? "true" : "false")
 
                 };
 
                 var data = await lessonsApp.sendEmail(emailModel);
 
                 if (data.Status === 0) {
-
 
                     $('#label-sent').show();
                     $('#spinner-loading').hide();

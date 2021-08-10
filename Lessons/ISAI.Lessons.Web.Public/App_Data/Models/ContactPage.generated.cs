@@ -52,6 +52,27 @@ namespace Umbraco.Web.PublishedModels
 		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent BackgroundImage => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("backgroundImage");
 
 		///<summary>
+		/// Email Subject
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("emailSubject")]
+		public string EmailSubject => this.Value<string>("emailSubject");
+
+		///<summary>
+		/// Form Complete Message
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("formCompleteMessage")]
+		public string FormCompleteMessage => this.Value<string>("formCompleteMessage");
+
+		///<summary>
+		/// Is Free Trial Request
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("isFreeTrialRequest")]
+		public bool IsFreeTrialRequest => this.Value<bool>("isFreeTrialRequest");
+
+		///<summary>
 		/// Message Title
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
@@ -66,6 +87,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString PageContent => this.Value<global::System.Web.IHtmlString>("pageContent");
 
 		///<summary>
+		/// Show Icon Links
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("showLinks")]
+		public bool ShowLinks => this.Value<bool>("showLinks");
+
+		///<summary>
 		/// Title
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
@@ -73,10 +101,17 @@ namespace Umbraco.Web.PublishedModels
 		public string Title => this.Value<string>("title");
 
 		///<summary>
-		/// Top Icon Links
+		/// Icon Links
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
 		[ImplementPropertyType("topIconLinks")]
 		public global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContactElement> TopIconLinks => this.Value<global::System.Collections.Generic.IEnumerable<global::Umbraco.Web.PublishedModels.ContactElement>>("topIconLinks");
+
+		///<summary>
+		/// Use Mobile For Trial
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("useMobileForTrial")]
+		public bool UseMobileForTrial => this.Value<bool>("useMobileForTrial");
 	}
 }
