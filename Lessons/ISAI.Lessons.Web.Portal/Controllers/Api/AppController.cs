@@ -190,7 +190,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         {
                             new Lessons.Models.Models.ErrorResponse()
                             {
-                                Message = "You do not have a licence to access this content."
+                                Code = ErrorCode.InvalidLicence,
+                                Message = "Your licence does not allow access to this content. Please contact support"
                             }
                         };
 
@@ -377,7 +378,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     new Lessons.Models.Models.ErrorResponse()
                     {
-                        Message = "A valid licence does not exist. Please contact support."
+                        Code = ErrorCode.LicenceExpired,
+                        Message = "A valid licence does not exist. Please subscribe to a new plan."
                     }
                 };
 
@@ -391,7 +393,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     new Lessons.Models.Models.ErrorResponse()
                     {
-                        Message = "Your licence has expired or has been cancelled. Please contact support."
+                           Code = ErrorCode.LicenceExpired,
+                        Message = "Your licence has expired or has been cancelled. Please subscribe to a new plan."
                     }
                 };
 
@@ -453,20 +456,32 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         }
 
 
-        async Task<SubscriptionCode> GenerateTrialCode()
+        async Task<SubscriptionCode> GenerateTrialCode(string code)
         {
-            var code = new SubscriptionCode();
-            code.Code = Guid.NewGuid().ToString();
-            code.IssuedTo = "August 2021 - 30 Day Free Trial";
-            code.SubscriptionTypeId = 1;
-            code.ValidFrom = new DateTime(2021, 7, 1);
-            code.ValidTo = new DateTime(2021, 9, 1);
-            code.LicenceDays = 30;
+            var subscriptionCode = new SubscriptionCode();
+            subscriptionCode.Code = Guid.NewGuid().ToString();
 
-            db.Entry(code).State = EntityState.Added;
+            if (code.Equals("AUG30TRIAL")) {
+
+                subscriptionCode.IssuedTo = "August 2021 - 30 Day Free Trial";
+                subscriptionCode.SubscriptionTypeId = 1;
+                subscriptionCode.ValidFrom = new DateTime(2021, 7, 1);
+                subscriptionCode.ValidTo = new DateTime(2021, 9, 1);
+                subscriptionCode.LicenceDays = 30;
+
+            } else
+            {
+                subscriptionCode.IssuedTo = "14 Day Free Trial";
+                subscriptionCode.SubscriptionTypeId = 1;
+                subscriptionCode.ValidFrom = DateTime.Today;
+                subscriptionCode.ValidTo = DateTime.Today.AddDays(14);
+                subscriptionCode.LicenceDays = 14;
+            }
+
+            db.Entry(subscriptionCode).State = EntityState.Added;
             await db.SaveChangesAsync();
 
-            return code;
+            return subscriptionCode;
         }
 
         public async Task<Lessons.Models.Models.ResponseData<bool>> CreateFreeTrail(SendEmailRequestViewModel request)
@@ -475,8 +490,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             
             try
             {
-
-                var code = await GenerateTrialCode();
+                //TODO: not sure what this class does
+                var code = await GenerateTrialCode("AUG30TRIAL");
 
 
                 if (request.UseMobileForTrial)
@@ -1148,9 +1163,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 SubscriptionCode subscriptionCode = null;
 
-                if (request.AccessCode.Trim().ToUpper().Equals("AUG30TRIAL"))
+                if (request.AccessCode.Trim().ToUpper().Equals("AUG30TRIAL") || request.AccessCode.Trim().ToUpper().Equals("FREE14DAYTRIAL"))
                 {
-                    subscriptionCode = await GenerateTrialCode();
+                    subscriptionCode = await GenerateTrialCode(request.AccessCode.Trim().ToUpper());
                 }
                 else
                 {

@@ -586,7 +586,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
             var auth = await GetAuth();
 
-            if (auth == null)
+            if (auth == null || auth.RefreshToken == null)
             {
                 SetHttpClient();
             }
