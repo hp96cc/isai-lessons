@@ -23,6 +23,13 @@
         width: 'auto',
         allowExcelExport: true,
         allowPdfExport: true,
+        allowFiltering: true,
+        allowSorting: true,
+        height: '100%',
+        width: '100%',
+        filterSettings: {
+            type: 'Excel'
+        },
         pageSettings: { pageCount: 4, pageSize: 50 },
         toolbar: [/*'Add'*/ 'Edit', /*'Delete',*/ 'Update', 'Cancel', 'ExcelExport', 'PdfExport', 'CsvExport'],
         actionBegin: function (args) {
@@ -106,6 +113,15 @@
             {
                 field: 'AcceptMarketing',
                 headerText: 'Accept Marketing',
+                displayAsCheckBox: true,
+                editType: "booleanedit",
+                width: 120
+
+            },
+
+            {
+                field: 'AllowAdminOverride',
+                headerText: 'Admin Override',
                 displayAsCheckBox: true,
                 editType: "booleanedit",
                 width: 120

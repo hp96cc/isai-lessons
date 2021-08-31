@@ -36,6 +36,8 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string HearAbout { get; set; }
 
+        public bool AllowAdminOverride { get; set; }
+
 
         [JsonIgnore]
         public string PaymentSessionId { get; set; }

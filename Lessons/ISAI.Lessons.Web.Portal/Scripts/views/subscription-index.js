@@ -26,7 +26,10 @@
         allowPdfExport: true,
         allowGrouping: true,
         groupSettings: { disablePageWiseAggregates: true },
-        sortSettings: { columns: [{ field: 'StartDate', direction: 'Descending' }] },
+        allowFiltering: true,
+        allowSorting: true,
+        height: '100%',
+        width: '100%',
         filterSettings: {
             type: 'Excel'
         },
@@ -42,6 +45,7 @@
                 this.columns[3].visible = false;
                 this.columns[4].visible = false;
                 this.columns[5].visible = false;
+                this.columns[6].visible = false;
 
 
             } else if (args.requestType === "save" || args.requestType === "cancel") {
@@ -51,6 +55,7 @@
                 this.columns[3].visible = true;
                 this.columns[4].visible = true;
                 this.columns[5].visible = true;
+                this.columns[6].visible = true;
 
             }
         },
@@ -64,7 +69,7 @@
                 headerText: 'Id',
                 allowEditing: false,
                 defaultValue: 0,
-                width: 70,
+                width:100,
             },
 
             {
@@ -72,12 +77,12 @@
                 headerText: 'Customer Id',
                 allowEditing: false,
                 defaultValue: 0,
-                width: 70,
+                width: 150,
             },
 
             {
                 field: 'Customer.FirstName',
-                headerText: 'Customer',
+                headerText: 'Customer Name',
                 allowEditing: false,
                 width: 150,
                 valueAccessor: function (field, data, column) {
@@ -87,14 +92,25 @@
                 }
             },
 
+
+            {
+                field: 'Customer.Email',
+                headerText: 'Email',
+                allowEditing: false,
+                width: 200,
+                valueAccessor: function (field, data, column) {
+
+                    return data.Customer.Email;
+
+                }
+            },
+
            
-
-
             {
                 field: 'Name',
                 headerText: 'Name',
                 allowEditing: false,
-                width: 150
+                width: 200
 
             },
 
@@ -102,7 +118,7 @@
                 field: 'SubscriptionType.Name',
                 headerText: 'Subscription Type',
                 allowEditing: false,
-                width: 120
+                width: 200
 
             },
 
