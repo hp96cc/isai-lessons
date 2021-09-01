@@ -42,32 +42,32 @@ namespace ISAI.Lessons.AzureVideo
             }).GetAwaiter().GetResult();
         }
 
-        static async Task UpdateLessonGroup(LessonsDbContext db, LessonGroup parent)
-        {
-            var lessonGroups = await db.LessonGroup.Where(x => x.ParentLessonGroupId == parent.Id).ToListAsync();
+        //static async Task UpdateLessonGroup(LessonsDbContext db, LessonGroup parent)
+        //{
+        //    var lessonGroups = await db.LessonGroup.Where(x => x.ParentLessonGroupId == parent.Id).ToListAsync();
 
-            foreach(var lessonGroup in lessonGroups)
-            {
-                lessonGroup.SubscriptionTypeId = parent.SubscriptionTypeId;
-                db.Entry(lessonGroup).State = EntityState.Modified;
-                Console.WriteLine("Updating {0}", lessonGroup.Name);
+        //    foreach(var lessonGroup in lessonGroups)
+        //    {
+        //        lessonGroup.SubscriptionTypeId = parent.SubscriptionTypeId;
+        //        db.Entry(lessonGroup).State = EntityState.Modified;
+        //        Console.WriteLine("Updating {0}", lessonGroup.Name);
 
-                var lessons = await db.Lesson.Where(x => x.LessonGroupId == lessonGroup.Id).ToListAsync();
+        //        var lessons = await db.Lesson.Where(x => x.LessonGroupId == lessonGroup.Id).ToListAsync();
 
-                foreach (var lesson in lessons)
-                {
+        //        foreach (var lesson in lessons)
+        //        {
 
-                    lesson.SubscriptionTypeId = parent.SubscriptionTypeId;
-                    db.Entry(lesson).State = EntityState.Modified;
-                    Console.WriteLine("Updating Lesson {0}", lesson.Name);
-                }
+        //            lesson.SubscriptionTypeId = parent.SubscriptionTypeId;
+        //            db.Entry(lesson).State = EntityState.Modified;
+        //            Console.WriteLine("Updating Lesson {0}", lesson.Name);
+        //        }
 
-                await db.SaveChangesAsync();
+        //        await db.SaveChangesAsync();
 
-                await UpdateLessonGroup(db, lessonGroup);
-            }
+        //        await UpdateLessonGroup(db, lessonGroup);
+        //    }
 
-        }
+        //}
 
         static async Task AsyncMain(string[] args)
         {
