@@ -24,6 +24,7 @@ namespace ISAI.Lessons.Web.Portal.App_Start
             builder.EntitySet<Lesson>("Lessons");
             builder.EntitySet<LessonGroup>("LessonGroups");
             builder.EntitySet<Subscription>("Subscriptions");
+            builder.EntitySet<SubscriptionCode>("SubscriptionCodes");
             builder.EntitySet<SubscriptionType>("SubscriptionTypes");
 
             config.MapODataServiceRoute(
