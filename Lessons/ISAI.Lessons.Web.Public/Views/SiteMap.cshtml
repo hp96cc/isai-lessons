@@ -1,0 +1,68 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    Layout = null;
+    Response.ContentType = "text/json";
+    var siteHomePage = Umbraco.Content(1098);
+    var maxSiteMapDepth = Model.HasValue("maxSiteMapDepth") ? Model.Value<int>("maxSiteMapDepth") : int.MaxValue;
+    string excludedDocumentTypeList = Model.Value<string>("excludedDocumentTypes");
+    string[] excludedDocumentTypes = (!String.IsNullOrEmpty(excludedDocumentTypeList)) ? excludedDocumentTypeList.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).ToArray() : new string[] { };
+}
+
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://www.google.com/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">@RenderSiteMapUrlEntry(siteHomePage)@RenderSiteMapUrlEntriesForChildren(siteHomePage, maxSiteMapDepth, excludedDocumentTypes)</urlset>
+
+@helper RenderSiteMapUrlEntry(IPublishedContent node)
+{
+    var changeFreq = node.HasValue("searchEngineChangeFrequency", fallback: Fallback.ToAncestors) ? node.Value("searchEngineChangeFrequency", fallback: Fallback.ToAncestors) : "daily";
+    // with the relative priority, this is a per page setting only, so we're not using recursion, so we won't fallback to ancestors here and we'll default to 0.5 if no value is set
+    var priority = node.HasValue("searchEngineRelativePriority") ? node.Value<string>("searchEngineRelativePriority") : "0.5";
+
+
+    var mediaId = "";
+
+    var lessonItem = node as Umbraco.Web.PublishedModels.LessonItem;
+
+    if (lessonItem != null)
+    {
+        mediaId = "https://scottishonlinelessons.com/assets/lessonthumbs/thumb_" + lessonItem.MediaId + ".jpg";
+    }
+
+
+
+    <loc>@EnsureUrlStartsWithDomain(@node.Url(mode: UrlMode.Absolute))</loc>
+    <name>@node.Name</name>
+    <image>@mediaId</image>
+    <lastmod>@(string.Format("{0:s}+00:00", node.UpdateDate))</lastmod>
+
+  
+}
+
+@functions {
+    private static string EnsureUrlStartsWithDomain(string url)
+    {
+        if (url.StartsWith("http"))
+        {
+            return url;
+        }
+        else
+        {
+            // whatever makes sense for your site here...
+            var domainPrefix = string.Format("https://{0}/", HttpContext.Current.Request.ServerVariables["HTTP_HOST"]);
+            return domainPrefix + url;
+        }
+    }
+}
+
+@helper RenderSiteMapUrlEntriesForChildren(IPublishedContent parentPage, int maxSiteMapDepth, string[] excludedDocumentTypes)
+{
+    foreach (var page in parentPage.Children)
+    {
+<url>
+
+    @RenderSiteMapUrlEntry(page)
+    @RenderSiteMapUrlEntriesForChildren(page, maxSiteMapDepth, excludedDocumentTypes)
+
+</url>
+            }
+
+            }

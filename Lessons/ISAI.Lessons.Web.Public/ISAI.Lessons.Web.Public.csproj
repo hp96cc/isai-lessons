@@ -674,6 +674,7 @@
     <Content Include="Views\BlogItem.cshtml" />
     <Content Include="Views\ContentPageStyle2.cshtml" />
     <Content Include="Views\Partials\_Plans.cshtml" />
+    <Content Include="Views\SiteMap.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

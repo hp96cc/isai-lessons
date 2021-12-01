@@ -56,8 +56,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
 
 
-        [Route("api/lessonapp/login")]
-        [HttpPost]
+        [Route("api/lessonapp/lessonfeed")]
+        [HttpGet]
         public async Task Login(LoginRequestViewModel model)
         {
 
@@ -70,7 +70,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         }
 
-       
 
 
         [Route("api/lessonapp/logout")]

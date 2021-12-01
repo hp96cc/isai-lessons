@@ -469,13 +469,23 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 subscriptionCode.ValidTo = new DateTime(2021, 9, 1);
                 subscriptionCode.LicenceDays = 30;
 
-            } else
+            }
+            else if (code.Equals("STCHARLESFREETRIAL"))
             {
-                subscriptionCode.IssuedTo = "14 Day Free Trial";
+                subscriptionCode.IssuedTo = "St Charles - 30 Day Free Trial";
+                subscriptionCode.SubscriptionTypeId = 1;
+                subscriptionCode.ValidFrom = new DateTime(2021, 7, 1);
+                subscriptionCode.ValidTo = new DateTime(2021, 10, 8);
+                subscriptionCode.LicenceDays = 30;
+
+            }
+            else
+            {
+                subscriptionCode.IssuedTo = "1 Day Free Trial";
                 subscriptionCode.SubscriptionTypeId = 1;
                 subscriptionCode.ValidFrom = DateTime.Today;
-                subscriptionCode.ValidTo = DateTime.Today.AddDays(14);
-                subscriptionCode.LicenceDays = 14;
+                subscriptionCode.ValidTo = DateTime.Now.AddDays(1);
+                subscriptionCode.LicenceDays = 1;
             }
 
             db.Entry(subscriptionCode).State = EntityState.Added;
@@ -1163,7 +1173,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 SubscriptionCode subscriptionCode = null;
 
-                if (request.AccessCode.Trim().ToUpper().Equals("AUG30TRIAL") || request.AccessCode.Trim().ToUpper().Equals("FREE14DAYTRIAL"))
+                if (request.AccessCode.Trim().ToUpper().Equals("FREE1DAYTRIAL") || request.AccessCode.Trim().ToUpper().Equals("STCHARLESFREETRIAL"))
                 {
                     subscriptionCode = await GenerateTrialCode(request.AccessCode.Trim().ToUpper());
                 }
@@ -1578,6 +1588,42 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 }
 
+            }
+
+        }
+
+
+
+        [AllowAnonymous] //remove at runtime
+        [Route("api/app/setscreenshot")]
+        [HttpGet]
+        public async Task DownloadScreenShot(int lessonId)
+        {
+
+            var lesson = await db.Lesson.Where(x => x.Id == lessonId).FirstOrDefaultAsync();
+
+            if(lesson != null)
+            {
+                var azureMediaService = new AzureMediaService();
+                var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, "download-locator-" + lesson.Id.ToString(), StreamingPolicyStreamingProtocol.Download);
+
+                var url = urls.First(x => x.Contains(".jpg"));
+
+                var saveFilePath = @"C:\Apps\Websites\inetpub-www\wwwroot\Assets\lessonthumbs\thumb_" + lesson.Id + ".jpg";
+
+                if (System.IO.File.Exists(saveFilePath)) System.IO.File.Delete(saveFilePath);
+
+                HttpClient client = new HttpClient();
+                var response = await client.GetAsync(url);
+                using (var fs = new FileStream(
+                    saveFilePath,
+                    FileMode.CreateNew))
+                {
+                    await response.Content.CopyToAsync(fs);
+                }
+            } else
+            {
+                throw new Exception("Lesson does not exist");
             }
 
         }
