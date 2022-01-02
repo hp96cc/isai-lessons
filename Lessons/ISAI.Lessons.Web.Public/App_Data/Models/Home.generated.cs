@@ -220,6 +220,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent TopLeftLogo => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("topLeftLogo");
 
 		///<summary>
+		/// Top Left Logo - UK
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("topLeftLogoUK")]
+		public global::Umbraco.Core.Models.PublishedContent.IPublishedContent TopLeftLogoUK => this.Value<global::Umbraco.Core.Models.PublishedContent.IPublishedContent>("topLeftLogoUK");
+
+		///<summary>
 		/// Top Menu
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]

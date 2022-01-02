@@ -10,7 +10,10 @@
 
         ViewBag.LoggedIn = true;
 
+
     }
+
+    Response.Redirect("/lessons/");
 
 }
 
@@ -503,37 +506,37 @@
 @if (ViewBag.LoggedIn == null)
 {
 
-<section class="pt-6">
-    <div class="container">
-        <div class="section-heading mb-0">
-
+    <section class="pt-6">
+        <div class="container">
             <div class="section-heading mb-0">
-                <h2>Sign Up to Scottish Online Lessons</h2>
-                <span class="title-separator"></span>
+
+                <div class="section-heading mb-0">
+                    <h2>Sign Up to Scottish Online Lessons</h2>
+                    <span class="title-separator"></span>
+                </div>
+
+                <p>It's simple to sign up to SOL. Simply decide on a one off payment of £50 or pay £5 per month for 12 months.&nbsp;</p>
+                <p><strong>To view Scottish Online Lessons on your mobile please click the download app link at the bottom of this page.&nbsp;</strong></p>
+
+
             </div>
+            <div class="row mt-5">
+                @Html.Partial("Partials/_Plans")
 
-            <p>It's simple to sign up to SOL. Simply decide on a one off payment of £50 or pay £5 per month for 12 months.&nbsp;</p>
-            <p><strong>To view Scottish Online Lessons on your mobile please click the download app link at the bottom of this page.&nbsp;</strong></p>
-
-
-        </div>
-        <div class="row mt-5">
-            @Html.Partial("Partials/_Plans")
-
-        </div>
-        <div class="row pt-5">
-
-            <div class="col-6 text-center">
-                <a target="_blank" href="https://play.google.com/store/apps/details?id=uk.co.isai.uteachlessons.pupil.droid&amp;pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" style="height:100px;"></a>
             </div>
+            <div class="row pt-5">
+
+                <div class="col-6 text-center">
+                    <a target="_blank" href="https://play.google.com/store/apps/details?id=uk.co.isai.uteachlessons.pupil.droid&amp;pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" style="height:100px;"></a>
+                </div>
 
 
-            <div class="col-6  text-center">
-                <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><img alt="Download in the App Store" src="/media/gkhevzea/apple-download.svg" style="height:100px;padding:15px;"></a>
+                <div class="col-6  text-center">
+                    <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><img alt="Download in the App Store" src="/media/gkhevzea/apple-download.svg" style="height:100px;padding:15px;"></a>
+                </div>
+
             </div>
-
         </div>
-    </div>
-</section>
+    </section>
 
 }

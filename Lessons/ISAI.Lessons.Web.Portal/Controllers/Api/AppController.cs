@@ -434,7 +434,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p>", request.Name, request.Email, request.Message);
 
 
-                await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com", "kboswell@uteachrecruitment.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+                await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
                 response.Content = true;
                 response.Status = ResponseStatus.OK;
               

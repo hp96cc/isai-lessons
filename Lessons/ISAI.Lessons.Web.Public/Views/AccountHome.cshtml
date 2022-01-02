@@ -3,7 +3,14 @@
 @{
     Layout = "Master.cshtml";
 
-    var redirectUrl = Request.QueryString["redirectUrl"] != null ? Request.QueryString["redirectUrl"].ToString() : null;
+    var redirectUrl = "https://" + Request.ServerVariables["HTTP_HOST"];
+
+    if(Request.QueryString["redirectUrl"] != null)
+    {
+        redirectUrl += Request.QueryString["redirectUrl"].ToString();
+    }
+
+
 
 }
 

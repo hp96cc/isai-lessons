@@ -59,6 +59,13 @@ namespace Umbraco.Web.PublishedModels
 		public global::System.Web.IHtmlString PageContent => this.Value<global::System.Web.IHtmlString>("pageContent");
 
 		///<summary>
+		/// Page Content - UK
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]
+		[ImplementPropertyType("pageContentUK")]
+		public global::System.Web.IHtmlString PageContentUK => this.Value<global::System.Web.IHtmlString>("pageContentUK");
+
+		///<summary>
 		/// Subtitle
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "8.11.1")]

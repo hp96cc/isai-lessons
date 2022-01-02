@@ -56,9 +56,9 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
 
 
-        [Route("api/lessonapp/lessonfeed")]
-        [HttpGet]
-        public async Task Login(LoginRequestViewModel model)
+        [Route("api/lessonapp/login")]
+        [HttpPost]
+        public async Task Login(LoginRequestViewModel model) 
         {
 
             var auth = await GetAuthToken(model.Email, model.Password, null);

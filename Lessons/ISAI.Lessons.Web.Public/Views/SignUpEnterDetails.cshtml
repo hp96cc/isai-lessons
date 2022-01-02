@@ -18,6 +18,10 @@
 
     }
 
+    var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
+
+    bool isUKSite = canonicalUrl.Contains("portal.ukonlinelessons.com");
+
 }
 
 
@@ -39,8 +43,17 @@
             @if (ViewBag.LoggedIn == null)
             {
 
-            @Model.PageContent
-            
+                if (isUKSite)
+                {
+                    @Model.PageContentUK
+                }
+                else
+                {
+                    @Model.PageContent
+                }
+
+
+
             }
 
             <span class="title-separator"></span>
@@ -132,7 +145,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-12" id="div-input-toggleaccesscode">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="checkbox-accesscode" onchange="ToggleAccessCode();">
                                         <label class="custom-control-label" for="checkbox-accesscode">I have an access code</label>
@@ -189,11 +202,17 @@
     <script>
 
         var loggedIn = false;
+        var isUKSite = false;
         
         @if(ViewBag.LoggedIn != null)
         {
             @:loggedIn = true
         }
+
+        @if(isUKSite)
+         {
+            @:isUKSite = true;
+            }
 
         $(document).ready(function () {
 
@@ -204,6 +223,15 @@
             } else {
                 $('#register-form').show();
                 
+            }
+
+            if (isUKSite)
+            {
+                $("#button-checkout").hide();
+                $("#button-activate").show();
+                $("#div-input-accesscode").show();
+                $('#input-accesscode').attr('required', 'required');
+                $("#div-input-toggleaccesscode").hide();
             }
 
         });
@@ -253,11 +281,11 @@
 
                 var registerRequestViewModel = {
 
-                    firstName: $("#input-firstname").val(),
-                    lastName: $("#input-lastname").val(),
-                    email: $("#input-email").val(),
-                    password: $("#input-password").val(),
-                    passwordConfirm: $('#input-confirmpassword').val(),
+                    firstName: $("#input-firstname").val().trim(),
+                    lastName: $("#input-lastname").val().trim(),
+                    email: $("#input-email").val().trim(),
+                    password: $("#input-password").val().trim(),
+                    passwordConfirm: $('#input-confirmpassword').val().trim(),
                     acceptMarketing: $('#input-newsletter').prop("checked"),
                     accessCode: $('#input-accesscode').val(),
                     hearAbout: $('#input-hearabout').val()

@@ -41,9 +41,20 @@
     }
 
 
-    var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + @Model.Url();
+    var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
+    bool isUKSite = canonicalUrl.Contains("portal.ukonlinelessons.com");
 
-}
+    if (isUKSite)
+    {
+        metaTitle = "UK " + metaTitle;
+    }
+    else
+    {
+        metaTitle = "Scottish " + metaTitle;
+    }
+
+
+    }
 
 
 @helper RenderMenuItem(IPublishedContent page, int menudepth)
@@ -242,7 +253,7 @@
 
     <!-- Google Tag Manager (noscript) -->
     <noscript>
-        <iframe src=https://www.googletagmanager.com/ns.html?id =GTM-K4MTQ96
+        <iframe src=https://www.googletagmanager.com/ns.html?id=GTM-K4MTQ96
                 height="0" width="0" style="display:none;visibility:hidden"></iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
@@ -294,7 +305,15 @@
                                 else
                                 {
 
-                                    <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
+                                    if (isUKSite)
+                                    {
+                                        <a href="/plans/signup" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
+                                    }
+
                                     <a href="/account/?redirectUrl=@(Url.Encode(Model.Url()))" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
 
                                 }
@@ -318,7 +337,18 @@
                                     <div class="navbar-header navbar-header-custom">
                                         <!-- start logo -->
 
-                                        <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogo.MediaUrl()" alt="@home.Title"></a>
+
+                                        @if (isUKSite)
+                                        {
+                                            <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogoUK.MediaUrl()" alt="@home.Title"></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogo.MediaUrl()" alt="@home.Title"></a>
+                                        }
+
+
+
 
 
                                         <!-- end logo -->
@@ -409,49 +439,51 @@
         <footer>
             <div class="footer-bg">
                 <div class="container">
-                    <div class="row">
+                    @*<div class="row">
 
 
-                        <div class="col-lg-4 col-sm-6 col-12 sm-margin-30px-bottom">
-                            <div class="footer margin-20px-bottom"><img src="@home.FooterLogo.MediaUrl()" alt="" class="width-75 sm-width-150px" /></div>
-                            <p class="margin-10px-bottom">@home.FooterText</p>
-                            @*<a href="about.html" class="text-sky font-weight-700">read more<i class="fas fa-angle-right padding-10px-left display-inline-block vertical-align-middle"></i></a>*@
-                        </div>
-
-                        <div class="col-lg-4 col-sm-6 col-12 sm-margin-30px-bottom">
-                            <div class="padding-50px-left md-padding-20px-left ms-no-padding-left">
-                                <h4 class="font-size22 sm-font-size20 xs-font-size18 font-weight-800 margin-25px-bottom sm-margin-20px-bottom ms-margin-15px-bottom">@home.LinkTitle</h4>
-
-                                @if (home.Links != null)
-                                {
-                                    <ul class="list-style3">
-                                        @foreach (var link in home.Links)
-                                        {
-                                            <li><a href="@link.Url">@link.Name</a></li>
-                                        }
-                                    </ul>
-                                }
-
+                            <div class="col-lg-4 col-sm-6 col-12 sm-margin-30px-bottom">
+                                <div class="footer margin-20px-bottom"><img src="@home.FooterLogo.MediaUrl()" alt="" class="width-75 sm-width-150px" /></div>
+                                <p class="margin-10px-bottom">@home.FooterText</p>
+                               <a href="about.html" class="text-sky font-weight-700">read more<i class="fas fa-angle-right padding-10px-left display-inline-block vertical-align-middle"></i></a>
                             </div>
-                        </div>
 
+                            <div class="col-lg-4 col-sm-6 col-12 sm-margin-30px-bottom">
+                                <div class="padding-50px-left md-padding-20px-left ms-no-padding-left">
+                                    <h4 class="font-size22 sm-font-size20 xs-font-size18 font-weight-800 margin-25px-bottom sm-margin-20px-bottom ms-margin-15px-bottom">@home.LinkTitle</h4>
 
-                        <div class="col-lg-4 col-sm-6 col-12">
-                            <div class="padding-50px-left md-padding-20px-left ms-no-padding-left">
-                                <h4 class="font-size22 sm-font-size20 xs-font-size18 font-weight-800 margin-25px-bottom sm-margin-20px-bottom ms-margin-15px-bottom">@home.Links3Title</h4>
+                                    @if (home.Links != null)
+                                    {
+                                        <ul class="list-style3">
+                                            @foreach (var link in home.Links)
+                                            {
+                                                <li><a href="@link.Url">@link.Name</a></li>
+                                            }
+                                        </ul>
+                                    }
 
-                                @if (home.Links != null)
-                                {
-                                    <ul class="list-style3">
-                                        @foreach (var link in home.Links2)
-                                        {
-                                            <li><a href="@link.Url">@link.Name</a></li>
-                                        }
-                                    </ul>
-                                }
+                                </div>
                             </div>
-                        </div>
-                    </div>
+
+
+                            <div class="col-lg-4 col-sm-6 col-12">
+                                <div class="padding-50px-left md-padding-20px-left ms-no-padding-left">
+                                    <h4 class="font-size22 sm-font-size20 xs-font-size18 font-weight-800 margin-25px-bottom sm-margin-20px-bottom ms-margin-15px-bottom">@home.Links3Title</h4>
+
+                                    @if (home.Links != null)
+                                    {
+                                        <ul class="list-style3">
+                                            @foreach (var link in home.Links2)
+                                            {
+                                                <li><a href="@link.Url">@link.Name</a></li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            </div>
+                        </div>*@
+
+
                     <div class="row pt-5">
 
                         <div class="col-6 text-center">
@@ -468,7 +500,7 @@
             </div>
             <div class="footer-bar">
                 <div class="container">
-                    <p>&copy; @DateTime.Today.Year Scottish Online Lessons. All Rights Reserved. <br /><br />Web and App Development by <a href="https://www.isai.co.uk?STID=Lessons" target="_blank" class="text-white" style="text-decoration:underline;">ISAI</a></p>
+                    <p>&copy; @DateTime.Today.Year @(isUKSite ? "UK" : "Scottish") Online Lessons. All Rights Reserved. <br /><br />Web and App Development by <a href="https://www.isai.co.uk?STID=Lessons" target="_blank" class="text-white" style="text-decoration:underline;">ISAI</a></p>
                 </div>
             </div>
         </footer>
@@ -661,6 +693,7 @@
         });
     </script>
 
+
     <script>
         window.fwSettings = {
             'widget_id': 80000006775
@@ -668,7 +701,6 @@
         !function () { if ("function" != typeof window.FreshworksWidget) { var n = function () { n.q.push(arguments) }; n.q = [], window.FreshworksWidget = n } }()
     </script>
     <script type='text/javascript' src='https://euc-widget.freshworks.com/widgets/80000006775.js' async defer></script>
-
 
     @RenderSection("Scripts", required: false)
 
