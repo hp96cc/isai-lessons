@@ -1,17 +1,7 @@
-﻿using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
+﻿#if ANDROID
 using Android.Views;
-using Android.Widget;
 using ISAI.Lessons.Models.Interfaces;
-using Plugin.CurrentActivity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui;
+
 
 namespace ISAI.Lessons.Mobile.Droid.Helpers
 {
@@ -23,15 +13,15 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
         public void HideStatusBar()
         {
-            var activity = CrossCurrentActivity.Current.Activity;
+            var activity = Platform.CurrentActivity;
             var attrs = activity.Window.Attributes;
             _originalFlags = attrs.Flags;
-            attrs.Flags |= Android.Views.WindowManagerFlags.Fullscreen;
+            attrs.Flags |= WindowManagerFlags.Fullscreen;
             activity.Window.Attributes = attrs;
         }
         public void ShowStatusBar()
         {
-            var activity = CrossCurrentActivity.Current.Activity;
+            var activity = Platform.CurrentActivity;
             var attrs = activity.Window.Attributes;
             attrs.Flags = _originalFlags;
             activity.Window.Attributes = attrs;
@@ -41,3 +31,5 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
     }
 
 }
+
+#endif

@@ -12,8 +12,8 @@ using MediaManager.Library;
 using MediaManager.Player;
 using Plugin.DeviceOrientation;
 using Plugin.DeviceOrientation.Abstractions;
-using Plugin.Hud;
-using Plugin.Hud.Abstractions;
+//TODO IMPORT: using Plugin.Hud;
+//TODO IMPORT: using Plugin.Hud.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -230,7 +230,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async void OnWatchClicked(object obj)
         {
 
-            if (DeviceInfo.Platform == DevicePlatform.Android)
+            if (DeviceInfo.Current.Platform == DevicePlatform.iOS)
             {
 
                 if (VideoDownload != null)
@@ -240,12 +240,12 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     var lessonPage = new VideoPageAndroid(_lesson.Id, videoPath);
                     await Shell.Current.Navigation.PushModalAsync(lessonPage, true);
-                    CrossHud.Current.Dismiss();
+                    //TODO IMPORT: CrossHud.Current.Dismiss();
                 }
                 else
                 {
 
-                    CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
+                    //TODO IMPORT: CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
 
                     var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
 
@@ -262,7 +262,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     };
 
                     var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
-                    CrossHud.Current.Dismiss();
+                    //TODO IMPORT: CrossHud.Current.Dismiss();
 
                     if (streamingUrlResponse.Status == ResponseStatus.OK)
                     {
@@ -271,20 +271,20 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     }
                     else if(streamingUrlResponse.ErrorResponse != null)
                     {
-                        CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
+                        //TODO IMPORT: CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
                     }
                     else
                     {
-                        
-                        CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
+
+                        //TODO IMPORT: CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
                     }
 
-                   
+
 
                 }                  
 
             }
-            else if (DeviceInfo.Platform == DevicePlatform.iOS)
+            else if (DeviceInfo.Current.Platform == DevicePlatform.Android)
             {
 
                 if (VideoDownload != null)
@@ -295,11 +295,11 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     var lessonPage = new VideoPage(_lesson.Id, "ms-appdata:///local/" + fileName);
                     await Shell.Current.Navigation.PushAsync(lessonPage, true);
-                    CrossHud.Current.Dismiss();
+                    //TODO IMPORT: CrossHud.Current.Dismiss();
                 }
                 else
                 {
-                    CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
+                    //TODO IMPORT: CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
 
                     var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
 
@@ -316,7 +316,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     };
 
                     var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
-                    CrossHud.Current.Dismiss();
+                    //TODO IMPORT: CrossHud.Current.Dismiss();
 
                     if (streamingUrlResponse.Status == ResponseStatus.OK)
                     {
@@ -325,16 +325,16 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     }
                     else if (streamingUrlResponse.ErrorResponse != null)
                     {
-                        CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
+                        //TODO IMPORT:  CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
                     }
                     else
                     {
 
-                        CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
+                        //TODO IMPORT:  CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
                     }
 
 
-     
+
 
                 }
 
@@ -344,7 +344,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         public void OnDisappearing()
         {
-            CrossHud.Current.Dismiss();
+            //TODO IMPORT: CrossHud.Current.Dismiss();
 
         }
 
@@ -352,7 +352,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async void OnDownloadClicked(object obj)
         {
 
-            CrossHud.Current.Show("Preparing Download", -1, MaskType.Black);
+            //TODO IMPORT: CrossHud.Current.Show("Preparing Download", -1, MaskType.Black);
 
             var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
             var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
@@ -395,24 +395,24 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     await db.SaveVideoDownloadAsync(VideoDownload);
                     await CheckDownloadStatus();
-                    CrossHud.Current.Dismiss();
+                    //TODO IMPORT: CrossHud.Current.Dismiss();
 
 
                 }
                 else if (streamingUrlResponse.ErrorResponse != null)
                 {
-                    CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
+                    //TODO IMPORT: CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
                 }
                 else
                 {
 
-                    CrossHud.Current.ShowError("Cannot download at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
+                    //TODO IMPORT: CrossHud.Current.ShowError("Cannot download at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
                 }
 
             } else
             {
 
-                CrossHud.Current.ShowError("You must allow access to download files", MaskType.Black);
+                //TODO IMPORT: CrossHud.Current.ShowError("You must allow access to download files", MaskType.Black);
 
             }
 

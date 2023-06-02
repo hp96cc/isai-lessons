@@ -6,7 +6,6 @@
               xmlns:mm="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
               xmlns:local="clr-namespace:ISAI.Lessons.Mobile.ViewModels"
               xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
-              xmlns:xct="clr-namespace:Xamarin.CommunityToolkit.UI.Views;assembly=Xamarin.CommunityToolkit"
               BackgroundColor="Black"
              >
 

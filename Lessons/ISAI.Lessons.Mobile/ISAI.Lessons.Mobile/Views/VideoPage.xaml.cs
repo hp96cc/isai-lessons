@@ -1,17 +1,8 @@
 ﻿using ISAI.Lessons.Mobile.ViewModels;
 using Plugin.DeviceOrientation;
 using Plugin.DeviceOrientation.Abstractions;
-using Plugin.Hud;
-using Plugin.Hud.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
-using Microsoft.Maui.Controls.Xaml;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui;
+//TODO IMPORT: using Plugin.Hud;
+//TODO IMPORT: using Plugin.Hud.Abstractions;
 
 namespace ISAI.Lessons.Mobile.Views
 {
@@ -24,14 +15,17 @@ namespace ISAI.Lessons.Mobile.Views
         {
             InitializeComponent();
             BindingContext = _viewModel = new VideoViewModel(lessonId, streamingUrl);
+
           
+
+
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
             _viewModel.OnAppearing();
-            CrossDeviceOrientation.Current.LockOrientation(DeviceOrientations.Landscape);
+            //CrossDeviceOrientation.Current.LockOrientation(DeviceOrientations.Landscape);
 
         }
 
@@ -40,7 +34,7 @@ namespace ISAI.Lessons.Mobile.Views
             base.OnDisappearing();
             _viewModel.OnDisappearing();
 
-            CrossDeviceOrientation.Current.UnlockOrientation();
+            //CrossDeviceOrientation.Current.UnlockOrientation();
         }
 
         void OnMediaOpened(object sender, EventArgs e)

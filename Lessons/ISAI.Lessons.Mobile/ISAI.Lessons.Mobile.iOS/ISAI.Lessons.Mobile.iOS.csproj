@@ -38,8 +38,9 @@
     <MtouchLink>SdkOnly</MtouchLink>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="2.0.0" />
     <PackageReference Include="sqlite-net-pcl">
-      <Version>1.7.335</Version>
+      <Version>1.8.116</Version>
     </PackageReference>
     <PackageReference Include="Xam.Plugins.DownloadManager">
       <Version>1.4.0</Version>

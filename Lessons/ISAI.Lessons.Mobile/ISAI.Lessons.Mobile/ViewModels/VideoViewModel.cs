@@ -7,7 +7,7 @@ using ISAI.Lessons.Models.Models;
 using MediaManager;
 using MediaManager.Library;
 using MediaManager.Player;
-using Plugin.Hud;
+//TODO IMPORT: using Plugin.Hud;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -61,7 +61,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                 DependencyService.Get<IStatusBar>().HideStatusBar();
 
-                CrossHud.Current.Show();
+                //TODO IMPORT: CrossHud.Current.Show();
                 CrossMediaManager.Current.Init();
                 CrossMediaManager.Current.Notification.Enabled = false;
 
@@ -95,7 +95,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                CrossHud.Current.Dismiss();
+                //TODO IMPORT: CrossHud.Current.Dismiss();
                 DependencyService.Get<IStatusBar>().HideStatusBar();
 
                 CrossMediaManager.Current.StateChanged -= Current_StateChanged;
@@ -109,11 +109,11 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
             if (e.State == MediaPlayerState.Buffering)
             {
-                CrossHud.Current.Show();
+                //TODO IMPORT: CrossHud.Current.Show();
             }
             else
             {
-                CrossHud.Current.Dismiss();
+                //TODO IMPORT: CrossHud.Current.Dismiss();
             }
         }
 

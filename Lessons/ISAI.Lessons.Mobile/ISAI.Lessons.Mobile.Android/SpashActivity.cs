@@ -1,21 +1,8 @@
-﻿using System;
-using Android.App;
-using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+﻿using Android.App;
 using Android.OS;
-using MediaManager;
-using ISAI.Lessons.Models.Interfaces;
-using ISAI.Lessons.Mobile.Droid.Helpers;
-using Plugin.CurrentActivity;
 using Android.Content;
-using ISAI.Lessons.Core.Services;
 using AndroidX.AppCompat.App;
 using Android.Util;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.Droid
 {
@@ -40,7 +27,7 @@ namespace ISAI.Lessons.Mobile.Droid
         {
             base.OnResume();
 
-            StartActivity(new Intent(Android.App.Application.Context, typeof(MainActivity)));
+            StartActivity(new Intent(this, typeof(MainActivity)));
             //Task startupWork = new Task(() => { SimulateStartup(); });
             //startupWork.Start();
         }

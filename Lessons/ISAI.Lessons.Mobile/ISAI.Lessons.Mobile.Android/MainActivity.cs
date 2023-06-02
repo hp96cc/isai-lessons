@@ -1,30 +1,23 @@
-﻿using System;
-using Android.App;
+﻿using Android.App;
 using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
-using MediaManager;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Mobile.Droid.Helpers;
-using Plugin.CurrentActivity;
 using Android.Content;
 using ISAI.Lessons.Core.Services;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui;
+
 
 namespace ISAI.Lessons.Mobile.Droid
 {
     [Activity(
         Theme = "@style/MainTheme", 
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    public class MainActivity : MauiAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            TabLayoutResource = Resource.Layout.Tabbar;
-            ToolbarResource = Resource.Layout.Toolbar;
+            //TabLayoutResource = Resource.Layout.Tabbar;
+            //ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
 
@@ -32,22 +25,16 @@ namespace ISAI.Lessons.Mobile.Droid
             DependencyService.Register<IVideoDownloadService, VideoDownloadService>();
             DependencyService.Register<ISqliteService, SqliteService>();
 
-            CrossCurrentActivity.Current.Init(this, savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-
             DownloadBrodacast downloadBrodacast = new DownloadBrodacast();
             RegisterReceiver(downloadBrodacast, new IntentFilter(DownloadManager.ActionDownloadComplete));
 
-            LoadApplication(new App());
         }
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
-            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-
+            Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-   
+
     }
 }

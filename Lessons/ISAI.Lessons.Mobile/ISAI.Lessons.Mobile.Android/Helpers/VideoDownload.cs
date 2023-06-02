@@ -1,13 +1,9 @@
-﻿using Android.App;
-using Android.OS;
+﻿#if ANDROID
+using Android.App;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
-using Plugin.CurrentActivity;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+using Uri = Android.Net.Uri;
 
 namespace ISAI.Lessons.Mobile.Droid.Helpers
 {
@@ -23,10 +19,11 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
         public VideoDownload StartDownload(VideoDownload videoDownload)
         {
 
-            var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);
-            var request = new DownloadManager.Request(Android.Net.Uri.Parse(videoDownload.DownloadUrl));
+  
+            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
+            var request = new DownloadManager.Request(Uri.Parse(videoDownload.DownloadUrl));
             request.SetNotificationVisibility(DownloadVisibility.Visible);
-            request.SetDestinationInExternalFilesDir(CrossCurrentActivity.Current.Activity, videoDownload.Id.ToString(), ".mp4");
+            request.SetDestinationInExternalFilesDir(Platform.CurrentActivity, videoDownload.Id.ToString(), ".mp4");
             request.SetTitle(videoDownload.LessonName);
             request.SetDescription(string.Format("{0} is Downloading...", videoDownload.LessonName));
             long downloadId = manager.Enqueue(request);
@@ -41,7 +38,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
         public string GetLocalVideoPath(VideoDownload videoDownload)
         {
 
-            var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);
+            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
             
             var videoUri = manager.GetUriForDownloadedFile(Convert.ToInt64(videoDownload.DownloadId));
             return videoUri.ToString();
@@ -50,7 +47,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
         public VideoDownload GetDownloadProgress(VideoDownload videoDownload)
         {
-            var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);
+            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
             var query = new DownloadManager.Query();
             query.SetFilterById(new long[] { Convert.ToInt64(videoDownload.DownloadId) });
             var cursor = manager.InvokeQuery(query);
@@ -100,14 +97,14 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
         public void DeleteDownload(VideoDownload videoDownload)
         {
-            var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);
+            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
             long[] ids = new long[long.Parse(videoDownload.DownloadId)];
             manager.Remove(ids);
         }
 
         public void DeleteAllDownloads()
         {
-            var manager = DownloadManager.FromContext(CrossCurrentActivity.Current.Activity);
+            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
             var query = new DownloadManager.Query();
             query.SetFilterByStatus(DownloadStatus.Successful);
             var cursor = manager.InvokeQuery(query);
@@ -137,3 +134,4 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
     }
 }
+#endif

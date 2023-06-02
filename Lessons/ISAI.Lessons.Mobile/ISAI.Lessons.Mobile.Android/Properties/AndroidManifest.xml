@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="210" android:versionName="2.0.10" package="uk.co.isai.uteachlessons.pupil.droid" android:installLocation="auto">
-	<uses-sdk android:minSdkVersion="22" android:targetSdkVersion="30" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="300" android:versionName="3.0.1" package="uk.co.isai.uteachlessons.pupil.droid" android:installLocation="auto">
+	<uses-sdk android:minSdkVersion="30" android:targetSdkVersion="33" />
 	<application android:theme="@style/MainTheme" android:label="Scottish Online Lessons"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

@@ -99,7 +99,7 @@
     
 
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
-    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked" Icon="outline_logout_black_18.png">
+    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked" IconImageSource="outline_logout_black_18.png">
     </MenuItem>
 
     <!--

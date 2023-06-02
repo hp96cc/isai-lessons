@@ -5,6 +5,8 @@
     <OutputType>Library</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <SingleProject>true</SingleProject>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">28.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\logo.png" />
@@ -13,8 +15,9 @@
     <EmbeddedResource Include="Resources\logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Plugin.MediaManager.Forms" Version="1.0.8" />
-    <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
+    <PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="2.0.0" />
+    <PackageReference Include="Plugin.MediaManager.Forms" Version="1.2.2" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
     <PackageReference Include="Plugin.DeviceOrientation" Version="1.0.7" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.2" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.2" />

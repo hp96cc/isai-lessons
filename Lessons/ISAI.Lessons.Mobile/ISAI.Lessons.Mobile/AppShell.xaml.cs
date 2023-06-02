@@ -1,14 +1,9 @@
-﻿using ISAI.Lessons.Mobile.ViewModels;
-using ISAI.Lessons.Mobile.Views;
+﻿using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Interfaces;
-using System;
-using System.Collections.Generic;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile
 {
-    public partial class AppShell : Xamarin.Forms.Shell
+    public partial class AppShell : Shell
     {
         public AppShell()
         {

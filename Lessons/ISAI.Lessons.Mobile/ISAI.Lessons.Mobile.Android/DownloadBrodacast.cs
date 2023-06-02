@@ -1,27 +1,17 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Views;
 using Android.Widget;
 using ISAI.Lessons.Core.Helpers;
-using ISAI.Lessons.Mobile.Droid.Helpers;
 using ISAI.Lessons.Mobile.Models.Messages;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.Droid
 {
-    [BroadcastReceiver]
+    [BroadcastReceiver(Enabled = true, Exported = false)]
     [IntentFilter(new string[] { DownloadManager.ActionDownloadComplete, DownloadManager.ColumnBytesDownloadedSoFar, DownloadManager.ActionNotificationClicked })]
-    public class DownloadBrodacast : Android.Content.BroadcastReceiver
+    public class DownloadBrodacast : BroadcastReceiver
     { 
 
         public override void OnReceive(Context context, Intent intent)
@@ -67,7 +57,7 @@ namespace ISAI.Lessons.Mobile.Droid
                     else if (status == (int)DownloadStatus.Failed)
                     {
                         var code = c.GetInt(c.GetColumnIndex(DownloadManager.ColumnReason));
-                        Toast.MakeText(Android.App.Application.Context, "donwload failed: " + code, ToastLength.Short).Show();
+                        Toast.MakeText(Platform.CurrentActivity, "donwload failed: " + code, ToastLength.Short).Show();
                     }
                 }
             }

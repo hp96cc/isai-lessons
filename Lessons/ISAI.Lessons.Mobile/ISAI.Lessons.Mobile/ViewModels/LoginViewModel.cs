@@ -4,8 +4,8 @@ using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using Microsoft.AppCenter.Crashes;
-using Plugin.Hud;
-using Plugin.Hud.Abstractions;
+//TODO IMPORT: using Plugin.Hud;
+//TODO IMPORT: using Plugin.Hud.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -63,7 +63,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         async Task OnLoginClicked()
         {
-            CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
+            //TODO IMPORT: CrossHud.Current.Show("Signing in...", -1, MaskType.Black);
 
             await Task.Delay(100);
 
@@ -92,9 +92,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
 
-                    CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
+                    //TODO IMPORT: CrossHud.Current.Show("Downloading Lesson Data...", -1, MaskType.Black);
                     await DownloadLessonData();
-                    CrossHud.Current.Dismiss();
+                    //TODO IMPORT: CrossHud.Current.Dismiss();
 
                     var readStatus = await Permissions.RequestAsync<Permissions.StorageRead>();
                     var writeStatus = await Permissions.RequestAsync<Permissions.StorageWrite>();
@@ -113,8 +113,8 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             }
 
-            CrossHud.Current.Dismiss();
-            CrossHud.Current.ShowError("Could not login. Please check your email and / or password. ", MaskType.Black, TimeSpan.FromSeconds(3));
+            //TODO IMPORT: CrossHud.Current.Dismiss();
+            //TODO IMPORT: CrossHud.Current.ShowError("Could not login. Please check your email and / or password. ", MaskType.Black, TimeSpan.FromSeconds(3));
 
         }
 
@@ -137,8 +137,8 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
             else
             {
-                CrossHud.Current.Dismiss();
-                CrossHud.Current.ShowError(lessonGroupResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(3));
+                //TODO IMPORT:  CrossHud.Current.Dismiss();
+                //TODO IMPORT: CrossHud.Current.ShowError(lessonGroupResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(3));
                 await Task.Delay(3000);
                 throw new Exception("Could not download Lesson Groups");
             }
@@ -151,8 +151,8 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
             else
             {
-                CrossHud.Current.Dismiss();
-                CrossHud.Current.ShowError(lessonResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(3));
+                //TODO IMPORT:  CrossHud.Current.Dismiss();
+                //TODO IMPORT: CrossHud.Current.ShowError(lessonResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(3));
                 await Task.Delay(3000);
                 throw new Exception("Could not download Lessons");
             }
