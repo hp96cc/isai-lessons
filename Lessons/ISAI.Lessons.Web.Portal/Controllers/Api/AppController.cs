@@ -847,7 +847,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 byte[] iv = Convert.FromBase64String(_base64Iv);
                 string encryptedDigest = Strings.Encrypt(digest, key, iv);
 
-                var passwordResetLink = "https://scottishonlinelessons.com/reset-password?digest=" + HttpUtility.UrlEncode(encryptedDigest);
+                var passwordResetLink = "https://portal.scottishonlinelessons.com/reset-password?digest=" + HttpUtility.UrlEncode(encryptedDigest);
 
                 var templateHtml = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath("~/Email Templates/ResetPasswordEmailTemplate.html"));
                 templateHtml = templateHtml.Replace("{{name}}", string.Format("{0} {1}", customer.FirstName, customer.LastName));

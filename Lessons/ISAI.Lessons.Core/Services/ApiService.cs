@@ -40,7 +40,7 @@ namespace ISAI.Lessons.EntityFramework.Services
             else
             {
                 _baseUrl = "https://app.scottishonlinelessons.com/";
-                _baseReturnUrl = "https://scottishonlinelessons/";
+                _baseReturnUrl = "https://portal.scottishonlinelessons.com/";
             }
 
         }

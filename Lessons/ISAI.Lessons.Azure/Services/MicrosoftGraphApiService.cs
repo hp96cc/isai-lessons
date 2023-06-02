@@ -20,7 +20,7 @@ namespace ISAI.Lessons.Core.Services
         readonly string tennantId = "72b8f033-67c4-4524-964e-d3c01efa1acd";
         readonly string authPath = "oauth2/v2.0/token";
         readonly string appId = "88030882-6822-4b8d-b8ae-19fe43c38f89";
-        readonly string appSecret = "-u~-5YFpS0Q884b8~uW3Sc3oDSRy4gt7gg";
+        readonly string appSecret = "2WW8Q~.mHQ21b2XQvhY3oc3rTVruWwCHsACIgds8";
         readonly string scope = "https://graph.microsoft.com/.default";
         readonly string grantType = "client_credentials";
 
@@ -80,10 +80,19 @@ namespace ISAI.Lessons.Core.Services
                     }
                 }).ToList();
             }
-            await graphClient.Users[userName]
-                .SendMail(message, saveToSentItems)
-                .Request()
-                .PostAsync();
+
+            try
+            {
+
+                await graphClient.Users[userName]
+                    .SendMail(message, saveToSentItems)
+                    .Request()
+                    .PostAsync();
+
+            } catch (Exception ex)
+            {
+                bool b = true;
+            }
 
 
         }

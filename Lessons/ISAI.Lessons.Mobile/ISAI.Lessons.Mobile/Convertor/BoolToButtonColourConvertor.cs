@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using Xamarin.Forms;
+using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.Convertor
 {
@@ -10,10 +12,10 @@ namespace ISAI.Lessons.Mobile.Convertor
         {
             if(!(bool)value)
             {
-                return Color.FromHex("#18b8ff");
+                return Color.FromArgb("#18b8ff");
             } else
             {
-                return Color.Red;
+                return Colors.Red;
             }
         }
 

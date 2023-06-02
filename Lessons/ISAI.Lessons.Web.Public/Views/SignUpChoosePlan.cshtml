@@ -2,6 +2,19 @@
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "Master.cshtml";
+
+
+    //Redirect back to UK / Chinese site 
+    var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
+    bool isUKSite = canonicalUrl.Contains("portal.ukonlinelessons.com");
+
+    if (isUKSite)
+    {
+        Response.Redirect("https://ukonlinelessons.com");
+    }
+   
+
+
 }
 
 <section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()" style="background-image: url('@Model.BackgroundImage.MediaUrl()');">

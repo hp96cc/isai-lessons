@@ -2,8 +2,8 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Essentials;
-using Xamarin.Forms;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.ViewModels
 {

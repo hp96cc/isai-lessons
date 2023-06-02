@@ -6,12 +6,13 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using MediaManager;
-using Xamarin.Forms;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Mobile.Droid.Helpers;
 using Plugin.CurrentActivity;
 using Android.Content;
 using ISAI.Lessons.Core.Services;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.Droid
 {

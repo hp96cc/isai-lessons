@@ -8,8 +8,9 @@ using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using Plugin.DownloadManager;
 using Plugin.DownloadManager.Abstractions;
-using Xamarin.Essentials;
-using Xamarin.Forms;
+using Microsoft.Maui.Storage;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.iOS.Helpers
 {

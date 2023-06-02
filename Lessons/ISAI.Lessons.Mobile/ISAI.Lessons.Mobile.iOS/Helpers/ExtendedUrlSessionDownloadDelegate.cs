@@ -6,7 +6,8 @@ using ISAI.Lessons.Mobile.Models.Messages;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using Plugin.DownloadManager;
-using Xamarin.Forms;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.iOS.Helpers
 {

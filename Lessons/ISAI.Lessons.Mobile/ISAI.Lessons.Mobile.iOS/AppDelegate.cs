@@ -5,12 +5,13 @@ using ISAI.Lessons.Mobile.iOS.Helpers;
 using Foundation;
 using ISAI.Lessons.Models.Interfaces;
 using UIKit;
-using Xamarin.Forms;
 using ISAI.Lessons.Core.Services;
 using Plugin.DownloadManager;
 using Plugin.DownloadManager.Abstractions;
 using System.IO;
 using Plugin.DeviceOrientation;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.iOS
 {

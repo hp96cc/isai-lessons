@@ -1,6 +1,7 @@
 ﻿using ISAI.Lessons.Mobile.ViewModels;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.Views
 {

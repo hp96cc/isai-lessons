@@ -1,7 +1,6 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31005.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{D8240E0C-3A07-4F13-9CD8-8EFCDE942EB4}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,9 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{0E5540B5-7AF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mobile", "Mobile", "{4CC5F0AF-2C5D-4779-AAE3-09E8F12B2698}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Mobile.Android", "ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.Android\ISAI.Lessons.Mobile.Android.csproj", "{5242AE2E-D19D-4C7C-9367-6C38E222E07B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Mobile.Android", "ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.Android\ISAI.Lessons.Mobile.Android.csproj", "{5242AE2E-D19D-4C7C-9367-6C38E222E07B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Mobile.iOS", "ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.iOS\ISAI.Lessons.Mobile.iOS.csproj", "{2791C3E5-0D8E-429B-899F-0F24839EF3F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Mobile.iOS", "ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.iOS\ISAI.Lessons.Mobile.iOS.csproj", "{2791C3E5-0D8E-429B-899F-0F24839EF3F7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Mobile", "ISAI.Lessons.Mobile\ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.csproj", "{D2E2E10F-C9FC-45E7-B645-39938925CE19}"
 EndProject
@@ -37,6 +36,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Azure", "ISAI.Lessons.Azure\ISAI.Lessons.Azure.csproj", "{162F6EC3-466F-4ED3-AA00-E3F2A3F94961}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Key.Creation", "ISAI.Key.Creation\ISAI.Key.Creation.csproj", "{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Web.Tutor", "ISAI.Lessons.Web.Tutor\ISAI.Lessons.Web.Tutor.csproj", "{F1B47D06-128C-409D-9010-8C1CD5533267}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,7 +79,7 @@ Global
 		{5242AE2E-D19D-4C7C-9367-6C38E222E07B}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{5242AE2E-D19D-4C7C-9367-6C38E222E07B}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{5242AE2E-D19D-4C7C-9367-6C38E222E07B}.Release|iPhoneSimulator.Deploy.0 = Release|Any CPU
-		{2791C3E5-0D8E-429B-899F-0F24839EF3F7}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
+		{2791C3E5-0D8E-429B-899F-0F24839EF3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2791C3E5-0D8E-429B-899F-0F24839EF3F7}.Debug|iPhone.ActiveCfg = Debug|iPhone
 		{2791C3E5-0D8E-429B-899F-0F24839EF3F7}.Debug|iPhone.Build.0 = Debug|iPhone
 		{2791C3E5-0D8E-429B-899F-0F24839EF3F7}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
@@ -184,6 +185,18 @@ Global
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425}.Release|iPhone.Build.0 = Release|Any CPU
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Release|iPhone.Build.0 = Release|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{F1B47D06-128C-409D-9010-8C1CD5533267}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -200,6 +213,7 @@ Global
 		{A5935001-F19F-4894-9AAB-089C0A45DAD2} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
 		{162F6EC3-466F-4ED3-AA00-E3F2A3F94961} = {7DF8045F-FEC5-4C99-8246-5CAADE969B5F}
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
+		{F1B47D06-128C-409D-9010-8C1CD5533267} = {0E5540B5-7AF9-4013-BF39-7105F65150D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13AF8AE1-3867-4096-A7E3-F867D4849F2F}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using Xamarin.Forms;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.Convertor
 {

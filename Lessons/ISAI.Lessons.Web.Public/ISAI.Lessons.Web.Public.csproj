@@ -597,6 +597,15 @@
     <Compile Include="App_Data\Models\SignUpPaymentFailed.generated.cs" />
     <Compile Include="App_Data\Models\SignUpPaymentSuccess.generated.cs" />
     <Compile Include="App_Data\Models\SocialLink.generated.cs" />
+    <Compile Include="App_Data\Models\TutorCardRegistered.generated.cs" />
+    <Compile Include="App_Data\Models\TutorConfirmation.generated.cs" />
+    <Compile Include="App_Data\Models\TutorHome.generated.cs" />
+    <Compile Include="App_Data\Models\TutorLogin.generated.cs" />
+    <Compile Include="App_Data\Models\TutorPaymentFailed.generated.cs" />
+    <Compile Include="App_Data\Models\TutorPaymentSuccess.generated.cs" />
+    <Compile Include="App_Data\Models\TutorRegister.generated.cs" />
+    <Compile Include="App_Data\Models\TutorSlotSelection.generated.cs" />
+    <Compile Include="App_Data\Models\TutorSubjectSelection.generated.cs" />
     <Compile Include="Components\AttributeRoutingCompsoer.cs" />
     <Compile Include="Controllers\LessonAppController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,7 +3,8 @@ using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using Xamarin.Forms;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile
 {
