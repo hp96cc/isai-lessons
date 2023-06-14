@@ -206,9 +206,11 @@ namespace ISAI.Lessons.Mobile.ViewModels
             {
 
                 var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(_videoDownload);
-                var fileName = Path.GetFileName(videoPath);
+                //var fileName = Path.GetFileName(videoPath);
 
-                var lessonPage = new VideoPage(_lesson.Id, "filesystem://" + fileName + ".mp4");
+                //var lessonPage = new VideoPage(_lesson.Id, fileName);
+                var lessonPage = new VideoPage(_lesson.Id, "file://" + videoPath);
+                
                 await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 DependencyService.Get<IHud>().Dismiss();
             }

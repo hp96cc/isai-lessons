@@ -20,7 +20,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
         {
 
   
-            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
+            var manager = DownloadManager.FromContext(Platform.AppContext);
             var request = new DownloadManager.Request(Uri.Parse(videoDownload.DownloadUrl));
             request.SetNotificationVisibility(DownloadVisibility.Visible);
             request.SetDestinationInExternalFilesDir(Platform.CurrentActivity, videoDownload.Id.ToString(), ".mp4");
@@ -38,7 +38,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
         public string GetLocalVideoPath(VideoDownload videoDownload)
         {
 
-            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
+            var manager = DownloadManager.FromContext(Platform.AppContext);
             
             var videoUri = manager.GetUriForDownloadedFile(Convert.ToInt64(videoDownload.DownloadId));
             return videoUri.ToString();
@@ -47,7 +47,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
         public VideoDownload GetDownloadProgress(VideoDownload videoDownload)
         {
-            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
+            var manager = DownloadManager.FromContext(Platform.AppContext);
             var query = new DownloadManager.Query();
             query.SetFilterById(new long[] { Convert.ToInt64(videoDownload.DownloadId) });
             var cursor = manager.InvokeQuery(query);
@@ -97,14 +97,14 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
         public void DeleteDownload(VideoDownload videoDownload)
         {
-            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
+            var manager = DownloadManager.FromContext(Platform.AppContext);
             long[] ids = new long[long.Parse(videoDownload.DownloadId)];
             manager.Remove(ids);
         }
 
         public void DeleteAllDownloads()
         {
-            var manager = DownloadManager.FromContext(Platform.CurrentActivity);
+            var manager = DownloadManager.FromContext(Platform.AppContext);
             var query = new DownloadManager.Query();
             query.SetFilterByStatus(DownloadStatus.Successful);
             var cursor = manager.InvokeQuery(query);

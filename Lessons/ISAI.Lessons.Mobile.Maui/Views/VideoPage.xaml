@@ -18,6 +18,7 @@
             <toolkit:MediaElement
                       x:Name="MediaElement"
                       Source="{Binding SourceUrl}"
+                
                       BackgroundColor="Black"
                       VerticalOptions="CenterAndExpand"
                       ShouldAutoPlay="True"
