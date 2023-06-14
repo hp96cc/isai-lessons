@@ -1,0 +1,56 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{D8240E0C-3A07-4F13-9CD8-8EFCDE942EB4}"
+	ProjectSection(SolutionItems) = preProject
+		solution.txt = solution.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{0E5540B5-7AF9-4013-BF39-7105F65150D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mobile", "Mobile", "{4CC5F0AF-2C5D-4779-AAE3-09E8F12B2698}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{7DF8045F-FEC5-4C99-8246-5CAADE969B5F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Models", "ISAI.Lessons.Models\ISAI.Lessons.Models.csproj", "{D455984F-DF60-481E-ABA3-EC76630C7355}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Core", "ISAI.Lessons.Core\ISAI.Lessons.Core.csproj", "{B589ECC0-720D-4F5B-8C8F-542FC8B7A3B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Console", "Console", "{C4BD916E-74C1-4224-91F4-4BDB876EA210}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Mobile.Maui", "ISAI.Lessons.Mobile.Maui\ISAI.Lessons.Mobile.Maui.csproj", "{C5EA799A-E892-4588-9AF4-35B52B76C685}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D455984F-DF60-481E-ABA3-EC76630C7355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D455984F-DF60-481E-ABA3-EC76630C7355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D455984F-DF60-481E-ABA3-EC76630C7355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D455984F-DF60-481E-ABA3-EC76630C7355}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B589ECC0-720D-4F5B-8C8F-542FC8B7A3B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B589ECC0-720D-4F5B-8C8F-542FC8B7A3B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B589ECC0-720D-4F5B-8C8F-542FC8B7A3B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B589ECC0-720D-4F5B-8C8F-542FC8B7A3B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5EA799A-E892-4588-9AF4-35B52B76C685}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5EA799A-E892-4588-9AF4-35B52B76C685}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5EA799A-E892-4588-9AF4-35B52B76C685}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C5EA799A-E892-4588-9AF4-35B52B76C685}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5EA799A-E892-4588-9AF4-35B52B76C685}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5EA799A-E892-4588-9AF4-35B52B76C685}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D455984F-DF60-481E-ABA3-EC76630C7355} = {7DF8045F-FEC5-4C99-8246-5CAADE969B5F}
+		{B589ECC0-720D-4F5B-8C8F-542FC8B7A3B7} = {7DF8045F-FEC5-4C99-8246-5CAADE969B5F}
+		{C5EA799A-E892-4588-9AF4-35B52B76C685} = {4CC5F0AF-2C5D-4779-AAE3-09E8F12B2698}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {13AF8AE1-3867-4096-A7E3-F867D4849F2F}
+	EndGlobalSection
+EndGlobal

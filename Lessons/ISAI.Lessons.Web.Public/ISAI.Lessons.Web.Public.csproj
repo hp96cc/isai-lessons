@@ -695,10 +695,6 @@
     <Folder Include="Views\LessonApp\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ISAI.Lessons.Azure\ISAI.Lessons.Azure.csproj">
-      <Project>{162f6ec3-466f-4ed3-aa00-e3f2a3f94961}</Project>
-      <Name>ISAI.Lessons.Azure</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
       <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
       <Name>ISAI.Lessons.Core</Name>
@@ -732,6 +728,11 @@
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>
+    <MonoDevelop>
+      <Properties>
+        <XspParameters Port="8080" Address="127.0.0.1" SslMode="None" SslProtocol="Default" KeyType="None" CertFile="" KeyFile="" PasswordOptions="None" Password="" Verbose="True" />
+      </Properties>
+    </MonoDevelop>
   </ProjectExtensions>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
