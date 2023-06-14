@@ -25,9 +25,9 @@
                 Source="{Binding ImageUrl}"
                 Aspect="AspectFit"
                 Margin="30"
-                HorizontalOptions="Start"
+                VerticalOptions="Start"
                 MaximumWidthRequest="300"
-
+                MaximumHeightRequest="200"
                 />
 
             <Button

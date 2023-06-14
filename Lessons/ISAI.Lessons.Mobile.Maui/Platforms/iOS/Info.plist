@@ -28,5 +28,19 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
+		<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>CFBundleShortVersionString</key>
+	<string>3.0.1</string>
+	<key>CFBundleVersion</key>
+	<string>3.0.1</string>
+		<string>Scottish Online Lessons</string>
+	<key>CFBundleIdentifier</key>
+	<string>uk.co.isai.uteachlessons.pupil.ios</string>
+	<key>CFBundleName</key>
+	<string>uk.co.isai.lessons.mobile.ios</string>
 </dict>
 </plist>
