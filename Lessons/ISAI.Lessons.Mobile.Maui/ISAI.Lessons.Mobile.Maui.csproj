@@ -52,6 +52,7 @@
 	  <None Remove="Resources\AppIcon\appicon.png" />
 	  <None Remove="Resources\Images\logo.png" />
 	  <None Remove="Resources\Splash\splash.png" />
+	  <None Remove="Platforms\iOS\Helpers\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -132,7 +133,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiIcon Include="Resources\AppIcon\appicon.png" />
+	  <MauiIcon Include="Resources\AppIcon\appicon.png" Color="White" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Platforms\iOS\Helpers\" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios'">
+	  <PackageReference Include="BTProgressHUD" Version="2.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-maccatalyst'">
+	  <PackageReference Include="BTProgressHUD" Version="2.0.0" />
+	</ItemGroup>
 </Project>

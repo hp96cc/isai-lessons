@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:convertor="clr-namespace:ISAI.Lessons.Mobile.Convertor"
              x:Class="ISAI.Lessons.Mobile.Views.LessonPage"
              Title="{Binding Title}">
  
@@ -26,8 +25,10 @@
                 Source="{Binding ImageUrl}"
                 Aspect="AspectFit"
                 Margin="30"
-                HorizontalOptions="CenterAndExpand"
-                MinimumHeightRequest="200"/>
+                HorizontalOptions="Start"
+                MaximumWidthRequest="300"
+
+                />
 
             <Button
                 Margin="10"

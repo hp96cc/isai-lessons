@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ISAI.Lessons.Mobile.Views.LessonsPage"
@@ -16,7 +16,7 @@
                     <StackLayout Padding="10" x:DataType="model:Lesson">
                         <Label Text="{Binding Name}" 
                             LineBreakMode="WordWrap" 
-                            Style="{DynamicResource ListItemTextStyle}" 
+                            
                             FontSize="16"
                             FontAttributes="Bold"
                             Margin="5,5,5,10"   

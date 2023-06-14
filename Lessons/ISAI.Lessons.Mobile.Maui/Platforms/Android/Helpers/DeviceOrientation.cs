@@ -54,7 +54,7 @@ namespace ISAI.Lessons.Mobile.Maui.Platforms.Android.Helpers
             }
         }
 
-        public DeviceOrientations Convert(SurfaceOrientation orientation)
+        private DeviceOrientations Convert(SurfaceOrientation orientation)
         {
             switch (orientation)
             {
