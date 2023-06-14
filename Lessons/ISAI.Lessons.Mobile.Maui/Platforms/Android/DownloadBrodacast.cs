@@ -1,0 +1,68 @@
+﻿using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Widget;
+using ISAI.Lessons.Core.Helpers;
+using ISAI.Lessons.Mobile.Models.Messages;
+using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
+
+namespace ISAI.Lessons.Mobile.Droid
+{
+    [BroadcastReceiver(Enabled = true, Exported = false)]
+    [IntentFilter(new string[] { DownloadManager.ActionDownloadComplete, DownloadManager.ColumnBytesDownloadedSoFar, DownloadManager.ActionNotificationClicked })]
+    public class DownloadBrodacast : BroadcastReceiver
+    { 
+
+        public override void OnReceive(Context context, Intent intent)
+        {
+
+            String action = intent.Action;
+            if (DownloadManager.ActionDownloadComplete.Equals(action) && intent.Extras != null)
+            {
+                Bundle extras = intent.Extras;
+                DownloadManager.Query q = new DownloadManager.Query();
+                long downloadId = extras.GetLong(DownloadManager.ExtraDownloadId);
+                q.SetFilterById(downloadId);
+                var c = ((DownloadManager)context.GetSystemService(Context.DownloadService)).InvokeQuery(q);
+                if (c.MoveToFirst())
+                {
+                    int status = c.GetInt(c.GetColumnIndex(DownloadManager.ColumnStatus));
+                    if (status == (int)DownloadStatus.Successful)
+                    {
+                        string downloadFilePath = (c.GetString(c.GetColumnIndex(DownloadManager.ColumnUri))).Replace("file://", "");
+                        string downloadTitle = c.GetString(c.GetColumnIndex(DownloadManager.ColumnTitle));
+                        c.Close();
+
+
+                        var videoDownloads = AsyncUtil.RunSync(() => DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync());
+                        var download = videoDownloads.FirstOrDefault(x => x.DownloadId == downloadId.ToString());
+
+                        if (download != null)
+                        {
+                            download.DateDownloaded = DateTime.UtcNow;
+                            download.VideoDownloadStatusCode = VideoDownloadStatusCode.Successful;
+                            AsyncUtil.RunSync(() => DependencyService.Get<ISqliteService>().SaveVideoDownloadAsync(download));
+
+                            var sender = new DownloadCompleteMessage()
+                            {
+                                LessonId = download.LessonId,
+                                VideoDownloadStatusCode = VideoDownloadStatusCode.Successful
+                            };
+
+                            MessagingCenter.Send(sender, "DownloadComplete");
+                        }
+
+                    }
+                    else if (status == (int)DownloadStatus.Failed)
+                    {
+                        var code = c.GetInt(c.GetColumnIndex(DownloadManager.ColumnReason));
+                        Toast.MakeText(Platform.CurrentActivity, "donwload failed: " + code, ToastLength.Short).Show();
+                    }
+                }
+            }
+        }
+    }
+
+
+}

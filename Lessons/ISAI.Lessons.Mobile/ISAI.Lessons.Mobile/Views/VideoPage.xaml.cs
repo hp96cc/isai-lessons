@@ -25,6 +25,7 @@ namespace ISAI.Lessons.Mobile.Views
         {
             base.OnAppearing();
             _viewModel.OnAppearing();
+
             //CrossDeviceOrientation.Current.LockOrientation(DeviceOrientations.Landscape);
 
         }
@@ -34,6 +35,7 @@ namespace ISAI.Lessons.Mobile.Views
             base.OnDisappearing();
             _viewModel.OnDisappearing();
 
+            MediaElement.Stop();
             //CrossDeviceOrientation.Current.UnlockOrientation();
         }
 

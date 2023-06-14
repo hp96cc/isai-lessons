@@ -5,7 +5,8 @@ using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Mobile.Droid.Helpers;
 using Android.Content;
 using ISAI.Lessons.Core.Services;
-
+using MediaManager;
+using ISAI.Lessons.Mobile.Android.Helpers;
 
 namespace ISAI.Lessons.Mobile.Droid
 {
@@ -21,12 +22,15 @@ namespace ISAI.Lessons.Mobile.Droid
 
             base.OnCreate(savedInstanceState);
 
+            DependencyService.Register<IHud, Hud>();
             DependencyService.Register<IStatusBar, StatusBar>();
             DependencyService.Register<IVideoDownloadService, VideoDownloadService>();
             DependencyService.Register<ISqliteService, SqliteService>();
 
             DownloadBrodacast downloadBrodacast = new DownloadBrodacast();
             RegisterReceiver(downloadBrodacast, new IntentFilter(DownloadManager.ActionDownloadComplete));
+
+            CrossMediaManager.Current.Init(this);
 
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

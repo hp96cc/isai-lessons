@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="ISAI.Lessons.Mobile.Views.LoginPage"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.Content>
+        <StackLayout Padding="20" VerticalOptions="StartAndExpand">
+
+
+            <Image
+                    Source="logo.png"
+                    WidthRequest="250"
+                    Margin="10,50,10,50"
+                
+                    />
+
+            <Entry
+                Margin="10"
+                Placeholder="Email"
+                Keyboard="Email"
+                VerticalOptions="Center"
+                Text="{Binding Email}"
+                />
+
+            <Entry
+                Margin="10"
+                IsPassword="True"
+                Keyboard="Text"
+                Placeholder="Password"
+                VerticalOptions="Center"
+                Text="{Binding Password}"
+                />
+
+            <Button 
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Sign In" 
+                Command="{Binding LoginCommand}" />
+
+
+            <Button 
+                TextColor="{StaticResource Primary}"
+                BackgroundColor="Transparent"
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Forgot Password?" 
+                Command="{Binding ForgotPasswordCommand}" />
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

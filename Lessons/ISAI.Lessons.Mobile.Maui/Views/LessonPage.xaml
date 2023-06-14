@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:convertor="clr-namespace:ISAI.Lessons.Mobile.Convertor"
+             x:Class="ISAI.Lessons.Mobile.Views.LessonPage"
+             Title="{Binding Title}">
+ 
+    <ContentPage.Content>
+         <ScrollView>
+        <StackLayout Padding="20">
+            <Label 
+                FontSize="20"
+                Text="{Binding Lesson.Name}"
+                Margin="10,0,0,0"
+
+                />
+            
+            <Label 
+                Text="{Binding Breadcrumb}"
+                FontSize="14"
+                FontAttributes="Bold"
+                Margin="10,0,0,30"/>
+
+        
+              <Image                
+                Source="{Binding ImageUrl}"
+                Aspect="AspectFit"
+                Margin="30"
+                HorizontalOptions="CenterAndExpand"
+                MinimumHeightRequest="200"/>
+
+            <Button
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Watch Lesson"
+                Command="{Binding WatchCommand}" />
+
+
+            <Button
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Download Lesson"
+                Command="{Binding DownloadCommand}"
+                IsVisible="{Binding CanDownload}"
+                
+                />
+
+             <Button
+                Margin="10"
+                VerticalOptions="Center"
+                Text="Downloading Lesson"
+                IsVisible="{Binding IsDownloading}"
+                IsEnabled="False"
+                
+                />
+
+
+             <Button
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Delete Download"
+                 BackgroundColor="Red"
+                Command="{Binding DeleteDownload}"
+                IsVisible="{Binding CanDeleteDownload}"
+                
+                />
+
+            <Label
+                  Margin="10"
+                Text="{Binding DownloadErrorText}"
+                TextColor="Red"></Label>
+
+            
+        </StackLayout>
+              </ScrollView>
+    </ContentPage.Content>
+</ContentPage>
