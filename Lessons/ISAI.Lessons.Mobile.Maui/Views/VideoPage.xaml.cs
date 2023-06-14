@@ -1,4 +1,5 @@
-﻿using ISAI.Lessons.Mobile.ViewModels;
+﻿using CommunityToolkit.Maui.Views;
+using ISAI.Lessons.Mobile.ViewModels;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 
@@ -14,12 +15,15 @@ namespace ISAI.Lessons.Mobile.Views
             InitializeComponent();
             BindingContext = _viewModel = new VideoViewModel(lessonId, streamingUrl);
 
+            //TODO: need to determine download form here
+            var source = MediaSource.FromUri(streamingUrl);
+            MediaElement.Source = source;
+
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            _viewModel.OnAppearing();
             DependencyService.Get<IDeviceOrientation>().LockOrientation(DeviceOrientations.Landscape);
 
         }
@@ -27,8 +31,6 @@ namespace ISAI.Lessons.Mobile.Views
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            _viewModel.OnDisappearing();
-
             MediaElement.Stop();
             DependencyService.Get<IDeviceOrientation>().UnlockOrientation();
 

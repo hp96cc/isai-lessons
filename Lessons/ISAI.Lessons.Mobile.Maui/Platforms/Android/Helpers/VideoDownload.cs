@@ -37,13 +37,13 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
 
         public string GetLocalVideoPath(VideoDownload videoDownload)
         {
-            var externalFilesPath = Platform.AppContext.GetExternalFilesDir(null);
-            var filePath = Path.Combine(externalFilesPath.Path, videoDownload.Id.ToString() + ".mp4");
-            return filePath;
-            //var manager = DownloadManager.FromContext(Platform.AppContext);
-            
-            //var videoUri = manager.GetUriForDownloadedFile(Convert.ToInt64(videoDownload.DownloadId));
-            //return videoUri.ToString();
+            //var externalFilesPath = Platform.AppContext.GetExternalFilesDir(null);
+            //var filePath = Path.Combine(externalFilesPath.Path, videoDownload.Id.ToString() + ".mp4");
+            //return filePath;
+            var manager = DownloadManager.FromContext(Platform.AppContext);
+
+            var videoUri = manager.GetUriForDownloadedFile(Convert.ToInt64(videoDownload.DownloadId));
+            return videoUri.ToString();
 
         }
 

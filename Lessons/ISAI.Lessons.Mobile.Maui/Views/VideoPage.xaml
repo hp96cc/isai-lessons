@@ -15,10 +15,26 @@
            <StackLayout>
 
 
+            <!--<toolkit:MediaElement
+                      x:Name="MediaElement"
+                       Source="{Binding SourceUrl}"
+                
+                      BackgroundColor="Black"
+                      VerticalOptions="CenterAndExpand"
+                      ShouldAutoPlay="True"
+                      ShouldShowPlaybackControls="True"
+                      MinimumHeightRequest="300"
+                      MediaOpened="OnMediaOpened"
+                      MediaFailed="OnMediaFailed"
+                      MediaEnded="OnMediaEnded"
+                      SeekCompleted="OnSeekCompleted"
+                      
+                 />-->
+
+
             <toolkit:MediaElement
                       x:Name="MediaElement"
-                      Source="{Binding SourceUrl}"
-                
+ 
                       BackgroundColor="Black"
                       VerticalOptions="CenterAndExpand"
                       ShouldAutoPlay="True"
@@ -31,8 +47,7 @@
                       
                  />
 
-
-                  </StackLayout>  
+        </StackLayout>  
     </ContentPage.Content>
    
 </ContentPage>

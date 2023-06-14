@@ -46,65 +46,6 @@ namespace ISAI.Lessons.Mobile.ViewModels
             _streamingUrl = streamingUrl;
             SourceUrl = streamingUrl;
 
-      
-        }
-
-        public async void OnAppearing()
-        {
-  
-
-            //if (DeviceInfo.Platform == DevicePlatform.Android)
-            //{
-
-            //    _lesson = await DependencyService.Get<ISqliteService>().GetLessonAsync(_lessonId);
-            //    Title = _lesson.Name;
-
-            //    DependencyService.Get<IStatusBar>().HideStatusBar();
-
-            //    //TODO IMPORT: CrossHud.Current.Show();
-            //    CrossMediaManager.Current.Init();
-            //    CrossMediaManager.Current.Notification.Enabled = false;
-
-            //    CrossMediaManager.Current.StateChanged += Current_StateChanged;
-
-            //    var videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
-            //    IMediaItem item;
-
-            //    if (videoDownload != null)
-            //    {
-            //        var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(videoDownload);
-            //        item = await CrossMediaManager.Current.Extractor.CreateMediaItem(videoPath);
-            //    }
-            //    else
-            //    {
-            //        item = await CrossMediaManager.Current.Extractor.CreateMediaItem(_streamingUrl);
-            //        item.MediaType = MediaType.Hls;
-            //    }
-
-
-            //    item.Title = _lesson.Name;
-
-            //    await CrossMediaManager.Current.Play(item);
-
-            //}
-
-        }
-
-        public async void OnDisappearing()
-        {
-
-      
-
-            //if (DeviceInfo.Platform == DevicePlatform.Android)
-            //{
-            //    //TODO IMPORT: CrossHud.Current.Dismiss();
-            //    DependencyService.Get<IStatusBar>().HideStatusBar();
-
-            //    CrossMediaManager.Current.StateChanged -= Current_StateChanged;
-            //    await CrossMediaManager.Current.Stop();
-            //    CrossMediaManager.Current.Dispose();
-
-            //}
         }
 
         private void Current_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
