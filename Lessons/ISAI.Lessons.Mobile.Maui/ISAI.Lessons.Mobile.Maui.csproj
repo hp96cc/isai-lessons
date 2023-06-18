@@ -32,6 +32,15 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
+	  <CodesignKey>iPhone Developer</CodesignKey>
+	  <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
+	  <CodesignProvision>Automatic</CodesignProvision>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
+	  <CreatePackage>false</CreatePackage>
+	  <CodesignKey>iPhone Distribution</CodesignKey>
+	  <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
+	  <CodesignProvision>Automatic</CodesignProvision>
 	</PropertyGroup>
 	<ItemGroup>
 		<!-- App Icon -->
@@ -53,6 +62,7 @@
 	  <None Remove="Resources\Images\logo.png" />
 	  <None Remove="Resources\Splash\splash.png" />
 	  <None Remove="Platforms\iOS\Helpers\" />
+	  <None Remove="Platforms\iOS\Helpers\CrossDownloadManager\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -138,6 +148,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Platforms\iOS\Helpers\" />
+	  <Folder Include="Platforms\iOS\Helpers\CrossDownloadManager\" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios'">
 	  <PackageReference Include="BTProgressHUD" Version="2.0.0" />

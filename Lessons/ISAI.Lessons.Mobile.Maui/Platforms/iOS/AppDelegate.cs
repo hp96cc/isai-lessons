@@ -26,7 +26,7 @@ namespace ISAI.Lessons.Mobile.Maui
         [Export("application:handleEventsForBackgroundURLSession:completionHandler:")]
         public void HandleEventsForBackgroundUrl(UIApplication application, string sessionIdentifier, Action completionHandler)
         {
-            //CrossDownloadManager.BackgroundSessionCompletionHandler = completionHandler;
+            CrossDownloadManager.BackgroundSessionCompletionHandler = completionHandler;
         }
 
 

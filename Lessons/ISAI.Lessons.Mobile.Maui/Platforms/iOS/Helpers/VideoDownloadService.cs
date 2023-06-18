@@ -16,33 +16,33 @@ namespace ISAI.Lessons.Mobile.Maui.Platforms.iOS.Helpers
         {
             _localPath = FileSystem.AppDataDirectory;
 
-            //CrossDownloadManager.UrlSessionDownloadDelegate = new ExtendedUrlSessionDownloadDelegate();
+            CrossDownloadManager.UrlSessionDownloadDelegate = new ExtendedUrlSessionDownloadDelegate();
 
-            //CrossDownloadManager.Current.PathNameForDownloadedFile = new System.Func<IDownloadFile, string>(file =>
-            //{
-            //    string fileName = (new NSUrl(file.Url, false)).LastPathComponent;
-            //    var download = (DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync().Result).First(x => x.DownloadId == fileName);
-            //    fileName = download.LessonId.ToString() + ".mp4";
-            //    return Path.Combine(_localPath, fileName);
+            CrossDownloadManager.Current.PathNameForDownloadedFile = new System.Func<IDownloadFile, string>(file =>
+            {
+                string fileName = (new NSUrl(file.Url, false)).LastPathComponent;
+                var download = (DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync().Result).First(x => x.DownloadId == fileName);
+                fileName = download.LessonId.ToString() + ".mp4";
+                return Path.Combine(_localPath, fileName);
 
-            //});
+            });
 
-            //CrossDownloadManager.UrlSessionDownloadDelegate = new ExtendedUrlSessionDownloadDelegate();
+            CrossDownloadManager.UrlSessionDownloadDelegate = new ExtendedUrlSessionDownloadDelegate();
         }
 
         public VideoDownload StartDownload(VideoDownload videoDownload)
         {
-            //var downloadManager = CrossDownloadManager.Current;
+            var downloadManager = CrossDownloadManager.Current;
 
-            //var file = downloadManager.CreateDownloadFile(videoDownload.DownloadUrl);
+            var file = downloadManager.CreateDownloadFile(videoDownload.DownloadUrl);
 
-            //string fileName = (new NSUrl(videoDownload.DownloadUrl, false)).LastPathComponent;
+            string fileName = (new NSUrl(videoDownload.DownloadUrl, false)).LastPathComponent;
 
-            //downloadManager.Start(file);
+            downloadManager.Start(file);
 
 
-            //videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Running;
-            //videoDownload.DownloadId = fileName;
+            videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Running;
+            videoDownload.DownloadId = fileName;
 
             return videoDownload;
 
