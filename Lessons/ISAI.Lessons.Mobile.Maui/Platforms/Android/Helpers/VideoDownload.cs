@@ -75,7 +75,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
                         break;
 
                     case (int)DownloadStatus.Running:
-                        videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Running;
+                        videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Downloading;
                         break;
 
                     case (int)DownloadStatus.Pending:

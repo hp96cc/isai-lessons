@@ -9,7 +9,7 @@ namespace ISAI.Lessons.Models.Enums
         Successful,
         Failed,
         Paused,
-        Running,
+        Downloading,
         Pending
 
 

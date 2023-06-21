@@ -41,7 +41,7 @@ namespace ISAI.Lessons.Mobile.Maui.Platforms.iOS.Helpers
             downloadManager.Start(file);
 
 
-            videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Running;
+            videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Downloading;
             videoDownload.DownloadId = fileName;
 
             return videoDownload;

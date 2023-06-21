@@ -32,7 +32,7 @@
 	<key>CFBundleName</key>
 	<string>uk.co.isai.uteachlessons.pupil.ios</string>
 	<key>XSAppIconAssets</key>
-	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -41,10 +41,8 @@
 		<true/>
 	</dict>
 	<key>CFBundleShortVersionString</key>
-	<string>3.0.1</string>
+	<string>3.0.5</string>
 	<key>CFBundleVersion</key>
-	<string>3.0.1</string>
-	<key>XSAppIconAssets</key>
-<string>Assets.xcassets/appicon.appiconset</string>
+	<string>3.0.5</string>
 </dict>
 </plist>

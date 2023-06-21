@@ -13,7 +13,7 @@ namespace ISAI.Lessons.Mobile.Maui.Platforms.iOS.Helpers
 
         public void ShowError(string message, TimeSpan time)
         {
-            BTProgressHUD.ShowErrorWithStatus(message, MaskType.Black, time.Milliseconds);
+            BTProgressHUD.ShowErrorWithStatus(message, MaskType.Black);
         }
 
         public void ShowSpinner(string message)

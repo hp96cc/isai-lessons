@@ -3,6 +3,9 @@ using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.Mobile.Maui.Platforms.iOS.Helpers;
 using ISAI.Lessons.Models.Interfaces;
 using UIKit;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using Microsoft.AppCenter;
 
 namespace ISAI.Lessons.Mobile.Maui
 {
@@ -13,7 +16,6 @@ namespace ISAI.Lessons.Mobile.Maui
 
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
-
             DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.Register<IHud, Hud>();
             DependencyService.Register<IDeviceOrientation, DeviceOrientation>();

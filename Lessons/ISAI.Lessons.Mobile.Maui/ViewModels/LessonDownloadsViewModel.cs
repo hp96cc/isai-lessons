@@ -19,9 +19,10 @@ namespace ISAI.Lessons.Mobile.ViewModels
     public class LessonDownloadsViewModel : BaseViewModel
     {
 
+        bool _hasAppeared;
+
         VideoDownload _selectedItem;
         public ObservableCollection<VideoDownload> Items { get; }
-        public Command LoadItemsCommand { get; }
         public Command DeleteAllCommand { get; }
         public Command<VideoDownload> ItemTapped { get; }
 
@@ -29,38 +30,27 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public LessonDownloadsViewModel()
         {
             Items = new ObservableCollection<VideoDownload>();
-            LoadItemsCommand = new Command(async () => await DisplayVideoDownloads());
             ItemTapped = new Command<VideoDownload>(OnItemSelected);
             DeleteAllCommand = new Command(async () => await DeleteAllVideoDownloads());
             Title = "Lesson Downloads";
 
             MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
             {
-                MainThread.BeginInvokeOnMainThread(() =>
+                MainThread.BeginInvokeOnMainThread(async () =>
                 {
-                    LoadItemsCommand.Execute(null);
+                    await DisplayVideoDownloads(true);
                 });
               
             });
 
-
-            //MessagingCenter.Subscribe<DownloadDidUpdateMessage>(this, "DownloadUpdate", (sender) =>
-            //{
-            //    MainThread.BeginInvokeOnMainThread(() =>
-            //    {
-            //        LoadItemsCommand.Execute(null);
-            //    });
-
-            //});
-
-
         }
 
 
-        async Task DisplayVideoDownloads()
+        async Task DisplayVideoDownloads(bool forceReload = false)
         {
 
-            IsBusy = true;
+            if (_hasAppeared && !forceReload) return;
+            _hasAppeared = true;
 
             Items.Clear();
 
@@ -71,14 +61,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 Items.Add(item);
             }
 
-            IsBusy = false;
+     
         }
 
 
         public async void OnAppearing()
         {
-            IsBusy = true;
             SelectedItem = null;
+            await DisplayVideoDownloads(false);
         }
 
         public VideoDownload SelectedItem
@@ -100,7 +90,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
             {
                 DependencyService.Get<IVideoDownloadService>().DeleteAllDownloads();
                 await DependencyService.Get<ISqliteService>().DeleteAllVideoDownloadsAsync();
-                await DisplayVideoDownloads();
+                await DisplayVideoDownloads(true);
             }
 
 

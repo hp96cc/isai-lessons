@@ -101,11 +101,12 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 Crashes.TrackError(ex);
                 Debug.WriteLine(ex.StackTrace);
 
+                DependencyService.Get<IHud>().Dismiss();
+                DependencyService.Get<IHud>().ShowError("Could not login. Please check your email and / or password. ", TimeSpan.FromSeconds(3));
+
+
             }
 
-            DependencyService.Get<IHud>().Dismiss();
-            DependencyService.Get<IHud>().ShowError("Could not login. Please check your email and / or password. ", TimeSpan.FromSeconds(3));
-     
         }
 
 

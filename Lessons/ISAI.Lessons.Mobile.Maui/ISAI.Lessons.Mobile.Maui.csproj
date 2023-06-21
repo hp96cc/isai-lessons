@@ -43,7 +43,9 @@
 	  <CodesignProvision>Automatic</CodesignProvision>
 	</PropertyGroup>
 
-
+	<!--	 <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+    </PropertyGroup>-->
 		<ItemGroup>
 
 	  <None Remove="Resources\AppIcon\appicon.png" />
@@ -78,6 +80,9 @@
 		<PackageReference Include="Plugin.MediaManager.Forms" Version="1.2.2" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.5" />
+		<PackageReference Include="Microsoft.AppCenter" Version="5.0.2" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.2" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -145,6 +150,7 @@
 	</ItemGroup>
 
 
+
 	<ItemGroup>
 	  <Folder Include="Platforms\iOS\Helpers\" />
 	  <Folder Include="Platforms\iOS\Helpers\CrossDownloadManager\" />
@@ -155,4 +161,6 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-maccatalyst'">
 	  <PackageReference Include="BTProgressHUD" Version="2.0.0" />
 	</ItemGroup>
+
+
 </Project>

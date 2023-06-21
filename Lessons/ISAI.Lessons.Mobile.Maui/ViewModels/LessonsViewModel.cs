@@ -20,17 +20,17 @@ namespace ISAI.Lessons.Mobile.ViewModels
     {
 
         int _lessonGroupId;
+        bool _hasAppeared;
 
         Lesson _selectedItem;
         public ObservableCollection<Lesson> Items { get; }
-        public Command LoadItemsCommand { get; }
+       
         public Command<Lesson> ItemTapped { get; }
 
         public LessonsViewModel(int lessonGroupId)
         {
             _lessonGroupId = lessonGroupId;
             Items = new ObservableCollection<Lesson>();
-            LoadItemsCommand = new Command(async () => await DisplayLessons());
             ItemTapped = new Command<Lesson>(OnItemSelected);
 
         }
@@ -39,7 +39,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
         async Task DisplayLessons()
         {
 
-            IsBusy = true;
+            if (_hasAppeared) return;
+            _hasAppeared = true;
+
             Items.Clear();
 
             var lessons = (await DependencyService.Get<ISqliteService>().GetLessonsAsync(_lessonGroupId))
@@ -53,16 +55,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     Items.Add(item);
                 }
             }
-
-            IsBusy = false;
         }
 
 
         public async void OnAppearing()
         {
             Title = Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_lessonGroupId)).Name;
-            IsBusy = true;
             SelectedItem = null;
+            await DisplayLessons();
         }
 
         public Lesson SelectedItem

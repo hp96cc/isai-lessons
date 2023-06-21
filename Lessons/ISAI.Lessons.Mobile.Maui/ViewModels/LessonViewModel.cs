@@ -125,11 +125,12 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public LessonViewModel(int lessonId)
         {
             _lessonId = lessonId;
+            ImageUrl = string.Format("https://portal.scottishonlinelessons.com/assets/lessonthumbs/thumb_{0}.jpg", _lessonId);
+
             CanDownload = true;
             CanDeleteDownload = false;
 
 
-            ImageUrl = string.Format("https://portal.scottishonlinelessons.com/assets/lessonthumbs/thumb_{0}.jpg", _lessonId);
             WatchCommand = new Command(OnWatchClicked);
             DownloadCommand = new Command(OnDownloadClicked);
             DeleteDownload = new Command(OnDeleteDownloadClicked);
@@ -257,116 +258,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
 
 
-            //if (DeviceInfo.Current.Platform == DevicePlatform.Android)
-            //{
-
-            //    if (VideoDownload != null)
-            //    {
-
-            //        var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(_videoDownload);
-
-            //        var lessonPage = new VideoPageAndroid(_lesson.Id, videoPath);
-            //        await Shell.Current.Navigation.PushModalAsync(lessonPage, true);
-            //        //TODO IMPORT: CrossHud.Current.Dismiss();
-            //    }
-            //    else
-            //    {
-
-            //        //TODO IMPORT: CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
-
-            //        var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
-
-            //        var lessonRequestViewModel = new LessonRequestViewModel()
-            //        {
-            //            LessonId = _lesson.Id,
-            //            RemoteMediaType = RemoteMediaType.StandardStream,
-            //            CustomerDevice = new CustomerDeviceViewModel()
-            //            {
-            //                DeviceIdentifier = AppIdService.GetAppId(),
-            //                DeviceType = DeviceInfo.Platform.ToString(),
-            //                Name = string.Format("{0} ({1} {2})", DeviceInfo.Name, DeviceInfo.Manufacturer, DeviceInfo.Model).Trim()
-            //            }
-            //        };
-
-            //        var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
-            //        //TODO IMPORT: CrossHud.Current.Dismiss();
-
-            //        if (streamingUrlResponse.Status == ResponseStatus.OK)
-            //        {
-            //            var lessonPage = new VideoPageAndroid(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
-            //            await Shell.Current.Navigation.PushModalAsync(lessonPage, true);
-            //        }
-            //        else if(streamingUrlResponse.ErrorResponse != null)
-            //        {
-            //            //TODO IMPORT: CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
-            //        }
-            //        else
-            //        {
-
-            //            //TODO IMPORT: CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
-            //        }
-
-
-
-            //    }                  
-
-            //}
-            //else if (DeviceInfo.Current.Platform == DevicePlatform.iOS)
-            //{
-
-            //    if (VideoDownload != null)
-            //    {
-
-            //        var videoPath = DependencyService.Get<IVideoDownloadService>().GetLocalVideoPath(_videoDownload);
-            //        var fileName = Path.GetFileName(videoPath);
-
-            //        var lessonPage = new VideoPage(_lesson.Id, "ms-appdata:///local/" + fileName);
-            //        await Shell.Current.Navigation.PushAsync(lessonPage, true);
-            //        //TODO IMPORT: CrossHud.Current.Dismiss();
-            //    }
-            //    else
-            //    {
-            //        //TODO IMPORT: CrossHud.Current.Show("Preparing video", -1, MaskType.Black);
-
-            //        var apiService = new ApiService(false, DependencyService.Get<IAuthService>());
-
-            //        var lessonRequestViewModel = new LessonRequestViewModel()
-            //        {
-            //            LessonId = _lesson.Id,
-            //            RemoteMediaType = RemoteMediaType.StandardStream,
-            //            CustomerDevice = new CustomerDeviceViewModel()
-            //            {
-            //                DeviceIdentifier = AppIdService.GetAppId(),
-            //                DeviceType = DeviceInfo.Platform.ToString(),
-            //                Name = string.Format("{0} ({1} {2})", DeviceInfo.Name, DeviceInfo.Manufacturer, DeviceInfo.Model).Trim()
-            //            }
-            //        };
-
-            //        var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
-            //        //TODO IMPORT: CrossHud.Current.Dismiss();
-
-            //        if (streamingUrlResponse.Status == ResponseStatus.OK)
-            //        {
-            //            var lessonPage = new VideoPage(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
-            //            await Shell.Current.Navigation.PushAsync(lessonPage, true);
-            //        }
-            //        else if (streamingUrlResponse.ErrorResponse != null)
-            //        {
-            //            //TODO IMPORT:  CrossHud.Current.ShowError(streamingUrlResponse.ErrorResponse[0].Message, MaskType.Black, TimeSpan.FromSeconds(5));
-            //        }
-            //        else
-            //        {
-
-            //            //TODO IMPORT:  CrossHud.Current.ShowError("Cannot stream at this time.", MaskType.Black, TimeSpan.FromSeconds(5));
-            //        }
-
-
-
-
-            //    }
-
-            //}
-
+            
         }
 
         public void OnDisappearing()
@@ -415,7 +307,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                         LessonName = _lesson.Name,
                         LessonGroup = lessonGroup.Name,
                         DownloadUrl = streamingUrlResponse.Content.StreamingUrl,
-                        VideoDownloadStatusCode = VideoDownloadStatusCode.Running
+                        VideoDownloadStatusCode = VideoDownloadStatusCode.Downloading
                     };
 
                     VideoDownload = DependencyService.Get<IVideoDownloadService>().StartDownload(VideoDownload);
@@ -454,6 +346,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 DependencyService.Get<IVideoDownloadService>().DeleteDownload(_videoDownload);
                 await DependencyService.Get<ISqliteService>().DeleteVideoDownloadAsync(_videoDownload);
                 await CheckDownloadStatus();
+
+                var sender = new DownloadCompleteMessage()
+                {
+                    LessonId = _lessonId,
+                    VideoDownloadStatusCode = VideoDownloadStatusCode.Successful
+                };
+
+                MessagingCenter.Send(sender, "DownloadComplete");
             }
 
            
