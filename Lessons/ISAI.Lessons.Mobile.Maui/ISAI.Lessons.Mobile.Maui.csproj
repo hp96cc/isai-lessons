@@ -31,9 +31,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-
-		<UseInterpreter>true</UseInterpreter>
-
+		<UseInterpreter Condition="'$(UseInterpreter)' == '' and '$(Configuration)' == 'Release'">True</UseInterpreter>
+		<MtouchLink Condition="'$(MtouchLink)' == '' and '$(Configuration)' == 'Release' and '$(UseInterpreter)' == 'true'">None</MtouchLink>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
