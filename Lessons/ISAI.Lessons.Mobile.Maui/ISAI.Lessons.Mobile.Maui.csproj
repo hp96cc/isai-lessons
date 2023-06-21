@@ -30,6 +30,12 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<PropertyGroup>
+
+		<UseInterpreter>true</UseInterpreter>
+
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
 	  <CodesignKey>iPhone Developer</CodesignKey>
@@ -46,6 +52,9 @@
 	<!--	 <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
         <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     </PropertyGroup>-->
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	  <WarningLevel>4</WarningLevel>
+	</PropertyGroup>
 		<ItemGroup>
 
 	  <None Remove="Resources\AppIcon\appicon.png" />
