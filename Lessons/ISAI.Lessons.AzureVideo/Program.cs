@@ -22,9 +22,10 @@ namespace ISAI.Lessons.AzureVideo
         static readonly string tennantId = "72b8f033-67c4-4524-964e-d3c01efa1acd";
         static readonly string authPath = "oauth2/v2.0/token";
         static readonly string appId = "88030882-6822-4b8d-b8ae-19fe43c38f89";
-        static readonly string appSecret = "-u~-5YFpS0Q884b8~uW3Sc3oDSRy4gt7gg";
+        static readonly string appSecret = "vOP8Q~6W9LZa-qZD-eVLr6LRbsgG~dawfloGmaCs";
         static readonly string scope = "https://graph.microsoft.com/.default";
         static readonly string grantType = "client_credentials";
+
 
         static readonly string[] documentPermissons = new string[2] { "write", "read" };
 
