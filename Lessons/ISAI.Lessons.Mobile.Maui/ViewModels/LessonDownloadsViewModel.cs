@@ -7,12 +7,6 @@ using ISAI.Lessons.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.ViewModels
 {
@@ -25,7 +19,6 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public ObservableCollection<VideoDownload> Items { get; }
         public Command DeleteAllCommand { get; }
         public Command<VideoDownload> ItemTapped { get; }
-
 
         public LessonDownloadsViewModel()
         {
