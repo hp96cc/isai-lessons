@@ -28,7 +28,7 @@ namespace ISAI.Lessons.Mobile.Droid.Helpers
             request.SetDescription(string.Format("{0} is Downloading...", videoDownload.LessonName));
             long downloadId = manager.Enqueue(request);
 
-            videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Running;
+            videoDownload.VideoDownloadStatusCode = VideoDownloadStatusCode.Downloading;
             videoDownload.DownloadId = downloadId.ToString();
 
             return videoDownload;
