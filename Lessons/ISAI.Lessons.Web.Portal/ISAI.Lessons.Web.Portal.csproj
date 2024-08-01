@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="..\packages\Microsoft.Net.Compilers.2.1.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.1.0\build\Microsoft.Net.Compilers.props')" />
@@ -77,10 +78,10 @@
       <HintPath>..\packages\Effortless.Net.Encryption.3.3.0\lib\net40\Effortless.Net.Encryption.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="FluentEmail.Core, Version=2.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentEmail.Core.2.8.0\lib\netstandard2.0\FluentEmail.Core.dll</HintPath>
@@ -2907,11 +2908,14 @@
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets'))" />
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets'))" />
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.2.0.3\build\net461\SQLitePCLRaw.lib.e_sqlite3.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.2.0.3\build\net461\SQLitePCLRaw.lib.e_sqlite3.targets'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
   </Target>
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" />
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.11\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.2.0.3\build\net461\SQLitePCLRaw.lib.e_sqlite3.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.2.0.3\build\net461\SQLitePCLRaw.lib.e_sqlite3.targets')" />
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

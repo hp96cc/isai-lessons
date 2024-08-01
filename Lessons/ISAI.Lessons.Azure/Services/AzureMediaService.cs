@@ -528,6 +528,7 @@ namespace ISAI.Lessons.Core.Services
                 if (streamingEndpoint.ResourceState != StreamingEndpointResourceState.Running)
                 {
                     await client.StreamingEndpoints.StartAsync(resourceGroupName, accountName, DefaultStreamingEndpointName);
+
                 }
             }
 
@@ -819,6 +820,8 @@ namespace ISAI.Lessons.Core.Services
             return handler.WriteToken(token);
         }
         // </GetToken>
+
+
 
 
     }

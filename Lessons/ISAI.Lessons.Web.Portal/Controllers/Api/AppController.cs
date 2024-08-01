@@ -847,21 +847,29 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 byte[] iv = Convert.FromBase64String(_base64Iv);
                 string encryptedDigest = Strings.Encrypt(digest, key, iv);
 
-                var passwordResetLink = "https://scottishonlinelessons.com/reset-password?digest=" + HttpUtility.UrlEncode(encryptedDigest);
+                var passwordResetLink = "https://portal.scottishonlinelessons.com/reset-password?digest=" + HttpUtility.UrlEncode(encryptedDigest);
 
                 var templateHtml = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath("~/Email Templates/ResetPasswordEmailTemplate.html"));
                 templateHtml = templateHtml.Replace("{{name}}", string.Format("{0} {1}", customer.FirstName, customer.LastName));
                 templateHtml = templateHtml.Replace("{{link}}", passwordResetLink);
 
-                MicrosoftGraphApiService graphService = new MicrosoftGraphApiService();
-                await graphService.SendEmail(
-                        "noreply@scottishonlinelessons.com",
-                        "Reset Password - Scottish Online Lessons",
-                        templateHtml,
-                        new List<string>() { customer.Email },
-                        null,
-                        new List<string>() { "sysadmin@isai.co.uk" },
-                        true);
+                try
+                {
+
+                    MicrosoftGraphApiService graphService = new MicrosoftGraphApiService();
+                    await graphService.SendEmail(
+                            "noreply@scottishonlinelessons.com",
+                            "Reset Password - Scottish Online Lessons",
+                            templateHtml,
+                            new List<string>() { customer.Email },
+                            null,
+                            new List<string>() { "sysadmin@isai.co.uk" },
+                            true);
+
+                } catch (Exception ex)
+                {
+                    var t = true;
+                }
 
             }
 
@@ -1322,6 +1330,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             .OrderByDescending(x => x.Id)
                             .FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
 
+                    subscription.Active = true;
                     subscription.StripeSubscriptionId = checkOutComplete.SubscriptionId;
                     db.Entry(subscription).State = EntityState.Modified;
 

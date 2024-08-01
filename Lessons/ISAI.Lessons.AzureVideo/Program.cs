@@ -1,6 +1,7 @@
 ﻿using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.EntityFramework;
 using ISAI.Lessons.EntityFramework.Models;
+using Microsoft.Azure.Management.Media.Models;
 using Microsoft.Graph;
 using Newtonsoft.Json;
 using System;
@@ -10,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,6 +76,28 @@ namespace ISAI.Lessons.AzureVideo
         {
 
 
+            var azureMediaService = new AzureMediaService();
+            
+
+            using (var db = new LessonsDbContext())
+            {
+
+                var lessons = await db.Lesson.Where(x => x.Deleted == false).ToListAsync();
+
+                foreach (var lesson in lessons)
+                {
+                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
+                    var t = true;
+
+                }
+
+                Console.ReadLine();
+
+            }
+
+            return;
+
+
             ////Assign Subsctioion Ids to lesson groups
             //using (var db = new LessonsDbContext())
             //{
@@ -117,7 +141,7 @@ namespace ISAI.Lessons.AzureVideo
             //        await db.SaveChangesAsync();
             //    }
 
-            
+
 
             //}
 
@@ -217,7 +241,7 @@ namespace ISAI.Lessons.AzureVideo
                         {
                             Console.WriteLine("Match Lesson (Encodiing): {0} with file {1}", lesson.Name, item.Name);
 
-                            var azureMediaService = new AzureMediaService();
+                            //var azureMediaService = new AzureMediaService();
                             //string jobId = Guid.NewGuid().ToString();
                             var encodingOutput = await azureMediaService.EncodeFile(lesson.Id.ToString(), filePath, @"c:\temp\");
 
