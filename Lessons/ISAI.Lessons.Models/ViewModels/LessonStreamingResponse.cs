@@ -10,4 +10,12 @@ namespace ISAI.Lessons.Models.ViewModels
 
         public string Token { get; set; }
     }
+
+    public class LessonStreamingToken
+    {
+        public int LessonId { get; set; }
+
+        public DateTime ExpiryDate { get; set; }
+    }
+
 }

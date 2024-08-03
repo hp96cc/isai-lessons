@@ -15,4 +15,3 @@ namespace ISAI.Lessons.Models.Enums
 
     }
 }
-  

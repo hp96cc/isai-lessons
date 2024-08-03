@@ -89,21 +89,36 @@
 
                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                 {
-                    <div id="iphone-redirect">
-                        <div class="p-5 h4">
-                            To view this lesson, please  <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><u>download our app from the Apple App Store</u></a>
+                    @*<div id="iphone-redirect">
+                            <div class="p-5 h4">
+                                To view this lesson, please  <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><u>download our app from the Apple App Store</u></a>
 
 
-                        </div>
+                            </div>
 
 
-                        <div class="h4">
-                            <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><img alt="Download in the App Store" src="/media/gkhevzea/apple-download.svg" style="height:100px;padding:15px;"></a>
+                            <div class="h4">
+                                <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><img alt="Download in the App Store" src="/media/gkhevzea/apple-download.svg" style="height:100px;padding:15px;"></a>
 
-                        </div>
-                    </div>
+                            </div>
+                        </div>*@
 
-                    <video id="lessonplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered" controls width="640" height="400" data-setup='{"fluid": true, "logo": { "enabled": false }, "techOrder": ["azureHtml5JS", "flashSS", "silverlightSS", "html5"], "nativeControlsForTouch": false}' tabindex="0">
+                    @*<video id="lessonplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered" controls width="640" height="400" data-setup='{"fluid": true, "logo": { "enabled": false }, "techOrder": ["azureHtml5JS", "flashSS", "silverlightSS", "html5"], "nativeControlsForTouch": false}' tabindex="0">
+                        </video>*@
+
+                    <video id="sol-video"
+                           class="video-js"
+                           controls
+                           preload="auto"
+                           width="640"
+                           height="400"
+                           data-setup="{}">
+
+                        <p class="vjs-no-js">
+                            To view this video please enable JavaScript, and consider upgrading to a
+                            web browser that
+                            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                        </p>
                     </video>
 
                 }
@@ -204,33 +219,27 @@
 }
 
 
-    @section Head {
+@section Head {
 
-        <link href="//amp.azure.net/libs/amp/2.3.8/skins/amp-default/azuremediaplayer.min.css" rel="stylesheet">
-        <script src="//amp.azure.net/libs/amp/2.3.8/azuremediaplayer.min.js"></script>
-
-
-    }
-
-    @section Scripts {
+    <link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet" />
 
 
+}
 
-        @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
-        {
+@section Scripts {
 
-            <script>
 
-            function isIphoneMobileSafari() {
-                return navigator.userAgent.match(/(iPod|iPhone)/) && navigator.userAgent.match(/AppleWebKit/)
-            }
+
+    @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
+    {
+
+        <script src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
+
+        <script>
+
 
             $(document).ready(function () {
-
                 $("#panel-nolicence").hide();
-
-
-
             });
 
     function initFingerprintJS() {
@@ -238,24 +247,12 @@
             fp.get().then(result => {
                 LessonsApp.visitorId = result.visitorId;
                 //console.log(LessonsApp.visitorId);
-                LoadLesson();
+                SetLessonUrl();
             });
         });
             }
 
-            function LoadLesson() {
 
-                if (isIphoneMobileSafari()) {
-
-                    $("#iphone-redirect").show();
-                    $("#lessonplayer").hide();
-
-                } else {
-
-                    $("#iphone-redirect").hide();
-                    SetLessonUrl();
-                }
-            }
 
         function ToggleLessonNotes() {
 
@@ -293,16 +290,8 @@
 
                     $("#lessonplayer").show();
 
-                    var myPlayer = amp("lessonplayer", /* Options */);
-                    myPlayer.src([{
-                        src: data.Content.StreamingUrl,
-                        type: "application/vnd.ms-sstr+xml",
-                        protectionInfo: [{
-                            type: "AES",
-                            authenticationToken: data.Content.Token
-                        }]
-                    },]
-                    );
+                    var myPlayer = videojs('sol-video');
+                    myPlayer.src({ type: 'application/x-mpegURL', src: data.Content.StreamingUrl });
 
                     return;
 
@@ -322,36 +311,34 @@
             var errorHtml = 'You do not have a licence to view this lesson or your trial licence has expired. To get a licence please, <a href="/plans"><u>Subscribe Here</u></a>';
             $("#alert-nolicence").html(errorHtml);
             $("#alert-nolicence").show();
-            $("#panel-nolicence").show(); 
+            $("#panel-nolicence").show();
 
             $("#panel-plans").show();
 
         }
 
 
-            </script>
+        </script>
 
-            <script async
-                    src="~/scripts/fp.min.js"
-                    onload="initFingerprintJS()"></script>
+        <script async
+                src="~/scripts/fp.min.js"
+                onload="initFingerprintJS()"></script>
 
-        }
-        else
-        {
-            <script>
+    }
+    else
+    {
+        <script>
 
-                $(document).ready(function () {
+            $(document).ready(function ()
+            {
+                $("#panel-nolicence").hide();
+            });
 
-                    $("#panel-nolicence").hide();
-
-                });
-
-
-            </script>
-        }
+        </script>
+    }
 
 
-<script>
+    <script>
 
             async function SendMessage() {
 
@@ -372,7 +359,7 @@
                     var message = $('#input-message').val();
                     message += "<br /><br /><strong>Lesson Details</strong>"
                     message += "<br /> @(Model.Name.Replace("\"", ""))";
-                    message += "<br />https://portal.scottishonlinelessons.com/@(Model.Url())";
+                    message += "<br />https://scottishonlinelessons.com/@(Model.Url())";
 
                     var emailModel = {
 
@@ -392,9 +379,6 @@
                         $('#spinner-loading').hide();
 
                     } else {
-
-                        //console.log(ErrorText);
-
                         $('#contact-form').show();
                         $('#label-error').show();
                         $('#spinner-loading').hide();
@@ -406,6 +390,6 @@
 
             }
 
-</script>
+    </script>
 
-    }
+}
