@@ -9,10 +9,6 @@ namespace ISAI.Lessons.Mobile.Maui
         {
             InitializeComponent();
 
-            //Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
-            //Routing.RegisterRoute(nameof(LessonsPage), typeof(LessonsPage));
-            //Routing.RegisterRoute(nameof(LessonDownloadsPage), typeof(LessonDownloadsPage));
-
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)

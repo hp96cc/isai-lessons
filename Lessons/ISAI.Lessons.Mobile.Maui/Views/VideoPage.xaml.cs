@@ -15,7 +15,7 @@ namespace ISAI.Lessons.Mobile.Views
             InitializeComponent();
             BindingContext = _viewModel = new VideoViewModel(lessonId, streamingUrl);
 
-            //TODO: need to determine download form here
+            streamingUrl = "https://portal.scottishonlinelessons.com/" + streamingUrl;
             var source = MediaSource.FromUri(streamingUrl);
             MediaElement.Source = source;
 

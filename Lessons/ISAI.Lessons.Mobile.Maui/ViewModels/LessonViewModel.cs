@@ -226,7 +226,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 var lessonRequestViewModel = new LessonRequestViewModel()
                 {
                     LessonId = _lesson.Id,
-                    RemoteMediaType = RemoteMediaType.Download,
+                    RemoteMediaType = RemoteMediaType.EncryptedStream,
                     CustomerDevice = new CustomerDeviceViewModel()
                     {
                         DeviceIdentifier = AppIdService.GetAppId(),
