@@ -57,13 +57,24 @@
                 />
 
 
-             <Button
+             <!--<Button
                 Margin="10"
                 VerticalOptions="Center" 
                 Text="Delete Download"
                  BackgroundColor="Red"
+                
                 Command="{Binding DeleteDownload}"
                 IsVisible="{Binding CanDeleteDownload}"
+                
+                />-->
+
+                <Button
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Delete Download"
+                 BackgroundColor="Red"
+               
+                IsVisible="False"
                 
                 />
 

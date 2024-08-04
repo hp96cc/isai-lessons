@@ -1,7 +1,7 @@
-﻿using CommunityToolkit.Maui.Views;
-using ISAI.Lessons.Mobile.ViewModels;
+﻿using ISAI.Lessons.Mobile.ViewModels;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
+using LibVLCSharp.Shared;
 
 namespace ISAI.Lessons.Mobile.Views
 {
@@ -15,10 +15,12 @@ namespace ISAI.Lessons.Mobile.Views
             InitializeComponent();
             BindingContext = _viewModel = new VideoViewModel(lessonId, streamingUrl);
 
-            streamingUrl = "https://portal.scottishonlinelessons.com/" + streamingUrl;
-            var source = MediaSource.FromUri(streamingUrl);
-            MediaElement.Source = source;
+            streamingUrl = "https://portal.scottishonlinelessons.com/" + streamingUrl + "&isApp=true";
 
+            var libVLC = new LibVLCSharp.Shared.LibVLC(enableDebugLogs: true);
+            var media = new Media(libVLC, new Uri(streamingUrl));
+            VideoView.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(media) { EnableHardwareDecoding = true }; 
+           
         }
 
         protected override void OnAppearing()
@@ -31,31 +33,16 @@ namespace ISAI.Lessons.Mobile.Views
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            MediaElement.Stop();
+            VideoView.MediaPlayer.Stop();
             DependencyService.Get<IDeviceOrientation>().UnlockOrientation();
 
         }
 
-        void OnMediaOpened(object sender, EventArgs e)
+        
+        private void VideoView_MediaPlayerChanged(object sender, MediaPlayerChangedEventArgs e)
         {
-            Console.WriteLine("Media opened.");
+            var t = true;
         }
-
-        void OnMediaFailed(object sender, EventArgs e)
-        {
-            Console.WriteLine("Media failed.");
-        }
-
-        void OnMediaEnded(object sender, EventArgs e)
-        {
-            Console.WriteLine("Media ended.");
-        }
-
-        void OnSeekCompleted(object sender, EventArgs e)
-        {
-            Console.WriteLine("Seek completed.");
-        }
-
 
 
     }

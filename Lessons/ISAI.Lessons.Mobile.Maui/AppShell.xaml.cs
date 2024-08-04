@@ -1,5 +1,4 @@
-﻿using ISAI.Lessons.Mobile.Views;
-using ISAI.Lessons.Models.Interfaces;
+﻿using ISAI.Lessons.Models.Interfaces;
 
 namespace ISAI.Lessons.Mobile.Maui
 {
