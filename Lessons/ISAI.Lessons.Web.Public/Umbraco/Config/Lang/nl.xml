@@ -193,26 +193,6 @@
     <key alias="submitChanges">Indienen</key>
     <key alias="submitChangesAndClose">Indienen en sluiten</key>
   </area>
-  <area alias="changeDocType">
-    <key alias="changeDocTypeInstruction">Om het documenttype voor de geselecteerde inhoud te wijzigen, selecteert u eerst uit de lijst van geldige types voor deze locatie.</key>
-    <key alias="changeDocTypeInstruction2">Bevestig en/of wijzig vervolgens de toewijzing van eigenschappen van het huidige naar het nieuwe type en klik op Opslaan.</key>
-    <key alias="contentRepublished">De inhoud is opnieuw gepubliceerd.</key>
-    <key alias="currentProperty">Huidige eigenschap</key>
-    <key alias="currentType">Huidig type</key>
-    <key alias="docTypeCannotBeChanged">Het documenttype kan niet worden gewijzigd, omdat er geen alternatieven geldig zijn voor deze locatie.</key>
-    <key alias="docTypeChanged">Documenttype gewijzigd</key>
-    <key alias="mapProperties">Eigenschappen toewijzen</key>
-    <key alias="mapToProperty">Toewijzen aan eigenschap</key>
-    <key alias="newTemplate">Nieuw sjabloon</key>
-    <key alias="newType">Nieuw type</key>
-    <key alias="none">geen</key>
-    <key alias="selectedContent">Inhoud</key>
-    <key alias="selectNewDocType">Selecteer nieuw documenttype</key>
-    <key alias="successMessage">Het documenttype van de geselecteerde inhoud is succesvol gewijzigd naar [new type] en de volgende eigenschappen zijn toegekend:</key>
-    <key alias="to">aan</key>
-    <key alias="validationErrorPropertyWithMoreThanOneMapping">Toewijzen van eigenschappen kan niet worden afgerond, omdat één of meer eigenschappen meer dan één toewijzing hebben.</key>
-    <key alias="validDocTypesNote">Alleen alternatieve types geldig voor de huidige locatie worden weergegeven.</key>
-  </area>
   <area alias="codefile">
     <key alias="createFolderFailedById">Het maken van een map onder de bovenliggende map met ID %0% is mislukt</key>
     <key alias="createFolderFailedByName">Het maken van een map onder de bovenliggende map met de naam %0% is mislukt</key>
@@ -334,7 +314,7 @@
     <key alias="nodeIsInTrash">Dit item is in de prullenbak</key>
   </area>
   <area alias="blueprints">
-    <key alias="createBlueprintFrom">Nieuw Inhoudssjabloon aanmaken voor '%0%'</key>
+    <key alias="createBlueprintFrom"><![CDATA[Nieuw Inhoudssjabloon aanmaken voor <em>%0%</em>]]></key>
     <key alias="blankBlueprint">Leeg</key>
     <key alias="selectBlueprint">Selecteer een Inhoudssjabloon</key>
     <key alias="createdBlueprintHeading">Inhoudssjabloon aangemaakt</key>
@@ -650,7 +630,6 @@
     <key alias="tableColMergeLeft">Plaats de cursor links van de twee cellen die je wilt samenvoegen</key>
     <key alias="tableSplitNotSplittable">Je kunt een cel die is samengevoegd niet delen</key>
     <key alias="propertyHasErrors">Deze eigenschap is ongeldig</key>
-    <key alias="errorPropertyEditorNotSupportedInElementTypes">Eigenschap '%0%' gebruikt editor '%1%' die niet ondersteund wordt in Element Types.</key>
   </area>
   <area alias="general">
     <key alias="options">Opties</key>
@@ -806,11 +785,13 @@
     <key alias="articles">Artikels</key>
     <key alias="videos">Videos</key>
     <key alias="installing">Installeren</key>
+    <key alias="avatar">Avatar van</key>
   </area>
   <area alias="colors">
     <key alias="blue">Blauw</key>
   </area>
   <area alias="shortcuts">
+    <key alias="addTab">Tabblad toevoegen</key>
     <key alias="addGroup">Groep toevoegen</key>
     <key alias="addProperty">Eigenschap toevoegen</key>
     <key alias="addEditor">Editor toevoegen</key>
@@ -902,7 +883,7 @@ Echter, Runway biedt een gemakkelijke basis om je snel op weg te helpen. Als je 
     <key alias="theEndHeader">Umbraco %0% is geïnstalleerd en klaar voor gebruik.</key>
     <key alias="theEndInstallFailed"><![CDATA[Om de installatie af te sluiten, moet u de handmatig het <strong>/web.config bestand</strong> aanpassen, en de Appsetting key <strong>UmbracoConfigurationStatus</strong> onder in het bestand veranderen naar <strong>'%0%'</strong>.]]></key>
     <key alias="theEndInstallSuccess"><![CDATA[Je kunt <strong>meteen beginnen</strong> door de "Launch Umbraco" knop hieronder te klikken. <br />Als je een <strong>beginnende Umbraco gebruiker</strong> bent, dan kun je you can find veel informatie op onze "getting started" pagina's vinden.]]></key>
-    <key alias="theEndOpenUmbraco"><![CDATA[<h3>Launch Umbraco</h3> Om je website te beheren open je simpelweg de Umbraco back office en begin je inhoud toe te voegen, templates en stylesheets aan te passen of nieuwe functionaliteit toe te voegen]]></key>
+    <key alias="theEndOpenUmbraco"><![CDATA[<h3>Launch Umbraco</h3> Om je website te beheren open je simpelweg de Umbraco backoffice en begin je inhoud toe te voegen, templates en stylesheets aan te passen of nieuwe functionaliteit toe te voegen]]></key>
     <key alias="Unavailable">Verbinding met de database mislukt.</key>
     <key alias="Version3">Umbraco versie 3</key>
     <key alias="Version4">Umbraco versie 4</key>
@@ -1229,7 +1210,6 @@ Echter, Runway biedt een gemakkelijke basis om je snel op weg te helpen. Als je 
     <key alias="tabs">Tabs</key>
     <key alias="contentTypeEnabled">Basis inhoudstype ingeschakeld</key>
     <key alias="contentTypeUses">Dit inhoudstype gebruikt</key>
-    <key alias="asAContentMasterType">als basis inhoudstype. Tabs van basis inhoudstypes worden niet getoond en kunnen alleen worden aangepast op het basis inhoudstype zelf</key>
     <key alias="noPropertiesDefinedOnTab">Geen eigenschappen gedefinieerd op dit tabblad. Klik op de link "voeg een nieuwe eigenschap" aan de bovenkant om een ​​nieuwe eigenschap te creëren.</key>
     <key alias="createMatchingTemplate">Maak een bijpassende sjabloon</key>
     <key alias="addIcon">Icoon toevoegen</key>
@@ -1297,6 +1277,7 @@ Echter, Runway biedt een gemakkelijke basis om je snel op weg te helpen. Als je 
     <key alias="mediaTypeSavedHeader">Mediatype opgeslagen</key>
     <key alias="memberTypeSavedHeader">Ledentype opgeslagen</key>
     <key alias="memberGroupSavedHeader">Ledengroep opgeslagen</key>
+    <key alias="memberGroupNameDuplicate">Er bestaat al een andere ledengroep met dezelfde naam</key>
     <key alias="templateErrorHeader">Sjabloon niet opgeslagen</key>
     <key alias="templateErrorText">Controleer dat je geen 2 sjablonen met dezelfde naam hebt</key>
     <key alias="templateSavedHeader">Sjabloon opgeslagen</key>
@@ -1550,6 +1531,7 @@ Echter, Runway biedt een gemakkelijke basis om je snel op weg te helpen. Als je 
     <key alias="elementCannotToggle">Een documenttype kan niet worden gewijzigd in een elementtype nadat het is gebruikt om een of meer contentitems te maken.</key>
     <key alias="elementDoesNotSupport">Dit is niet van toepassing op een elementtype</key>
     <key alias="propertyHasChanges">Je hebt wijzigingen aangebracht aan deze eigenschap. Ben je zeker dat je ze wil weggooien?</key>
+    <key alias="addTab">Tabblad toevoegen</key>
   </area>
   <area alias="languages">
     <key alias="addLanguage">Taal toevoegen</key>
@@ -1705,9 +1687,10 @@ Echter, Runway biedt een gemakkelijke basis om je snel op weg te helpen. Als je 
     <key alias="changePassword">Verander je wachtwoord</key>
     <key alias="changePhoto">Wijzig je foto</key>
     <key alias="newPassword">Wijzig je wachtwoord</key>
+    <key alias="newPasswordFormatLengthTip">Nog minimaal %0% teken(s) te gaan!</key>
     <key alias="noLockouts">is niet gedeblokkeerd</key>
     <key alias="noPasswordChange">Het wachtwoord is niet gewijzigd</key>
-    <key alias="confirmNewPassword">Bevestig nieuw password</key>
+    <key alias="confirmNewPassword">Bevestig nieuw wachtwoord</key>
     <key alias="changePasswordDescription">Je kunt je wachtwoord veranderen door onderstaand formulier in te vullen en op de knop 'Verander wachtwoord' te klikken </key>
     <key alias="contentChannel">Inhoudskanaal</key>
     <key alias="createAnotherUser">Nog een gebruiker aanmaken</key>
@@ -2152,6 +2135,8 @@ Echter, Runway biedt een gemakkelijke basis om je snel op weg te helpen. Als je 
   <area alias="logViewer">
     <key alias="deleteSavedSearch">Opgeslagen zoekopdracht verwijderen</key>
     <key alias="logLevels">Log Niveaus</key>
+    <key alias="selectAllLogLevelFilters">Selecteer alles</key>
+    <key alias="deselectAllLogLevelFilters">Deselecteer alles</key>
     <key alias="savedSearches">Opgeslagen Zoekopdrachten</key>
     <key alias="saveSearch">Zoekopdracht opslaan</key>
     <key alias="saveSearchDescription">Enter a friendly name for your search query</key>
@@ -2203,7 +2188,6 @@ Echter, Runway biedt een gemakkelijke basis om je snel op weg te helpen. Als je 
     <key alias="tooltipForPropertyActionsMenuClose">Eigenschapsacties sluiten</key>
   </area>
   <area alias="nuCache">
-      <key alias="wait">Wachten</key>
       <key alias="refreshStatus">Status vernieuwen</key>
       <key alias="memoryCache">Geheugencache</key>
       <key alias="memoryCacheDescription">
@@ -2361,6 +2345,8 @@ Echter, Runway biedt een gemakkelijke basis om je snel op weg te helpen. Als je 
       <key alias="confirmCancelBlockCreationMessage"><![CDATA[Ben je zeker dat je deze wijzigingen wil verwerpen?]]></key>
       <key alias="elementTypeDoesNotExistHeadline">Fout!</key>
       <key alias="elementTypeDoesNotExistDescription">Het Elementtype van dit blok bestaat niet meer</key>
+      <key alias="addBlock">Inhoud toevoegen</key>
+      <key alias="propertyEditorNotSupported">Eigenschap '%0%' gebruikt editor '%1%' die niet ondersteund wordt in blokken.</key>
     </area>
   <area alias="contentTemplatesDashboard">
     <key alias="whatHeadline">Wat zijn Inhoudssjablonen?</key>

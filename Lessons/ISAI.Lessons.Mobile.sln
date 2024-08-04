@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Models", "ISAI
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Core", "ISAI.Lessons.Core\ISAI.Lessons.Core.csproj", "{B589ECC0-720D-4F5B-8C8F-542FC8B7A3B7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Console", "Console", "{C4BD916E-74C1-4224-91F4-4BDB876EA210}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Mobile.Maui", "ISAI.Lessons.Mobile.Maui\ISAI.Lessons.Mobile.Maui.csproj", "{C5EA799A-E892-4588-9AF4-35B52B76C685}"
 EndProject
 Global

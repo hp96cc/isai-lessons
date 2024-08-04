@@ -603,7 +603,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 //monthly: price_1IxXUFJ81SbG6nzav7NG3Vto
                 //annual: price_1IxXTvJ81SbG6nzajuriP6XZ
 
-                model.CancelUrl = _baseReturnUrl + "/plans/payment-failed";
+                model.CancelUrl = _baseReturnUrl + "/plans/payment-cancel";
                 model.SuccessUrl = _baseReturnUrl + "/plans/payment-success";
 
                 var json = JsonConvert.SerializeObject(model);
@@ -612,7 +612,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
                 HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/stripecreatepayemntsession", content).ConfigureAwait(false);
 
-   
                 if (httpResponse.IsSuccessStatusCode)
                 {
 
@@ -666,6 +665,20 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         }
 
+
+        public async Task<bool> IsRequestAuthenticated()
+        {
+            var auth = await _apiService.RefreshToken();
+
+            if (auth != null && auth.AccessToken != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public async Task<Auth> GetAuth()
         {

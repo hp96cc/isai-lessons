@@ -1,16 +1,14 @@
 ﻿using createsend_dotnet;
+using CryptoNet;
 using Effortless.Net.Encryption;
 using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
-using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.ViewModels;
 using ISAI.Lessons.Web.Portal.Helpers;
-using Microsoft.Azure.Management.Media.Models;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
@@ -41,13 +39,17 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         StripeOptions options;
         IStripeClient client;
+        ICryptoNet cryptoNetKey;
 
         string _adminUserId = "efef3c10-4e2c-4aca-baf7-7477377d1d73";
         string _base64Key = "Shnlc8favzpU3dBgpUuZ4yktIWPyB/xU3FYcEAWVAVE=";
         string _base64Iv = "GOcuDFIgvv+Sss54DFVjLN/2GFyCP1TZc9HDNKf/cxY=";
+        string _aesKeyFile = @"c:\apps\videokey.aes";
 
         public AppController()
         {
+            cryptoNetKey = new CryptoNetAes(new FileInfo(_aesKeyFile));
+
             if (User.Identity.IsAuthenticated)
             {
                 _customerId = Convert.ToInt32(User.Identity.GetClaim("CustomerId"));
@@ -222,49 +224,44 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     db.CustomerActivity.Add(customerActivity);
                     await db.SaveChangesAsync();
 
-
-                    if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.EncryptedStream)
+                    if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.EncryptedStream || lessonRequestViewModel.RemoteMediaType == RemoteMediaType.StandardStream)
                     {
-                        var azureMediaService = new AzureMediaService();
-                        var urlTuple = await azureMediaService.GetEncryptedStreamingUrlsAsync(null, null, null, string.Format("aes-streaming-locator-{0}", lesson.Id));
+                        var lessonStreamingToken = new LessonStreamingToken()
+                        {
+                            LessonId = lesson.Id,
+                            ExpiryDate = DateTime.UtcNow.AddHours(1)
+                        };
+
+                        var lessonStreamingTokenJson = JsonConvert.SerializeObject(lessonStreamingToken);
+                        var encryptedData = cryptoNetKey.EncryptFromString(lessonStreamingTokenJson);
+                        var encryptedToken = HttpServerUtility.UrlTokenEncode(encryptedData);
+
+                        var url = string.Format("/VideoHandler.ashx?lessonId={0}&actionType=m3u8&token={1}", lesson.Id, encryptedToken);
 
                         response.Status = ResponseStatus.OK;
                         response.Content = new LessonStreamingResponse()
                         {
-                            StreamingUrl = urlTuple.Item1,
-                            Token = urlTuple.Item2
+                            StreamingUrl = url,
+                            Token = encryptedToken,
                         };
-
-                    }
-                    else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.StandardStream)
-                    {
-
-                        var azureMediaService = new AzureMediaService();
-                        var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("streaming-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Hls);
-
-                        response.Status = ResponseStatus.OK;
-                        response.Content = new LessonStreamingResponse()
-                        {
-                            StreamingUrl = urls[0]
-                        };
-
-                        return response;
 
                     }
                     else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.Download)
                     {
 
-                        var azureMediaService = new AzureMediaService();
-                        var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
+                        //var azureMediaService = new AzureMediaService();
+                        //var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
 
 
-                        response.Status = ResponseStatus.OK;
-                        response.Content = new LessonStreamingResponse()
-                        {
-                            StreamingUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
-                        };
+                        //response.Status = ResponseStatus.OK;
+                        //response.Content = new LessonStreamingResponse()
+                        //{
+                        //    StreamingUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
+                        //};
 
-                        return response;
+                        //return response;
+
+                        return new Lessons.Models.Models.ResponseData<LessonStreamingResponse>();
                     }
                     else
                     {
@@ -853,15 +850,23 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 templateHtml = templateHtml.Replace("{{name}}", string.Format("{0} {1}", customer.FirstName, customer.LastName));
                 templateHtml = templateHtml.Replace("{{link}}", passwordResetLink);
 
-                MicrosoftGraphApiService graphService = new MicrosoftGraphApiService();
-                await graphService.SendEmail(
-                        "noreply@scottishonlinelessons.com",
-                        "Reset Password - Scottish Online Lessons",
-                        templateHtml,
-                        new List<string>() { customer.Email },
-                        null,
-                        new List<string>() { "sysadmin@isai.co.uk" },
-                        true);
+                try
+                {
+
+                    MicrosoftGraphApiService graphService = new MicrosoftGraphApiService();
+                    await graphService.SendEmail(
+                            "noreply@scottishonlinelessons.com",
+                            "Reset Password - Scottish Online Lessons",
+                            templateHtml,
+                            new List<string>() { customer.Email },
+                            null,
+                            new List<string>() { "sysadmin@isai.co.uk" },
+                            true);
+
+                } catch (Exception ex)
+                {
+                    var t = true;
+                }
 
             }
 
@@ -1322,6 +1327,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             .OrderByDescending(x => x.Id)
                             .FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
 
+                    subscription.Active = true;
                     subscription.StripeSubscriptionId = checkOutComplete.SubscriptionId;
                     db.Entry(subscription).State = EntityState.Modified;
 
@@ -1544,92 +1550,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-
-        #region Legacy App Methods
-
-       
-
-        [AllowAnonymous] //remove at runtime
-        [Route("api/app/downloadscreenshots")]
-        [HttpPost]
-        public async Task DownloadScreenShots()
-        {
-
-            var lessons = await db.Lesson.Where(x =>
-            x.AssetId != null &&
-            x.Deleted == false).ToListAsync();
-
-
-            foreach (var lesson in lessons)
-            {
-
-                try
-                {
-
-                    var azureMediaService = new AzureMediaService();
-                    var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, "download-locator-" + lesson.Id.ToString(), StreamingPolicyStreamingProtocol.Download);
-
-                    var url = urls.First(x => x.Contains(".jpg"));
-
-                    var saveFilePath = @"C:\Temp\thumbs\thumb_" + lesson.Id + ".jpg";
-
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetAsync(url);
-                    using (var fs = new FileStream(
-                        saveFilePath,
-                        FileMode.CreateNew))
-                    {
-                        await response.Content.CopyToAsync(fs);
-                    }
-
-                }
-                catch (Exception ex)
-                {
-
-                }
-
-            }
-
-        }
-
-
-
-        [AllowAnonymous] //remove at runtime
-        [Route("api/app/setscreenshot")]
-        [HttpGet]
-        public async Task DownloadScreenShot(int lessonId)
-        {
-
-            var lesson = await db.Lesson.Where(x => x.Id == lessonId).FirstOrDefaultAsync();
-
-            if(lesson != null)
-            {
-                var azureMediaService = new AzureMediaService();
-                var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, "download-locator-" + lesson.Id.ToString(), StreamingPolicyStreamingProtocol.Download);
-
-                var url = urls.First(x => x.Contains(".jpg"));
-
-                var saveFilePath = @"C:\Apps\Websites\inetpub-www\wwwroot\Assets\lessonthumbs\thumb_" + lesson.Id + ".jpg";
-
-                if (System.IO.File.Exists(saveFilePath)) System.IO.File.Delete(saveFilePath);
-
-                HttpClient client = new HttpClient();
-                var response = await client.GetAsync(url);
-                using (var fs = new FileStream(
-                    saveFilePath,
-                    FileMode.CreateNew))
-                {
-                    await response.Content.CopyToAsync(fs);
-                }
-            } else
-            {
-                throw new Exception("Lesson does not exist");
-            }
-
-        }
-
-
-        #endregion
 
     }
 

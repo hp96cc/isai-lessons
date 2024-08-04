@@ -39,6 +39,8 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public bool PendingDownload { get; set; }
 
+        public string BitmovinId { get; set; }
+
        
 
     }
