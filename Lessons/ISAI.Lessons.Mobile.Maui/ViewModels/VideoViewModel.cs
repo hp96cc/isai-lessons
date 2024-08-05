@@ -1,4 +1,5 @@
 ﻿using ISAI.Lessons.Models.Models;
+using LibVLCSharp.Shared;
 
 namespace ISAI.Lessons.Mobile.ViewModels
 {
@@ -35,10 +36,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
             LibVLC = new LibVLCSharp.Shared.LibVLC(enableDebugLogs: true);
             using var media = new LibVLCSharp.Shared.Media(LibVLC, new Uri(_streamingUrl));
+            //using var media = new LibVLCSharp.Shared.Media(LibVLC, new Uri("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
 
+          
             MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC)
             {
-                Media = media
+                Media = media,
+                Fullscreen = true,
+                 
             };
         }
 

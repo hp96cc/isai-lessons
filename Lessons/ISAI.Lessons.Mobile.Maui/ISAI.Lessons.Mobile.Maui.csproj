@@ -28,17 +28,17 @@
 		<MtouchLink Condition="'$(MtouchLink)' == '' and '$(Configuration)' == 'Release' and '$(UseInterpreter)' == 'true'">None</MtouchLink>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
 	  <CodesignKey>iPhone Developer</CodesignKey>
 	  <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
 	  <CodesignProvision>Automatic</CodesignProvision>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
-	  <CodesignKey>iPhone Distribution</CodesignKey>
+	  <CodesignKey>Apple Distribution: ISAI Technologies Ltd (T5X7RSN9L7)</CodesignKey>
 	  <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
-	  <CodesignProvision>Automatic</CodesignProvision>
+	  <CodesignProvision>Lesson Distribution</CodesignProvision>
 	</PropertyGroup>
 
 	<!--	 <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
@@ -89,7 +89,6 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="5.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-		<PackageReference Include="Plugin.MediaManager.Forms" Version="1.2.2" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.5" />
 		<PackageReference Include="Microsoft.AppCenter" Version="5.0.2" />

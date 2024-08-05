@@ -8,7 +8,6 @@ using ISAI.Lessons.Mobile.Droid;
 using ISAI.Lessons.Mobile.Droid.Helpers;
 using ISAI.Lessons.Mobile.Maui.Platforms.Android.Helpers;
 using ISAI.Lessons.Models.Interfaces;
-using MediaManager;
 
 namespace ISAI.Lessons.Mobile.Maui
 {
@@ -28,8 +27,6 @@ namespace ISAI.Lessons.Mobile.Maui
 
             DownloadBrodacast downloadBrodacast = new DownloadBrodacast();
             RegisterReceiver(downloadBrodacast, new IntentFilter(DownloadManager.ActionDownloadComplete));
-
-            CrossMediaManager.Current.Init(this);
 
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

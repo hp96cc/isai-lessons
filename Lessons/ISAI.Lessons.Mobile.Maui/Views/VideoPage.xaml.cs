@@ -15,18 +15,13 @@ namespace ISAI.Lessons.Mobile.Views
             InitializeComponent();
             BindingContext = _viewModel = new VideoViewModel(lessonId, streamingUrl);
 
-            //streamingUrl = "https://portal.scottishonlinelessons.com/" + streamingUrl + "&isApp=true";
-
-            //var libVLC = new LibVLCSharp.Shared.LibVLC(enableDebugLogs: true);
-            //var media = new Media(libVLC, new Uri("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4"));
-            //VideoView.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(media) { EnableHardwareDecoding = true }; 
-           
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
             _viewModel.OnAppearing();
+            NavigationPage.SetHasNavigationBar(this, false);
             DependencyService.Get<IDeviceOrientation>().LockOrientation(DeviceOrientations.Landscape);
         }
 
@@ -34,6 +29,7 @@ namespace ISAI.Lessons.Mobile.Views
         {
             base.OnDisappearing();
             _viewModel.OnDisappearing();
+            NavigationPage.SetHasNavigationBar(this, true);
             DependencyService.Get<IDeviceOrientation>().UnlockOrientation();
         }
 
