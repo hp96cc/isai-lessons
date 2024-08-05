@@ -15,35 +15,32 @@ namespace ISAI.Lessons.Mobile.Views
             InitializeComponent();
             BindingContext = _viewModel = new VideoViewModel(lessonId, streamingUrl);
 
-            streamingUrl = "https://portal.scottishonlinelessons.com/" + streamingUrl + "&isApp=true";
+            //streamingUrl = "https://portal.scottishonlinelessons.com/" + streamingUrl + "&isApp=true";
 
-            var libVLC = new LibVLCSharp.Shared.LibVLC(enableDebugLogs: true);
-            var media = new Media(libVLC, new Uri(streamingUrl));
-            VideoView.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(media) { EnableHardwareDecoding = true }; 
+            //var libVLC = new LibVLCSharp.Shared.LibVLC(enableDebugLogs: true);
+            //var media = new Media(libVLC, new Uri("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4"));
+            //VideoView.MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(media) { EnableHardwareDecoding = true }; 
            
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            _viewModel.OnAppearing();
             DependencyService.Get<IDeviceOrientation>().LockOrientation(DeviceOrientations.Landscape);
-
         }
 
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            VideoView.MediaPlayer.Stop();
+            _viewModel.OnDisappearing();
             DependencyService.Get<IDeviceOrientation>().UnlockOrientation();
-
         }
 
-        
         private void VideoView_MediaPlayerChanged(object sender, MediaPlayerChangedEventArgs e)
         {
-            var t = true;
+            _viewModel.OnVideoViewInitialized();
         }
-
 
     }
 }

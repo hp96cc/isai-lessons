@@ -1,22 +1,4 @@
-﻿using ISAI.Lessons.Mobile.Models;
-using ISAI.Lessons.Mobile.Models.Messages;
-using ISAI.Lessons.Mobile.Views;
-using ISAI.Lessons.Models.Enums;
-using ISAI.Lessons.Models.Interfaces;
-using ISAI.Lessons.Models.Models;
-using MediaManager;
-using MediaManager.Library;
-using MediaManager.Player;
-//TODO IMPORT: using Plugin.Hud;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Maui.Devices;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui;
+﻿using ISAI.Lessons.Models.Models;
 
 namespace ISAI.Lessons.Mobile.ViewModels
 {
@@ -27,39 +9,64 @@ namespace ISAI.Lessons.Mobile.ViewModels
         Lesson _lesson;
         string _streamingUrl;
 
+        private LibVLCSharp.Shared.LibVLC LibVLC { get; set; }
 
-        public string SourceUrl
+        private LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
+        public LibVLCSharp.Shared.MediaPlayer MediaPlayer
         {
-            get => _sourceUrl;
-            set
-            {
-                SetProperty(ref _sourceUrl, value);
-
-            }
+            get => _mediaPlayer;
+            private set => SetProperty(ref _mediaPlayer, value);
         }
-        string _sourceUrl = "https://portal.scottishonlinelessons.com/";
+
+        private bool IsLoaded { get; set; }
+        private bool IsVideoViewInitialized { get; set; }
+        private string _baseUrl = "https://portal.scottishonlinelessons.com/";
 
 
         public VideoViewModel(int lessonId, string streamingUrl)
         {
             _lessonId = lessonId;
-            _streamingUrl = streamingUrl;
-            SourceUrl = streamingUrl;
+            _streamingUrl = _baseUrl + streamingUrl;
+            Initialize();
 
         }
 
-        private void Current_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
+        private void Initialize()
         {
-            if (e.State == MediaPlayerState.Buffering)
+            LibVLC = new LibVLCSharp.Shared.LibVLC(enableDebugLogs: true);
+            using var media = new LibVLCSharp.Shared.Media(LibVLC, new Uri(_streamingUrl));
+
+            MediaPlayer = new LibVLCSharp.Shared.MediaPlayer(LibVLC)
             {
-                DependencyService.Get<IHud>().ShowSpinner("Loading...");
-            }
-            else
-            {
-                DependencyService.Get<IHud>().Dismiss();
-            }
+                Media = media
+            };
         }
 
 
+        public void OnAppearing()
+        {
+            IsLoaded = true;
+            Play();
+        }
+
+        internal void OnDisappearing()
+        {
+            MediaPlayer.Dispose();
+            LibVLC.Dispose();
+        }
+
+        public void OnVideoViewInitialized()
+        {
+            IsVideoViewInitialized = true;
+            Play();
+        }
+
+        private void Play()
+        {
+            if (IsLoaded && IsVideoViewInitialized)
+            {
+                MediaPlayer.Play();
+            }
+        }
     }
 }

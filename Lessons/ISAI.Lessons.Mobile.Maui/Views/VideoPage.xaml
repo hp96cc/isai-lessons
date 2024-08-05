@@ -5,21 +5,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              Title="{Binding Title}"
               xmlns:shared="clr-namespace:LibVLCSharp.MAUI;assembly=LibVLCSharp.MAUI"
-              BackgroundColor="Black"
-             >
+              BackgroundColor="Black">
 
     <ContentPage.Content>
-           <StackLayout>
-
 
                <shared:VideoView
                    x:Name="VideoView"
+                   MediaPlayer="{Binding MediaPlayer}"
                    MediaPlayerChanged="VideoView_MediaPlayerChanged" 
-                   HorizontalOptions="CenterAndExpand"
-                   VerticalOptions="CenterAndExpand"/>
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="FillAndExpand"/>
 
-
-        </StackLayout>  
     </ContentPage.Content>
    
 </ContentPage>
