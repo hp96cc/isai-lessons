@@ -241,7 +241,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 if (streamingUrlResponse.Status == ResponseStatus.OK)
                 {
                     var lessonPage = new VideoPage(_lesson.Id, streamingUrlResponse.Content.StreamingUrl);
-                    await Shell.Current.Navigation.PushModalAsync(new NavigationPage(lessonPage));
+                    await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 }
                 else if (streamingUrlResponse.ErrorResponse != null)
                 {
