@@ -1,0 +1,51 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AppVideoPage>
+	@using ContentModels = Umbraco.Web.PublishedModels;
+	@{
+	Layout = null;
+
+	var videoUrl = Request.QueryString["videoUrl"];
+
+	}
+
+
+	<head>
+		<link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet" />
+
+		<style>
+
+            body {
+                display: flex;
+                place-content: center center;
+                flex-wrap: wrap;
+                height: 100vh;
+                background-color: black;
+            }
+
+		</style>
+
+	</head>
+
+	<body>
+
+		<div class="video-container">
+
+			<video id="my-video"
+				   class="video-js"
+				   controls
+				   preload="auto"
+				   width="800"
+				   height="600"
+				   data-setup="{}">
+				<source src="@videoUrl" type="application/x-mpegURL" />
+
+				<p class="vjs-no-js">
+					To view this video please enable JavaScript, and consider upgrading to a
+					web browser that
+					<a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+				</p>
+			</video>
+
+		</div>
+
+		<script src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
+	</body>

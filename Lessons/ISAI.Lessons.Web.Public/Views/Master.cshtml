@@ -117,30 +117,15 @@
 <head>
 
 
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-199197178-1">
-    </script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-199197178-1');
-    </script>
+	<!-- Google Tag Manager -->
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-5BT7PHFN');</script>
+	<!-- End Google Tag Manager -->
 
 
-    <!-- Google Tag Manager -->
-    <script>
-        (function (w, d, s, l, i) {
-            w[l] = w[l] || []; w[l].push({
-                'gtm.start':
-                    new Date().getTime(), event: 'gtm.js'
-            }); var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-K4MTQ96');</script>
-    <!-- End Google Tag Manager -->
     <!-- metas -->
     <meta charset="utf-8">
     <meta name="author" content="ISAI Technologies" />
@@ -251,12 +236,11 @@
 
 <body>
 
-    <!-- Google Tag Manager (noscript) -->
-    <noscript>
-        <iframe src=https://www.googletagmanager.com/ns.html?id=GTM-K4MTQ96
-                height="0" width="0" style="display:none;visibility:hidden"></iframe>
-    </noscript>
-    <!-- End Google Tag Manager (noscript) -->
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5BT7PHFN"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
     <!-- start page loading -->
     <div id="preloader">
         <div class="row loader">
@@ -277,7 +261,7 @@
 
 
                         <div class="col-12 col-sm-12">
-
+@*
                             <ul class="top-social-icon float-left">
 
                                 @foreach (var socialLink in home.SocialLinks)
@@ -291,7 +275,7 @@
 
 
                             </ul>
-
+*@
                             <div class="top-right-bar">
                                 <div class="justify-content-center h3 text-white  float-right"></div>
 
@@ -304,16 +288,17 @@
                                 }
                                 else
                                 {
-
+@*
                                     if (isUKSite)
                                     {
+                                        <a href="https://ukonlinelessons.com/" target="_blank" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
                                         <a href="/plans/signup" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
                                     }
                                     else
                                     {
                                         <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
                                     }
-
+*@
                                     <a href="/account/?redirectUrl=@(Url.Encode(Model.Url()))" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
 
                                 }
@@ -500,7 +485,7 @@
             </div>
             <div class="footer-bar">
                 <div class="container">
-                    <p>&copy; @DateTime.Today.Year @(isUKSite ? "UK" : "Scottish") Online Lessons. All Rights Reserved. <br /><br />Web and App Development by <a href="https://www.isai.co.uk?STID=Lessons" target="_blank" class="text-white" style="text-decoration:underline;">ISAI</a></p>
+                    <p>&copy; @DateTime.Today.Year @(isUKSite ? "UK" : "Scottish") Online Lessons. All Rights Reserved. <br /><br />Web and App Development by <a href="https://isai.co.uk" target="_blank" class="text-white" style="text-decoration:underline;">ISAI</a> and <a href="https://craigchampion.com" target="_blank" class="text-white" style="text-decoration:underline;">Craig Champion Software Development</a></p>
                 </div>
             </div>
         </footer>

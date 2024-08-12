@@ -12,6 +12,7 @@ namespace ISAI.Lessons.Web.Public
     {
         const string _aesKeyFile = @"c:\apps\videokey.aes";
         ICryptoNet _cryptoNeiKey;
+        const string appUrlPrefix = "https://portal.scottishonlinelessons.com/";
 
         public VideoHandler()
         {
@@ -22,6 +23,7 @@ namespace ISAI.Lessons.Web.Public
         {
             var token = context.Request.QueryString["token"];
             var lessonId = context.Request.QueryString["lessonId"];
+            var isApp = context.Request.QueryString["isApp"] == null ? false : Convert.ToBoolean(context.Request.QueryString["isApp"]);
 
             if (IsTokenValid(token, Convert.ToInt32(lessonId)))
             {
@@ -31,7 +33,7 @@ namespace ISAI.Lessons.Web.Public
                 if (actionType == "m3u8")
                 {
                     var m3u8FilePath = Path.Combine(videoRoot, string.Format("{0}.m3u8", lessonId));
-                    var m3u8FileContents = Parsem3u8File(File.ReadAllText(m3u8FilePath), lessonId, token);
+                    var m3u8FileContents = Parsem3u8File(File.ReadAllText(m3u8FilePath), lessonId, token, isApp);
 
                     context.Response.ContentType = "application/x-mpegURL";
                     context.Response.Write(m3u8FileContents);
@@ -68,7 +70,7 @@ namespace ISAI.Lessons.Web.Public
 
         }
 
-        private string Parsem3u8File(string fileContents, string lineNumber, string token)
+        private string Parsem3u8File(string fileContents, string lineNumber, string token, bool isApp)
         {
 
             var m3u8FileStringBuilder = new StringBuilder();
@@ -80,13 +82,13 @@ namespace ISAI.Lessons.Web.Public
 
                     if (line.Contains("m3u8.key"))
                     {
-                        var handlerLine = string.Format("#EXT-X-KEY:METHOD=AES-128,URI=\"/VideoHandler.ashx?actionType=key&lessonId={0}&token={1}\",IV=0x00000000000000000000000000000000", lineNumber, token);
+                        var handlerLine = string.Format("#EXT-X-KEY:METHOD=AES-128,URI=\"{0}/VideoHandler.ashx?actionType=key&lessonId={1}&token={2}\",IV=0x00000000000000000000000000000000", isApp ? appUrlPrefix : string.Empty, lineNumber, token);
                         m3u8FileStringBuilder.AppendLine(handlerLine);
                     }
                     else if (line.StartsWith(lineNumber))
                     {
                         var segmentNumber = Path.GetFileNameWithoutExtension(line);
-                        var handlerLine = string.Format("/VideoHandler.ashx?actionType=ts&lessonId={0}&segmentNumber={1}&token={2}", lineNumber, segmentNumber, token);
+                        var handlerLine = string.Format("{0}/VideoHandler.ashx?actionType=ts&lessonId={1}&segmentNumber={2}&token={3}", isApp ? appUrlPrefix : string.Empty, lineNumber, segmentNumber, token);
                         m3u8FileStringBuilder.AppendLine(handlerLine);
                     }
                     else
@@ -111,7 +113,7 @@ namespace ISAI.Lessons.Web.Public
 
             } catch(Exception ex)
             {
-                return false;
+                throw ex;
             }
 
             return false;

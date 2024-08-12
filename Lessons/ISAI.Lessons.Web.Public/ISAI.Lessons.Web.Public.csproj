@@ -594,6 +594,7 @@
     <Compile Include="App_Data\Models\AccountInfo.generated.cs" />
     <Compile Include="App_Data\Models\AccountLogout.generated.cs" />
     <Compile Include="App_Data\Models\AccountSubscriptions.generated.cs" />
+    <Compile Include="App_Data\Models\AppVideoPage.generated.cs" />
     <Compile Include="App_Data\Models\BlogGroup.generated.cs" />
     <Compile Include="App_Data\Models\BlogItem.generated.cs" />
     <Compile Include="App_Data\Models\ContactElement.generated.cs" />
@@ -707,6 +708,7 @@
     <Content Include="Views\Partials\Grid\Bootstrap3.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
     <Content Include="Views\Partials\BlockList\Default.cshtml" />
+    <Content Include="Views\AppVideoPage.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
