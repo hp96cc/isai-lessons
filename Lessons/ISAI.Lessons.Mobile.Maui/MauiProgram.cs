@@ -12,7 +12,6 @@ namespace ISAI.Lessons.Mobile.Maui
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
-                .UseMauiCommunityToolkitMediaElement()
                 .UseLibVLCSharp()
                 .ConfigureFonts(fonts =>
                 {

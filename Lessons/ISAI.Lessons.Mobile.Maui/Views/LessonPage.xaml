@@ -43,7 +43,7 @@
                 VerticalOptions="Center" 
                 Text="Download Lesson"
                 Command="{Binding DownloadCommand}"
-                IsVisible="{Binding CanDownload}"
+                IsVisible="false"
                 
                 />
 
