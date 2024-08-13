@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISAI.Lessons.Azure", "ISAI.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Key.Creation", "ISAI.Key.Creation\ISAI.Key.Creation.csproj", "{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Console.BitmovinPort", "ISAI.Lessons.Console.BitmovinPort\ISAI.Lessons.Console.BitmovinPort.csproj", "{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +86,7 @@ Global
 		{A5935001-F19F-4894-9AAB-089C0A45DAD2} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
 		{162F6EC3-466F-4ED3-AA00-E3F2A3F94961} = {7DF8045F-FEC5-4C99-8246-5CAADE969B5F}
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
+		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13AF8AE1-3867-4096-A7E3-F867D4849F2F}

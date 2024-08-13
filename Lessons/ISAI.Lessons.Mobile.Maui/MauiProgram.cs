@@ -1,6 +1,4 @@
 ﻿using CommunityToolkit.Maui;
-using LibVLCSharp.MAUI;
-using Microsoft.Extensions.Logging;
 
 namespace ISAI.Lessons.Mobile.Maui
 {
@@ -12,7 +10,6 @@ namespace ISAI.Lessons.Mobile.Maui
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
-                .UseLibVLCSharp()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

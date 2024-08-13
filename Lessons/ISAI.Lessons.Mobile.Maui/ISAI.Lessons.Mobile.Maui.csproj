@@ -97,10 +97,6 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.61" />
 		<PackageReference Include="BTProgressHUD" Version="2.1.1" Condition="'$(TargetFramework)' == 'net8.0-ios'" />
 		<PackageReference Include="AndHUD" Version="2.0.2" Condition="'$(TargetFramework)' == 'net8.0-android'" />
-
-		<PackageReference Include="LibVLCSharp.MAUI" Version="3.8.5" />
-	    <PackageReference Include="VideoLAN.LibVLC.Android" Version="3.5.3" Condition="'$(TargetFramework)' == 'net8.0-android'" />
-	    <PackageReference Include="VideoLAN.LibVLC.iOS" Version="3.3.18" Condition="'$(TargetFramework)' == 'net8.0-ios'" />
 	
 	</ItemGroup>
 
@@ -171,6 +167,54 @@
 	<ItemGroup>
 	  <Folder Include="Platforms\iOS\Helpers\" />
 	  <Folder Include="Platforms\iOS\Helpers\CrossDownloadManager\" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Users\craig\.nuget\packages\videolan.libvlc.android\3.5.3\build\android-armv7\libvlc.so" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Users\craig\.nuget\packages\videolan.libvlc.android\3.5.3\build\android-armv7\libc++_shared.so" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Users\craig\.nuget\packages\videolan.libvlc.android\3.5.3\build\android-armv8\libvlc.so" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Users\craig\.nuget\packages\videolan.libvlc.android\3.5.3\build\android-armv8\libc++_shared.so" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Users\craig\.nuget\packages\videolan.libvlc.android\3.5.3\build\android-x86\libvlc.so" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Users\craig\.nuget\packages\videolan.libvlc.android\3.5.3\build\android-x86\libc++_shared.so" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Users\craig\.nuget\packages\videolan.libvlc.android\3.5.3\build\android-x86_64\libvlc.so" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Users\craig\.nuget\packages\videolan.libvlc.android\3.5.3\build\android-x86_64\libc++_shared.so" />
 	</ItemGroup>
 
 </Project>

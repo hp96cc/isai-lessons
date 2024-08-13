@@ -13,6 +13,7 @@ using Bitmovin.Api.Sdk.Streams.Video;
 using FFMpegCore;
 using FFMpegCore.Enums;
 using System.Net;
+using System.Data.Entity.Infrastructure;
 
 namespace ISAI.Lessons.Console.BitmovinPort
 {
@@ -53,6 +54,21 @@ namespace ISAI.Lessons.Console.BitmovinPort
 
         static async Task AsyncMain(string[] args)
         {
+
+            var folders = Directory.GetDirectories(@"C:\Apps\Video\m3u8");
+            StringBuilder sbQuery = new StringBuilder();
+
+            for(int i=0; i < 1505; i++)
+            {
+                if (!Directory.Exists(@"C:\Apps\Video\m3u8" + "\\" + (i+1).ToString())) {
+                    sbQuery.Append(" OR Id = " + (i + 1).ToString());
+                }
+            }
+
+            System.Console.WriteLine(sbQuery.ToString());
+            System.Console.ReadLine();
+            return;
+
             using (var db = new LessonsDbContext())
             {
                 //ffmpeg -i C:\app\BitMovin\input-100.mp4  -vcodec h264 -b:a 96k -start_number 0 -hls_time 10 -hls_list_size 0 -f hls -hls_enc 1 C:\app\BitMovin\100.m3u8
