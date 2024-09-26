@@ -17,7 +17,7 @@ namespace ISAI.Lessons.Mobile.Maui
                 });
 
 #if DEBUG
-		builder.Logging.AddDebug();
+            builder.Logging.Services.AddLogging();
 #endif
 
             return builder.Build();
