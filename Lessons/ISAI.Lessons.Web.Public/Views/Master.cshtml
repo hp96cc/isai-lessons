@@ -42,16 +42,7 @@
 
 
     var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
-    bool isUKSite = canonicalUrl.Contains("portal.ukonlinelessons.com");
-
-    if (isUKSite)
-    {
-        metaTitle = "UK " + metaTitle;
-    }
-    else
-    {
-        metaTitle = "Scottish " + metaTitle;
-    }
+    metaTitle = "Scottish " + metaTitle;
 
 
     }
@@ -288,17 +279,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 }
                                 else
                                 {
-@*
-                                    if (isUKSite)
-                                    {
-                                        <a href="https://ukonlinelessons.com/" target="_blank" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
-                                        <a href="/plans/signup" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
-                                    }
-                                    else
-                                    {
-                                        <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
-                                    }
-*@
+                                    @*
+                                   
+
+            <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
+                                    *@
                                     <a href="/account/?redirectUrl=@(Url.Encode(Model.Url()))" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
 
                                 }
@@ -323,16 +308,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                         <!-- start logo -->
 
 
-                                        @if (isUKSite)
-                                        {
-                                            <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogoUK.MediaUrl()" alt="@home.Title"></a>
-                                        }
-                                        else
-                                        {
-                                            <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogo.MediaUrl()" alt="@home.Title"></a>
-                                        }
-
-
+                                        <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogo.MediaUrl()" alt="@home.Title"></a>
 
 
 
@@ -485,7 +461,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div class="footer-bar">
                 <div class="container">
-                    <p>&copy; @DateTime.Today.Year @(isUKSite ? "UK" : "Scottish") Online Lessons. All Rights Reserved. <br /><br />Web and App Development by <a href="https://isai.co.uk" target="_blank" class="text-white" style="text-decoration:underline;">ISAI</a> and <a href="https://craigchampion.com" target="_blank" class="text-white" style="text-decoration:underline;">Craig Champion Software Development</a></p>
+                    <p>&copy; @DateTime.Today.Year Scottish Online Lessons. All Rights Reserved. <br /><br />Web and App Development by <a href="https://isai.co.uk" target="_blank" class="text-white" style="text-decoration:underline;">ISAI</a> and <a href="https://craigchampion.com" target="_blank" class="text-white" style="text-decoration:underline;">Craig Champion Software Development</a></p>
                 </div>
             </div>
         </footer>

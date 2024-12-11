@@ -20,8 +20,6 @@
 
     var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
 
-    bool isUKSite = canonicalUrl.Contains("portal.ukonlinelessons.com");
-
 }
 
 
@@ -43,14 +41,7 @@
             @if (ViewBag.LoggedIn == null)
             {
 
-                if (isUKSite)
-                {
-                    @Model.PageContentUK
-                }
-                else
-                {
-                    @Model.PageContent
-                }
+                @Model.PageContent
 
 
 
@@ -202,17 +193,11 @@
     <script>
 
         var loggedIn = false;
-        var isUKSite = false;
         
         @if(ViewBag.LoggedIn != null)
         {
             @:loggedIn = true
         }
-
-        @if(isUKSite)
-         {
-            @:isUKSite = true;
-            }
 
         $(document).ready(function () {
 
@@ -223,15 +208,6 @@
             } else {
                 $('#register-form').show();
                 
-            }
-
-            if (isUKSite)
-            {
-                $("#button-checkout").hide();
-                $("#button-activate").show();
-                $("#div-input-accesscode").show();
-                $('#input-accesscode').attr('required', 'required');
-                $("#div-input-toggleaccesscode").hide();
             }
 
         });
