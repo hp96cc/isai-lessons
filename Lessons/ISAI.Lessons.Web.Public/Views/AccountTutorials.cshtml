@@ -1,7 +1,142 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountTutorials>
+@using ContentModels = Umbraco.Web.PublishedModels;
 @{
-	Layout = "Master.cshtml";
+    Layout = "Master.cshtml";
 }
 
-@* the fun starts here *@
+
+<!-- BREADCRUMB -->
+<nav class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+
+                <!-- Breadcrumb -->
+                <ol class="breadcrumb mb-0 font-size-xs text-gray-400">
+                    <li class="breadcrumb-item">
+                        <a class="text-gray-400" href="index.html">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Tutorials
+                    </li>
+                </ol>
+
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<section class="p-0">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="spinner-border mb-10" role="status" id="spinner-loading">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="account-panel" style="display:none;">
+            <div class="col-12 col-md-3">
+
+                <!-- Nav -->
+                @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "tutorials" } })
+
+
+            </div>
+            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                <div class="row">
+
+
+                    <div class="col-12 text-center">
+
+                        <!-- Heading -->
+                        <h3 class="mb-10 mt-3">My Tutorials</h3>
+                        <p>The table below shows your tutorials. Explanations text TBC.</p>
+
+
+
+                    </div>
+
+
+                    <div class="col-12 p-1">
+                        <div class="row" id="tutorial-list"></div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section Scripts {
+
+    <script>
+
+        var tutorials;
+
+        $(document).ready(function ()
+        {
+            devices = [];
+            DisplayTutorials();
+            //GetTutorials();
+        });
+
+
+        async function GetTutorials()
+        {
+
+            $('#account-panel').hide();
+            $('#spinner-loading').show();
+
+            var data = await lessonsApp.getCustomerTutorials();
+
+            if (!data)
+            {
+                lessonsApp.logout();
+            }
+            else if (data.Status !== 0)
+            {
+                location.href = '/account/'
+            } else
+            {
+                var devices = data.Content;
+                DisplayTutorials();
+            }
+
+
+        }
+
+        async function DisplayTutorials()
+        {
+
+            $('#tutorial-list').html('');
+
+            var itemListHTML = '';
+            var templateItem = $('#template-device').html();
+
+            devices.forEach(function (item)
+            {
+                itemListHTML += Mustache.render(templateItem, item);
+
+            });
+
+
+            $('#tutorial-list').html(itemListHTML);
+
+            $('#account-panel').show();
+            $('#spinner-loading').hide();
+
+
+        }
+
+    </script>
+}
 

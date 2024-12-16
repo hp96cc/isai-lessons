@@ -139,7 +139,6 @@
 
     <link rel="canonical" href="@canonicalUrl" />
 
-    <meta name="facebook-domain-verification" content="a56dkbvit59ngwbbynr8snzqi80hsy" />
     <meta name="apple-itunes-app" content="app-id=1435441337">
 
     <!-- favicon -->
@@ -172,65 +171,10 @@
     @RenderSection("Head", required: false)
 
 
-    <!-- Facebook Pixel Code -->
-    <script>
-        !function (f, b, e, v, n, t, s) {
-            if (f.fbq) return; n = f.fbq = function () {
-                n.callMethod ?
-                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-            };
-            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-            n.queue = []; t = b.createElement(e); t.async = !0;
-            t.src = v; s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '4717593798270440');
-        fbq('track', 'PageView');
-    </script>
-    <noscript>
-        <img height="1" width="1" style="display:none"
-             src="https://www.facebook.com/tr?id=4717593798270440&ev=PageView&noscript=1" />
-    </noscript>
-    <!-- End Facebook Pixel Code -->
-
-
-    <script type="text/javascript">
-        adroll_adv_id = "NPNG7NFM2BFALEZ2ZFWUFY";
-        adroll_pix_id = "FNKKQG7SXBBLRPUGNLMV7D";
-        adroll_version = "2.0";
-
-        (function (w, d, e, o, a) {
-            w.__adroll_loaded = true;
-            w.adroll = w.adroll || [];
-            w.adroll.f = ['setProperties', 'identify', 'track'];
-            var roundtripUrl = "https://s.adroll.com/j/" + adroll_adv_id
-                + "/roundtrip.js";
-            for (a = 0; a < w.adroll.f.length; a++) {
-                w.adroll[w.adroll.f[a]] = w.adroll[w.adroll.f[a]] || (function (n) {
-                    return function () {
-                        w.adroll.push([n, arguments])
-                    }
-                })(w.adroll.f[a])
-            }
-
-            e = d.createElement('script');
-            o = d.getElementsByTagName('script')[0];
-            e.async = 1;
-            e.src = roundtripUrl;
-            o.parentNode.insertBefore(e, o);
-        })(window, document);
-        adroll.track("pageView");
-    </script>
-
 </head>
 
 <body>
 
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5BT7PHFN"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 
     <!-- start page loading -->
     <div id="preloader">
@@ -537,15 +481,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script src="/assets/js/main.js"></script>
 
     <script src="~/scripts/app.js?v=10"></script>
-
-
-    <script>
-        window.fwSettings = {
-            'widget_id': 80000006775
-        };
-        !function () { if ("function" != typeof window.FreshworksWidget) { var n = function () { n.q.push(arguments) }; n.q = [], window.FreshworksWidget = n } }()
-    </script>
-    <script type='text/javascript' src='https://euc-widget.freshworks.com/widgets/80000006775.js' async defer></script>
 
     @RenderSection("Scripts", required: false)
 

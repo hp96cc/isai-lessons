@@ -724,7 +724,6 @@
     <Content Include="Views\TutorialPayment.cshtml" />
     <Content Include="Views\TutorialPaymentFailed.cshtml" />
     <Content Include="Views\TutorialPaymentSuccess.cshtml" />
-    <Content Include="Views\Login.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
