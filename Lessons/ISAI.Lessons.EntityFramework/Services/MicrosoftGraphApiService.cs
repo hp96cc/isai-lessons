@@ -167,7 +167,6 @@ namespace ISAI.Lessons.EntityFramework.Services
             });
 
 
-
         }
 
         public async Task GetAvailability()

@@ -2,7 +2,6 @@
 using ISAI.Lessons.Models.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
@@ -54,5 +53,6 @@ namespace ISAI.Lessons.EntityFramework.Models
         [NotMapped]
         public string PasswordConfirm { get; set; }
 
+        public virtual ICollection<Tutorial> Tutorials { get; set; }
     }
 }

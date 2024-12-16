@@ -594,6 +594,7 @@
     <Compile Include="App_Data\Models\AccountInfo.generated.cs" />
     <Compile Include="App_Data\Models\AccountLogout.generated.cs" />
     <Compile Include="App_Data\Models\AccountSubscriptions.generated.cs" />
+    <Compile Include="App_Data\Models\AccountTutorials.generated.cs" />
     <Compile Include="App_Data\Models\AppVideoPage.generated.cs" />
     <Compile Include="App_Data\Models\BlogGroup.generated.cs" />
     <Compile Include="App_Data\Models\BlogItem.generated.cs" />
@@ -625,7 +626,14 @@
     <Compile Include="App_Data\Models\SignUpEnterDetails.generated.cs" />
     <Compile Include="App_Data\Models\SignUpPaymentFailed.generated.cs" />
     <Compile Include="App_Data\Models\SignUpPaymentSuccess.generated.cs" />
+    <Compile Include="App_Data\Models\SiteMap.generated.cs" />
     <Compile Include="App_Data\Models\SocialLink.generated.cs" />
+    <Compile Include="App_Data\Models\TutorialCalendar.generated.cs" />
+    <Compile Include="App_Data\Models\TutorialConfirm.generated.cs" />
+    <Compile Include="App_Data\Models\TutorialHome.generated.cs" />
+    <Compile Include="App_Data\Models\TutorialPayment.generated.cs" />
+    <Compile Include="App_Data\Models\TutorialPaymentFailed.generated.cs" />
+    <Compile Include="App_Data\Models\TutorialPaymentSuccess.generated.cs" />
     <Compile Include="Components\AttributeRoutingCompsoer.cs" />
     <Compile Include="Controllers\LessonAppController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -709,6 +717,14 @@
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
     <Content Include="Views\Partials\BlockList\Default.cshtml" />
     <Content Include="Views\AppVideoPage.cshtml" />
+    <Content Include="Views\AccountTutorials.cshtml" />
+    <Content Include="Views\TutorialCalendar.cshtml" />
+    <Content Include="Views\TutorialConfirm.cshtml" />
+    <Content Include="Views\TutorialHome.cshtml" />
+    <Content Include="Views\TutorialPayment.cshtml" />
+    <Content Include="Views\TutorialPaymentFailed.cshtml" />
+    <Content Include="Views\TutorialPaymentSuccess.cshtml" />
+    <Content Include="Views\Login.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

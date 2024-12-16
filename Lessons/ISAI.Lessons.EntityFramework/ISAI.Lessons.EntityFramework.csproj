@@ -247,6 +247,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\AllowSearchAttribute.cs" />
+    <Compile Include="Migrations\202412151325120_Added Tutorial.cs" />
+    <Compile Include="Migrations\202412151325120_Added Tutorial.Designer.cs">
+      <DependentUpon>202412151325120_Added Tutorial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202412151327283_Added Tutorial 2.cs" />
+    <Compile Include="Migrations\202412151327283_Added Tutorial 2.Designer.cs">
+      <DependentUpon>202412151327283_Added Tutorial 2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202412151330384_Added Tutorial 3.cs" />
+    <Compile Include="Migrations\202412151330384_Added Tutorial 3.Designer.cs">
+      <DependentUpon>202412151330384_Added Tutorial 3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -258,6 +270,7 @@
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\SubscriptionCode.cs" />
     <Compile Include="Models\SubscriptionType.cs" />
+    <Compile Include="Models\Tutorial.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="LessonsDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -268,7 +281,17 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202412151325120_Added Tutorial.resx">
+      <DependentUpon>202412151325120_Added Tutorial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412151327283_Added Tutorial 2.resx">
+      <DependentUpon>202412151327283_Added Tutorial 2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412151330384_Added Tutorial 3.resx">
+      <DependentUpon>202412151330384_Added Tutorial 3.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj">
       <Project>{b589ecc0-720d-4f5b-8c8f-542fc8b7a3b7}</Project>
