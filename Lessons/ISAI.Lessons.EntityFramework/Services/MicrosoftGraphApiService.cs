@@ -11,6 +11,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.Graph.Users.Item.SendMail;
 using Microsoft.Graph.Users.Item.Calendar.GetSchedule;
+using ISAI.Lessons.Models.ViewModels.GraphApi;
 
 namespace ISAI.Lessons.EntityFramework.Services
 {
@@ -36,7 +37,16 @@ namespace ISAI.Lessons.EntityFramework.Services
 
         }
 
-        public async Task SendEmail(string userName, string subject, string htmlBody, List<string> addressTo, List<string> addressCC, List<string> addressBCC, List<string> addressReplyTo, bool saveToSentItems = true, List<FileAttachment> attachments = null)
+        public async Task SendEmail(
+            string userName, 
+            string subject, 
+            string htmlBody, 
+            List<string> addressTo,
+            List<string> addressCC, 
+            List<string> addressBCC, 
+            List<string> addressReplyTo, 
+            bool saveToSentItems = true, 
+            List<FileAttachment> attachments = null)
         {
             GraphServiceClient graphClient = GetAuthenticatedClient();
 
@@ -121,51 +131,71 @@ namespace ISAI.Lessons.EntityFramework.Services
         }
 
 
-        public async Task CreateTeamsEvent()
+        public async Task<TeamsEventResponse> CreateTeamsEvent(
+            string userName,
+            string subject, 
+            string htmlBody, 
+            string timeZone, 
+            string dateTimeStart, 
+            string dateTimeEnd, 
+            List<Tuple<string, string>> attendees )
         {
             GraphServiceClient graphClient = GetAuthenticatedClient();
-
+         
             var requestBody = new Event
             {
-                Subject = "Test Meeting - Ignore",
+                Subject = subject,
                 Body = new ItemBody
                 {
                     ContentType = BodyType.Html,
-                    Content = "Test Meeting Text - Ignore",
+                    Content = htmlBody,
                 },
                 Start = new DateTimeTimeZone
                 {
-                    DateTime = "2024-12-11T13:00:00",
-                    TimeZone = "GMT Standard Time",
+                    DateTime = dateTimeStart,
+                    TimeZone = timeZone,
                 },
                 End = new DateTimeTimeZone
                 {
-                    DateTime = "2024-12-11T14:00:00",
-                    TimeZone = "GMT Standard Time",
+                    DateTime = dateTimeEnd,
+                    TimeZone = timeZone,
                 },
 
-                Attendees = new List<Attendee>
-                {
-                    new Attendee
-                    {
-                        EmailAddress = new EmailAddress
-                        {
-                            Address = "craig@isai.co.uk",
-                            Name = "Craig Champion",
-                        },
-                        Type = AttendeeType.Required,
-                    },
-                },
                 AllowNewTimeProposals = false,
                 IsOnlineMeeting = true,
                 OnlineMeetingProvider = OnlineMeetingProviderType.TeamsForBusiness,
             };
 
-            var result = await graphClient.Users["craig@isai.co.uk"].Events.PostAsync(requestBody, (requestConfiguration) =>
-            {
-                requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"GMT Standard Time\"");
-            });
 
+            requestBody.Attendees = attendees.Select(x => new Attendee()
+            {
+                EmailAddress = new EmailAddress()
+                {
+                    Name = x.Item1,
+                    Address = x.Item2
+                },
+                Type = AttendeeType.Required,
+            }).ToList();
+
+            try
+            {
+
+                var result = await graphClient.Users[userName].Events.PostAsync(requestBody, (requestConfiguration) =>
+                {
+                    requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"" + timeZone + "\"");
+                });
+
+                return new TeamsEventResponse()
+                {
+                    Id = result.Id,
+                    WebLink = result.WebLink
+                };
+
+            } catch(Exception ex)
+            {
+                //TODO: need to handle error
+                return null;
+            }
 
         }
 

@@ -1,7 +1,6 @@
 ﻿using createsend_dotnet;
 using CryptoNet;
 using Effortless.Net.Encryption;
-using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
@@ -95,7 +94,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [HttpPost]
         public async Task<Lessons.Models.Models.ResponseData<Customer>> SaveCustomer(Customer customer)
         {
-
             var response = new Lessons.Models.Models.ResponseData<Customer>();
 
             if (_customerId > 0)
@@ -141,6 +139,72 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             }
 
             throw new HttpResponseException(HttpStatusCode.NotFound);
+
+        }
+
+
+        [Route("api/app/tutorialcreate")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<TutorialCreateResponseViewModel>> TutorialCreate(TutorialCreateRequestViewModel request)
+        {
+            var response = new Lessons.Models.Models.ResponseData<TutorialCreateResponseViewModel>();
+            var content = new TutorialCreateResponseViewModel();
+
+            var customer = await db.Customer.FirstAsync(x => x.Id == request.CustomerId);
+            var tutor = await db.Users.FirstAsync(x => x.Id == request.TutorId);
+
+            var customerFullName = string.Format("{0} {1}", customer.FirstName, customer.LastName);
+            var tutotialName = string.Format("TBC Scottish Online Lessons Tutorial for {0}", customerFullName);
+            var tutotialDescription = string.Format("TBC Scottish Online Lessons Tutorial for {0}", customerFullName);
+
+            Lesson lesson = null;
+            if (request.LessonId.HasValue)
+                lesson = await db.Lesson.FirstAsync(x => x.Id == request.LessonId.Value);
+
+            var graphApi = new MicrosoftGraphApiService();
+            var teamsEventResponse = await graphApi.CreateTeamsEvent(
+                tutor.Email,
+                tutotialName,
+                tutotialDescription,
+                "GMT Standard Time", 
+                request.DateTimeStart.ToString("s"),
+                request.DateTimeEnd.ToString("s"),
+                new List<Tuple<string, string>>()
+                {
+                    new Tuple<string, string>(customerFullName, customer.Email)
+                });
+
+            content.TeamsId = teamsEventResponse.Id;
+            content.TeamsLink = teamsEventResponse.WebLink;
+
+            var tutorial = new Tutorial()
+            {
+                Name = tutotialName,
+                TeamsId = content.TeamsId,
+                TeamsLink = content.TeamsLink,
+                AppId = 1,
+                CustomerId = customer.Id,
+                LessonId = request.LessonId,
+                DurationInMinutes = request.Duration,
+                DateTimeStart = request.DateTimeStart,
+                DateTimeEnd = request.DateTimeEnd,
+                TutorUserId = tutor.Id,
+                Deleted = false,
+                DateCreated = DateTime.UtcNow,
+                CreatedUserId = _adminUserId,
+                DateModified = DateTime.UtcNow,
+                ModifiedUserId = _adminUserId
+            };
+
+            db.Entry(tutorial).State = EntityState.Added;
+            await db.SaveChangesAsync();
+
+            content.TutorialId = tutorial.Id;
+
+            response.Content = content;
+            response.Status = ResponseStatus.OK;
+
+            return response;
 
         }
 

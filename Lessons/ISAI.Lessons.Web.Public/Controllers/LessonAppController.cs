@@ -123,6 +123,38 @@ namespace ISAI.Lessons.Web.Public.Controllers
             }
         }
 
+
+        [Route("api/lessonapp/tutorialcreate")]
+        [HttpPost]
+        public async Task<ResponseData<TutorialCreateResponseViewModel>> TutorialCreate(TutorialCreateRequestViewModel request)
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(request);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/tutorialcreate", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var response = JsonConvert.DeserializeObject<ResponseData<TutorialCreateResponseViewModel>>(serialisedContent);
+                    return response;
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
         [Route("api/lessonapp/savecustomer")]
         [HttpPost]
         public async Task<ResponseData<Customer>> Customer(Customer customer)

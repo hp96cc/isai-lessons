@@ -4,7 +4,6 @@
     var baseUrl = '/api/lessonapp/';
     var lesson = null;
 
-
     var login = async function (username, password) {
 
         var result = false;
@@ -15,24 +14,20 @@
         });
 
         try {
-
             var data = await $.ajax({
                 url: url,
                 data: requestData,
                 type: "POST",
                 contentType: 'application/json',
             });
-
             result = true;
 
-        } catch (error) {
-
+        } catch (error) 
+        {
             console.log(error);
-
         }
 
         return result;
-
     };
 
     var getCustomer = async function () {
@@ -40,20 +35,17 @@
         var url = this.baseUrl + "customer";
 
         try {
-
             var data = await $.ajax({
                 url: url,
                 type: "POST",
                 contentType: 'application/json',
             });
 
-            //this.customer = data;
             return data;
 
-        } catch (error) {
-
+        } catch (error) 
+        {
             console.log(error);
-
         }
 
     };
@@ -73,12 +65,33 @@
 
             return data;
 
-        } catch (error) {
-
+        } catch (error) 
+        {
             console.log(error);
-
         }
 
+    };
+
+
+    var tutorialCreate = async function (tutorial)
+    {
+        var url = this.baseUrl + "tutorialcreate";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(tutorial),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
     };
 
 
@@ -97,10 +110,10 @@
 
             return data;
 
-        } catch (error) {
-
+        }
+        catch (error) 
+        {
             console.log(error);
-
         }
 
     };
@@ -459,7 +472,8 @@
         sendEmail: sendEmail,
         saveCustomer: saveCustomer,
         deleteCustomerDevice: deleteCustomerDevice,
-        sendFreeTrailRequest: sendFreeTrailRequest
+        sendFreeTrailRequest: sendFreeTrailRequest,
+        tutorialCreate: tutorialCreate
 
     }
 

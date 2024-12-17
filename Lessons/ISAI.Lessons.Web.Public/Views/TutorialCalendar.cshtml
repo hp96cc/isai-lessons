@@ -41,6 +41,26 @@
 
 </section>
 
+<div class="modal fade" id="confirmTutorialTimeSlotModal" tabindex="-1" role="dialog" aria-labelledby="deleteDeviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteDeviceModalLabel">Confirm Time Slote</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you wish to delete this device? You will no longer be able to access any lesson content on this device after it has been deleted.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="DeleteDevice();">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 @section Head {
@@ -87,6 +107,8 @@
         {
             alert('Event from ' + startTime + ' to ' + endTime);
         }
+
+
 
     </script>
 
