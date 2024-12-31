@@ -9,6 +9,9 @@ using ISAI.Lessons.Web.Portal.App_Start;
 using ISAI.Lessons.EntityFramework.Models;
 using Microsoft.Owin.Security.OAuth;
 using Timber.Ecommerce.Web.Portal.Helpers;
+using Hangfire;
+using System.Configuration;
+using ISAI.Lessons.Web.Portal.Helpers;
 
 [assembly: OwinStartup(typeof(ISAI.Lessons.Web.Portal.Startup))]
 namespace ISAI.Lessons.Web.Portal
@@ -65,6 +68,17 @@ namespace ISAI.Lessons.Web.Portal
             };
             app.UseOAuthAuthorizationServer(options);
             app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
+
+            GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigurationManager.ConnectionStrings["Hangfire"].ConnectionString);
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new[] { new HangfireAuthorizationFilter() }
+            });
+            app.UseHangfireServer();
+
+            var timeZone = ConfigurationManager.AppSettings["SystemTimeZone"];
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            RecurringJob.AddOrUpdate(() => SchedulerService.ProcessMicrosoftGraphMessageQueue(), Cron.Minutely, timeZoneInfo);
 
 
         }

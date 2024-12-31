@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ISAI.Lessons.EntityFramework.Models
@@ -36,6 +37,21 @@ namespace ISAI.Lessons.EntityFramework.Models
         public string TeamsId { get; set; }
 
         public string TeamsLink { get; set; }
+
+        [JsonIgnore]
+        public string StripePaymentSessionId { get; set; }
+
+        [JsonIgnore]
+        public string StripePaymentId { get; set; }
+
+        [JsonIgnore]
+        public bool HasCompletedCheckout { get; set; }
+
+        [JsonIgnore]
+        public bool PendingEmailConfirmationUser { get; set; }
+
+        [JsonIgnore]
+        public bool PendingEmailConfirmationTutor { get; set; }
 
 
     }

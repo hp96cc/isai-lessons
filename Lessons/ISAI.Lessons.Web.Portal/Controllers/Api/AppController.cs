@@ -23,6 +23,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.UI.WebControls;
 using Customer = ISAI.Lessons.EntityFramework.Models.Customer;
 using Subscription = ISAI.Lessons.EntityFramework.Models.Subscription;
 
@@ -44,6 +45,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         string _base64Key = "Shnlc8favzpU3dBgpUuZ4yktIWPyB/xU3FYcEAWVAVE=";
         string _base64Iv = "GOcuDFIgvv+Sss54DFVjLN/2GFyCP1TZc9HDNKf/cxY=";
         string _aesKeyFile = @"c:\apps\videokey.aes";
+        string _tutorialStripePrefix = "tutorial_";
 
         public AppController()
         {
@@ -143,71 +145,148 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         }
 
 
-        [Route("api/app/tutorialcreate")]
+        [Route("api/app/tutorialpurchase")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<TutorialCreateResponseViewModel>> TutorialCreate(TutorialCreateRequestViewModel request)
+        public async Task<Lessons.Models.Models.ResponseData<TutorialPurchaseResponseViewModel>> TutorialPurchase(TutorialPurchaseRequestViewModel request)
         {
-            var response = new Lessons.Models.Models.ResponseData<TutorialCreateResponseViewModel>();
-            var content = new TutorialCreateResponseViewModel();
-
-            var customer = await db.Customer.FirstAsync(x => x.Id == request.CustomerId);
-            var tutor = await db.Users.FirstAsync(x => x.Id == request.TutorId);
-
-            var customerFullName = string.Format("{0} {1}", customer.FirstName, customer.LastName);
-            var tutotialName = string.Format("TBC Scottish Online Lessons Tutorial for {0}", customerFullName);
-            var tutotialDescription = string.Format("TBC Scottish Online Lessons Tutorial for {0}", customerFullName);
-
-            Lesson lesson = null;
-            if (request.LessonId.HasValue)
-                lesson = await db.Lesson.FirstAsync(x => x.Id == request.LessonId.Value);
-
-            var graphApi = new MicrosoftGraphApiService();
-            var teamsEventResponse = await graphApi.CreateTeamsEvent(
-                tutor.Email,
-                tutotialName,
-                tutotialDescription,
-                "GMT Standard Time", 
-                request.DateTimeStart.ToString("s"),
-                request.DateTimeEnd.ToString("s"),
-                new List<Tuple<string, string>>()
-                {
-                    new Tuple<string, string>(customerFullName, customer.Email)
-                });
-
-            content.TeamsId = teamsEventResponse.Id;
-            content.TeamsLink = teamsEventResponse.WebLink;
-
-            var tutorial = new Tutorial()
+            try
             {
-                Name = tutotialName,
-                TeamsId = content.TeamsId,
-                TeamsLink = content.TeamsLink,
-                AppId = 1,
-                CustomerId = customer.Id,
-                LessonId = request.LessonId,
-                DurationInMinutes = request.Duration,
-                DateTimeStart = request.DateTimeStart,
-                DateTimeEnd = request.DateTimeEnd,
-                TutorUserId = tutor.Id,
-                Deleted = false,
-                DateCreated = DateTime.UtcNow,
-                CreatedUserId = _adminUserId,
-                DateModified = DateTime.UtcNow,
-                ModifiedUserId = _adminUserId
-            };
 
-            db.Entry(tutorial).State = EntityState.Added;
-            await db.SaveChangesAsync();
+                var response = new Lessons.Models.Models.ResponseData<TutorialPurchaseResponseViewModel>();
 
-            content.TutorialId = tutorial.Id;
+                //Create Tutorial
+                var customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
+                var tutor = await db.Users.FirstAsync(x => x.Id == request.TutorId);
 
-            response.Content = content;
-            response.Status = ResponseStatus.OK;
+                var customerFullName = string.Format("{0} {1}", customer.FirstName, customer.LastName);
+                var tutotialName = string.Format("TBC Scottish Online Lessons Tutorial for {0}", customerFullName);
+                var tutotialDescription = string.Format("TBC Scottish Online Lessons Tutorial for {0}", customerFullName);
 
-            return response;
+                Lesson lesson = null;
+                if (request.LessonId.HasValue)
+                    lesson = await db.Lesson.FirstAsync(x => x.Id == request.LessonId.Value);
+
+                var graphApi = new MicrosoftGraphApiService();
+                var teamsEventResponse = await graphApi.CreateTeamsEvent(
+                    tutor.Email,
+                    tutotialName,
+                    tutotialDescription,
+                    "GMT Standard Time",
+                    request.DateTimeStart.ToString("s"),
+                    request.DateTimeEnd.ToString("s"),
+                    new List<Tuple<string, string>>()
+                    {
+                    new Tuple<string, string>(customerFullName, customer.Email)
+                    });
+
+                //TODO: error handling?
+
+
+                var tutorialDuration = request.DateTimeEnd.Subtract(request.DateTimeStart).Minutes;
+
+                var tutorial = new Tutorial()
+                {
+                    Name = tutotialName,
+                    TeamsId = teamsEventResponse.Id,
+                    TeamsLink = teamsEventResponse.WebLink,
+                    AppId = 1,
+                    CustomerId = customer.Id,
+                    LessonId = request.LessonId,
+                    DurationInMinutes = tutorialDuration,
+                    DateTimeStart = request.DateTimeStart,
+                    DateTimeEnd = request.DateTimeEnd,
+                    TutorUserId = tutor.Id,
+                    Deleted = false,
+                    DateCreated = DateTime.UtcNow,
+                    CreatedUserId = _adminUserId,
+                    DateModified = DateTime.UtcNow,
+                    ModifiedUserId = _adminUserId
+                };
+
+                db.Entry(tutorial).State = EntityState.Added;
+                await db.SaveChangesAsync();
+
+                string tutorialPriceId;
+
+                //TODO: these are tet server price ids, need to move
+                switch (tutorial.DurationInMinutes)
+                {
+                    case 20:
+                        tutorialPriceId = "price_1QX3p8J81SbG6nzarRWdCiZR";
+                        break;
+                    case 40:
+                        tutorialPriceId = "price_1QX3otJ81SbG6nzaj40dzKdT";
+                        break;
+                    case 60:
+                    default:
+                        tutorialPriceId = "price_1QX3oYJ81SbG6nzaOqDLru2K";
+                        break;
+                }
+
+                var options = new SessionCreateOptions
+                {
+                    // See https://stripe.com/docs/api/checkout/sessions/create
+                    ClientReferenceId = _tutorialStripePrefix + tutorial.Id.ToString(),
+                    SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                    CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                    PaymentMethodTypes = new List<string>
+                    {
+                        "card",
+                    },
+                    Mode = "payment",
+                    LineItems = new List<SessionLineItemOptions>
+                    {
+                        new SessionLineItemOptions
+                        {
+                            Price = tutorialPriceId,
+                            Quantity = 1,
+                        },
+                    },
+                };
+                var service = new SessionService(this.client);
+                var session = await service.CreateAsync(options);
+
+                tutorial.StripePaymentSessionId = session.Id;
+                tutorial.HasCompletedCheckout = false;
+                db.Entry(tutorial).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+
+                response.Status = ResponseStatus.OK;
+                response.Content = new TutorialPurchaseResponseViewModel
+                {
+                    SessionId = session.Id,
+                };
+                return response;
+
+            }
+            catch (StripeException e)
+            {
+                Console.WriteLine(e.StripeError.Message);
+
+                var errorMessage = new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ReasonPhrase = e.StripeError.Message
+                };
+
+                throw new HttpResponseException(errorMessage);
+
+            }
+            catch (Exception ex)
+            {
+
+                var errorMessage = new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ReasonPhrase = ex.Message
+                };
+
+                throw new HttpResponseException(errorMessage);
+
+            }
+
 
         }
-
 
         [Route("api/app/lesson")]
         [HttpPost]
@@ -226,19 +305,14 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-
-
         [Route("api/app/lessonmediaurl")]
         [HttpPost]
         public async Task<Lessons.Models.Models.ResponseData<LessonStreamingResponse>> LessonMediaUrl(LessonRequestViewModel lessonRequestViewModel)
         {
             var response = new Lessons.Models.Models.ResponseData<LessonStreamingResponse>();
 
-
             try
             {
-
-             
                 var licenceResponse = await CheckSubscription();
 
                 if (licenceResponse.Status == ResponseStatus.OK)
@@ -469,12 +543,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-
-
-        
-
-      
-
         [AllowAnonymous] 
         [Route("api/app/sendemail")]
         [HttpPost]
@@ -585,7 +653,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                         var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been sent the following SMS message: <br />{3}</p>", request.Name, request.Email, request.Message, message);
                         var graphApi = new MicrosoftGraphApiService();
-                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com", "kboswell@uteachrecruitment.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { "noreply@scottishonlinelessons.com" }, true);
+                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { "noreply@scottishonlinelessons.com" }, true);
 
                         response.Content = true;
                         response.Status = ResponseStatus.OK;
@@ -618,7 +686,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been added to Campaign Monitor</p>", request.Name, request.Email, request.Message);
 
                         var graphApi = new MicrosoftGraphApiService();
-                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com", "kboswell@uteachrecruitment.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { "noreply@scottishonlinelessons.com" }, true);
+                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { "noreply@scottishonlinelessons.com" }, true);
 
                         response.Content = true;
                         response.Status = ResponseStatus.OK;
@@ -1044,14 +1112,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [AllowAnonymous]
         public async Task<CreateCustomerPayemntSessionResponse> CreateCustomerPayemntSession(CreateCustomerPayemntSessionRequest request)
         {
-
             try
             {
 
                 ICustomer customer;
 
                 if (User.Identity.IsAuthenticated) { 
-              
                     customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
                 }
                 else
@@ -1066,20 +1132,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             Errors = register.Errors
                         };
                     }
-
                     customer = register.Customer;
                 }
-
-                
-
-             
-
 
                 var options = new SessionCreateOptions
                 {
                     // See https://stripe.com/docs/api/checkout/sessions/create
-                    //SuccessUrl = "https://example.com/success.html?session_id={CHECKOUT_SESSION_ID}",
-                    //CancelUrl = "https://example.com/canceled.html",
                     ClientReferenceId = customer.Id.ToString(),
                     SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
                     CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
@@ -1089,13 +1147,13 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     },
                     Mode = "subscription",
                     LineItems = new List<SessionLineItemOptions>
-                {
-                    new SessionLineItemOptions
                     {
-                        Price = request.PriceId,
-                        Quantity = 1,
+                        new SessionLineItemOptions
+                        {
+                            Price = request.PriceId,
+                            Quantity = 1,
+                        },
                     },
-                },
                 };
                 var service = new SessionService(this.client);
 
@@ -1377,26 +1435,50 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             switch (stripeEvent.Type)
             {
+
                 case "checkout.session.completed":
 
-                    var checkOutComplete = stripeEvent.Data.Object as Stripe.Checkout.Session;
-                    customerId = Convert.ToInt32(checkOutComplete.ClientReferenceId);
-                    var customer = await db.Customer.FirstAsync(x => x.Id == customerId);
-                    
-                    //Add Stripe customer ID
-                    customer.StripeCustomerId = checkOutComplete.CustomerId;
-                    db.Entry(customer).State = EntityState.Modified;
+                    var checkOutComplete = stripeEvent.Data.Object as Session;
 
-                    //Add Stripe SubsctioiniD
-                    var subscription = await db.Subscription
-                            .OrderByDescending(x => x.Id)
-                            .FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
+                    if (checkOutComplete.ClientReferenceId.StartsWith(_tutorialStripePrefix))
+                    {
+                        var tutorialId = Convert.ToInt32(checkOutComplete.ClientReferenceId.Replace(_tutorialStripePrefix, string.Empty));
+                        var tutorial = await db.Tutorial.FirstAsync(x => x.Id == tutorialId);
 
-                    subscription.Active = true;
-                    subscription.StripeSubscriptionId = checkOutComplete.SubscriptionId;
-                    db.Entry(subscription).State = EntityState.Modified;
+                        tutorial.HasCompletedCheckout = true;
+                        tutorial.PendingEmailConfirmationTutor = true;
+                        tutorial.PendingEmailConfirmationUser = true;
+                        tutorial.StripePaymentId = checkOutComplete.PaymentIntentId;
+                        tutorial.DateModified = DateTime.UtcNow;
+                        db.Entry(tutorial).State = EntityState.Modified;
 
-                    await db.SaveChangesAsync();
+                        await db.SaveChangesAsync();
+
+                    }
+                    else
+                    {
+
+                        customerId = Convert.ToInt32(checkOutComplete.ClientReferenceId);
+                        var customer = await db.Customer.FirstAsync(x => x.Id == customerId);
+
+                        //Add Stripe customer ID
+                        customer.StripeCustomerId = checkOutComplete.CustomerId;
+                        db.Entry(customer).State = EntityState.Modified;
+
+                        //Add Stripe SubsctioiniD
+                        var subscription = await db.Subscription
+                                .OrderByDescending(x => x.Id)
+                                .FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
+
+                        subscription.Active = true;
+                        subscription.StripeSubscriptionId = checkOutComplete.SubscriptionId;
+                        subscription.DateModified = DateTime.UtcNow;
+                        db.Entry(subscription).State = EntityState.Modified;
+
+                        await db.SaveChangesAsync();
+
+                    }
+
 
                     break;
                 case "invoice.paid":
@@ -1423,6 +1505,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     await UpdateCustomerSubscription(deletedSubscription.Id, false);
 
                     break;
+                case "payment_intent.succeeded":
                 default:
                     // Unhandled event type
                     break;

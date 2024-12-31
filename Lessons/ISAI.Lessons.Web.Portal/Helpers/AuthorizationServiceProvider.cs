@@ -56,7 +56,6 @@ namespace Timber.Ecommerce.Web.Portal.Helpers
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
 
             using (var db = new LessonsDbContext())

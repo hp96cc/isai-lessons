@@ -259,6 +259,18 @@
     <Compile Include="Migrations\202412151330384_Added Tutorial 3.Designer.cs">
       <DependentUpon>202412151330384_Added Tutorial 3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202412171644221_Added Stripe Payment data to Tutorial.cs" />
+    <Compile Include="Migrations\202412171644221_Added Stripe Payment data to Tutorial.Designer.cs">
+      <DependentUpon>202412171644221_Added Stripe Payment data to Tutorial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202412171702301_Added Stripe Payment data to Tutorial 2.cs" />
+    <Compile Include="Migrations\202412171702301_Added Stripe Payment data to Tutorial 2.Designer.cs">
+      <DependentUpon>202412171702301_Added Stripe Payment data to Tutorial 2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202412310945439_Added email pending notifications.cs" />
+    <Compile Include="Migrations\202412310945439_Added email pending notifications.Designer.cs">
+      <DependentUpon>202412310945439_Added email pending notifications.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -290,6 +302,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202412151330384_Added Tutorial 3.resx">
       <DependentUpon>202412151330384_Added Tutorial 3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412171644221_Added Stripe Payment data to Tutorial.resx">
+      <DependentUpon>202412171644221_Added Stripe Payment data to Tutorial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412171702301_Added Stripe Payment data to Tutorial 2.resx">
+      <DependentUpon>202412171702301_Added Stripe Payment data to Tutorial 2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412310945439_Added email pending notifications.resx">
+      <DependentUpon>202412310945439_Added email pending notifications.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

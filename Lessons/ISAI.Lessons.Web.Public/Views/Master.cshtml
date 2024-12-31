@@ -217,14 +217,15 @@
 
                                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                                 {
+                                    <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2 "><span>Book Tutorial</span></a>
 
-                                    <a href="/account/info" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>My Account</span></a>
+                                    <a href="/account/info" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2 mr-2"><span>My Account</span></a>
 
                                 }
                                 else
                                 {
                                     @*
-                                   
+
 
             <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
                                     *@
@@ -342,7 +343,7 @@
         @RenderBody()
 
         <footer>
-            <div class="footer-bg">
+            <div class="footer-bg pt-4 pb-4">
                 <div class="container">
                     @*<div class="row">
 

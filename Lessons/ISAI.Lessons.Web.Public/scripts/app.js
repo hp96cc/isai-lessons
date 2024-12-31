@@ -95,6 +95,28 @@
     };
 
 
+    var tutorialPurchase = async function (tutorialPurchase)
+    {
+        var url = this.baseUrl + "tutorialpurchase";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(tutorialPurchase),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+
     var sendPasswordResetEmail = async function (model) {
 
         var url = this.baseUrl + "sendresetpasswordemail";
@@ -473,7 +495,8 @@
         saveCustomer: saveCustomer,
         deleteCustomerDevice: deleteCustomerDevice,
         sendFreeTrailRequest: sendFreeTrailRequest,
-        tutorialCreate: tutorialCreate
+        tutorialCreate: tutorialCreate,
+        tutorialPurchase: tutorialPurchase
 
     }
 

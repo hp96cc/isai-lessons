@@ -8,7 +8,7 @@ namespace ISAI.Lessons.EntityFramework
     public class LessonsDbContext : IdentityDbContext<User>
     {
 
-        public LessonsDbContext() : base("PrintContext")
+        public LessonsDbContext() : base("DefaultConnection")
         {
             Configuration.LazyLoadingEnabled = false;
         }

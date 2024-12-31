@@ -124,24 +124,29 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-        [Route("api/lessonapp/tutorialcreate")]
+
+        [Route("api/lessonapp/tutorialpurchase")]
         [HttpPost]
-        public async Task<ResponseData<TutorialCreateResponseViewModel>> TutorialCreate(TutorialCreateRequestViewModel request)
+        public async Task<ResponseData<TutorialPurchaseResponseViewModel>> TutorialPurchase(TutorialPurchaseRequestViewModel request)
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
+
+                request.CancelUrl = _baseReturnUrl + "/tutorials/payment-success";
+                request.SuccessUrl = _baseReturnUrl + "/tutorials/payment-failed";
+
                 var json = JsonConvert.SerializeObject(request);
                 HttpContent content = new StringContent(json);
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/tutorialcreate", content).ConfigureAwait(false);
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/tutorialpurchase", content).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var response = JsonConvert.DeserializeObject<ResponseData<TutorialCreateResponseViewModel>>(serialisedContent);
+                    var response = JsonConvert.DeserializeObject<ResponseData<TutorialPurchaseResponseViewModel>>(serialisedContent);
                     return response;
                 }
                 else
@@ -154,6 +159,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
         }
+
+
 
         [Route("api/lessonapp/savecustomer")]
         [HttpPost]
@@ -634,7 +641,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 //LIVE id: 
                 //monthly: price_1IxXUFJ81SbG6nzav7NG3Vto
                 //annual: price_1IxXTvJ81SbG6nzajuriP6XZ
-
                 model.CancelUrl = _baseReturnUrl + "/plans/payment-cancel";
                 model.SuccessUrl = _baseReturnUrl + "/plans/payment-success";
 
