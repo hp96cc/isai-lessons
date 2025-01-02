@@ -1,5 +1,16 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.TutorialPaymentSuccess>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
-	Layout = "Master.cshtml";
+    Layout = "Master.cshtml";
+}
+
+
+@section Scripts {
+
+    <script>
+
+        location.href = '/tutorials/confirm';
+
+    </script>
+
 }

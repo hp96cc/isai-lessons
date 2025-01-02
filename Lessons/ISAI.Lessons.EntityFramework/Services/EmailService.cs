@@ -11,7 +11,7 @@ namespace ISAI.Lessons.EntityFramework.Services
         public static async Task SetPasswordResetEmail(IdentityMessage message)
         {
                 var graphApi = new MicrosoftGraphApiService();
-                await graphApi.SendEmail("noreply@scottishonlinelessons.com", message.Subject, message.Body, new List<string>() { message.Destination }, null, new List<string>() { ConfigurationManager.AppSettings["SysAdminEmail"] }, new List<string>() { "noreply@scottishonlinelessons.com" }, true, null);
+                await graphApi.SendEmail("noreply@scottishonlinelessons.com", message.Subject, message.Body, new List<string>() { message.Destination }, null, new List<string>() { ConfigurationManager.AppSettings["Email.SysAdmin"] }, new List<string>() { "noreply@scottishonlinelessons.com" }, true, null);
         }
 
         public static string GetTemplateHTML(string url)

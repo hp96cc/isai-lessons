@@ -78,8 +78,10 @@ namespace ISAI.Lessons.Web.Portal
 
             var timeZone = ConfigurationManager.AppSettings["SystemTimeZone"];
             var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
-            RecurringJob.AddOrUpdate(() => SchedulerService.ProcessMicrosoftGraphMessageQueue(), Cron.Minutely, timeZoneInfo);
-
+            RecurringJob.AddOrUpdate("SchedulerService.SendPendingTutorialEmails", () => SchedulerService.SendPendingTutorialEmails(), Cron.Minutely, new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local
+            });
 
         }
     }

@@ -32,60 +32,64 @@
             </div>
         </div>
 
-        <div class="row align-items-top">
+        <div id="account-panel" style="display:none;">
+
+            <div class="row align-items-top">
 
 
-            <div class="col-7">
+                <div class="col-7">
 
-                <h4>Select Tutorial Duration</h4>
-
-
-                <select id="select-tutorial-duration" class="form-control form-control-md mb-4" onchange="ChangeTutorialDuration(this)">
-                    <option value="20">20 minutes</option>
-                    <option value="40" selected>40 minutes</option>
-                    <option value="60">60 minutes</option>
-                </select>
+                    <h4>Select Tutorial Duration</h4>
 
 
-                <h4>Select a Date</h4>
-                <div id="Calendar"></div>
-            </div>
-            <div class="col-5">
-                <h4>Pick a time slot</h4>
-                <div class="overflow-auto" style="max-height:400px">
+                    <select id="select-tutorial-duration" class="form-control form-control-md mb-4" onchange="ChangeTutorialDuration(this)">
+                        <option value="20">20 minutes</option>
+                        <option value="40" selected>40 minutes</option>
+                        <option value="60">60 minutes</option>
+                    </select>
 
-                    @for (int i = 9; i < 20; i++)
-                    {
 
-                        <button type="button" onclick="ShowTutorialSummary(@(i), 0);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):00</button>
-                        <button type="button" onclick="ShowTutorialSummary(@(i), 20);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):20</button>
-                        <button type="button" onclick="ShowTutorialSummary(@(i), 40);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):40</button>
+                    <h4>Select a Date</h4>
+                    <div id="Calendar"></div>
+                </div>
+                <div class="col-5">
+                    <h4>Pick a time slot</h4>
+                    <div class="overflow-auto" style="max-height:400px">
 
-                    }
+                        @for (int i = 9; i < 20; i++)
+                        {
+
+                            <button type="button" onclick="ShowTutorialSummary(@(i), 0);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):00</button>
+                            <button type="button" onclick="ShowTutorialSummary(@(i), 20);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):20</button>
+                            <button type="button" onclick="ShowTutorialSummary(@(i), 40);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):40</button>
+
+                        }
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+            <div class="row align-items-top">
+                <div class="col-12 mt-4 d-none" id="tutorial-booking-summary">
 
-        <div class="row align-items-top">
-            <div class="col-12 mt-4 d-none" id="tutorial-booking-summary">
+                    <h4>Tutorial Booking Summary</h4>
 
-                <h4>Tutorial Booking Summary</h4>
+                    <p class="fs-5">
+                        You are booking a <strong id="tutorial-duration-text"></strong> minute long tutorial on
+                        <strong id="tutorial-date-text"> Monday 5th December</strong>
+                        <br />from <strong id="tutorial-start-text">14:00</strong> to <strong id="tutorial-end-text">14:00</strong><br />
+                        Total Cost: <strong>£<span id="tutorial-cost-text">40.00</span> </strong>
 
-                <p class="fs-5">
-                    You are booking a <strong id="tutorial-duration-text"></strong> minute long tutorial on
-                    <strong id="tutorial-date-text"> Monday 5th December</strong>
-                    <br />from <strong id="tutorial-start-text">14:00</strong> to <strong id="tutorial-end-text">14:00</strong><br />
-                    Total Cost: <strong>£<span id="tutorial-cost-text">40.00</span> </strong>
+                    </p>
 
-                </p>
+                    <button type="button" onclick="ShowConfirmTutorialDialog();" class="butn medium sky btn-lg btn-block p-2">Book Tutorial</button>
 
-                <button type="button" onclick="ShowConfirmTutorialDialog();" class="butn medium sky btn-lg btn-block p-2">Book Tutorial</button>
+                </div>
+
 
             </div>
-
 
         </div>
     </div>
@@ -167,16 +171,19 @@
 
         $(document).ready(function ()
         {
-    calendar = new ej.calendars.Calendar({
+            $('#account-panel').show();
+            $('#spinner-loading').hide();
+
+            calendar = new ej.calendars.Calendar({
                 min: minDate,
                 max: maxDate,
                 value: minDate,
-                cssClass:'calendarWidth'
+                cssClass: 'calendarWidth'
             });
 
-                calendar.appendTo('#Calendar');
+            calendar.appendTo('#Calendar');
 
-            });
+        });
 
         function addDays(date, days)
             {
@@ -210,11 +217,12 @@
 
             function ShowConfirmTutorialDialog()
             {
-            $('#confirmTutorialModal').modal('show');
+                $('#confirmTutorialModal').modal('show');
             }
 
         async function GoToPurchase()
         {
+            $('#account-panel').hide();
             $('#spinner-loading').show();
 
             var request =
@@ -235,7 +243,7 @@
                     sessionId: data.Content.SessionId
                 }).then(handleResult);
 
-                $('#spinner-loading').hide();
+    
                 return;
 
             } else

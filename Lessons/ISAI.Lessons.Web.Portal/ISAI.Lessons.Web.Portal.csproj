@@ -613,6 +613,7 @@
     </Compile>
     <Compile Include="Helpers\AuthorizationServiceProvider.cs" />
     <Compile Include="Helpers\EnableQueryWithSearchAttribute.cs" />
+    <Compile Include="Helpers\HangfireAuthorizationFilter.cs" />
     <Compile Include="Helpers\HTMLHelperExtensions.cs" />
     <Compile Include="Helpers\IdentityExtensions.cs" />
     <Compile Include="Helpers\SchedulerService.cs" />

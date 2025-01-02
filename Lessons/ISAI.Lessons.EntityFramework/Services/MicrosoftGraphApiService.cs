@@ -197,7 +197,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 return new TeamsEventResponse()
                 {
                     Id = result.Id,
-                    WebLink = result.WebLink
+                    WebLink = result.OnlineMeeting.JoinUrl
                 };
 
             } catch(Exception ex)

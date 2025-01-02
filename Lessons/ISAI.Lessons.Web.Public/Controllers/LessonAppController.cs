@@ -134,8 +134,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
             try
             {
 
-                request.CancelUrl = _baseReturnUrl + "/tutorials/payment-success";
-                request.SuccessUrl = _baseReturnUrl + "/tutorials/payment-failed";
+                request.CancelUrl = _baseReturnUrl + "/tutorials/payment-failed";
+                request.SuccessUrl = _baseReturnUrl + "/tutorials/payment-success";
 
                 var json = JsonConvert.SerializeObject(request);
                 HttpContent content = new StringContent(json);
