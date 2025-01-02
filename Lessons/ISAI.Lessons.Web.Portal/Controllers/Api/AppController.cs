@@ -521,7 +521,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                         var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been sent the following SMS message: <br />{3}</p>", request.Name, request.Email, request.Message, message);
                         var graphApi = new MicrosoftGraphApiService();
-                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com", "kboswell@uteachrecruitment.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
 
                         response.Content = true;
                         response.Status = ResponseStatus.OK;
@@ -554,7 +554,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been added to Campaign Monitor</p>", request.Name, request.Email, request.Message);
 
                         var graphApi = new MicrosoftGraphApiService();
-                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com", "kboswell@uteachrecruitment.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
+                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, true);
 
                         response.Content = true;
                         response.Status = ResponseStatus.OK;
@@ -1417,20 +1417,24 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
 
                     case "price_1J0LLgJ81SbG6nzad3BrKr0L":
+                    case "price_1QcjgOJ81SbG6nza4UPk6uid":
                         subscriptionName = "Secondary Annual Subscription";
                         subscriptionTypeId = 3;
                         break;
 
                     case "price_1J0LLMJ81SbG6nzasmeqA5KF":
+                    case "price_1QcjhQJ81SbG6nzaN3MfE7N4":
                         subscriptionName = "Secondary Monthly Subscription";
                         subscriptionTypeId = 3;
                         break;
 
+                    case "price_1QcjiYJ81SbG6nzajhmWnLr4":
                     case "price_1IxXUFJ81SbG6nzav7NG3Vto":
                         subscriptionName = "Primary Monthly Subscription";
                         subscriptionTypeId = 2;
                         break;
 
+                    case "price_1Qcji0J81SbG6nza5UsAUbm2":
                     case "price_1IxXTvJ81SbG6nzajuriP6XZ":
                     default:
                         subscriptionName = "Primary Annual Subscription";
