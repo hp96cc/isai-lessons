@@ -72,6 +72,20 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
 
 
+        [Route("api/lessonapp/checksession")]
+        [HttpPost]
+        public async Task<bool> CheckSession()
+        {
+            var isAuthenticated = await IsRequestAuthenticated();
+
+            if (isAuthenticated == false) 
+                Logout();
+
+            return isAuthenticated;
+
+        }
+
+
         [Route("api/lessonapp/logout")]
         [HttpPost]
         public void Logout()

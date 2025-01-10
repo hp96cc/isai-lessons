@@ -13,9 +13,7 @@
     /* Check is logged in */
     if (Request.Cookies["lessons_access_token"] != null && Request.Cookies["lessons_access_token"].Value.ToString().Length > 100)
     {
-
         ViewBag.LoggedIn = true;
-
     }
 
     var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
@@ -318,6 +316,15 @@
                 form.classList.add('was-validated');
 
             } else {
+
+                if (/^\s*$/.test($('#input-priceid').val()))
+                {
+                    $('#form-error-label').html('No Subscription has been selected. Please enter an access code or choose a plan from <a href="https://www.scottishonlinelessons.com/#signup">https://www.scottishonlinelessons.com/#signup</a>');
+                    $('#form-error-label').show();
+                    $('#register-form').show();
+                    $('#spinner-loading').hide();
+                    return;
+                }
 
                 $('#register-form').hide();
                 $('#spinner-loading').show();

@@ -38,6 +38,8 @@ namespace ISAI.Lessons.EntityFramework
 
         public DbSet<Tutorial> Tutorial { get; set; }
 
+        public DbSet<StripeWebhookLog> StripeWebhookLog { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 

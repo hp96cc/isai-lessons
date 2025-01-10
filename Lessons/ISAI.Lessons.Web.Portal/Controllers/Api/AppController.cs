@@ -1414,7 +1414,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             Event stripeEvent;
 
-
             try
             {
                 stripeEvent = EventUtility.ConstructEvent(
@@ -1422,7 +1421,19 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     stripeSignature,
                     options.WebhookSecret
                 );
+
                 Console.WriteLine($"Webhook notification with type: {stripeEvent.Type} found for {stripeEvent.Id}");
+
+                var stripeWebhookLog = new StripeWebhookLog();
+                stripeWebhookLog.CallBackName = "Webhook notification with type: {stripeEvent.Type} found for {stripeEvent.Id}";
+                stripeWebhookLog.Description = stripeEvent.RawJObject.ToString(Formatting.Indented);
+                stripeWebhookLog.CreatedUserId = _adminUserId;
+                stripeWebhookLog.ModifiedUserId = _adminUserId;
+                stripeWebhookLog.DateCreated = DateTimeOffset.UtcNow;
+                stripeWebhookLog.DateModified = DateTimeOffset.UtcNow;
+                db.Entry(stripeWebhookLog).State = EntityState.Added;
+                await db.SaveChangesAsync();
+
             }
             catch (Exception e)
             {
@@ -1462,9 +1473,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                         //Add Stripe customer ID
                         customer.StripeCustomerId = checkOutComplete.CustomerId;
+                        customer.HasCompletedCheckout = true;
+                        customer.DateModified = DateTime.UtcNow;
                         db.Entry(customer).State = EntityState.Modified;
 
-                        //Add Stripe SubsctioiniD
+                        //Add Stripe Subscription
                         var subscription = await db.Subscription
                                 .OrderByDescending(x => x.Id)
                                 .FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);

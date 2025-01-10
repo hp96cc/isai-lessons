@@ -14,11 +14,38 @@ namespace ISAI.Lessons.Web.Portal.Helpers
     {
         static string _systemUserId => ConfigurationManager.AppSettings["SystemUserId"];
         static string _systemGraphUserEmail => ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
-        static string _systemGraphUserName => ConfigurationManager.AppSettings["MicrosoftGraph.SenderName"];
         static string _systemAdminEmail => ConfigurationManager.AppSettings["Email.SysAdmin"];
         static string _clientAuditEmail => ConfigurationManager.AppSettings["Email.ClientAudit"];
         
         static bool _isSendingTutorialEmails = false;
+
+        static bool _isDeletingAbandonedCustomers = false;
+
+        public static void DeleteAbandonedCustomers()
+        {
+            if (_isDeletingAbandonedCustomers) return;
+
+            try
+            {
+                _isDeletingAbandonedCustomers = true;
+
+
+                using (var db = new LessonsDbContext())
+                {
+
+                }
+            } catch (Exception ex)
+            {
+                _isDeletingAbandonedCustomers = false;
+                throw ex;
+            }
+            finally
+            {
+                _isDeletingAbandonedCustomers = false;
+            }
+
+
+        }
 
         public static void SendPendingTutorialEmails()
         {

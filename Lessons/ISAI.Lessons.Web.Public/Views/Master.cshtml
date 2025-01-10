@@ -196,21 +196,21 @@
 
 
                         <div class="col-12 col-sm-12">
-@*
-                            <ul class="top-social-icon float-left">
+                            @*
+                                <ul class="top-social-icon float-left">
 
-                                @foreach (var socialLink in home.SocialLinks)
-                                {
-                                    if (socialLink.Link != null)
+                                    @foreach (var socialLink in home.SocialLinks)
                                     {
+                                        if (socialLink.Link != null)
+                                        {
 
-                                        <li><a href="@socialLink.Link.Url"><i class="fab @socialLink.IconPrefix"></i></a></li>
+                                            <li><a href="@socialLink.Link.Url"><i class="fab @socialLink.IconPrefix"></i></a></li>
+                                        }
                                     }
-                                }
 
 
-                            </ul>
-*@
+                                </ul>
+                            *@
                             <div class="top-right-bar">
                                 <div class="justify-content-center h3 text-white  float-right"></div>
 
@@ -227,7 +227,7 @@
                                     @*
 
 
-            <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
+                                        <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
                                     *@
                                     <a href="/account/?redirectUrl=@(Url.Encode(Model.Url()))" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
 
@@ -482,6 +482,42 @@
     <script src="/assets/js/main.js"></script>
 
     <script src="~/scripts/app.js?v=10"></script>
+
+
+    @if (Model.Url().Contains("/plans/") == false && Model.Url().Contains("/account/") == false)
+    {
+
+    <script>
+
+        $(document).ready(function ()
+        {
+            CheckSession();
+        });
+
+        async function CheckSession()
+        {
+            $('#account-panel').hide();
+            $('#spinner-loading').show();
+
+            try
+            {
+                var data = await lessonsApp.checksession();
+                if (data)
+                {
+                    $('#account-panel').show();
+                    $('#spinner-loading').hide();
+                    return;
+                }
+
+            } catch {
+
+            }
+
+            location.href = '/account/';
+        }
+    </script>
+
+    }
 
     @RenderSection("Scripts", required: false)
 

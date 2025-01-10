@@ -271,6 +271,14 @@
     <Compile Include="Migrations\202412310945439_Added email pending notifications.Designer.cs">
       <DependentUpon>202412310945439_Added email pending notifications.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202501101115090_Add Stripe Callback.cs" />
+    <Compile Include="Migrations\202501101115090_Add Stripe Callback.Designer.cs">
+      <DependentUpon>202501101115090_Add Stripe Callback.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501101116417_Add Stripe Callback 2.cs" />
+    <Compile Include="Migrations\202501101116417_Add Stripe Callback 2.Designer.cs">
+      <DependentUpon>202501101116417_Add Stripe Callback 2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -279,6 +287,7 @@
     <Compile Include="Models\CustomerDevice.cs" />
     <Compile Include="Models\Lesson.cs" />
     <Compile Include="Models\LessonGroup.cs" />
+    <Compile Include="Models\StripeWebhookLog.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\SubscriptionCode.cs" />
     <Compile Include="Models\SubscriptionType.cs" />
@@ -311,6 +320,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202412310945439_Added email pending notifications.resx">
       <DependentUpon>202412310945439_Added email pending notifications.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501101115090_Add Stripe Callback.resx">
+      <DependentUpon>202501101115090_Add Stripe Callback.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501101116417_Add Stripe Callback 2.resx">
+      <DependentUpon>202501101116417_Add Stripe Callback 2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

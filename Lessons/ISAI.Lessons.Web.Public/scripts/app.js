@@ -50,6 +50,28 @@
 
     };
 
+    var checksession = async function ()
+    {
+
+        var url = this.baseUrl + "checksession";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
     var saveCustomer = async function (customer) {
 
         var url = this.baseUrl + "savecustomer";
@@ -496,7 +518,8 @@
         deleteCustomerDevice: deleteCustomerDevice,
         sendFreeTrailRequest: sendFreeTrailRequest,
         tutorialCreate: tutorialCreate,
-        tutorialPurchase: tutorialPurchase
+        tutorialPurchase: tutorialPurchase,
+        checksession: checksession
 
     }
 
