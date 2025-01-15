@@ -43,11 +43,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         IStripeClient client;
         ICryptoNet cryptoNetKey;
 
-        string _adminUserId = "efef3c10-4e2c-4aca-baf7-7477377d1d73";
-        string _base64Key = "Shnlc8favzpU3dBgpUuZ4yktIWPyB/xU3FYcEAWVAVE=";
-        string _base64Iv = "GOcuDFIgvv+Sss54DFVjLN/2GFyCP1TZc9HDNKf/cxY=";
-        string _aesKeyFile = @"c:\apps\videokey.aes";
-        string _tutorialStripePrefix = "tutorial_";
+        string _adminUserId = ConfigurationManager.AppSettings["SystemUserId"];
+        string _base64Key = ConfigurationManager.AppSettings["Video.Base64Key"];
+        string _base64Iv = ConfigurationManager.AppSettings["Video.Base64Iv"];
+        string _aesKeyFile = ConfigurationManager.AppSettings["Video.AesKeyFile"];
+        string _tutorialStripePrefix = ConfigurationManager.AppSettings["Stripe.TutorialPrefix"];
 
         public AppController()
         {
@@ -64,9 +64,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 PublishableKey = ConfigurationManager.AppSettings["STRIPE_PUBLISHABLE_KEY"],
                 SecretKey = ConfigurationManager.AppSettings["STRIPE_SECRET_KEY"],
                 WebhookSecret = ConfigurationManager.AppSettings["STRIPE_WEBHOOK_SECRET"],
-                BasicPrice = ConfigurationManager.AppSettings["BASIC_PRICE_ID"], //TODO: remove?
-                ProPrice = ConfigurationManager.AppSettings["PRO_PRICE_ID"], //TODO: remove?
-                Domain = ConfigurationManager.AppSettings["DOMAIN"], //TODO: remove?
             };
 
 

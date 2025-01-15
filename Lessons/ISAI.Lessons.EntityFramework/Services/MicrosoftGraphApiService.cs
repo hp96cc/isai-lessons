@@ -12,32 +12,24 @@ using System.Threading.Tasks;
 using Microsoft.Graph.Users.Item.SendMail;
 using Microsoft.Graph.Users.Item.Calendar.GetSchedule;
 using ISAI.Lessons.Models.ViewModels.GraphApi;
+using System.Configuration;
 
 namespace ISAI.Lessons.EntityFramework.Services
 {
     public class MicrosoftGraphApiService
     {
 
-        //readonly string baseAuthAddress = "https://login.microsoftonline.com/";
-        //readonly string tennantId = "72b8f033-67c4-4524-964e-d3c01efa1acd";
-        //readonly string authPath = "oauth2/v2.0/token";
-        //readonly string appId = "88030882-6822-4b8d-b8ae-19fe43c38f89";
-        //readonly string appSecret = "vOP8Q~6W9LZa-qZD-eVLr6LRbsgG~dawfloGmaCs";
-        //readonly string scope = "https://graph.microsoft.com/.default";
-        //readonly string grantType = "client_credentials";
-
-        //TODO: below are ISAI connnection settings - above are SOL
-        readonly string baseAuthAddress = "https://login.microsoftonline.com/";
-        readonly string tennantId = "6aabb53e-79a5-446f-baee-f84747ee0dbf";
-        readonly string authPath = "oauth2/v2.0/token";
-        readonly string appId = "fd9d1a5d-c6b0-4cf3-a96e-5b5bc18cae0e";
-        readonly string appSecret = "0sR8Q~kP95PMbSh5YmYhlpgJOAiJHKVlRuySGb~e";
-        readonly string scope = "https://graph.microsoft.com/.default";
-        readonly string grantType = "client_credentials";
+        readonly string baseAuthAddress = ConfigurationManager.AppSettings["MicrosoftGraph.BaseAuthAddress"];
+        readonly string tennantId = ConfigurationManager.AppSettings["MicrosoftGraph.TennantId"];
+        readonly string authPath = ConfigurationManager.AppSettings["MicrosoftGraph.AuthPath"];
+        readonly string appId = ConfigurationManager.AppSettings["MicrosoftGraph.AppId"];
+        readonly string appSecret = ConfigurationManager.AppSettings["MicrosoftGraph.AppSecret"];
+        readonly string scope = ConfigurationManager.AppSettings["MicrosoftGraph.Scope"];
+        readonly string grantType = ConfigurationManager.AppSettings["MicrosoftGraph.GrantType"];
 
         //NOTE: For Subscriptions and keys below see: https://learn.microsoft.com/en-us/graph/change-notifications-with-resource-data
-        readonly string publicSubscriptionKeyId = "TBC";
-        readonly string publicSubscriptionKey = "TBC";
+        readonly string publicSubscriptionKeyId = ConfigurationManager.AppSettings["MicrosoftGraph.PublicSubscriptionKeyId"];
+        readonly string publicSubscriptionKey = ConfigurationManager.AppSettings["MicrosoftGraph.PublicSubscriptionKey"];
 
         string _authToken;
 

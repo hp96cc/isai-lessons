@@ -48,7 +48,5 @@ namespace ISAI.Lessons.Models.Models
         [NotMapped]
         public string PasswordConfirm { get; set; }
 
-        public virtual ICollection<Tutorial> Tutorials { get; set; }
-
     }
 }
