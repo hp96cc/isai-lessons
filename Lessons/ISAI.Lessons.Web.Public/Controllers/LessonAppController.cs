@@ -1,6 +1,5 @@
 ﻿using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
-using ISAI.Lessons.EntityFramework.ViewModels.Stripe;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
@@ -9,7 +8,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -17,6 +15,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Customer = ISAI.Lessons.EntityFramework.Models.Customer;  //TODO: models need to rationlised
+using CustomerDevice = ISAI.Lessons.EntityFramework.Models.CustomerDevice;
+using Lesson = ISAI.Lessons.EntityFramework.Models.Lesson;
+using Subscription = ISAI.Lessons.EntityFramework.Models.Subscription;
 
 namespace ISAI.Lessons.Web.Public.Controllers
 {
@@ -124,6 +126,72 @@ namespace ISAI.Lessons.Web.Public.Controllers
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var customer = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
                     return customer;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [Route("api/lessonapp/tutors")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<TutorResponseViewModel>> GetTutors(TutorRequestViewModel request)
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(request);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/tutors", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<ResponseData<TutorResponseViewModel>>(serialisedContent);
+                    return data;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [Route("api/lessonapp/tutorialtimeslots")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<TutorTimeSlotResponseViewModel>> GetTutotialTimeSlots(TutorTimeSlotRequestViewModel request)
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(request);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/tutorialtimeslots", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<ResponseData<TutorTimeSlotResponseViewModel>>(serialisedContent);
+                    return data;
 
                 }
                 else
@@ -309,14 +377,14 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/deletedevice")]
         [HttpPost]
-        public async Task<ResponseBase> DeleteDevice(CustomerDevice customerDevice)
+        public async Task<ResponseBase> DeleteDevice(CustomerDevice request)
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
 
-                var json = JsonConvert.SerializeObject(customerDevice);
+                var json = JsonConvert.SerializeObject(request);
                 HttpContent content = new StringContent(json);
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
@@ -346,19 +414,23 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/customeractivity")]
         [HttpPost]
-        public async Task<List<CustomerActivity>> CustomerActivity()
+        public async Task<ResponseData<LessonHistoryResponseViewModel>> CustomerActivity(LessonHistoryRequestViewModel request)
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
             try
             {
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/customeractivity", null).ConfigureAwait(false);
+                var json = JsonConvert.SerializeObject(request);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/customeractivity", content).ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
                 {
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var customerActivity = JsonConvert.DeserializeObject<List<CustomerActivity>>(serialisedContent);
+                    var customerActivity = JsonConvert.DeserializeObject<ResponseData<LessonHistoryResponseViewModel>>(serialisedContent);
                     return customerActivity;
 
                 }

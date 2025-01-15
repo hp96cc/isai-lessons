@@ -13,5 +13,7 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
         public string Id { get; set; }
 
         public string Name { get; set; }
+
+        public string SubjectName { get; set; }
     }
 }

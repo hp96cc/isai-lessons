@@ -1,10 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
-
-namespace ISAI.Lessons.Models.Models
+﻿namespace ISAI.Lessons.Models.Models
 {
     public class CustomerDevice : BaseModel
     {

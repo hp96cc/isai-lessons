@@ -40,6 +40,12 @@ namespace ISAI.Lessons.EntityFramework
 
         public DbSet<StripeWebhookLog> StripeWebhookLog { get; set; }
 
+        public DbSet<Subject> Subject { get; set; }
+
+        public DbSet<SubjectLessonGroup> SubjectLessonGroup { get; set; }
+
+        public DbSet<SubjectTutorUser> SubjectTutorUser { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 

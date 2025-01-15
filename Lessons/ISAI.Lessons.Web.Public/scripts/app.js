@@ -519,7 +519,9 @@
         sendFreeTrailRequest: sendFreeTrailRequest,
         tutorialCreate: tutorialCreate,
         tutorialPurchase: tutorialPurchase,
-        checksession: checksession
+        checksession: checksession,
+        tutors: tutors, //TODO:
+        tutorialtimeslots: tutorialtimeslots //TODO:
 
     }
 

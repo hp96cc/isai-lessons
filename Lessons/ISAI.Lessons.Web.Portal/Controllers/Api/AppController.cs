@@ -1,4 +1,5 @@
-﻿using createsend_dotnet;
+﻿using Azure;
+using createsend_dotnet;
 using CryptoNet;
 using Effortless.Net.Encryption;
 using ISAI.Lessons.EntityFramework.Models;
@@ -8,9 +9,11 @@ using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.ViewModels;
 using ISAI.Lessons.Web.Portal.Helpers;
+using Microsoft.AspNet.SignalR.Hosting;
 using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
+using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -143,6 +146,161 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+        [Route("api/app/tutors")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<TutorResponseViewModel>> GetTutors(TutorRequestViewModel request)
+        {
+            var response = new Lessons.Models.Models.ResponseData<TutorResponseViewModel>()
+            {
+                Content = new TutorResponseViewModel()
+            };
+
+            try
+            {
+                //TODO: maybe return users
+                if(request.SubjectId.HasValue)
+                {
+                    var tutors = await db.SubjectTutorUser
+                        .Include(x => x.TutorUser)
+                        .Include(x => x.Subject)
+                        .Where(x => x.TutorUser.Deleted == false && x.SubjectId == request.SubjectId)
+                        .Select(x => new Tutor()
+                        {
+                            Id = x.TutorUser.Id,
+                            Name = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
+                            SubjectName = x.Subject.Name
+                        })
+                        .ToListAsync();
+
+                    response.Content.Tutors = tutors;
+
+                } else
+                {
+                    var tutors = await db.SubjectTutorUser
+                       .Include(x => x.TutorUser)
+                       .Include(x => x.Subject)
+                       .Where(x => x.TutorUser.Deleted == false && x.SubjectId == request.SubjectId)
+                       .Select(x => new Tutor()
+                       {
+                           Id = x.TutorUser.Id,
+                           Name = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
+                           SubjectName = x.Subject.Name
+                       })
+                       .ToListAsync();
+
+                    response.Content.Tutors = tutors;
+                }
+
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        {
+                            new Lessons.Models.Models.ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
+
+        [Route("api/app/tutorialtimeslots")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<TutorTimeSlotResponseViewModel>> GetTutotialTimeSlots(TutorTimeSlotRequestViewModel request)
+        {
+
+            var response = new Lessons.Models.Models.ResponseData<TutorTimeSlotResponseViewModel>();
+
+            try
+            {
+                var tutorialTimeSlots = new List<TutorialTimeSlot>();
+
+                for(int i = 9; i < 21; i++)
+                {
+                    tutorialTimeSlots.Add(new TutorialTimeSlot()
+                    {
+                        StartTime = i.ToString("00") + ":00",
+                        EndTime = (i + request.TutorialDuration).ToString("00") + ":00"
+                    });
+                }
+
+                response.Content.TutorialTimeSlots = tutorialTimeSlots;
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        {
+                            new Lessons.Models.Models.ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
+
+        //TODO: ceate view model of useful customer actovty
+        [Route("api/app/customeractivity")]
+        [HttpPost]
+        public async Task<Lessons.Models.Models.ResponseData<LessonHistoryResponseViewModel>> CustomerActivity(LessonHistoryRequestViewModel request)
+        {
+
+            var response = new Lessons.Models.Models.ResponseData<LessonHistoryResponseViewModel>()
+            {
+                Content = new LessonHistoryResponseViewModel(),
+            };
+
+            try
+            {
+                var lessonHistory = await db.CustomerActivity
+                .Include(x => x.CustomerDevice)
+                .Include(x => x.Lesson)
+                .Include(x => x.Lesson.LessonGroup)
+                .Where(x => x.CustomerDevice.CustomerId == _customerId && x.Deleted == false)
+                .Select(x => new LessonHistory()
+                {
+                    LessonId = x.LessonId,
+                    LessonName = x.Lesson.Name,
+                    LessonGroupName = x.Lesson.LessonGroup.Name,
+                    DateTimeStart = x.StartDateTime,
+                    DateTimeEnd = x.StartDateTime, //TODO: needs to be recored
+                    WatchedDurationInMinutes = 0 //TODO: needs to be recorded
+                })
+                .Skip(request.Page * request.RecordCount)
+                .Take(request.RecordCount)
+                .ToListAsync();
+
+                response.Content.LessonHistory = lessonHistory;
+                response.Status = ResponseStatus.OK;
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        {
+                            new Lessons.Models.Models.ErrorResponse()
+                            {
+                                Message = ex.Message
+                            }
+                        };
+
+                return response;
+            }
+        }
+
 
         [Route("api/app/tutorialpurchase")]
         [HttpPost]
@@ -177,9 +335,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     {
                     new Tuple<string, string>(customerFullName, customer.Email)
                     });
-
-                //TODO: error handling?
-
 
                 var tutorialDuration = request.DateTimeEnd.Subtract(request.DateTimeStart).Minutes;
 
@@ -932,27 +1087,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 await db.SaveChangesAsync();
             }
 
-            response.Status = ResponseStatus.OK;
-
-            return response;
-        }
-
-        [Route("api/app/customeractivity")]
-        [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<List<CustomerActivity>>> CustomerActivity()
-        {
-
-            var response = new Lessons.Models.Models.ResponseData<List<CustomerActivity>>();
-
-
-            var activity = await db.CustomerActivity
-                .Include(x => x.CustomerDevice)
-                .Where(x =>
-                x.CustomerDevice.CustomerId == _customerId &&
-                x.Deleted == false
-            ).ToListAsync();
-
-            response.Content = activity;
             response.Status = ResponseStatus.OK;
 
             return response;

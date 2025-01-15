@@ -279,6 +279,14 @@
     <Compile Include="Migrations\202501101116417_Add Stripe Callback 2.Designer.cs">
       <DependentUpon>202501101116417_Add Stripe Callback 2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202501141651494_Added Subjects for Tutors.cs" />
+    <Compile Include="Migrations\202501141651494_Added Subjects for Tutors.Designer.cs">
+      <DependentUpon>202501141651494_Added Subjects for Tutors.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501141723257_Added Subjects for Tutors 2.cs" />
+    <Compile Include="Migrations\202501141723257_Added Subjects for Tutors 2.Designer.cs">
+      <DependentUpon>202501141723257_Added Subjects for Tutors 2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -288,6 +296,9 @@
     <Compile Include="Models\Lesson.cs" />
     <Compile Include="Models\LessonGroup.cs" />
     <Compile Include="Models\StripeWebhookLog.cs" />
+    <Compile Include="Models\Subject.cs" />
+    <Compile Include="Models\SubjectLessonGroup.cs" />
+    <Compile Include="Models\SubjectUser.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\SubscriptionCode.cs" />
     <Compile Include="Models\SubscriptionType.cs" />
@@ -326,6 +337,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202501101116417_Add Stripe Callback 2.resx">
       <DependentUpon>202501101116417_Add Stripe Callback 2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501141651494_Added Subjects for Tutors.resx">
+      <DependentUpon>202501141651494_Added Subjects for Tutors.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501141723257_Added Subjects for Tutors 2.resx">
+      <DependentUpon>202501141723257_Added Subjects for Tutors 2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

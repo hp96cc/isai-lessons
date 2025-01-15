@@ -2,15 +2,15 @@
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class SubjectUser : BaseModel
+    public class SubjectTutorUser : BaseModel
     {
         public int SubjectId {  get; set; }
         [ForeignKey("SubjectId")]
         public Subject Subject { get; set; }
 
-        public string UserId { get; set; }
+        public string TutorUserId { get; set; }
 
-        [ForeignKey("UserId")]
-        public User User { get; set; }
+        [ForeignKey("TutorUserId")]
+        public User TutorUser { get; set; }
     }
 }
