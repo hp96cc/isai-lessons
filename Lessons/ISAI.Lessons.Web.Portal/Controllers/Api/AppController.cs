@@ -1,5 +1,4 @@
-﻿using Azure;
-using createsend_dotnet;
+﻿using createsend_dotnet;
 using CryptoNet;
 using Effortless.Net.Encryption;
 using ISAI.Lessons.EntityFramework.Models;
@@ -9,7 +8,7 @@ using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.ViewModels;
 using ISAI.Lessons.Web.Portal.Helpers;
-using Microsoft.AspNet.SignalR.Hosting;
+using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
@@ -27,6 +26,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Customer = ISAI.Lessons.EntityFramework.Models.Customer;
+using ResponseStatus = ISAI.Lessons.Models.Enums.ResponseStatus;
 using Subscription = ISAI.Lessons.EntityFramework.Models.Subscription;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
@@ -43,11 +43,14 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         IStripeClient client;
         ICryptoNet cryptoNetKey;
 
-        string _adminUserId = ConfigurationManager.AppSettings["SystemUserId"];
-        string _base64Key = ConfigurationManager.AppSettings["Video.Base64Key"];
-        string _base64Iv = ConfigurationManager.AppSettings["Video.Base64Iv"];
-        string _aesKeyFile = ConfigurationManager.AppSettings["Video.AesKeyFile"];
-        string _tutorialStripePrefix = ConfigurationManager.AppSettings["Stripe.TutorialPrefix"];
+        private readonly string _adminUserId = ConfigurationManager.AppSettings["SystemUserId"];
+        private readonly string _base64Key = ConfigurationManager.AppSettings["Video.Base64Key"];
+        private readonly string _base64Iv = ConfigurationManager.AppSettings["Video.Base64Iv"];
+        private readonly string _aesKeyFile = ConfigurationManager.AppSettings["Video.AesKeyFile"];
+        private readonly string _tutorialStripePrefix = ConfigurationManager.AppSettings["Stripe.TutorialPrefix"];
+        private readonly string _graphSenderAdminAccount = ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
+        private readonly string _systemTimeZone = ConfigurationManager.AppSettings["SystemTimeZone"];
+
 
         public AppController()
         {
@@ -211,20 +214,61 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [HttpPost]
         public async Task<Lessons.Models.Models.ResponseData<TutorTimeSlotResponseViewModel>> GetTutotialTimeSlots(TutorTimeSlotRequestViewModel request)
         {
-
             var response = new Lessons.Models.Models.ResponseData<TutorTimeSlotResponseViewModel>();
 
             try
             {
+                var tutorUser = await db.Users.FirstAsync(x => x.Id == request.TutorId && x.Deleted == false);
+                var userList = new List<string>() { tutorUser.Email };
+                var startDate = request.TutorialDate.Date;
+                var endDate = startDate.AddDays(1).AddSeconds(-1);
+                var tutorialDuration = request.TutorialDuration;
+
+                var graphApi = new MicrosoftGraphApiService();
+                var availabilityResponse = await graphApi.GetAvailability(
+                    _graphSenderAdminAccount, 
+                    userList, 
+                    startDate, 
+                    endDate, 
+                    _systemTimeZone, 
+                    request.TutorialDuration);
+
+                var scheduleInfo = availabilityResponse.Value[0];
+
+                var availableStartTime = scheduleInfo.WorkingHours.StartTime.Value.Hour;
+                var availableEndTime = scheduleInfo.WorkingHours.EndTime.Value.Hour;
+
                 var tutorialTimeSlots = new List<TutorialTimeSlot>();
 
-                for(int i = 9; i < 21; i++)
+                var availableStartDateTime = startDate.AddHours(availableStartTime);
+                var availableEndDateTime = startDate.AddHours(availableEndTime);
+                var tutorialMinutes = 0;
+
+                while(true)
                 {
-                    tutorialTimeSlots.Add(new TutorialTimeSlot()
+                    var tutorialStartDateTime = availableStartDateTime.AddMinutes(tutorialMinutes);
+                    var tutorialEndDateTime = availableStartDateTime.AddMinutes(tutorialMinutes + tutorialDuration);
+
+                    if (tutorialEndDateTime > availableEndDateTime)
                     {
-                        StartTime = i.ToString("00") + ":00",
-                        EndTime = (i + request.TutorialDuration).ToString("00") + ":00"
-                    });
+                        //NOTE: Tutorial goes past working hours
+                        break;
+                    }
+
+                    var isSlotAvailable = !scheduleInfo.ScheduleItems.Any(x => tutorialStartDateTime >= x.Start.ToDateTime() && tutorialEndDateTime <= x.End.ToDateTime());
+
+                    if (isSlotAvailable) {
+
+                        tutorialTimeSlots.Add(new TutorialTimeSlot()
+                        {
+                            StartTime = tutorialStartDateTime.Hour.ToString("00") + ":00",
+                            EndTime = tutorialEndDateTime.Hour.ToString("00") + ":00"
+                        });
+                    
+                    }
+
+                    tutorialMinutes += tutorialDuration;
+
                 }
 
                 response.Content.TutorialTimeSlots = tutorialTimeSlots;
@@ -247,7 +291,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        //TODO: ceate view model of useful customer actovty
         [Route("api/app/customeractivity")]
         [HttpPost]
         public async Task<Lessons.Models.Models.ResponseData<LessonHistoryResponseViewModel>> CustomerActivity(LessonHistoryRequestViewModel request)
@@ -714,7 +757,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p>", request.Name, request.Email, request.Message);
 
 
-                await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { "noreply@scottishonlinelessons.com" }, true);
+                await graphApi.SendEmail(_graphSenderAdminAccount, request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { _graphSenderAdminAccount }, true);
                 response.Content = true;
                 response.Status = ResponseStatus.OK;
               
@@ -804,7 +847,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                         var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been sent the following SMS message: <br />{3}</p>", request.Name, request.Email, request.Message, message);
                         var graphApi = new MicrosoftGraphApiService();
-                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { "noreply@scottishonlinelessons.com" }, true);
+                        await graphApi.SendEmail(_graphSenderAdminAccount, request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { _graphSenderAdminAccount }, true);
 
                         response.Content = true;
                         response.Status = ResponseStatus.OK;
@@ -837,7 +880,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been added to Campaign Monitor</p>", request.Name, request.Email, request.Message);
 
                         var graphApi = new MicrosoftGraphApiService();
-                        await graphApi.SendEmail("noreply@scottishonlinelessons.com", request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { "noreply@scottishonlinelessons.com" }, true);
+                        await graphApi.SendEmail(_graphSenderAdminAccount, request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { _graphSenderAdminAccount }, true);
 
                         response.Content = true;
                         response.Status = ResponseStatus.OK;
@@ -1117,13 +1160,13 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                     MicrosoftGraphApiService graphService = new MicrosoftGraphApiService();
                     await graphService.SendEmail(
-                            "noreply@scottishonlinelessons.com",
+                            _graphSenderAdminAccount,
                             "Reset Password - Scottish Online Lessons",
                             templateHtml,
                             new List<string>() { customer.Email },
                             null,
                             new List<string>() { "sysadmin@isai.co.uk" },
-                            new List<string>() { "noreply@scottishonlinelessons.com" },
+                            new List<string>() { _graphSenderAdminAccount },
                             true);
 
                 } catch (Exception ex)
@@ -1543,7 +1586,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             var json = await Request.Content.ReadAsStringAsync();
             var stripeSignature = Request.Headers.First(x => x.Key.Equals("Stripe-Signature")).Value.ElementAt(0);
 
-            Event stripeEvent;
+            Stripe.Event stripeEvent;
 
             try
             {

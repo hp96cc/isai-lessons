@@ -19,24 +19,22 @@ namespace ISAI.Lessons.EntityFramework.Services
     public class MicrosoftGraphApiService
     {
 
-        readonly string baseAuthAddress = ConfigurationManager.AppSettings["MicrosoftGraph.BaseAuthAddress"];
-        readonly string tennantId = ConfigurationManager.AppSettings["MicrosoftGraph.TennantId"];
-        readonly string authPath = ConfigurationManager.AppSettings["MicrosoftGraph.AuthPath"];
-        readonly string appId = ConfigurationManager.AppSettings["MicrosoftGraph.AppId"];
-        readonly string appSecret = ConfigurationManager.AppSettings["MicrosoftGraph.AppSecret"];
-        readonly string scope = ConfigurationManager.AppSettings["MicrosoftGraph.Scope"];
-        readonly string grantType = ConfigurationManager.AppSettings["MicrosoftGraph.GrantType"];
+        private readonly string baseAuthAddress = ConfigurationManager.AppSettings["MicrosoftGraph.BaseAuthAddress"];
+        private readonly string tennantId = ConfigurationManager.AppSettings["MicrosoftGraph.TennantId"];
+        private readonly string authPath = ConfigurationManager.AppSettings["MicrosoftGraph.AuthPath"];
+        private readonly string appId = ConfigurationManager.AppSettings["MicrosoftGraph.AppId"];
+        private readonly string appSecret = ConfigurationManager.AppSettings["MicrosoftGraph.AppSecret"];
+        private readonly string scope = ConfigurationManager.AppSettings["MicrosoftGraph.Scope"];
+        private readonly string grantType = ConfigurationManager.AppSettings["MicrosoftGraph.GrantType"];
+        private readonly string graphSenderAdminAccount = ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
 
         //NOTE: For Subscriptions and keys below see: https://learn.microsoft.com/en-us/graph/change-notifications-with-resource-data
-        readonly string publicSubscriptionKeyId = ConfigurationManager.AppSettings["MicrosoftGraph.PublicSubscriptionKeyId"];
-        readonly string publicSubscriptionKey = ConfigurationManager.AppSettings["MicrosoftGraph.PublicSubscriptionKey"];
+        private readonly string publicSubscriptionKeyId = ConfigurationManager.AppSettings["MicrosoftGraph.PublicSubscriptionKeyId"];
+        private readonly string publicSubscriptionKey = ConfigurationManager.AppSettings["MicrosoftGraph.PublicSubscriptionKey"];
 
-        string _authToken;
+        private string authToken;
 
-        public MicrosoftGraphApiService()
-        {
-
-        }
+        public MicrosoftGraphApiService() { }
 
         public async Task SendEmail(
             string userName, 
@@ -200,46 +198,46 @@ namespace ISAI.Lessons.EntityFramework.Services
 
         }
 
-        public async Task GetAvailability()
+        public async Task<GetSchedulePostResponse> GetAvailability(string userName, List<string> emailAddresses, DateTime startDate, DateTime endDate, string timeZone, int interval)
         {
+       
             GraphServiceClient graphClient = GetAuthenticatedClient();
+      
 
             var requestBody = new GetSchedulePostRequestBody
             {
-                Schedules = new List<string>
-                {
-                    "craig@isai.co.uk",
-                    "paula@isai.co.uk",
-                },
+                Schedules = emailAddresses,
                 StartTime = new DateTimeTimeZone
                 {
-                    DateTime = "2024-12-11T09:00:00",
-                    TimeZone = "GMT Standard Time",
+                    DateTime = startDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss"),
+                    TimeZone = timeZone,
                 },
                 EndTime = new DateTimeTimeZone
                 {
-                    DateTime = "2024-12-11T18:00:00",
-                    TimeZone = "GMT Standard Time",
+                    DateTime = endDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss"),
+                    TimeZone = timeZone,
                 },
-                AvailabilityViewInterval = 60,
+                AvailabilityViewInterval = interval,
             };
 
             try
             {
+                var scheduleInformation = new List<ScheduleInformation>();
 
                 // To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
-                var result = await graphClient.Users["craig@isai.co.uk"].Calendar.GetSchedule.PostAsGetSchedulePostResponseAsync(requestBody, (requestConfiguration) =>
+                var response = await graphClient.Users[userName].Calendar.GetSchedule.PostAsGetSchedulePostResponseAsync(requestBody, (requestConfiguration) =>
                 {
-                    requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"GMT Standard Time\"");
+                    requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"" + timeZone + "\"");
                 });
-                var t = true;
 
-            }
-            catch (Exception ex)
+                return response;
+
+            } 
+            catch(Exception ex)
             {
-                var y = true;
+                //TODO: handle and log
+                throw ex;
             }
-
 
         }
 
@@ -384,17 +382,19 @@ namespace ISAI.Lessons.EntityFramework.Services
 
             {
 
-                System.Net.ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
+                ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 httpClient.DefaultRequestHeaders.Add("Keep-Alive", "true");
 
-                var requestBody = new List<KeyValuePair<string, string>>();
-                requestBody.Add(new KeyValuePair<string, string>("client_id", appId));
-                requestBody.Add(new KeyValuePair<string, string>("scope", scope));
-                requestBody.Add(new KeyValuePair<string, string>("client_secret", appSecret));
-                requestBody.Add(new KeyValuePair<string, string>("grant_type", grantType));
+                var requestBody = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("client_id", appId),
+                    new KeyValuePair<string, string>("scope", scope),
+                    new KeyValuePair<string, string>("client_secret", appSecret),
+                    new KeyValuePair<string, string>("grant_type", grantType)
+                };
 
                 Uri path = new Uri(string.Format("{0}/{1}/{2}", baseAuthAddress, tennantId, authPath));
 
@@ -406,7 +406,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var jsonObject = JsonConvert.DeserializeObject<dynamic>(serialisedContent);
-                    _authToken = jsonObject.access_token;
+                    this.authToken = jsonObject.access_token;
 
                 }
 
