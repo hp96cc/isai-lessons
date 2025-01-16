@@ -1,4 +1,5 @@
-﻿using ISAI.Lessons.EntityFramework.Services;
+﻿using ISAI.Lessons.EntityFramework.Models;
+using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
@@ -15,10 +16,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Customer = ISAI.Lessons.EntityFramework.Models.Customer;  //TODO: models need to rationlised
-using CustomerDevice = ISAI.Lessons.EntityFramework.Models.CustomerDevice;
-using Lesson = ISAI.Lessons.EntityFramework.Models.Lesson;
-using Subscription = ISAI.Lessons.EntityFramework.Models.Subscription;
 
 namespace ISAI.Lessons.Web.Public.Controllers
 {
@@ -57,12 +54,10 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-
         [Route("api/lessonapp/login")]
         [HttpPost]
         public async Task Login(LoginRequestViewModel model) 
         {
-
             var auth = await GetAuthToken(model.Email, model.Password, null);
 
             if (auth == null)
@@ -141,7 +136,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/tutors")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<TutorResponseViewModel>> GetTutors(TutorRequestViewModel request)
+        public async Task<ResponseData<TutorResponseViewModel>> GetTutors(TutorRequestViewModel request)
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
@@ -174,7 +169,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/tutorialtimeslots")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<TutorTimeSlotResponseViewModel>> GetTutotialTimeSlots(TutorTimeSlotRequestViewModel request)
+        public async Task<ResponseData<TutorTimeSlotResponseViewModel>> GetTutotialTimeSlots(TutorTimeSlotRequestViewModel request)
         {
             _httpClient = await _apiService.SetHttpAuthClient();
 
@@ -489,7 +484,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/sendresetpasswordemail")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseBase> SendResetPasswordEmail(SendResetPasswordEmailViewModel model)
+        public async Task<ResponseBase> SendResetPasswordEmail(SendResetPasswordEmailViewModel model)
         {
 
             var response = new ResponseBase();
@@ -530,7 +525,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/updatepassword")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseBase> UpdatePassword(UpdatePasswordViewModel model)
+        public async Task<ResponseBase> UpdatePassword(UpdatePasswordViewModel model)
         {
 
             var response = new ResponseBase();
@@ -602,7 +597,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var lessonStreamingResponse = JsonConvert.DeserializeObject<Lessons.Models.Models.ResponseData<LessonStreamingResponse>>(serialisedContent);
+                    var lessonStreamingResponse = JsonConvert.DeserializeObject<ResponseData<LessonStreamingResponse>>(serialisedContent);
                     return lessonStreamingResponse;
 
                 }
@@ -626,7 +621,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         [Route("api/lessonapp/signupaccesscode")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<Customer>> SignupAccessCode(RegisterRequestViewModel model)
+        public async Task<ResponseData<Customer>> SignupAccessCode(RegisterRequestViewModel model)
         {
             SetHttpClient();
 
@@ -644,7 +639,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 {
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var stripeCheckoutSessionResponse = JsonConvert.DeserializeObject<Lessons.Models.Models.ResponseData<Customer>>(serialisedContent);
+                    var stripeCheckoutSessionResponse = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
                     return stripeCheckoutSessionResponse;
                 }
                 else
@@ -662,11 +657,11 @@ namespace ISAI.Lessons.Web.Public.Controllers
         [AllowAnonymous]
         [Route("api/lessonapp/sendemail")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<bool>> SendEmail(SendEmailRequestViewModel request)
+        public async Task<ResponseData<bool>> SendEmail(SendEmailRequestViewModel request)
         {
             SetHttpClient();
 
-            var response = new Lessons.Models.Models.ResponseData<bool>();
+            var response = new ResponseData<bool>();
 
 
             try
@@ -682,7 +677,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 {
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var responseContent = JsonConvert.DeserializeObject<Lessons.Models.Models.ResponseData<bool>>(serialisedContent);
+                    var responseContent = JsonConvert.DeserializeObject<ResponseData<bool>>(serialisedContent);
                     return responseContent;
                 }
                 else
