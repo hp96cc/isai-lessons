@@ -1,4 +1,4 @@
-﻿namespace ISAI.Lessons.Models.Models
+﻿namespace ISAI.Lessons.AppModels.Models
 {
     public class App : BaseModel
     {

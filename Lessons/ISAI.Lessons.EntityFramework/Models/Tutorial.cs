@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using ISAI.Lessons.Models.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class Tutorial : BaseModel
+    public class Tutorial : BaseModel, ITutorial
     {
         public int AppId { get; set; }
 
@@ -52,7 +53,6 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         [JsonIgnore]
         public bool PendingEmailConfirmationTutor { get; set; }
-
-
+     
     }
 }

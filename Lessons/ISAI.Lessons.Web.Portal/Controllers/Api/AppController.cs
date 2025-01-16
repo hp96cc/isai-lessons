@@ -6,6 +6,7 @@ using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Models.Models;
 using ISAI.Lessons.Models.ViewModels;
 using ISAI.Lessons.Web.Portal.Helpers;
 using Microsoft.Graph.Models;
@@ -77,10 +78,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/customer")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<Customer>> Customer()
+        public async Task<ResponseData<Customer>> Customer()
         {
 
-            var response = new Lessons.Models.Models.ResponseData<Customer>();
+            var response = new ResponseData<Customer>();
 
             var customer = await db.Customer.FirstOrDefaultAsync(x =>
                x.Id == _customerId &&
@@ -96,9 +97,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/savecustomer")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<Customer>> SaveCustomer(Customer customer)
+        public async Task<ResponseData<Customer>> SaveCustomer(Customer customer)
         {
-            var response = new Lessons.Models.Models.ResponseData<Customer>();
+            var response = new ResponseData<Customer>();
 
             if (_customerId > 0)
             {
@@ -112,9 +113,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     {
 
                         response.Status = ResponseStatus.UserAlreadyExists;
-                        response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        response.ErrorResponse = new List<ErrorResponse>()
                         {
-                            new Lessons.Models.Models.ErrorResponse()
+                            new ErrorResponse()
                             {
                                 Message = "This email cannot be used as it is already in use."
                             }
@@ -148,9 +149,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/tutors")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<TutorResponseViewModel>> GetTutors(TutorRequestViewModel request)
+        public async Task<ResponseData<TutorResponseViewModel>> GetTutors(TutorRequestViewModel request)
         {
-            var response = new Lessons.Models.Models.ResponseData<TutorResponseViewModel>()
+            var response = new ResponseData<TutorResponseViewModel>()
             {
                 Content = new TutorResponseViewModel()
             };
@@ -197,9 +198,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             catch (Exception ex)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                         {
-                            new Lessons.Models.Models.ErrorResponse()
+                            new ErrorResponse()
                             {
                                 Message = ex.Message
                         }
@@ -212,9 +213,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/tutorialtimeslots")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<TutorTimeSlotResponseViewModel>> GetTutotialTimeSlots(TutorTimeSlotRequestViewModel request)
+        public async Task<ResponseData<TutorTimeSlotResponseViewModel>> GetTutotialTimeSlots(TutorTimeSlotRequestViewModel request)
         {
-            var response = new Lessons.Models.Models.ResponseData<TutorTimeSlotResponseViewModel>();
+            var response = new ResponseData<TutorTimeSlotResponseViewModel>();
 
             try
             {
@@ -278,9 +279,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             catch (Exception ex)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                         {
-                            new Lessons.Models.Models.ErrorResponse()
+                            new ErrorResponse()
                             {
                                 Message = ex.Message
                         }
@@ -293,10 +294,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/customeractivity")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<LessonHistoryResponseViewModel>> CustomerActivity(LessonHistoryRequestViewModel request)
+        public async Task<ResponseData<LessonHistoryResponseViewModel>> CustomerActivity(LessonHistoryRequestViewModel request)
         {
 
-            var response = new Lessons.Models.Models.ResponseData<LessonHistoryResponseViewModel>()
+            var response = new ResponseData<LessonHistoryResponseViewModel>()
             {
                 Content = new LessonHistoryResponseViewModel(),
             };
@@ -329,9 +330,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             catch (Exception ex)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                         {
-                            new Lessons.Models.Models.ErrorResponse()
+                            new ErrorResponse()
                             {
                                 Message = ex.Message
                             }
@@ -344,12 +345,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/tutorialpurchase")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<TutorialPurchaseResponseViewModel>> TutorialPurchase(TutorialPurchaseRequestViewModel request)
+        public async Task<ResponseData<TutorialPurchaseResponseViewModel>> TutorialPurchase(TutorialPurchaseRequestViewModel request)
         {
             try
             {
 
-                var response = new Lessons.Models.Models.ResponseData<TutorialPurchaseResponseViewModel>();
+                var response = new ResponseData<TutorialPurchaseResponseViewModel>();
 
                 //Create Tutorial
                 var customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
@@ -484,9 +485,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/lesson")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<Lesson>> Lesson(LessonRequestViewModel lessonRequestViewModel)
+        public async Task<ResponseData<Lesson>> Lesson(LessonRequestViewModel lessonRequestViewModel)
         {
-            var response = new Lessons.Models.Models.ResponseData<Lesson>();
+            var response = new ResponseData<Lesson>();
 
             var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
             x.Id == lessonRequestViewModel.LessonId &&
@@ -501,9 +502,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/lessonmediaurl")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<LessonStreamingResponse>> LessonMediaUrl(LessonRequestViewModel lessonRequestViewModel)
+        public async Task<ResponseData<LessonStreamingResponse>> LessonMediaUrl(LessonRequestViewModel lessonRequestViewModel)
         {
-            var response = new Lessons.Models.Models.ResponseData<LessonStreamingResponse>();
+            var response = new ResponseData<LessonStreamingResponse>();
 
             try
             {
@@ -520,9 +521,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     if (licenceResponse.Content.SubscriptionTypeId > 1 && licenceResponse.Content.SubscriptionTypeId != lesson.SubscriptionTypeId)
                     {
                         response.Status = ResponseStatus.InvalidLicence;
-                        response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        response.ErrorResponse = new List<ErrorResponse>()
                         {
-                            new Lessons.Models.Models.ErrorResponse()
+                            new ErrorResponse()
                             {
                                 Code = ErrorCode.InvalidLicence,
                                 Message = "Your licence does not allow access to this content. Please contact support"
@@ -593,14 +594,14 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                         //return response;
 
-                        return new Lessons.Models.Models.ResponseData<LessonStreamingResponse>();
+                        return new ResponseData<LessonStreamingResponse>();
                     }
                     else
                     {
                         response.Status = ResponseStatus.Failed;
-                        response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                        response.ErrorResponse = new List<ErrorResponse>()
                     {
-                        new Lessons.Models.Models.ErrorResponse()
+                        new ErrorResponse()
                         {
                             Message = "Invalid Remote Media Type."
                         }
@@ -627,9 +628,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             } catch(Exception ex)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                         {
-                            new Lessons.Models.Models.ErrorResponse()
+                            new ErrorResponse()
                             {
                                 Message = ex.Message
                             }
@@ -640,10 +641,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        async Task<Lessons.Models.Models.ResponseBase> CheckCustomerDevice(CustomerDeviceViewModel customerDevice)
+        async Task<ResponseBase> CheckCustomerDevice(CustomerDeviceViewModel customerDevice)
         {
 
-            var response = new Lessons.Models.Models.ResponseBase();
+            var response = new ResponseBase();
 
             var customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
             var customerDevices = await db.CustomerDevice.Where(x => x.CustomerId == _customerId && x.Deleted == false).ToListAsync();
@@ -661,9 +662,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             {
                 //Maximum devices already allowed
                 response.Status = ResponseStatus.TooManyDevices;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                 {
-                    new Lessons.Models.Models.ErrorResponse()
+                    new ErrorResponse()
                     {
                         Message = string.Format("Your account already has {0} devices allocated to it. Please remove a device in 'My Account' to use this one.", customer.MaxDevicesAllowed)
                     }
@@ -687,10 +688,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             return response;
         }
 
-        async Task<Lessons.Models.Models.ResponseData<Subscription>> CheckSubscription()
+        async Task<ResponseData<Subscription>> CheckSubscription()
         {
 
-            var response = new Lessons.Models.Models.ResponseData<Subscription>();
+            var response = new ResponseData<Subscription>();
 
             //Check subscription
             var subscription = await db.Subscription
@@ -703,9 +704,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             if (subscription == null)
             {
                 response.Status = ResponseStatus.InvalidLicence;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                 {
-                    new Lessons.Models.Models.ErrorResponse()
+                    new ErrorResponse()
                     {
                         Code = ErrorCode.LicenceExpired,
                         Message = "A valid licence does not exist. Please subscribe to a new plan."
@@ -718,9 +719,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             else if (subscription.EndDate < DateTime.Today)
             {
                 response.Status = ResponseStatus.LicenceExpired;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                 {
-                    new Lessons.Models.Models.ErrorResponse()
+                    new ErrorResponse()
                     {
                            Code = ErrorCode.LicenceExpired,
                         Message = "Your licence has expired or has been cancelled. Please subscribe to a new plan."
@@ -740,7 +741,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [AllowAnonymous] 
         [Route("api/app/sendemail")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<bool>> SendEmail(SendEmailRequestViewModel request)
+        public async Task<ResponseData<bool>> SendEmail(SendEmailRequestViewModel request)
         {
 
             if(request.CreateFreeTrial)
@@ -748,7 +749,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 return await CreateFreeTrail(request);
             }
 
-            var response = new Lessons.Models.Models.ResponseData<bool>();
+            var response = new ResponseData<bool>();
             var graphApi = new MicrosoftGraphApiService();
 
             try
@@ -765,7 +766,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             } catch(Exception ex)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<ISAI.Lessons.Models.Models.ErrorResponse>() { new ISAI.Lessons.Models.Models.ErrorResponse () {
+                response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
                         ErrorDescription = ex.StackTrace
                     }
@@ -817,9 +818,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             return subscriptionCode;
         }
 
-        public async Task<Lessons.Models.Models.ResponseData<bool>> CreateFreeTrail(SendEmailRequestViewModel request)
+        public async Task<ResponseData<bool>> CreateFreeTrail(SendEmailRequestViewModel request)
         {
-            var response = new Lessons.Models.Models.ResponseData<bool>();
+            var response = new ResponseData<bool>();
             
             try
             {
@@ -896,7 +897,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         Console.WriteLine(error.Message);
 
                         response.Status = ResponseStatus.Failed;
-                        response.ErrorResponse = new List<ISAI.Lessons.Models.Models.ErrorResponse>() { new ISAI.Lessons.Models.Models.ErrorResponse () {
+                        response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                                 Message = ex.Message,
                                 ErrorDescription = ex.StackTrace
                             }
@@ -910,7 +911,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
 
                         response.Status = ResponseStatus.Failed;
-                        response.ErrorResponse = new List<ISAI.Lessons.Models.Models.ErrorResponse>() { new ISAI.Lessons.Models.Models.ErrorResponse () {
+                        response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                                 Message = ex.Message,
                                 ErrorDescription = ex.StackTrace
                             }
@@ -925,7 +926,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             catch (Exception ex)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<ISAI.Lessons.Models.Models.ErrorResponse>() { new ISAI.Lessons.Models.Models.ErrorResponse () {
+                response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                             Message = ex.Message,
                             ErrorDescription = ex.StackTrace
                         }
@@ -939,9 +940,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/lessons")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<List<Lesson>>> Lessons()
+        public async Task<ResponseData<List<Lesson>>> Lessons()
         {
-            var response = new Lessons.Models.Models.ResponseData<List<Lesson>>();
+            var response = new ResponseData<List<Lesson>>();
 
             var licenceResponse = await CheckSubscription();
 
@@ -977,10 +978,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [AllowAnonymous]
         [Route("api/app/lessongroups")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<List<LessonGroup>>> LessonGroups()
+        public async Task<ResponseData<List<LessonGroup>>> LessonGroups()
         {
 
-            var response = new Lessons.Models.Models.ResponseData<List<LessonGroup>>();
+            var response = new ResponseData<List<LessonGroup>>();
 
             var licenceResponse = await CheckSubscription();
 
@@ -1017,10 +1018,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/subscriptions")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<List<Subscription>>> Subscriptions()
+        public async Task<ResponseData<List<Subscription>>> Subscriptions()
         {
 
-            var response = new Lessons.Models.Models.ResponseData<List<Subscription>>();
+            var response = new ResponseData<List<Subscription>>();
 
             var dateTimeNow = DateTime.UtcNow;
 
@@ -1042,10 +1043,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/cancelsubscriptions")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseBase> CancelSubscriptions()
+        public async Task<ResponseBase> CancelSubscriptions()
         {
 
-            var response = new Lessons.Models.Models.ResponseBase();
+            var response = new ResponseBase();
 
             var subscriptions = await Subscriptions();
 
@@ -1066,9 +1067,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/restoresubscriptions")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<List<Subscription>>> RestoreSubscriptions()
+        public async Task<ResponseData<List<Subscription>>> RestoreSubscriptions()
         {
-            var response = new Lessons.Models.Models.ResponseData<List<Subscription>>();
+            var response = new ResponseData<List<Subscription>>();
 
             var subscriptions = await Subscriptions();
 
@@ -1092,10 +1093,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/customerdevices")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseData<List<CustomerDevice>>> CustomerDevices()
+        public async Task<ResponseData<List<CustomerDevice>>> CustomerDevices()
         {
 
-            var response = new Lessons.Models.Models.ResponseData<List<CustomerDevice>>();
+            var response = new ResponseData<List<CustomerDevice>>();
 
             var devices = await db.CustomerDevice.Where(x =>
             x.CustomerId == _customerId &&
@@ -1111,10 +1112,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/deletedevice")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseBase> DeleteDevice(CustomerDevice customerDevice)
+        public async Task<ResponseBase> DeleteDevice(CustomerDevice customerDevice)
         {
 
-            var response = new Lessons.Models.Models.ResponseBase ();
+            var response = new ResponseBase ();
 
             var device = await db.CustomerDevice.FirstOrDefaultAsync(x => x.Id == customerDevice.Id && x.Deleted == false);
 
@@ -1135,10 +1136,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [AllowAnonymous]
         [Route("api/app/sendresetpasswordemail")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseBase> SendResetPasswordEmail(SendResetPasswordEmailViewModel model)
+        public async Task<ResponseBase> SendResetPasswordEmail(SendResetPasswordEmailViewModel model)
         {
 
-            var response = new Lessons.Models.Models.ResponseBase();
+            var response = new ResponseBase();
             var customer = await db.Customer.FirstOrDefaultAsync(x => x.AppId == model.AppId && x.Email.Trim().ToLower() == model.Email.Trim().ToLower());
 
             if(customer != null)
@@ -1184,10 +1185,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [AllowAnonymous]
         [Route("api/app/updatepassword")]
         [HttpPost]
-        public async Task<Lessons.Models.Models.ResponseBase> UpdatePassword(UpdatePasswordViewModel model)
+        public async Task<ResponseBase> UpdatePassword(UpdatePasswordViewModel model)
         {
 
-            var response = new Lessons.Models.Models.ResponseBase();
+            var response = new ResponseBase();
 
             byte[] key = Convert.FromBase64String(_base64Key);
             byte[] iv = Convert.FromBase64String(_base64Iv);
@@ -1199,9 +1200,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             if(DateTime.UtcNow > expiry)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                 {
-                    new Lessons.Models.Models.ErrorResponse()
+                    new ErrorResponse()
                     {
                         Message = "Email password link has expired"
                     }
@@ -1214,9 +1215,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             if(customer == null)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                 {
-                    new Lessons.Models.Models.ErrorResponse()
+                    new ErrorResponse()
                     {
                         Message = "Customer does not exist"
                     }
@@ -1229,9 +1230,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             {
               
                response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                 {
-                    new Lessons.Models.Models.ErrorResponse()
+                    new ErrorResponse()
                     {
                         Message = "Passwords do not match"
                     }
@@ -1242,9 +1243,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             if (!PasswordCheckService.IsStrongPassword(model.Password))
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>()
+                response.ErrorResponse = new List<ErrorResponse>()
                 {
-                    new Lessons.Models.Models.ErrorResponse()
+                    new ErrorResponse()
                     {
                         Message = "Password is not strong enough. Passwords must be a minimum of 8 characters and contain a lowercase characters, an upper case characters and a number or symbol ."
                     }
@@ -1465,9 +1466,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [Route("api/app/signupaccesscode")]
         [HttpPost]
         [AllowAnonymous]
-        public async Task<Lessons.Models.Models.ResponseData<Customer>> SignupAccessCode(RegisterRequestViewModel request)
+        public async Task<ResponseData<Customer>> SignupAccessCode(RegisterRequestViewModel request)
         {
-            var response = new Lessons.Models.Models.ResponseData<Customer>();
+            var response = new ResponseData<Customer>();
 
             try
             {
@@ -1523,7 +1524,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             } catch (Exception ex)
             {
                 response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<Lessons.Models.Models.ErrorResponse>() { new Lessons.Models.Models.ErrorResponse () {
+                response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
                         ErrorDescription = ex.StackTrace
                     }

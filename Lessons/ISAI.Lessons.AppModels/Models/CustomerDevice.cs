@@ -1,4 +1,4 @@
-﻿namespace ISAI.Lessons.Models.Models
+﻿namespace ISAI.Lessons.AppModels.Models
 {
     public class CustomerDevice : BaseModel
     {
@@ -9,7 +9,7 @@
 
         public int CustomerId { get; set; }
 
-     
+
         public Customer Customer { get; set; }
 
 

@@ -1,7 +1,5 @@
-﻿using ISAI.Lessons.Models.Models;
-using System;
+﻿using ISAI.Lessons.AppModels.Models;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ISAI.Lessons.Models.Interfaces

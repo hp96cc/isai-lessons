@@ -287,6 +287,14 @@
     <Compile Include="Migrations\202501141723257_Added Subjects for Tutors 2.Designer.cs">
       <DependentUpon>202501141723257_Added Subjects for Tutors 2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202501160759167_Models reorganisation.cs" />
+    <Compile Include="Migrations\202501160759167_Models reorganisation.Designer.cs">
+      <DependentUpon>202501160759167_Models reorganisation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501160811200_Add Grouping to Tutorial Subject.cs" />
+    <Compile Include="Migrations\202501160811200_Add Grouping to Tutorial Subject.Designer.cs">
+      <DependentUpon>202501160811200_Add Grouping to Tutorial Subject.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -296,9 +304,9 @@
     <Compile Include="Models\Lesson.cs" />
     <Compile Include="Models\LessonGroup.cs" />
     <Compile Include="Models\StripeWebhookLog.cs" />
-    <Compile Include="Models\Subject.cs" />
-    <Compile Include="Models\SubjectLessonGroup.cs" />
-    <Compile Include="Models\SubjectUser.cs" />
+    <Compile Include="Models\TutorialSubjectGroup.cs" />
+    <Compile Include="Models\TutorialSubject.cs" />
+    <Compile Include="Models\TutorialSubjectTutorUser.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\SubscriptionCode.cs" />
     <Compile Include="Models\SubscriptionType.cs" />
@@ -307,7 +315,6 @@
     <Compile Include="LessonsDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EmailService.cs" />
-    <Compile Include="Services\MicrosoftGraphApiService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -343,6 +350,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202501141723257_Added Subjects for Tutors 2.resx">
       <DependentUpon>202501141723257_Added Subjects for Tutors 2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501160759167_Models reorganisation.resx">
+      <DependentUpon>202501160759167_Models reorganisation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501160811200_Add Grouping to Tutorial Subject.resx">
+      <DependentUpon>202501160811200_Add Grouping to Tutorial Subject.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

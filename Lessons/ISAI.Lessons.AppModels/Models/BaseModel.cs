@@ -1,9 +1,11 @@
 ﻿using ISAI.Lessons.Models.Interfaces;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.AppModels.Models
 {
+
     public abstract class BaseModel : IBaseInterface
     {
         protected BaseModel()
@@ -12,7 +14,6 @@ namespace ISAI.Lessons.Models.Models
             DateModified = DateTime.UtcNow;
         }
 
-        [SQLite.PrimaryKey]
         public int Id { get; set; }
 
         [JsonIgnore]
@@ -30,8 +31,6 @@ namespace ISAI.Lessons.Models.Models
         [JsonIgnore]
         public string CreatedUserId { get; set; }
 
-       
-
-
     }
+
 }

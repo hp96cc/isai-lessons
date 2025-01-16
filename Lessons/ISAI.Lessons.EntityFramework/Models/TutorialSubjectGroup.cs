@@ -3,15 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class SubscriptionType : BaseModel, ISubscriptionType
+    public class TutorialSubjectGroup : BaseModel, ITutorialSubjectGroup
     {
-        public string Name { get; set; }
-
         public int AppId { get; set; }
 
         [ForeignKey("AppId")]
         public App App { get; set; }
-
-
+        public string Name { get; set; }
+  
     }
 }

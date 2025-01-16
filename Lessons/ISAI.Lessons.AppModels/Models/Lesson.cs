@@ -1,8 +1,8 @@
-﻿namespace ISAI.Lessons.Models.Models
+﻿namespace ISAI.Lessons.AppModels.Models
 {
     public class Lesson : BaseModel
     {
-        
+
         public int AppId { get; set; }
 
         public int LessonGroupId { get; set; }
@@ -17,11 +17,11 @@
 
         public string AssetId { get; set; }
 
-        public string SourceUrl{ get; set; }
+        public string SourceUrl { get; set; }
 
         public bool PendingDownload { get; set; }
 
-       
+
 
     }
 }

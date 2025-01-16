@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.AppModels.Models
 {
     public class Subscription : BaseModel
     {

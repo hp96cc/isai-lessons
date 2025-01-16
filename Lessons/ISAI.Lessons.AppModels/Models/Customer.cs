@@ -1,10 +1,8 @@
 ﻿using ISAI.Lessons.Models.Interfaces;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.AppModels.Models
 {
     public class Customer : BaseModel, ICustomer
     {
@@ -32,6 +30,10 @@ namespace ISAI.Lessons.Models.Models
 
         public string StripeCustomerId { get; set; }
 
+        public bool AllowAdminOverride { get; set; }
+        public string HearAbout { get; set; }
+        public int MaxDevicesAllowed { get; set; }
+
 
         [JsonIgnore]
         public string PaymentSessionId { get; set; }
@@ -43,7 +45,7 @@ namespace ISAI.Lessons.Models.Models
         public string PasswordHash { get; set; }
 
         [NotMapped]
-        public string Password{ get; set; }
+        public string Password { get; set; }
 
         [NotMapped]
         public string PasswordConfirm { get; set; }

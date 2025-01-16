@@ -1,9 +1,10 @@
-﻿using System;
+﻿using ISAI.Lessons.Models.Interfaces;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class CustomerActivity : BaseModel
+    public class CustomerActivity : BaseModel, ICustomerActivity
     {
         public int CustomerDeviceId { get; set; }
 

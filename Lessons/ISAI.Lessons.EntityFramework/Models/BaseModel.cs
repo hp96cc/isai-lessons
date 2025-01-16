@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using ISAI.Lessons.EntityFramework.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 using ISAI.Lessons.Models.Interfaces;
 
 namespace ISAI.Lessons.EntityFramework.Models

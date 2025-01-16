@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ISAI.Lessons.Models.Interfaces;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class App : BaseModel
+    public class App : BaseModel, IApp
     {
 
         public string Name { get; set; }

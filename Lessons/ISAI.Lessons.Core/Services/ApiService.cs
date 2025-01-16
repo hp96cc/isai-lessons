@@ -7,8 +7,6 @@ using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -72,9 +70,9 @@ namespace ISAI.Lessons.EntityFramework.Services
         }
 
 
-        public async Task<ResponseData<List<Lesson>>> GetLessonsAsync()
+        public async Task<ResponseData<List<ILesson>>> GetLessonsAsync()
         {
-            var response = new ResponseData<List<Lesson>>();
+            var response = new ResponseData<List<ILesson>>();
 
             try
             {
@@ -86,7 +84,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    response = JsonConvert.DeserializeObject<ResponseData<List<Lesson>>>(serialisedContent);
+                    response = JsonConvert.DeserializeObject<ResponseData<List<ILesson>>>(serialisedContent);
                     return response;
                 }
                 else
@@ -152,10 +150,10 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
         }
 
-        public async Task<ResponseData<List<LessonGroup>>> GetLessonGroupsAsync()
+        public async Task<ResponseData<List<ILessonGroup>>> GetLessonGroupsAsync()
         {
 
-            var response = new ResponseData<List<LessonGroup>>();
+            var response = new ResponseData<List<ILessonGroup>>();
 
             try
             {
@@ -166,7 +164,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    response = JsonConvert.DeserializeObject<ResponseData<List<LessonGroup>>>(serialisedContent);
+                    response = JsonConvert.DeserializeObject<ResponseData<List<ILessonGroup>>>(serialisedContent);
                     return response;
                 }
                 else

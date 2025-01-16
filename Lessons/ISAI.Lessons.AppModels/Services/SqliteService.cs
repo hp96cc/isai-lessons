@@ -1,12 +1,10 @@
-﻿using ISAI.Lessons.Core.Extensions;
+﻿using ISAI.Lessons.AppModels.Models;
 using ISAI.Lessons.Models.Interfaces;
-using ISAI.Lessons.Models.Models;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ISAI.Lessons.Core.Services

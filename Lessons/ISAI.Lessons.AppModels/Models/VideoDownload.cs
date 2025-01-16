@@ -1,7 +1,7 @@
 ﻿using ISAI.Lessons.Models.Enums;
 using System;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.AppModels.Models
 {
     public class VideoDownload
     {
@@ -23,7 +23,7 @@ namespace ISAI.Lessons.Models.Models
 
         public VideoDownloadStatusCode VideoDownloadStatusCode { get; set; }
 
-        public long TotalBytes {get;set; }
+        public long TotalBytes { get; set; }
 
         public long TotalBytesDownloaded { get; set; }
     }

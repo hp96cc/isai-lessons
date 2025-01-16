@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ISAI.Lessons.Models.Models
+namespace ISAI.Lessons.AppModels.Models
 {
     public class EncodeVideoOutput
     {

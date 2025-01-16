@@ -1,9 +1,4 @@
-﻿using ISAI.Lessons.Models.Enums;
-using ISAI.Lessons.Models.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ISAI.Lessons.AppModels.Models;
 
 namespace ISAI.Lessons.Models.Interfaces
 {

@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Key.Creation", "ISAI.K
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Console.BitmovinPort", "ISAI.Lessons.Console.BitmovinPort\ISAI.Lessons.Console.BitmovinPort.csproj", "{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.App", "ISAI.Lessons.AppModels\ISAI.Lessons.App.csproj", "{344F22CB-5DD5-480E-B989-29D8F1B215E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{344F22CB-5DD5-480E-B989-29D8F1B215E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{344F22CB-5DD5-480E-B989-29D8F1B215E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{344F22CB-5DD5-480E-B989-29D8F1B215E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{344F22CB-5DD5-480E-B989-29D8F1B215E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{B589ECC0-720D-4F5B-8C8F-542FC8B7A3B7} = {7DF8045F-FEC5-4C99-8246-5CAADE969B5F}
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
 		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
+		{344F22CB-5DD5-480E-B989-29D8F1B215E0} = {7DF8045F-FEC5-4C99-8246-5CAADE969B5F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13AF8AE1-3867-4096-A7E3-F867D4849F2F}

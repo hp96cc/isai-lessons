@@ -48,7 +48,7 @@ namespace ISAI.Lessons.EntityFramework.Models
         public string PasswordHash { get; set; }
 
         [NotMapped]
-        public string Password{ get; set; }
+        public string Password { get; set; }
 
         [NotMapped]
         public string PasswordConfirm { get; set; }

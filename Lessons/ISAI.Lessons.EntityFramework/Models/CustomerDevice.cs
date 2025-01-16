@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using ISAI.Lessons.Models.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class CustomerDevice : BaseModel
+    public class CustomerDevice : BaseModel, ICustomerDevice
     {
 
         public string Name { get; set; }
