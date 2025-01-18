@@ -66,7 +66,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
                     foreach (var tutorial in tutorialsPendingEmailSending)
                     {
-                        if (tutorial.PendingEmailConfirmationUser)
+                        if (tutorial.PendingEmailConfirmationUser && tutorial.HasCompletedCheckout)
                         {
                             var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", tutorial.DateTimeStart.ToString("dd/MM/yyyy @ HH:mm"));
                             var htmlBody = EmailService.GetTemplateHTML("https://portal.scottishonlinelessons.com/email-templates/tutorial-confirmation-user/");

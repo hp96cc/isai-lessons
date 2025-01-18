@@ -34,7 +34,7 @@ namespace ISAI.Lessons.Web.Public.Components
                 {
                     //ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                    PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
+                    PreserveReferencesHandling = PreserveReferencesHandling.None,
                     Formatting = Formatting.Indented
                 }
             });

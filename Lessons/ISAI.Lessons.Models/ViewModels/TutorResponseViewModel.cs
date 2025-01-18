@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ISAI.Lessons.EntityFramework.ViewModels
+namespace ISAI.Lessons.Models.ViewModels
 {
     public class TutorResponseViewModel
     {
@@ -14,6 +14,5 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
 
         public string Name { get; set; }
 
-        public string SubjectName { get; set; }
     }
 }

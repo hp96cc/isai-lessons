@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ISAI.Lessons.EntityFramework.ViewModels
+namespace ISAI.Lessons.Models.ViewModels
 {
     public class TutorTimeSlotResponseViewModel
     {
@@ -9,7 +9,10 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
 
     public class TutorialTimeSlot
     {
-        public string StartTime { get; set; }
-        public string EndTime { get; set; }
+        public int StartTimeHours { get; set; }
+        public int StartTimeMinutes { get; set; }
+
+        public int EndTimeHours { get; set; }
+        public int EndTimeMinutes { get; set; }
     }
 }

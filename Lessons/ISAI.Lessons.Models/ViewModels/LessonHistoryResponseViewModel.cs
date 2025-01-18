@@ -16,11 +16,8 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
 
         public string LessonGroupName { get; set; }
 
-        public DateTimeOffset DateTimeStart { get; set; }
+        public string DateTimeWatched { get; set; }
 
-        public DateTimeOffset DateTimeEnd { get; set; }
-
-        public int WatchedDurationInMinutes { get; set; }
 
     }
 }

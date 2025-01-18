@@ -130,70 +130,158 @@ namespace ISAI.Lessons.EntityFramework.Services
         }
 
 
-        public async Task<TeamsEventResponse> CreateTeamsEvent(
+        public async Task<TeamsEventResponse> CreateOrUpdateTeamsEvent(
+            string eventId,
             string userName,
-            string subject, 
-            string htmlBody, 
-            string timeZone, 
-            string dateTimeStart, 
-            string dateTimeEnd, 
-            List<Tuple<string, string>> attendees )
+            string subject,
+            string htmlBody,
+            string timeZone,
+            string dateTimeStart,
+            string dateTimeEnd,
+            List<Tuple<string, string>> attendees)
         {
             GraphServiceClient graphClient = GetAuthenticatedClient();
-         
-            var requestBody = new Event
+
+            if (eventId != null)
             {
-                Subject = subject,
-                Body = new ItemBody
-                {
-                    ContentType = BodyType.Html,
-                    Content = htmlBody,
-                },
-                Start = new DateTimeTimeZone
-                {
-                    DateTime = dateTimeStart,
-                    TimeZone = timeZone,
-                },
-                End = new DateTimeTimeZone
-                {
-                    DateTime = dateTimeEnd,
-                    TimeZone = timeZone,
-                },
-
-                AllowNewTimeProposals = false,
-                IsOnlineMeeting = true,
-                OnlineMeetingProvider = OnlineMeetingProviderType.TeamsForBusiness,
-            };
-
-
-            requestBody.Attendees = attendees.Select(x => new Attendee()
-            {
-                EmailAddress = new EmailAddress()
-                {
-                    Name = x.Item1,
-                    Address = x.Item2
-                },
-                Type = AttendeeType.Required,
-            }).ToList();
-
-            try
-            {
-
-                var result = await graphClient.Users[userName].Events.PostAsync(requestBody, (requestConfiguration) =>
+                var response = await graphClient.Users[userName].Events[eventId].GetAsync(requestConfiguration =>
                 {
                     requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"" + timeZone + "\"");
                 });
 
-                return new TeamsEventResponse()
+                if (subject != null)
                 {
-                    Id = result.Id,
-                    WebLink = result.OnlineMeeting.JoinUrl
+                    response.Subject = subject;
+                }
+
+                if (htmlBody != null)
+                {
+                    response.Body = new ItemBody
+                    {
+                        ContentType = BodyType.Html,
+                        Content = htmlBody,
+                    };
+                }
+
+                if (dateTimeStart != null)
+                {
+                    response.Start = new DateTimeTimeZone
+                    {
+                        DateTime = dateTimeStart,
+                        TimeZone = timeZone,
+                    };
+                }
+
+                if (dateTimeEnd != null)
+                {
+                    response.End = new DateTimeTimeZone
+                    {
+                        DateTime = dateTimeEnd,
+                        TimeZone = timeZone,
+                    };
+                }
+
+                if (attendees != null && attendees.Count > 0)
+                {
+                    response.Attendees = attendees.Select(x => new Attendee()
+                    {
+                        EmailAddress = new EmailAddress()
+                        {
+                            Name = x.Item1,
+                            Address = x.Item2
+                        },
+                        Type = AttendeeType.Required,
+                    }).ToList();
+                }
+
+                response.AllowNewTimeProposals = false;
+                response.IsOnlineMeeting = true;
+                response.OnlineMeetingProvider = OnlineMeetingProviderType.TeamsForBusiness;
+
+                try
+                {
+
+                    var result = await graphClient.Users[userName].Events[eventId].PatchAsync(response, (requestConfiguration) =>
+                    {
+                        requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"" + timeZone + "\"");
+                    });
+
+                    return new TeamsEventResponse()
+                    {
+                        Id = result.Id,
+                        WebLink = result.OnlineMeeting.JoinUrl
+                    };
+
+                }
+                catch (Exception ex)
+                {
+                    //TODO: need to handle error
+                    return null;
+                }
+
+
+            }
+            else
+            {
+                var requestBody = new Event
+                {
+                    Subject = subject,
+                    Body = new ItemBody
+                    {
+                        ContentType = BodyType.Html,
+                        Content = htmlBody,
+                    },
+                    Start = new DateTimeTimeZone
+                    {
+                        DateTime = dateTimeStart,
+                        TimeZone = timeZone,
+                    },
+                    End = new DateTimeTimeZone
+                    {
+                        DateTime = dateTimeEnd,
+                        TimeZone = timeZone,
+                    },
+
+                    AllowNewTimeProposals = false,
+                    IsOnlineMeeting = true,
+                    OnlineMeetingProvider = OnlineMeetingProviderType.TeamsForBusiness,
                 };
 
-            } catch(Exception ex)
-            {
-                //TODO: need to handle error
-                return null;
+                if (attendees != null && attendees.Count > 0)
+                {
+
+                    requestBody.Attendees = attendees.Select(x => new Attendee()
+                    {
+                        EmailAddress = new EmailAddress()
+                        {
+                            Name = x.Item1,
+                            Address = x.Item2
+                        },
+                        Type = AttendeeType.Required,
+                    }).ToList();
+
+                }
+
+                try
+                {
+
+                    var result = await graphClient.Users[userName].Events.PostAsync(requestBody, (requestConfiguration) =>
+                    {
+                        requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"" + timeZone + "\"");
+                    });
+
+                    return new TeamsEventResponse()
+                    {
+                        Id = result.Id,
+                        WebLink = result.OnlineMeeting.JoinUrl
+                    };
+
+                }
+                catch (Exception ex)
+                {
+                    //TODO: need to handle error
+                    return null;
+                }
             }
 
         }

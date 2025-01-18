@@ -9,6 +9,6 @@
         int? ParentLessonGroupId { get; set; }
         int? SubscriptionTypeId { get; set; }
 
-        int? TutorialSubjectGroupId { get; set; }
+        int TutorialSubjectId { get; set; }
     }
 }

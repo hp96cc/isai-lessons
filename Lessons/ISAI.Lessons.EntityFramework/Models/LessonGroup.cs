@@ -12,10 +12,10 @@ namespace ISAI.Lessons.EntityFramework.Models
         [ForeignKey("AppId")]
         public App App { get; set; }
 
-        public int? TutorialSubjectGroupId { get; set; }
+        public int TutorialSubjectId { get; set; }
 
-        [ForeignKey("TutorialSubjectGroupId")]
-        public TutorialSubjectGroup TutorialSubjectGroup { get; set; }
+        [ForeignKey("TutorialSubjectId")]
+        public TutorialSubject TutorialSubject { get; set; }
 
         public int? ParentLessonGroupId { get; set; }
 
@@ -30,6 +30,8 @@ namespace ISAI.Lessons.EntityFramework.Models
         public int ListOrder { get; set; }
 
         public bool HasSubGroups { get; set; }
+
+
 
 
     }

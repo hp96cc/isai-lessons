@@ -41,38 +41,38 @@
         </div>
 
         <div class="row" id="account-panel" style="display:none;">
-            <div class="col-12 col-md-3">
+            <div class="col-3">
 
                 <!-- Nav -->
                 @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "tutorials" } })
 
 
             </div>
-            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+            <div class="col-9">
                 <div class="row">
 
                     <div class="col-12 text-right">
                         <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2"><span>New Tutorial</span></a>
 
                     </div>
-                        <div class="col-12 text-center">
+                    <div class="col-12">
 
-                            <!-- Heading -->
-                            <h3 class="mb-10 mt-3">My Tutorials</h3>
-                            <p>The table below shows your tutorials. Explanations text TBC.</p>
-
-
-
-                        </div>
+                        <!-- Heading -->
+                        <h3 class="mb-10">My Tutorials</h3>
+                        <p>The table below shows your tutorials. Explanations text TBC.</p>
 
 
-                        <div class="col-12 p-1">
-                            <div class="row" id="tutorial-list"></div>
+
+                    </div>
 
 
-                        </div>
+                    <div class="col-12 p-1">
+                        <div class="row" id="tutorial-list"></div>
+
+
                     </div>
                 </div>
+            </div>
         </div>
     </div>
 </section>
@@ -81,15 +81,71 @@
 
 @section Scripts {
 
+    <template id="template-tutorial">
+
+        <div class="col-12 p-0">
+            <div class="card-body pt-0">
+
+                <!-- Info -->
+                <div class="card card-sm">
+                    <div class="card-body bg-light">
+                        <div class="row">
+                            <div class="col-10">
+
+                                <!-- Heading -->
+                                <h6 class="heading-xxxs text-muted">{{Date}} @@ {{TimeStart}} to {{TimeEnd}}</h6>
+
+                                <!-- Text -->
+                                <p class="mb-lg-0 font-size-sm font-weight-bold">
+                                    {{Name}}
+                                </p>
+
+
+                            </div>
+                            <div class="col-2 float-right">
+
+                                {{#IsCompleted}}
+                                <!-- Button -->
+                                <button class="btn btn-circle float-right p-0" data-toggle="modal" data-target="#deleteDeviceModal" onclick="alert('TODO: What are the terms to delete a tutorial?')">
+                                    <i class="far fa-trash-alt delete-button"></i>
+                                </button>
+                                {{/IsCompleted}}
+
+                            </div>
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-10 mt-2">
+
+                                {{#IsCompleted}}
+                                <a href="{{TeamsLink}}" target="_blank" class="butn x-small green p-2 pl-3 pr-3 mb-2"><span>Join Tutorial</span></a>
+
+                                {{/IsCompleted}}
+                                {{^IsCompleted}}
+                                <a href="/tutorials/calendar/?rebookId={{Id}}" class="butn x-small pink p-2 pl-3 pr-3 mb-2"><span>Re-Book Tutorial</span></a>
+
+                                {{/IsCompleted}}
+
+
+                            </div>
+                    
+                        </div>
+
+                    </div>
+
+        </div>
+
+
+    </template>
+
     <script>
 
-        var tutorials;
+        var tutorials = [];
 
         $(document).ready(function ()
         {
-            devices = [];
-            DisplayTutorials();
-            //GetTutorials();
+            GetTutorials();
         });
 
 
@@ -99,18 +155,18 @@
             $('#account-panel').hide();
             $('#spinner-loading').show();
 
-            var data = await lessonsApp.getCustomerTutorials();
+            var data = await lessonsApp.tutorials();
 
             if (!data)
             {
-                lessonsApp.logout();
+               //lessonsApp.logout();
             }
             else if (data.Status !== 0)
             {
-                location.href = '/account/'
+                //location.href = '/account/'
             } else
             {
-                var devices = data.Content;
+                tutorials = data.Content.Tutorials;
                 DisplayTutorials();
             }
 
@@ -123,9 +179,9 @@
             $('#tutorial-list').html('');
 
             var itemListHTML = '';
-            var templateItem = $('#template-device').html();
+            var templateItem = $('#template-tutorial').html();
 
-            devices.forEach(function (item)
+            tutorials.forEach(function (item)
             {
                 itemListHTML += Mustache.render(templateItem, item);
 

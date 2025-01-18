@@ -17,7 +17,6 @@ using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Configuration;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -26,9 +25,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Configuration;
 using Customer = ISAI.Lessons.EntityFramework.Models.Customer;
 using ResponseStatus = ISAI.Lessons.Models.Enums.ResponseStatus;
 using Subscription = ISAI.Lessons.EntityFramework.Models.Subscription;
+using TutorialSubject = ISAI.Lessons.Models.ViewModels.TutorialSubject;
+using TutorialSubjectGroup = ISAI.Lessons.Models.ViewModels.TutorialSubjectGroup;
+using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
 {
@@ -147,6 +150,135 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+        [Route("api/app/tutorialsubjectgroups")]
+        [HttpPost]
+        public async Task<ResponseData<TutorialSubjectGroupResponseViewModel>> GetTutorialSubjectGroups()
+        {
+            var response = new ResponseData<TutorialSubjectGroupResponseViewModel>()
+            {
+                Content = new TutorialSubjectGroupResponseViewModel()
+            };
+
+            try
+            {
+                var tutorialSubjectGroups = await db.TutorialSubjectGroup
+                    .Where(x => x.Deleted == false)
+                    .Select(x => new TutorialSubjectGroup()
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                    })
+                    .ToListAsync();
+
+                response.Content.TutorialSubjectGroups = tutorialSubjectGroups;
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
+
+
+        [Route("api/app/tutorials")]
+        [HttpPost]
+        public async Task<ResponseData<TutorialResponseViewModel>> GetTutorials()
+        {
+            var response = new ResponseData<TutorialResponseViewModel>()
+            {
+                Content = new TutorialResponseViewModel()
+            };
+
+            try
+            {
+                var tutorials = await db.Tutorial
+                    .Include(x => x.TutorUser)
+                    .Where(x => x.CustomerId == _customerId && x.Deleted == false)
+                    .OrderByDescending(x => x.DateTimeStart)
+                    .ToListAsync();
+
+
+                response.Content.Tutorials = tutorials.Select(x => new Lessons.Models.ViewModels.Tutorial()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    IsCompleted = x.DateTimeStart > DateTime.Now,
+                    Date = x.DateTimeStart.Date.ToString("dddd, dd MMMM yyyy"),
+                    TimeStart = x.DateTimeStart.ToString("HH:mm"),
+                    TimeEnd = x.DateTimeEnd.ToString("HH:mm"),
+                    TeamsLink = x.TeamsLink,
+                    TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname
+                }).ToList();
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
+
+        [Route("api/app/tutorialsubjects")]
+        [HttpPost]
+        public async Task<ResponseData<TutorialSubjectResponseViewModel>> GetTutorialSubjectGroups(TutorialSubjectRequestViewModel request)
+        {
+            var response = new ResponseData<TutorialSubjectResponseViewModel>()
+            {
+                Content = new TutorialSubjectResponseViewModel()
+            };
+
+            try
+            {
+                var tutorialSubjects = await db.TutorialSubject
+                    .Where(x => x.TutorialSubjectGroupId == request.TutorialGroupId && x.Deleted == false)
+                    .Select(x => new TutorialSubject()
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                    })
+                    .ToListAsync();
+
+                response.Content.TutorialSubjects = tutorialSubjects;
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
+
         [Route("api/app/tutors")]
         [HttpPost]
         public async Task<ResponseData<TutorResponseViewModel>> GetTutors(TutorRequestViewModel request)
@@ -158,38 +290,45 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             try
             {
-                //TODO: maybe return users
-                if(request.SubjectId.HasValue)
+                if(request.TutorialSubjectId.HasValue)
                 {
-                    var tutors = await db.SubjectTutorUser
+                    var tutors = await db.TutorialSubjectTutorUser
                         .Include(x => x.TutorUser)
-                        .Include(x => x.Subject)
-                        .Where(x => x.TutorUser.Deleted == false && x.SubjectId == request.SubjectId)
+                        .Include(x => x.TutorialSubject)
+                        .Where(x => x.TutorUser.Deleted == false && x.TutorialSubjectId == request.TutorialSubjectId)
                         .Select(x => new Tutor()
                         {
                             Id = x.TutorUser.Id,
                             Name = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
-                            SubjectName = x.Subject.Name
                         })
+                        .Distinct()
                         .ToListAsync();
 
                     response.Content.Tutors = tutors;
 
-                } else
+                } 
+                else if(request.LesonId.HasValue)
                 {
-                    var tutors = await db.SubjectTutorUser
+                    var lesson = await db.Lesson
+                        .Include(x => x.LessonGroup)
+                        .FirstAsync(x => x.Id == request.LesonId);
+
+                    var tutors = await db.TutorialSubjectTutorUser
                        .Include(x => x.TutorUser)
-                       .Include(x => x.Subject)
-                       .Where(x => x.TutorUser.Deleted == false && x.SubjectId == request.SubjectId)
+                       .Include(x => x.TutorialSubject)
+                       .Where(x => x.TutorUser.Deleted == false && x.TutorialSubjectId == lesson.LessonGroup.TutorialSubjectId)
                        .Select(x => new Tutor()
                        {
                            Id = x.TutorUser.Id,
                            Name = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
-                           SubjectName = x.Subject.Name
                        })
+                       .Distinct()
                        .ToListAsync();
 
                     response.Content.Tutors = tutors;
+                } else
+                {
+                    throw new Exception("Request must specify either SubjectId or LessonId");
                 }
 
                 response.Status = ResponseStatus.OK;
@@ -215,7 +354,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [HttpPost]
         public async Task<ResponseData<TutorTimeSlotResponseViewModel>> GetTutotialTimeSlots(TutorTimeSlotRequestViewModel request)
         {
-            var response = new ResponseData<TutorTimeSlotResponseViewModel>();
+            var response = new ResponseData<TutorTimeSlotResponseViewModel>()
+            {
+                Content = new TutorTimeSlotResponseViewModel()
+            };
 
             try
             {
@@ -262,8 +404,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                         tutorialTimeSlots.Add(new TutorialTimeSlot()
                         {
-                            StartTime = tutorialStartDateTime.Hour.ToString("00") + ":00",
-                            EndTime = tutorialEndDateTime.Hour.ToString("00") + ":00"
+                            StartTimeHours = tutorialStartDateTime.Hour,
+                            StartTimeMinutes = tutorialStartDateTime.Minute,
+                            EndTimeHours = tutorialEndDateTime.Hour,
+                            EndTimeMinutes = tutorialEndDateTime.Minute
                         });
                     
                     }
@@ -304,25 +448,24 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             try
             {
+
                 var lessonHistory = await db.CustomerActivity
                 .Include(x => x.CustomerDevice)
                 .Include(x => x.Lesson)
                 .Include(x => x.Lesson.LessonGroup)
+                .OrderByDescending(x => x.StartDateTime)
                 .Where(x => x.CustomerDevice.CustomerId == _customerId && x.Deleted == false)
-                .Select(x => new LessonHistory()
-                {
-                    LessonId = x.LessonId,
-                    LessonName = x.Lesson.Name,
-                    LessonGroupName = x.Lesson.LessonGroup.Name,
-                    DateTimeStart = x.StartDateTime,
-                    DateTimeEnd = x.StartDateTime, //TODO: needs to be recored
-                    WatchedDurationInMinutes = 0 //TODO: needs to be recorded
-                })
                 .Skip(request.Page * request.RecordCount)
                 .Take(request.RecordCount)
                 .ToListAsync();
 
-                response.Content.LessonHistory = lessonHistory;
+                response.Content.LessonHistory = lessonHistory.Select(x => new LessonHistory()
+                {
+                    LessonId = x.LessonId,
+                    LessonName = x.Lesson.Name,
+                    LessonGroupName = x.Lesson.LessonGroup.Name,
+                    DateTimeWatched = x.StartDateTime.ToString("dddd, dd MMMM yyyy @ HH:mm")
+                }).ToList();
                 response.Status = ResponseStatus.OK;
 
                 return response;
@@ -357,25 +500,24 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 var tutor = await db.Users.FirstAsync(x => x.Id == request.TutorId);
 
                 var customerFullName = string.Format("{0} {1}", customer.FirstName, customer.LastName);
-                var tutotialName = string.Format("TBC Scottish Online Lessons Tutorial for {0}", customerFullName);
-                var tutotialDescription = string.Format("TBC Scottish Online Lessons Tutorial for {0}", customerFullName);
+                var tutotialName = string.Format("DRAFT - Scottish Online Lessons Tutorial for {0}", customerFullName);
+                var tutotialDescription = string.Format("Scottish Online Lessons Tutorial for {0}", customerFullName);
 
                 Lesson lesson = null;
                 if (request.LessonId.HasValue)
                     lesson = await db.Lesson.FirstAsync(x => x.Id == request.LessonId.Value);
 
                 var graphApi = new MicrosoftGraphApiService();
-                var teamsEventResponse = await graphApi.CreateTeamsEvent(
+                var teamsEventResponse = await graphApi.CreateOrUpdateTeamsEvent(
+                    null,
                     tutor.Email,
                     tutotialName,
                     tutotialDescription,
-                    "GMT Standard Time",
+                    _systemTimeZone,
                     request.DateTimeStart.ToString("s"),
                     request.DateTimeEnd.ToString("s"),
-                    new List<Tuple<string, string>>()
-                    {
-                    new Tuple<string, string>(customerFullName, customer.Email)
-                    });
+                    null
+                    );
 
                 var tutorialDuration = request.DateTimeEnd.Subtract(request.DateTimeStart).Minutes;
 
@@ -1601,7 +1743,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var stripeWebhookLog = new StripeWebhookLog();
                 stripeWebhookLog.CallBackName = "Webhook notification with type: {stripeEvent.Type} found for {stripeEvent.Id}";
-                stripeWebhookLog.Description = stripeEvent.RawJObject.ToString(Formatting.Indented);
+                stripeWebhookLog.Description = stripeEvent.Data != null ? stripeEvent.Data.Object.ToString() : string.Empty;
                 stripeWebhookLog.CreatedUserId = _adminUserId;
                 stripeWebhookLog.ModifiedUserId = _adminUserId;
                 stripeWebhookLog.DateCreated = DateTimeOffset.UtcNow;
@@ -1628,7 +1770,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     if (checkOutComplete.ClientReferenceId.StartsWith(_tutorialStripePrefix))
                     {
                         var tutorialId = Convert.ToInt32(checkOutComplete.ClientReferenceId.Replace(_tutorialStripePrefix, string.Empty));
-                        var tutorial = await db.Tutorial.FirstAsync(x => x.Id == tutorialId);
+                        var tutorial = await db.Tutorial
+                            .Include(x => x.TutorUser)
+                            .Include(x => x.Customer)
+                            .FirstAsync(x => x.Id == tutorialId);
+               
 
                         tutorial.HasCompletedCheckout = true;
                         tutorial.PendingEmailConfirmationTutor = true;
@@ -1638,6 +1784,24 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         db.Entry(tutorial).State = EntityState.Modified;
 
                         await db.SaveChangesAsync();
+
+                        var customerFullName = string.Format("{0} {1}", tutorial.Customer.FirstName, tutorial.Customer.LastName);
+                        var tutotialName = string.Format("CONFIRMED - Scottish Online Lessons Tutorial for {0}", customerFullName);
+    
+                        var graphApi = new MicrosoftGraphApiService();
+                        var teamsEventResponse = await graphApi.CreateOrUpdateTeamsEvent(
+                            tutorial.TeamsId,
+                            tutorial.TutorUser.Email,
+                            tutotialName,
+                            null,
+                            _systemTimeZone,
+                            null,
+                            null,
+                            new List<Tuple<string, string>>()
+                            {
+                                new Tuple<string, string>(customerFullName, tutorial.Customer.Email)
+                            }
+                            );
 
                     }
                     else

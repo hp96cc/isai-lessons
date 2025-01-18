@@ -37,7 +37,24 @@
             <div class="row align-items-top">
 
 
-                <div class="col-7">
+                <div class="col-5">
+
+                    <h4>Select Education Stage</h4>
+
+
+                    <select id="select-tutorial-tutorialsubjectgroup" onchange="GetTutorialSubjects()" class="form-control form-control-md mb-4" onchange="ChangeTutorialDuration(this)">
+                    </select>
+
+                    <h4>Select Subject Area</h4>
+
+                    <select id="select-tutorial-tutorialsubject" onchange="GetTutors()" class="form-control form-control-md mb-4" onchange="ChangeTutorialDuration(s)">
+                    </select>
+
+                    <h4>Select Tutor</h4>
+
+                    <select id="select-tutorial-tutor" class="form-control form-control-md mb-4" onchange="GetTimeslots();">
+                    </select>
+
 
                     <h4>Select Tutorial Duration</h4>
 
@@ -49,21 +66,27 @@
                     </select>
 
 
+                    
+                </div>
+                <div class="col-7">
                     <h4>Select a Date</h4>
                     <div id="Calendar"></div>
-                </div>
-                <div class="col-5">
+
                     <h4>Pick a time slot</h4>
                     <div class="overflow-auto" style="max-height:400px">
 
-                        @for (int i = 9; i < 20; i++)
-                        {
+                        <div id="timeslots">
 
-                            <button type="button" onclick="ShowTutorialSummary(@(i), 0);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):00</button>
-                            <button type="button" onclick="ShowTutorialSummary(@(i), 20);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):20</button>
-                            <button type="button" onclick="ShowTutorialSummary(@(i), 40);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):40</button>
+                            @*@for (int i = 9; i < 20; i++)
+                {
 
-                        }
+                    <button type="button" onclick="ShowTutorialSummary(@(i), 0);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):00</button>
+                    <button type="button" onclick="ShowTutorialSummary(@(i), 20);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):20</button>
+                    <button type="button" onclick="ShowTutorialSummary(@(i), 40);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):40</button>
+
+                }*@
+
+                        </div>
 
                     </div>
 
@@ -157,7 +180,6 @@
         const baseReturnUrl = "https://localhost:44306/";  //TODO: move to api controller
 
         var selectedLessonId = @(string.IsNullOrEmpty(Request.QueryString["lessonId"]) ? "null" : Request.QueryString["lessonId"]);
-        var selectedTutorId = '4991e42b-2994-42be-8cde-782668261c06';
 
         var startTime;
         var endTime;
@@ -183,22 +205,164 @@
 
             calendar.appendTo('#Calendar');
 
+            GetTutorialSubjectGroups();
+
         });
 
-        function addDays(date, days)
+        async function GetTutorialSubjectGroups()
+        {
+            var data = await lessonsApp.tutorialSubjectGroups();
+
+            try
             {
-                const newDate = new Date(date);
-                newDate.setDate(date.getDate() + days);
-                return newDate;
+                if (!data || data.Status !== 0)
+                {
+                    throw new Error('GetTutorialSubjectGroups failed');
+                }
+                else
+                {
+                    DisplayTutorialSubjectGroups(data.Content.TutorialSubjectGroups);
+                }
+
+            } catch (ex)
+            {
+
+                alert("TODO: Error Handling");
+            }
+        }
+
+        async function GetTutorialSubjects()
+        {
+
+            var request = {
+                TutorialGroupId: parseInt($("#select-tutorial-tutorialsubjectgroup").children("option:selected").val())
             }
 
-            function ShowTutorialSummary(startHours, startMinutes)
-            {
-                this.startTime = calendar.value;
-                this.startTime.setHours(startHours);
-                this.startTime.setMinutes(startMinutes);
+            var data = await lessonsApp.tutorialSubjects(request);
 
-                this.endTime = new Date(startTime.getTime() + tutorialDuration * 60000)
+            try
+            {
+                if (!data || data.Status !== 0)
+                {
+                    throw new Error('GetTutorialSubjects failed');
+                }
+                else
+                {
+                    DisplayTutorialSubjects(data.Content.TutorialSubjects);
+                }
+
+            } catch (ex)
+            {
+
+                alert("TODO: Error Handling");
+            }
+        }
+
+        function DisplayTutorialSubjectGroups(tutorialSubjectGroups)
+        {
+            tutorialSubjectGroups.forEach(x => $("#select-tutorial-tutorialsubjectgroup").append(new Option(x.Name, x.Id)))
+            GetTutorialSubjects();
+        }
+
+
+
+        function DisplayTutorialSubjects(tutorialSubjects)
+        {
+            $("#select-tutorial-tutorialsubject").find("option").remove().end();
+            tutorialSubjects.forEach(x => $("#select-tutorial-tutorialsubject").append(new Option(x.Name, x.Id)))
+            GetTutors();
+        }
+
+        async function GetTutors()
+        {
+            var request = {
+                TutorialSubjectId: parseInt($("#select-tutorial-tutorialsubject").children("option:selected").val())
+            }
+
+            var data = await lessonsApp.tutors(request);
+
+            try
+            {
+                if (!data || data.Status !== 0)
+                {
+                    throw new Error('GetTutors failed');
+                }
+                else
+                {
+                    DisplayTutors(data.Content.Tutors);
+                }
+
+            } catch (ex)
+            {
+
+                alert("TODO: Error Handling");
+            }
+
+        }
+
+        function DisplayTutors(tutors)
+        {
+            $("#select-tutorial-tutor").find("option").remove().end();
+            tutors.forEach(x => $("#select-tutorial-tutor").append(new Option(x.Name, x.Id)));
+            GetTimeslots();
+        }
+
+
+        async function GetTimeslots()
+        {
+
+            var tutorId = $("#select-tutorial-tutor").children("option:selected").val();
+            selectedTutorId = tutorId;
+            var tutorialDate = calendar.value;
+            var tutorialDuration = parseInt($("#select-tutorial-duration").children("option:selected").val());
+
+            var request = {
+                TutorId: tutorId,
+                TutorialDate: tutorialDate,
+                TutorialDuration: tutorialDuration
+            };
+
+            var data = await lessonsApp.tutorialTimeslots(request);
+
+            try
+            {
+                if (!data || data.Status !== 0)
+                {
+                    throw new Error('GetTimeslots failed');
+                }
+                else
+                {
+                    DisplayTimeslots(data.Content.TutorialTimeSlots);
+                }
+
+            } catch (ex)
+            {
+
+                alert("TODO: Error Handling");
+            }
+
+        }
+
+        function DisplayTimeslots(timeslots)
+        {
+            $("#timeslots").empty();
+            timeslots.forEach(x => $("#timeslots").append('<button type="button" onclick="ShowTutorialSummary(' + x.StartTimeHours + ', ' + x.StartTimeMinutes + ');" class="butn medium sky btn-block p-2 mb-2">' + x.StartTimeHours.toString().padStart(2, "0") + ':' + x.StartTimeMinutes.toString().padStart(2, "0") + '</button>'));
+        }
+
+        function addDays(date, days)
+        {
+            const newDate = new Date(date);
+            newDate.setDate(date.getDate() + days);
+            return newDate;
+        }
+
+        function ShowTutorialSummary(startHours, startMinutes)
+        {
+            this.startTime = calendar.value;
+            this.startTime.setHours(startHours);
+            this.startTime.setMinutes(startMinutes);
+
+            this.endTime = new Date(startTime.getTime() + tutorialDuration * 60000)
 
             $('#tutorial-duration-text').text(tutorialDuration);
             $('#tutorial-start-text').text(startTime.toLocaleTimeString('en-GB', optionsTime));
@@ -213,12 +377,12 @@
             $('#tutorial-cost-text-modal').text(tutorialDuration);
 
             $('#tutorial-booking-summary').removeClass("d-none").show();
-            }
+        }
 
-            function ShowConfirmTutorialDialog()
-            {
-                $('#confirmTutorialModal').modal('show');
-            }
+        function ShowConfirmTutorialDialog()
+        {
+            $('#confirmTutorialModal').modal('show');
+        }
 
         async function GoToPurchase()
         {
@@ -243,7 +407,7 @@
                     sessionId: data.Content.SessionId
                 }).then(handleResult);
 
-    
+
                 return;
 
             } else
@@ -282,7 +446,7 @@
 
         }
 
-        function ChangeTutorialDuration(sender)
+        function ChangeTutorialDuration()
         {
             tutorialDuration = parseInt($("select-tutorial-duration").val());
         }

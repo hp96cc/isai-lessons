@@ -13,5 +13,6 @@
         bool PendingDownload { get; set; }
         string SourceUrl { get; set; }
         int? SubscriptionTypeId { get; set; }
+        
     }
 }

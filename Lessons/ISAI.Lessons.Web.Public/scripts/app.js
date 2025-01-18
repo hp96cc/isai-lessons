@@ -94,6 +94,115 @@
 
     };
 
+    var tutorials = async function ()
+    {
+
+        var url = this.baseUrl + "tutorials";
+
+        try
+        {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
+    var tutorialSubjectGroups = async function ()
+    {
+
+        var url = this.baseUrl + "tutorialsubjectgroups";
+
+        try
+        {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
+    var tutorialSubjects = async function (request)
+    {
+        var url = this.baseUrl + "tutorialsubjects";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+    var tutorialTimeslots = async function (request)
+    {
+        var url = this.baseUrl + "tutorialtimeslots";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+
+    var tutors = async function (request)
+    {
+        var url = this.baseUrl + "tutors";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
 
     var tutorialCreate = async function (tutorial)
     {
@@ -387,15 +496,17 @@
     };
 
 
-    var getCustomerActivity = async function () {
+    var customerActivity = async function (request) {
 
         var url = this.baseUrl + "customeractivity";
+        var requestData = JSON.stringify(request);
 
         try {
 
             var data = await $.ajax({
                 url: url,
                 type: "POST",
+                data: requestData,
                 contentType: 'application/json',
             });
 
@@ -507,7 +618,7 @@
         getLesson: getLesson,
         getSubscriptions: getSubscriptions,
         getCustomerDevices: getCustomerDevices,
-        getCustomerActivity: getCustomerActivity,
+        customerActivity: customerActivity,
         logout: logout,
         createCustomerPaymentSession: createCustomerPaymentSession,
         subscriptionPortal: subscriptionPortal,
@@ -520,8 +631,11 @@
         tutorialCreate: tutorialCreate,
         tutorialPurchase: tutorialPurchase,
         checksession: checksession,
-        tutors: tutors, //TODO:
-        tutorialtimeslots: tutorialtimeslots //TODO:
+        tutors: tutors,
+        tutorials: tutorials,
+        tutorialTimeslots: tutorialTimeslots,
+        tutorialSubjects: tutorialSubjects,
+        tutorialSubjectGroups: tutorialSubjectGroups
 
     }
 
