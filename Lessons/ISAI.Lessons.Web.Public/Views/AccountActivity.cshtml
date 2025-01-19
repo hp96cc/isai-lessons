@@ -31,15 +31,8 @@
 <section class="p-0">
     <div class="container">
 
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border mb-10" role="status" id="spinner-loading">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="row" id="account-panel" style="display:none;">
+       
+        <div class="row" id="account-panel">
             <div class="col-3">
 
                 <!-- Nav -->
@@ -156,9 +149,6 @@
 
         async function GetActivity() {
 
-            $('#account-panel').hide();
-            $('#spinner-loading').show();
-
             var request = {
                 Page: 0,
                 RecordCount: 20
@@ -168,13 +158,15 @@
 
             if (!data)
             {
-                //lessonsApp.logout();
+                lessonsApp.logout();
             }
             else if (data.Status !== 0)
             {
-                //location.href = '/account/'
-            } else
+                location.href = '/account/'
+            }
+            else
             {
+                HidePreloader();
                 activity = data.Content.LessonHistory;
                 DisplayActivity();
             }
@@ -197,9 +189,7 @@
 
             $('#activity-list').html(itemListHTML);
 
-            $('#account-panel').show();
-            $('#spinner-loading').hide();
-
+            HidePreloader();
 
         }
 

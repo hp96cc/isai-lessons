@@ -24,15 +24,8 @@
 <section class="pb-2">
     <div class="container">
 
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border mb-10" role="status" id="spinner-loading">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="account-panel" style="display:none;">
+  
+        <div id="account-panel">
 
             <div class="row align-items-top">
 
@@ -191,10 +184,10 @@
         var maxDate = new Date(today);
         maxDate.setDate(maxDate.getDate() + 15);
 
+        var isFirstLoad = true;
+
         $(document).ready(function ()
         {
-            $('#account-panel').show();
-            $('#spinner-loading').hide();
 
             calendar = new ej.calendars.Calendar({
                 min: minDate,
@@ -211,6 +204,9 @@
 
         async function GetTutorialSubjectGroups()
         {
+            if (!isFirstLoad)
+                ShowPreloader();
+
             var data = await lessonsApp.tutorialSubjectGroups();
 
             try
@@ -222,17 +218,25 @@
                 else
                 {
                     DisplayTutorialSubjectGroups(data.Content.TutorialSubjectGroups);
+
+                    if (!isFirstLoad)
+                        HidePreloader();
+                    return;
                 }
 
             } catch (ex)
             {
-
+            
                 alert("TODO: Error Handling");
             }
+
+            HidePreloader();
         }
 
         async function GetTutorialSubjects()
         {
+            if (!isFirstLoad)
+                ShowPreloader();
 
             var request = {
                 TutorialGroupId: parseInt($("#select-tutorial-tutorialsubjectgroup").children("option:selected").val())
@@ -249,13 +253,18 @@
                 else
                 {
                     DisplayTutorialSubjects(data.Content.TutorialSubjects);
+
+                    if (!isFirstLoad)
+                        HidePreloader();
+                    return;
                 }
 
             } catch (ex)
             {
-
                 alert("TODO: Error Handling");
             }
+
+            HidePreloader();
         }
 
         function DisplayTutorialSubjectGroups(tutorialSubjectGroups)
@@ -275,12 +284,16 @@
 
         async function GetTutors()
         {
+            if (!isFirstLoad)
+                ShowPreloader();
+
             var request = {
                 TutorialSubjectId: parseInt($("#select-tutorial-tutorialsubject").children("option:selected").val())
             }
 
             var data = await lessonsApp.tutors(request);
 
+         
             try
             {
                 if (!data || data.Status !== 0)
@@ -290,6 +303,10 @@
                 else
                 {
                     DisplayTutors(data.Content.Tutors);
+
+                    if (!isFirstLoad)
+                        HidePreloader();
+                    return;
                 }
 
             } catch (ex)
@@ -297,6 +314,9 @@
 
                 alert("TODO: Error Handling");
             }
+
+            HidePreloader();
+
 
         }
 
@@ -310,6 +330,9 @@
 
         async function GetTimeslots()
         {
+
+            if (!isFirstLoad)
+                ShowPreloader();
 
             var tutorId = $("#select-tutorial-tutor").children("option:selected").val();
             selectedTutorId = tutorId;
@@ -333,6 +356,7 @@
                 else
                 {
                     DisplayTimeslots(data.Content.TutorialTimeSlots);
+                    return;
                 }
 
             } catch (ex)
@@ -341,12 +365,16 @@
                 alert("TODO: Error Handling");
             }
 
+
+            HidePreloader();
         }
 
         function DisplayTimeslots(timeslots)
         {
             $("#timeslots").empty();
             timeslots.forEach(x => $("#timeslots").append('<button type="button" onclick="ShowTutorialSummary(' + x.StartTimeHours + ', ' + x.StartTimeMinutes + ');" class="butn medium sky btn-block p-2 mb-2">' + x.StartTimeHours.toString().padStart(2, "0") + ':' + x.StartTimeMinutes.toString().padStart(2, "0") + '</button>'));
+            isFirstLoad = false;
+            HidePreloader();
         }
 
         function addDays(date, days)
@@ -386,8 +414,7 @@
 
         async function GoToPurchase()
         {
-            $('#account-panel').hide();
-            $('#spinner-loading').show();
+            ShowPreloader();
 
             var request =
             {
@@ -398,6 +425,8 @@
             };
 
             var data = await lessonsApp.tutorialPurchase(request);
+
+           
 
             if (data !== null && data.Content.SessionId !== null)
             {
@@ -442,7 +471,7 @@
 
             }
 
-            $('#spinner-loading').hide();
+            HidePreloader();
 
         }
 
@@ -456,7 +485,7 @@
             if (result.error)
             {
                 alert(result.error.message);
-                $('#spinner-loading').hide();
+                HidePreloader();
             }
         };
 

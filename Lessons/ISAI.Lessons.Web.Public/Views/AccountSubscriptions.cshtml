@@ -153,28 +153,7 @@
     </div>
 </section>
 
-@*
-    <!-- Modal -->
-    <div class="modal fade" id="cancelSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="cancelSubscriptionModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cancelSubscriptionModalLabel">Cancel Subscription</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you wish to cancel your subscription?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="butn x-small float-left p-2 pl-4 pr-4 ml-4 mb-2 mt-3" data-dismiss="modal">No, I want to keep it</button>
-                    <button type="button" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3">Yes, Cancel My Subscription</button>
-                </div>
-            </div>
-        </div>
-    </div>
-*@
+
 
 @section Scripts {
 
@@ -193,9 +172,13 @@
 
             var data = await lessonsApp.getSubscriptions();
 
-            if (!data || data.Status !== 0) {
+            if (!data || data.Status !== 0) 
+            {
                 lessonsApp.logout();
-            } else {
+            }
+            else
+            {
+                HidePreloader();
                 subscriptions = data.Content;
                 DisplaySubscriptions();
             }
@@ -231,11 +214,6 @@
 
                 $('#account-nosubscription').show();
             }
-
-
-
-            $('#spinner-loading').hide();
-
 
         }
 

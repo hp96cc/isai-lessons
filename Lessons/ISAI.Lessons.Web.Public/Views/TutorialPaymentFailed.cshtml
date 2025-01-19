@@ -1,5 +1,18 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.TutorialPaymentFailed>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
-	Layout = "Master.cshtml";
+    Layout = "Master.cshtml";
+}
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(function ()
+        {
+            HidePreloader();
+
+        });
+
+    </script>
 }

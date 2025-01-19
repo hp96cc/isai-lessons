@@ -43,11 +43,6 @@
                 <!-- Heading -->
                 <h3 class="mb-4">Sign In</h3>
 
-
-                <div class="spinner-border  mb-10" role="status" id="spinner-loading" style="display:none;">
-                    <span class="sr-only">Loading...</span>
-                </div>
-
             </div>
         </div>
         <div class="row justify-content-center" id="account-panel">
@@ -133,13 +128,18 @@
 
     <script>
 
+        $(document).ready(function ()
+        {
+            HidePreloader();
+        });
+
         async function Login() {
+
+
+            ShowPreloader();
 
             var username = $("#loginEmail").val();
             var password = $("#loginPassword").val();
-
-            $('#account-panel').hide();
-            $('#spinner-loading').show();
 
             var result = await lessonsApp.login(username, password);
 
@@ -158,11 +158,11 @@
             }
             else
             {
-                $('#account-panel').show();
-                $('#spinner-loading').hide();
-
+                HidePreloader();   
                 $("#login-error-label").show();
             }
+
+           
         }
 
     </script>

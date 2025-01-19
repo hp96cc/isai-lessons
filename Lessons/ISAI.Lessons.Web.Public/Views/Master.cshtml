@@ -2,13 +2,12 @@
 @{
     Layout = null;
 
+    ViewBag.LoggedIn = false;
 
     /* Check is logged in */
     if (Request.Cookies["lessons_access_token"] != null && Request.Cookies["lessons_access_token"].Value.ToString().Length > 100)
     {
-
         ViewBag.LoggedIn = true;
-
     }
 
 
@@ -45,7 +44,7 @@
     metaTitle = "Scottish " + metaTitle;
 
 
-    }
+}
 
 
 @helper RenderMenuItem(IPublishedContent page, int menudepth)
@@ -483,8 +482,30 @@
 
     <script src="~/scripts/app.js?v=10"></script>
 
+    <script>
+        function HidePreloader()
+        {
+            $('#preloader').fadeOut('normall', function ()
+            {
+                $(this).hide();
+            });
+        }
 
-    @*@if (Model.Url().Contains("/plans/") == false && Model.Url().Contains("/account/") == false)
+
+        function ShowPreloader()
+        {
+            $('#preloader').fadeOut('normall', function ()
+            {
+                $(this).show();
+            });
+        }
+    </script>
+
+
+    @if (Model.ContentType.Alias != "accountHome" &&
+        Model.ContentType.Alias.Contains("account") == false &&
+        Model.ContentType.Alias.Contains("tutorial") == false &&
+        Model.Url().Contains("/plans/") == false)
     {
 
     <script>
@@ -496,16 +517,12 @@
 
         async function CheckSession()
         {
-            $('#account-panel').hide();
-            $('#spinner-loading').show();
-
             try
             {
                 var data = await lessonsApp.checksession();
                 if (data)
                 {
-                    $('#account-panel').show();
-                    $('#spinner-loading').hide();
+                    HidePreloader();
                     return;
                 }
 
@@ -514,10 +531,18 @@
             }
 
             location.href = '/account/';
+            
         }
+
     </script>
 
-    }*@
+    }
+    else if (Model.ContentType.Alias.Contains("account") == false)
+    {
+        <script>
+            HidePreloader();
+        </script>
+    }
 
     @RenderSection("Scripts", required: false)
 

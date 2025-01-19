@@ -38,9 +38,10 @@
             01. Preloader
         --------------------------------------*/
 
-        $('#preloader').fadeOut('normall', function() {
-            $(this).remove();
-        });
+        //Preloader removed  to master for token check
+        //$('#preloader').fadeOut('normall', function() {
+        //    $(this).remove();
+        //});
 
         /*------------------------------------
             02. Sticky Header

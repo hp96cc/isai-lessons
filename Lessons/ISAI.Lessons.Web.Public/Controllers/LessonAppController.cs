@@ -876,8 +876,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 });
             }
 
-
-
         }
 
 
