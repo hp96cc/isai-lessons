@@ -3,12 +3,10 @@ using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
 using ISAI.Lessons.Models.ViewModels;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
+
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -97,8 +95,6 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
-
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
@@ -139,9 +135,7 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
-
-                Crashes.TrackError(ex);
-
+                
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
@@ -178,7 +172,6 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
 
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
