@@ -28,8 +28,8 @@ namespace ISAI.Lessons.Mobile
             DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.Register<IDeviceOrientation, DeviceOrientation>();
 
-            DownloadBrodacast downloadBrodacast = new DownloadBrodacast();
-            RegisterReceiver(downloadBrodacast, new IntentFilter(DownloadManager.ActionDownloadComplete));
+            //DownloadBrodacast downloadBrodacast = new DownloadBrodacast();
+            //RegisterReceiver(downloadBrodacast, new IntentFilter(DownloadManager.ActionDownloadComplete));
 
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
