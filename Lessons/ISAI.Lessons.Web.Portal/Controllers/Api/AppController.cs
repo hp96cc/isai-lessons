@@ -32,6 +32,7 @@ using Subscription = ISAI.Lessons.EntityFramework.Models.Subscription;
 using TutorialSubject = ISAI.Lessons.Models.ViewModels.TutorialSubject;
 using TutorialSubjectGroup = ISAI.Lessons.Models.ViewModels.TutorialSubjectGroup;
 using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
+using System.Text;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
 {
@@ -42,6 +43,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         int _customerId;
         int _appId;
+        string _baseUrl;
+        string _baseReturnUrl;
 
         StripeOptions options;
         IStripeClient client;
@@ -73,6 +76,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 WebhookSecret = ConfigurationManager.AppSettings["STRIPE_WEBHOOK_SECRET"],
             };
 
+            _baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
+            _baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
 
             this.client = new StripeClient(this.options.SecretKey);
         }
@@ -501,7 +506,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var customerFullName = string.Format("{0} {1}", customer.FirstName, customer.LastName);
                 var tutotialName = string.Format("DRAFT - Scottish Online Lessons Tutorial for {0}", customerFullName);
-                var tutotialDescription = string.Format("Scottish Online Lessons Tutorial for {0}", customerFullName);
+                var tutotialDescription = new StringBuilder(string.Format("Scottish Online Lessons Tutorial for {0}", customerFullName));
+                tutotialDescription.AppendLine("<p><b>Notes</b></p>");
+                tutotialDescription.AppendLine("<p>" + request.CustomerNotes.Replace("\n", "<br />") + "</p>");
 
                 Lesson lesson = null;
                 if (request.LessonId.HasValue)
@@ -512,7 +519,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     null,
                     tutor.Email,
                     tutotialName,
-                    tutotialDescription,
+                    tutotialDescription.ToString(),
                     _systemTimeZone,
                     request.DateTimeStart.ToString("s"),
                     request.DateTimeEnd.ToString("s"),
@@ -528,6 +535,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     TeamsLink = teamsEventResponse.WebLink,
                     AppId = 1,
                     CustomerId = customer.Id,
+                    Notes = request.CustomerNotes,
                     LessonId = request.LessonId,
                     DurationInMinutes = tutorialDuration,
                     DateTimeStart = request.DateTimeStart,
@@ -1292,7 +1300,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 byte[] iv = Convert.FromBase64String(_base64Iv);
                 string encryptedDigest = Strings.Encrypt(digest, key, iv);
 
-                var passwordResetLink = "https://portal.scottishonlinelessons.com/reset-password?digest=" + HttpUtility.UrlEncode(encryptedDigest);
+                var passwordResetLink = _baseReturnUrl + "reset-password?digest=" + HttpUtility.UrlEncode(encryptedDigest);
 
                 var templateHtml = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath("~/Email Templates/ResetPasswordEmailTemplate.html"));
                 templateHtml = templateHtml.Replace("{{name}}", string.Format("{0} {1}", customer.FirstName, customer.LastName));

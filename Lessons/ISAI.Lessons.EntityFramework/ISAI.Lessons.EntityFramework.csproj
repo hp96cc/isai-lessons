@@ -323,6 +323,10 @@
     <Compile Include="Migrations\202501170858077_Added TutorialSubject to lesson group.Designer.cs">
       <DependentUpon>202501170858077_Added TutorialSubject to lesson group.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202501202136081_Add Tutorial Notes.cs" />
+    <Compile Include="Migrations\202501202136081_Add Tutorial Notes.Designer.cs">
+      <DependentUpon>202501202136081_Add Tutorial Notes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -390,6 +394,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202501170858077_Added TutorialSubject to lesson group.resx">
       <DependentUpon>202501170858077_Added TutorialSubject to lesson group.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501202136081_Add Tutorial Notes.resx">
+      <DependentUpon>202501202136081_Add Tutorial Notes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

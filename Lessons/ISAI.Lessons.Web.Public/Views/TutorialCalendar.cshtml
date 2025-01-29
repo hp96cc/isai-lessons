@@ -58,8 +58,14 @@
                         <option value="60">60 minutes</option>
                     </select>
 
+                    <h4>Tutorial Notes</h4>
+                    <p>Please add some notes as to where you need help. This allow the tutor...text TBC</p>
 
-                    
+
+                    <textarea id="textarea-tutorial-notes" rows="4"></textarea>
+
+
+
                 </div>
                 <div class="col-7">
                     <h4>Select a Date</h4>
@@ -422,6 +428,7 @@
                 tutorId: selectedTutorId,
                 dateTimeStart: this.startTime.toJSON(),
                 dateTimeEnd: this.endTime.toJSON(),
+                customerNotes: $('#textarea-tutorial-notes').val()
             };
 
             var data = await lessonsApp.tutorialPurchase(request);

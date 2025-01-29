@@ -2,8 +2,8 @@
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
+using ISAI.Lessons.Models.Models.App;
 using ISAI.Lessons.Models.ViewModels;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,22 +25,12 @@ namespace ISAI.Lessons.EntityFramework.Services
         HttpClient _httpClient;
         IAuthService _authService;
 
-        public ApiService(bool isDevelopment, IAuthService authService)
+        public ApiService(IAuthService authService, string baseUrl, string baseReturnUrl)
         {
 
             _authService = authService;
-
-            if (isDevelopment)
-            {
-                _baseUrl = "https://localhost:44392/";
-                _baseReturnUrl = "https://localhost:44306/";
-            }
-            else
-            {
-                _baseUrl = "https://app.scottishonlinelessons.com/";
-                _baseReturnUrl = "https://scottishonlinelessons/";
-            }
-
+            _baseUrl = baseUrl;
+            _baseReturnUrl = baseReturnUrl;
         }
 
 
@@ -70,9 +60,9 @@ namespace ISAI.Lessons.EntityFramework.Services
         }
 
 
-        public async Task<ResponseData<List<ILesson>>> GetLessonsAsync()
+        public async Task<ResponseData<List<Lesson>>> GetLessonsAsync()
         {
-            var response = new ResponseData<List<ILesson>>();
+            var response = new ResponseData<List<Lesson>>();
 
             try
             {
@@ -84,7 +74,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    response = JsonConvert.DeserializeObject<ResponseData<List<ILesson>>>(serialisedContent);
+                    response = JsonConvert.DeserializeObject<ResponseData<List<Lesson>>>(serialisedContent);
                     return response;
                 }
                 else
@@ -95,7 +85,6 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
 
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
@@ -138,8 +127,6 @@ namespace ISAI.Lessons.EntityFramework.Services
             catch (Exception ex)
             {
 
-                Crashes.TrackError(ex);
-
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
@@ -150,10 +137,10 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
         }
 
-        public async Task<ResponseData<List<ILessonGroup>>> GetLessonGroupsAsync()
+        public async Task<ResponseData<List<LessonGroup>>> GetLessonGroupsAsync()
         {
 
-            var response = new ResponseData<List<ILessonGroup>>();
+            var response = new ResponseData<List<LessonGroup>>();
 
             try
             {
@@ -164,7 +151,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    response = JsonConvert.DeserializeObject<ResponseData<List<ILessonGroup>>>(serialisedContent);
+                    response = JsonConvert.DeserializeObject<ResponseData<List<LessonGroup>>>(serialisedContent);
                     return response;
                 }
                 else
@@ -176,7 +163,6 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex);
 
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {

@@ -1,9 +1,7 @@
 ﻿using ISAI.Lessons.Models.Enums;
-using System;
 
-namespace ISAI.Lessons.Models.Interfaces
-{
-    public interface IDeviceOrientation
+namespace ISAI.Lessons.Models.Interfaces.App
+{   public interface IDeviceOrientation
     {
         /// <summary>
         ///     Gets current device orientation
@@ -21,5 +19,4 @@ namespace ISAI.Lessons.Models.Interfaces
         /// </summary>
         void UnlockOrientation();
     }
-
 }

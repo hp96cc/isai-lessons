@@ -40,16 +40,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
             _baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
             _baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
             _context = HttpContext.Current;
-
-            if (_baseUrl.Contains("localhost"))
-            {
-                _apiService = new ApiService(true, this);
-            }
-            else
-            {
-                _apiService = new ApiService(false, this);
-            }
-
+            _apiService = new ApiService(this, _baseUrl, _baseReturnUrl);
 
         }
 

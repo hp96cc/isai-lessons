@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Mobile", "ISAI.Lessons.Mobile\ISAI.Lessons.Mobile.csproj", "{B078160D-9D1E-47E9-9668-B869DC3178BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Mobile.SampleCode", "ISAI.Lessons.Mobile.SampleCode\ISAI.Lessons.Mobile.SampleCode.csproj", "{65A8BABF-28CD-4067-ACF7-9C25DAC62F2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{8B43D16E-2C8F-48C3-B230-5D3E4DC6CF91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Core", "..\ISAI.Lessons.Core\ISAI.Lessons.Core.csproj", "{9CF577BB-C69E-4FDF-8A5D-E00BAE9906F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Models", "..\ISAI.Lessons.Models\ISAI.Lessons.Models.csproj", "{43836903-CD83-4EED-BBC3-729DA3E8793D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B078160D-9D1E-47E9-9668-B869DC3178BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B078160D-9D1E-47E9-9668-B869DC3178BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B078160D-9D1E-47E9-9668-B869DC3178BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B078160D-9D1E-47E9-9668-B869DC3178BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65A8BABF-28CD-4067-ACF7-9C25DAC62F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65A8BABF-28CD-4067-ACF7-9C25DAC62F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65A8BABF-28CD-4067-ACF7-9C25DAC62F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CF577BB-C69E-4FDF-8A5D-E00BAE9906F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CF577BB-C69E-4FDF-8A5D-E00BAE9906F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CF577BB-C69E-4FDF-8A5D-E00BAE9906F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CF577BB-C69E-4FDF-8A5D-E00BAE9906F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43836903-CD83-4EED-BBC3-729DA3E8793D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43836903-CD83-4EED-BBC3-729DA3E8793D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43836903-CD83-4EED-BBC3-729DA3E8793D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43836903-CD83-4EED-BBC3-729DA3E8793D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9CF577BB-C69E-4FDF-8A5D-E00BAE9906F3} = {8B43D16E-2C8F-48C3-B230-5D3E4DC6CF91}
+		{43836903-CD83-4EED-BBC3-729DA3E8793D} = {8B43D16E-2C8F-48C3-B230-5D3E4DC6CF91}
+	EndGlobalSection
+EndGlobal
