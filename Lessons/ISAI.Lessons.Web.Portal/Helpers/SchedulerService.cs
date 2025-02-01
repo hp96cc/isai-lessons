@@ -120,7 +120,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             htmlBody = htmlBody.Replace("{{Date}}", tutorial.DateTimeStart.DateTime.ToLongDateString());
             htmlBody = htmlBody.Replace("{{Time}}", tutorial.DateTimeStart.DateTime.ToString("HH:mm") + " to " + tutorial.DateTimeEnd.DateTime.ToString("HH:mm"));
             htmlBody = htmlBody.Replace("{{Duration}}", tutorial.DurationInMinutes + " minutes.");
-            htmlBody = htmlBody.Replace("{{Cost}}", tutorial.DurationInMinutes.ToString("c"));
+            htmlBody = htmlBody.Replace("{{Cost}}", string.Format("{0:N2} £", tutorial.TutorialCost));
             htmlBody = htmlBody.Replace("/{{Link}}", tutorial.TeamsLink);
             return htmlBody;
         }

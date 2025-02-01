@@ -327,6 +327,18 @@
     <Compile Include="Migrations\202501202136081_Add Tutorial Notes.Designer.cs">
       <DependentUpon>202501202136081_Add Tutorial Notes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502011324096_Add Stripe Price id to Subscription type.cs" />
+    <Compile Include="Migrations\202502011324096_Add Stripe Price id to Subscription type.Designer.cs">
+      <DependentUpon>202502011324096_Add Stripe Price id to Subscription type.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502011615098_Add Tutorial Costs to app.cs" />
+    <Compile Include="Migrations\202502011615098_Add Tutorial Costs to app.Designer.cs">
+      <DependentUpon>202502011615098_Add Tutorial Costs to app.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502011621462_Added Stripe Price Ids to App.cs" />
+    <Compile Include="Migrations\202502011621462_Added Stripe Price Ids to App.Designer.cs">
+      <DependentUpon>202502011621462_Added Stripe Price Ids to App.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -397,6 +409,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202501202136081_Add Tutorial Notes.resx">
       <DependentUpon>202501202136081_Add Tutorial Notes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502011324096_Add Stripe Price id to Subscription type.resx">
+      <DependentUpon>202502011324096_Add Stripe Price id to Subscription type.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502011615098_Add Tutorial Costs to app.resx">
+      <DependentUpon>202502011615098_Add Tutorial Costs to app.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502011621462_Added Stripe Price Ids to App.resx">
+      <DependentUpon>202502011621462_Added Stripe Price Ids to App.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

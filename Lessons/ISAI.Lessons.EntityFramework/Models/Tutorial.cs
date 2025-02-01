@@ -35,6 +35,8 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public int DurationInMinutes { get; set; }
 
+        public decimal TutorialCost { get; set; }
+
         public string Notes { get; set; }
 
         public string TeamsId { get; set; }

@@ -1,6 +1,8 @@
-﻿namespace ISAI.Lessons.AppModels.Models
+﻿using ISAI.Lessons.Models.Interfaces;
+
+namespace ISAI.Lessons.AppModels.Models
 {
-    public class App : BaseModel
+    public class App : BaseModel, IApp
     {
 
         public string Name { get; set; }
@@ -16,8 +18,12 @@
         public string StripeLivePublishApiKey { get; set; }
 
         public string StripeLiveSecretApiKey { get; set; }
-
-
+        public decimal TutorialCost20Minutes { get; set; }
+        public decimal TutorialCost40Minutes { get; set; }
+        public decimal TutorialCost60Minutes { get; set; }
+        public string TutorialStripPriceId20Minutes { get; set; }
+        public string TutorialStripPriceId40Minutes { get; set; }
+        public string TutorialStripPriceId60Minutes { get; set; }
     }
 
 }

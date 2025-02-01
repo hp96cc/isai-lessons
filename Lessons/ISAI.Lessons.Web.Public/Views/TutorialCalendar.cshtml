@@ -9,11 +9,11 @@
 <section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png">
     <div class="container">
         <div class="page-title">
-            <h1>Book Tutorial TBC</h1>
+            <h1>Book Your Session</h1>
             <div class="page-link">
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="javascript:void(0)">Book Tutorial TBC</a></li>
+                    <li><a href="javascript:void(0)">Book Your Session</a></li>
                 </ul>
             </div>
         </div>
@@ -35,12 +35,12 @@
                     <h4>Select Education Stage</h4>
 
 
-                    <select id="select-tutorial-tutorialsubjectgroup" onchange="GetTutorialSubjects()" class="form-control form-control-md mb-4" onchange="ChangeTutorialDuration(this)">
+                    <select id="select-tutorial-tutorialsubjectgroup" onchange="GetTutorialSubjects()" class="form-control form-control-md mb-4">
                     </select>
 
                     <h4>Select Subject Area</h4>
 
-                    <select id="select-tutorial-tutorialsubject" onchange="GetTutors()" class="form-control form-control-md mb-4" onchange="ChangeTutorialDuration(s)">
+                    <select id="select-tutorial-tutorialsubject" onchange="GetTutors()" class="form-control form-control-md mb-4">
                     </select>
 
                     <h4>Select Tutor</h4>
@@ -59,7 +59,7 @@
                     </select>
 
                     <h4>Tutorial Notes</h4>
-                    <p>Please add some notes as to where you need help. This allow the tutor...text TBC</p>
+                    <p>Please add some notes as to where you need help. This allows the tutor to understand what your struggling with and need support on.</p>
 
 
                     <textarea id="textarea-tutorial-notes" rows="4"></textarea>
@@ -76,14 +76,7 @@
 
                         <div id="timeslots">
 
-                            @*@for (int i = 9; i < 20; i++)
-                {
-
-                    <button type="button" onclick="ShowTutorialSummary(@(i), 0);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):00</button>
-                    <button type="button" onclick="ShowTutorialSummary(@(i), 20);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):20</button>
-                    <button type="button" onclick="ShowTutorialSummary(@(i), 40);" class="butn medium sky btn-block p-2 mb-2">@(i.ToString("00")):40</button>
-
-                }*@
+ 
 
                         </div>
 
@@ -177,6 +170,7 @@
         const optionsTime = { hour12: false, hour: '2-digit', minute: '2-digit' };
         const secondsPerDay = 86400;
         const baseReturnUrl = "https://localhost:44306/";  //TODO: move to api controller
+        const buttonTimeSlotClass = "timeslotbutton butn sky btn-block p-2 mb-2";
 
         var selectedLessonId = @(string.IsNullOrEmpty(Request.QueryString["lessonId"]) ? "null" : Request.QueryString["lessonId"]);
 
@@ -184,6 +178,8 @@
         var endTime;
         var calendar;
         var tutorialDuration = 40;
+        var selectedTutorialSubjectId
+        var costPerTimeSlot;
         var today = new Date(new Date().setHours(0, 0, 0, 0));
         var minDate = new Date(today);
         minDate.setDate(minDate.getDate() + 1);
@@ -293,8 +289,10 @@
             if (!isFirstLoad)
                 ShowPreloader();
 
+            selectedTutorialSubjectId = parseInt($("#select-tutorial-tutorialsubject").children("option:selected").val());
+
             var request = {
-                TutorialSubjectId: parseInt($("#select-tutorial-tutorialsubject").children("option:selected").val())
+                TutorialSubjectId: selectedTutorialSubjectId
             }
 
             var data = await lessonsApp.tutors(request);
@@ -336,6 +334,7 @@
 
         async function GetTimeslots()
         {
+            $('#tutorial-booking-summary').hide(); 
 
             if (!isFirstLoad)
                 ShowPreloader();
@@ -343,7 +342,7 @@
             var tutorId = $("#select-tutorial-tutor").children("option:selected").val();
             selectedTutorId = tutorId;
             var tutorialDate = calendar.value;
-            var tutorialDuration = parseInt($("#select-tutorial-duration").children("option:selected").val());
+            tutorialDuration = parseInt($("#select-tutorial-duration").children("option:selected").val());
 
             var request = {
                 TutorId: tutorId,
@@ -361,6 +360,7 @@
                 }
                 else
                 {
+                    costPerTimeSlot = data.Content.CostPerTimeSlot;
                     DisplayTimeslots(data.Content.TutorialTimeSlots);
                     return;
                 }
@@ -378,7 +378,7 @@
         function DisplayTimeslots(timeslots)
         {
             $("#timeslots").empty();
-            timeslots.forEach(x => $("#timeslots").append('<button type="button" onclick="ShowTutorialSummary(' + x.StartTimeHours + ', ' + x.StartTimeMinutes + ');" class="butn medium sky btn-block p-2 mb-2">' + x.StartTimeHours.toString().padStart(2, "0") + ':' + x.StartTimeMinutes.toString().padStart(2, "0") + '</button>'));
+            timeslots.forEach(x => $("#timeslots").append('<button type="button" onclick="ShowTutorialSummary(this, ' + x.StartTimeHours + ', ' + x.StartTimeMinutes + ');" class="' + buttonTimeSlotClass + '">' + x.StartTimeHours.toString().padStart(2, "0") + ':' + x.StartTimeMinutes.toString().padStart(2, "0") + '</button>'));
             isFirstLoad = false;
             HidePreloader();
         }
@@ -390,8 +390,15 @@
             return newDate;
         }
 
-        function ShowTutorialSummary(startHours, startMinutes)
+        function ShowTutorialSummary(sender, startHours, startMinutes)
         {
+
+            Array.from(document.querySelectorAll('.timeslotbutton')).forEach(
+                (el) => el.classList.remove('pink')
+            );
+
+            sender.classList.add('pink');
+
             this.startTime = calendar.value;
             this.startTime.setHours(startHours);
             this.startTime.setMinutes(startMinutes);
@@ -402,7 +409,7 @@
             $('#tutorial-start-text').text(startTime.toLocaleTimeString('en-GB', optionsTime));
             $('#tutorial-end-text').text(endTime.toLocaleTimeString('en-GB', optionsTime));
             $('#tutorial-date-text').text(startTime.toLocaleDateString('en-GB', optionsDate));
-            $('#tutorial-cost-text').text(tutorialDuration);
+            $('#tutorial-cost-text').text(costPerTimeSlot.toFixed(2));
 
             $('#tutorial-duration-text-modal').text(tutorialDuration);
             $('#tutorial-start-text-modal').text(startTime.toLocaleTimeString('en-GB', optionsTime));
@@ -426,6 +433,7 @@
             {
                 lessonId: selectedLessonId,
                 tutorId: selectedTutorId,
+                tutorialSubjectId: selectedTutorialSubjectId,
                 dateTimeStart: this.startTime.toJSON(),
                 dateTimeEnd: this.endTime.toJSON(),
                 customerNotes: $('#textarea-tutorial-notes').val()
@@ -482,9 +490,9 @@
 
         }
 
-        function ChangeTutorialDuration()
+        async function ChangeTutorialDuration()
         {
-            tutorialDuration = parseInt($("select-tutorial-duration").val());
+            await GetTimeslots();
         }
 
         var handleResult = function (result)

@@ -5,6 +5,7 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
     public class TutorialPurchaseRequestViewModel
     {
         public string TutorId { get; set; }
+        public int TutorialSubjectId { get; set; }
         public int? LessonId { get; set; }
         public DateTime DateTimeStart { get; set; }
         public DateTime DateTimeEnd { get; set; }

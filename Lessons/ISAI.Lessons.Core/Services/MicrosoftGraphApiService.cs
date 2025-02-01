@@ -13,6 +13,7 @@ using Microsoft.Graph.Users.Item.SendMail;
 using Microsoft.Graph.Users.Item.Calendar.GetSchedule;
 using ISAI.Lessons.Models.ViewModels.GraphApi;
 using System.Configuration;
+using Azure;
 
 namespace ISAI.Lessons.EntityFramework.Services
 {
@@ -206,6 +207,8 @@ namespace ISAI.Lessons.EntityFramework.Services
                         requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"" + timeZone + "\"");
                     });
 
+
+
                     return new TeamsEventResponse()
                     {
                         Id = result.Id,
@@ -244,6 +247,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
                     AllowNewTimeProposals = false,
                     IsOnlineMeeting = true,
+                   
                     OnlineMeetingProvider = OnlineMeetingProviderType.TeamsForBusiness,
                 };
 
@@ -265,15 +269,22 @@ namespace ISAI.Lessons.EntityFramework.Services
                 try
                 {
 
-                    var result = await graphClient.Users[userName].Events.PostAsync(requestBody, (requestConfiguration) =>
+           
+                    var eventResponse = await graphClient.Users[userName].Events.PostAsync(requestBody, (requestConfiguration) =>
                     {
                         requestConfiguration.Headers.Add("Prefer", "outlook.timezone=\"" + timeZone + "\"");
                     });
 
+                    var onlineMeetingResponse = await graphClient.Communications.OnlineMeetings.GetAsync((requestConfiguration) =>
+                    {
+                        var onlineMeetingFilter = string.Format("Id eq '{0}'", eventResponse.OnlineMeeting.ConferenceId);
+                        requestConfiguration.QueryParameters.Filter = onlineMeetingFilter;
+                    });
+
                     return new TeamsEventResponse()
                     {
-                        Id = result.Id,
-                        WebLink = result.OnlineMeeting.JoinUrl
+                        Id = eventResponse.Id,
+                        WebLink = eventResponse.OnlineMeeting.JoinUrl
                     };
 
                 }

@@ -4,5 +4,9 @@
     {
         int AppId { get; set; }
         string Name { get; set; }
+
+        string StripePriceId { get; set; }
+
+        int SubscriptionLengthInMonths { get; set; }
     }
 }

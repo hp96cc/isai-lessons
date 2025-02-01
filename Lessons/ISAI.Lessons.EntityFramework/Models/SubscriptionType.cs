@@ -7,6 +7,10 @@ namespace ISAI.Lessons.EntityFramework.Models
     {
         public string Name { get; set; }
 
+        public string StripePriceId { get; set; }
+
+        public int SubscriptionLengthInMonths { get; set; }
+
         public int AppId { get; set; }
 
         [ForeignKey("AppId")]

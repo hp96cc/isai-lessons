@@ -5,8 +5,8 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
     public class CreateCustomerPayemntSessionRequest : RegisterRequestViewModel
     {
 
-        [JsonProperty("priceId")]
-        public string PriceId { get; set; }
+        [JsonProperty("subscriptionTypeId")]
+        public int SubscriptionTypeId { get; set; }
 
         [JsonProperty("successUrl")]
         public string SuccessUrl { get; set; }

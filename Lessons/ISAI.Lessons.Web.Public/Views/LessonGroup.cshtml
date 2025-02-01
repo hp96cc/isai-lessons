@@ -38,23 +38,15 @@
                         <div class="courses-block">
                             <div class="courses-pic">
                                 <a href="@childLesson.Url()">
-                                    <img src="/assets/lessonthumbs/thumb_@(childLesson.MediaId.Trim()).jpg" alt="@childLesson.Title" />
+
+                                    @*<img src="/assets/lessonthumbs/thumb_@(childLesson.MediaId.Trim()).jpg" alt="@childLesson.Title" />*@
+                                    <img src="/VideoHandler.ashx?lessonId=@(childLesson.MediaId.Trim()).jpg" alt="@childLesson.Title" />
                                 </a>
                             </div>
                             <div class="course-desc">
-                                <h4 style="font-family:Comic Sans MS"> <a href="@childLesson.Url()">@childLesson.Title</a></h4>
-                                @*<p>Our kids extracurricular activities and games that children love after school activities.</p>*@
+                                <h4> <a href="@childLesson.Url()">@childLesson.Title</a></h4>
                             </div>
-                            @*<div class="course-details">
-                                    <ul>
-                                        <li>
-                                            <strong>Age: </strong>2-4 years
-                                        </li>
-                                        <li>
-                                            <strong>Time: </strong>09:00-11:00
-                                        </li>
-                                    </ul>
-                                </div>*@
+                           
                         </div>
                     </div>
 
@@ -356,11 +348,7 @@ else
 
                                 <div class="col-md-6 col-lg-6 margin-25px-bottom xs-margin-15px-bottom">
                                     <div class="courses-block @courseColour">
-                                        @*<div class="courses-pic">
-                                                <a href="course-details.html">
-                                                    <img src="img/courses/courses-1.jpg" alt="" />
-                                                </a>
-                                            </div>*@
+                                      
                                         <div class="course-desc">
                                             <h4><a href="@childLesson.Url()">@childLesson.Title</a></h4>
 

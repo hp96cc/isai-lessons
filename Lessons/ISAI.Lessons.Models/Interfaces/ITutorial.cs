@@ -9,6 +9,8 @@ namespace ISAI.Lessons.Models.Interfaces
         DateTimeOffset DateTimeEnd { get; set; }
         DateTimeOffset DateTimeStart { get; set; }
         int DurationInMinutes { get; set; }
+
+        decimal TutorialCost { get; set; }
         bool HasCompletedCheckout { get; set; }
         int? LessonId { get; set; }
         string Name { get; set; }

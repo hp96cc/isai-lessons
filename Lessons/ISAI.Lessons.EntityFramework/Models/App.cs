@@ -19,7 +19,14 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string StripeLiveSecretApiKey { get; set; }
 
+        public decimal TutorialCost20Minutes { get; set; }
 
+        public decimal TutorialCost40Minutes { get; set; }
+
+        public decimal TutorialCost60Minutes { get; set; }
+        public string TutorialStripPriceId20Minutes { get; set; }
+        public string TutorialStripPriceId40Minutes { get; set; }
+        public string TutorialStripPriceId60Minutes { get; set; }
     }
 
 }

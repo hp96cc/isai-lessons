@@ -4,6 +4,8 @@ namespace ISAI.Lessons.Models.ViewModels
 {
     public class TutorTimeSlotResponseViewModel
     {
+
+        public decimal CostPerTimeSlot { get; set; }
         public List<TutorialTimeSlot> TutorialTimeSlots { get; set; }
     }
 

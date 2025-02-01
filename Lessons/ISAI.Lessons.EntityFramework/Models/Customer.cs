@@ -38,6 +38,8 @@ namespace ISAI.Lessons.EntityFramework.Models
         public bool AllowAdminOverride { get; set; }
 
 
+
+
         [JsonIgnore]
         public string PaymentSessionId { get; set; }
 

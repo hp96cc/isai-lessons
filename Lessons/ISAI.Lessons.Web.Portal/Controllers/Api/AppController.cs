@@ -366,6 +366,27 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             try
             {
+                var app = await db.App.FirstAsync(x => x.Id == _appId);
+                decimal costPerTimeSlot;
+
+                switch(request.TutorialDuration)
+                {
+                    case 20:
+                        costPerTimeSlot = app.TutorialCost20Minutes;
+                        break;
+
+                    case 40:
+                        costPerTimeSlot = app.TutorialCost40Minutes;
+                        break;
+
+                    case 60:
+                        costPerTimeSlot = app.TutorialCost60Minutes;
+                        break;
+
+                    default:
+                        throw new Exception("Invalid Tutorial Duration");
+                }
+
                 var tutorUser = await db.Users.FirstAsync(x => x.Id == request.TutorId && x.Deleted == false);
                 var userList = new List<string>() { tutorUser.Email };
                 var startDate = request.TutorialDate.Date;
@@ -421,6 +442,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 }
 
+                response.Content.CostPerTimeSlot = costPerTimeSlot;
                 response.Content.TutorialTimeSlots = tutorialTimeSlots;
                 response.Status = ResponseStatus.OK;
                 return response;
@@ -501,25 +523,42 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 var response = new ResponseData<TutorialPurchaseResponseViewModel>();
 
                 //Create Tutorial
-                var customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
+                var customer = await db.Customer
+                    .Include(x => x.App)
+                    .FirstAsync(x => x.Id == _customerId);
                 var tutor = await db.Users.FirstAsync(x => x.Id == request.TutorId);
+                var tutorialSubject = await db.TutorialSubject.FirstAsync(x => x.Id == request.TutorialSubjectId);
 
                 var customerFullName = string.Format("{0} {1}", customer.FirstName, customer.LastName);
-                var tutotialName = string.Format("DRAFT - Scottish Online Lessons Tutorial for {0}", customerFullName);
-                var tutotialDescription = new StringBuilder(string.Format("Scottish Online Lessons Tutorial for {0}", customerFullName));
-                tutotialDescription.AppendLine("<p><b>Notes</b></p>");
-                tutotialDescription.AppendLine("<p>" + request.CustomerNotes.Replace("\n", "<br />") + "</p>");
+                var teamsEventTutorialName = string.Format("DRAFT - Scottish Online Lessons Tutorial for {0}", customerFullName);
+                var displayTutorialName = string.Format("{0} with {1}", tutorialSubject.Name, tutor.Firstname + " " + tutor.Surname);
+                var tutorialDescription = new StringBuilder(string.Format("Scottish Online Lessons Tutorial for {0}", customerFullName));
+                tutorialDescription.AppendLine("<p><b>Notes</b></p>");
+                tutorialDescription.AppendLine("<p>" + request.CustomerNotes.Replace("\n", "<br />") + "</p>");
 
                 Lesson lesson = null;
                 if (request.LessonId.HasValue)
-                    lesson = await db.Lesson.FirstAsync(x => x.Id == request.LessonId.Value);
+                    lesson = await db.Lesson
+                        .Include(x => x.LessonGroup)
+                        .FirstAsync(x => x.Id == request.LessonId.Value);
+
+                if(lesson != null)
+                {
+                    tutorialDescription.AppendLine("<p><b>Related Lesson</b></p>");
+                    tutorialDescription.AppendLine("<p>" + lesson.LessonGroup.Name + " - " + lesson.Name + "</p>");
+                    tutorialDescription.AppendLine(string.Format("<p><a href=\"{0}api/lessonumbraco/{1}>View Lesson</a></p>", _baseReturnUrl, lesson.Id));
+
+                    request.CustomerNotes += "Related Lesson:" + System.Environment.NewLine;
+                    request.CustomerNotes += lesson.LessonGroup.Name + " - " + lesson.Name + System.Environment.NewLine;
+                    request.CustomerNotes += string.Format("{0}api/lessonumbraco/{1}", _baseReturnUrl, lesson.Id);
+                }
 
                 var graphApi = new MicrosoftGraphApiService();
                 var teamsEventResponse = await graphApi.CreateOrUpdateTeamsEvent(
                     null,
                     tutor.Email,
-                    tutotialName,
-                    tutotialDescription.ToString(),
+                    teamsEventTutorialName,
+                    tutorialDescription.ToString(),
                     _systemTimeZone,
                     request.DateTimeStart.ToString("s"),
                     request.DateTimeEnd.ToString("s"),
@@ -530,7 +569,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var tutorial = new Tutorial()
                 {
-                    Name = tutotialName,
+                    Name = displayTutorialName,
                     TeamsId = teamsEventResponse.Id,
                     TeamsLink = teamsEventResponse.WebLink,
                     AppId = 1,
@@ -548,29 +587,33 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     ModifiedUserId = _adminUserId
                 };
 
+                string tutorialPriceId;
+
+                switch (tutorialDuration)
+                {
+                    case 20:
+                        tutorial.TutorialCost = customer.App.TutorialCost20Minutes;
+                        tutorialPriceId = customer.App.TutorialStripPriceId20Minutes;
+                        break;
+                    case 40:
+                        tutorial.TutorialCost = customer.App.TutorialCost40Minutes;
+                        tutorialPriceId = customer.App.TutorialStripPriceId40Minutes;
+                        break;
+                    case 60:
+                        tutorial.TutorialCost = customer.App.TutorialCost60Minutes;
+                        tutorialPriceId = customer.App.TutorialStripPriceId60Minutes;
+                        break;
+                    default:
+                        throw new Exception("Invalid Tutorial Duration");
+                }
+
                 db.Entry(tutorial).State = EntityState.Added;
                 await db.SaveChangesAsync();
 
-                string tutorialPriceId;
-
-                //TODO: these are tet server price ids, need to move
-                switch (tutorial.DurationInMinutes)
-                {
-                    case 20:
-                        tutorialPriceId = "price_1QX3p8J81SbG6nzarRWdCiZR";
-                        break;
-                    case 40:
-                        tutorialPriceId = "price_1QX3otJ81SbG6nzaj40dzKdT";
-                        break;
-                    case 60:
-                    default:
-                        tutorialPriceId = "price_1QX3oYJ81SbG6nzaOqDLru2K";
-                        break;
-                }
 
                 var options = new SessionCreateOptions
                 {
-                    // See https://stripe.com/docs/api/checkout/sessions/create
+                    // NOTE: https://stripe.com/docs/api/checkout/sessions/create
                     ClientReferenceId = _tutorialStripePrefix + tutorial.Id.ToString(),
                     SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
                     CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
@@ -1442,6 +1485,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 ICustomer customer;
 
                 if (User.Identity.IsAuthenticated) { 
+
                     customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
                 }
                 else
@@ -1459,6 +1503,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     customer = register.Customer;
                 }
 
+                var subscriptionType = await db.SubscriptionType.FirstAsync(x => x.Id == request.SubscriptionTypeId);
+
                 var options = new SessionCreateOptions
                 {
                     // See https://stripe.com/docs/api/checkout/sessions/create
@@ -1474,7 +1520,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     {
                         new SessionLineItemOptions
                         {
-                            Price = request.PriceId,
+                            Price = subscriptionType.StripePriceId,
                             Quantity = 1,
                         },
                     },
@@ -1487,7 +1533,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 db.Entry(customer).State = EntityState.Modified;
                 await db.SaveChangesAsync();
 
-                await CreateCustomerSubscription((Customer)customer, request.PriceId);
+                await CreateCustomerSubscription((Customer)customer, subscriptionType);
 
                 return new CreateCustomerPayemntSessionResponse
                 {
@@ -1872,13 +1918,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        async Task CreateCustomerSubscription(Customer customer, string priceId, SubscriptionCode subscriptionCode = null)
+        async Task CreateCustomerSubscription(Customer customer, SubscriptionType subscriptionType, SubscriptionCode subscriptionCode = null)
         {
 
             if(subscriptionCode != null)
             {
-
-
                 var subscription = new Subscription()
                 {
                     SubscriptionTypeId = subscriptionCode.SubscriptionTypeId,
@@ -1914,44 +1958,16 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             } 
             else
             {
-                
-                var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
-
-                string subscriptionName;
-                int subscriptionTypeId;
-
-                switch (priceId)
-                {
-
-                    case "price_1J0LLgJ81SbG6nzad3BrKr0L":
-                        subscriptionName = "Secondary Annual Subscription";
-                        subscriptionTypeId = 3;
-                        break;
-
-                    case "price_1J0LLMJ81SbG6nzasmeqA5KF":
-                        subscriptionName = "Secondary Monthly Subscription";
-                        subscriptionTypeId = 3;
-                        break;
-
-                    case "price_1IxXUFJ81SbG6nzav7NG3Vto":
-                        subscriptionName = "Primary Monthly Subscription";
-                        subscriptionTypeId = 2;
-                        break;
-
-                    case "price_1IxXTvJ81SbG6nzajuriP6XZ":
-                    default:
-                        subscriptionName = "Primary Annual Subscription";
-                        subscriptionTypeId = 2;
-                        break;
-                }
-
+                //TODO we should do a change subscription first
+                var subscription = await db.Subscription.FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
+             
                 if (subscription != null)
                 {
-                    subscription.Name = subscriptionName;
+                    subscription.Name = subscriptionType.Name;
                     subscription.Active = false;
                     subscription.StartDate = DateTime.UtcNow;
                     subscription.EndDate = DateTime.UtcNow;
-                    subscription.SubscriptionTypeId = subscriptionTypeId;
+                    subscription.SubscriptionTypeId = subscriptionType.Id;
                     subscription.DateModified = DateTime.UtcNow;
                     subscription.ModifiedUserId = _adminUserId;
 
@@ -1962,9 +1978,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     subscription = new Subscription()
                     {
-                        Name = subscriptionName,
+                        Name = subscriptionType.Name,
                         CustomerId = customer.Id,
-                        SubscriptionTypeId = subscriptionTypeId,
+                        SubscriptionTypeId = subscriptionType.Id,
                         Active = false,
                         StartDate = DateTime.UtcNow,
                         EndDate = DateTime.UtcNow,
@@ -1978,8 +1994,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 }
 
-              
-                customer.HasCompletedCheckout = true;
+                customer.HasCompletedCheckout = false;
                 customer.DateModified = DateTime.UtcNow;
                 customer.ModifiedUserId = _adminUserId;
 
@@ -1990,62 +2005,26 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-
-
-        async Task UpdateCustomerSubscription(string subscriptionId, bool isActive, Stripe.Invoice invoice = null)
+        async Task UpdateCustomerSubscription(string subscriptionId, bool isActive, Invoice invoice = null)
         {
 
-            var subscription = await db.Subscription.FirstAsync(x => x.StripeSubscriptionId == subscriptionId && x.Deleted == false);
+            var subscription = await db.Subscription
+                .Include(x => x.SubscriptionType)
+                .FirstAsync(x => x.StripeSubscriptionId == subscriptionId && x.Deleted == false);
 
             if (isActive == false)
             {
-
+                //TODO: need to make sure Mangage area is fixed and send an email to user
                 subscription.Active = false;
                 subscription.DateModified = DateTime.UtcNow;
                 subscription.ModifiedUserId = _adminUserId;
 
                 db.Entry(subscription).State = EntityState.Modified;
 
-
             } else {
 
-                string subscriptionName;
-                int subscriptionTypeId;
-                int subscriptionMonths;
-
-                switch (invoice.Lines.ElementAt(0).Plan.Id)
-                {
-
-                    case "price_1J0LLgJ81SbG6nzad3BrKr0L":
-                        subscriptionName = "Secondary Annual Subscription";
-                        subscriptionTypeId = 3;
-                        subscriptionMonths = 12;
-                        break;
-
-                    case "price_1J0LLMJ81SbG6nzasmeqA5KF":
-                        subscriptionName = "Secondary Monthly Subscription";
-                        subscriptionTypeId = 3;
-                        subscriptionMonths = 1;
-                        break;
-
-                    case "price_1IxXUFJ81SbG6nzav7NG3Vto":
-                        subscriptionName = "Primary Monthly Subscription";
-                        subscriptionTypeId = 2;
-                        subscriptionMonths = 1;
-                        break;
-
-                    case "price_1IxXTvJ81SbG6nzajuriP6XZ":
-                    default:
-                        subscriptionName = "Primary Annual Subscription";
-                        subscriptionTypeId = 2;
-                        subscriptionMonths = 12;
-                        break;
-                }
-
-                subscription.Name = subscriptionName;
-                subscription.SubscriptionTypeId = subscriptionTypeId;
                 subscription.Active = true;
-                subscription.EndDate = subscription.EndDate.AddMonths(subscriptionMonths);
+                subscription.EndDate = subscription.EndDate.AddMonths(subscription.SubscriptionType.SubscriptionLengthInMonths);
                 subscription.DateModified = DateTime.UtcNow;
                 subscription.ModifiedUserId = _adminUserId;
 
