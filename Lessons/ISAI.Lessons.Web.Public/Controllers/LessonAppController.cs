@@ -125,6 +125,34 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
+        [Route("api/lessonapp/cancelstripesubscription")]
+        [HttpPost]
+        public async Task CancelStripeSubscription()
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/cancelstripesubscription", null).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var customer = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
+
 
         [Route("api/lessonapp/subscription")]
         [HttpPost]
@@ -871,9 +899,11 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
 
 
-        #region Auth Methods
 
-        async Task<Auth> GetAuthToken(string username, string password, string postRegistrationAccessCode)
+
+            #region Auth Methods
+
+            async Task<Auth> GetAuthToken(string username, string password, string postRegistrationAccessCode)
         {
             var auth = await _apiService.GetAuthToken(username, password, postRegistrationAccessCode);
             return auth;

@@ -50,6 +50,29 @@
 
     };
 
+
+    var cancelStripeSubscription = async function ()
+    {
+
+        var url = this.baseUrl + "cancelstripesubscription";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
     var checksession = async function ()
     {
 
@@ -660,7 +683,8 @@
         tutorialTimeslots: tutorialTimeslots,
         tutorialSubjects: tutorialSubjects,
         tutorialSubjectGroups: tutorialSubjectGroups,
-        subscription: subscription
+        subscription: subscription,
+        cancelStripeSubscription: cancelStripeSubscription
 
     }
 

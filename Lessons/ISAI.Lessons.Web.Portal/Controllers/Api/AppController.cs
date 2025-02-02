@@ -33,6 +33,7 @@ using TutorialSubject = ISAI.Lessons.Models.ViewModels.TutorialSubject;
 using TutorialSubjectGroup = ISAI.Lessons.Models.ViewModels.TutorialSubjectGroup;
 using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
 using System.Text;
+using ISAI.Lessons.Core.Services;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
 {
@@ -57,7 +58,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         private readonly string _tutorialStripePrefix = ConfigurationManager.AppSettings["Stripe.TutorialPrefix"];
         private readonly string _graphSenderAdminAccount = ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
         private readonly string _systemTimeZone = ConfigurationManager.AppSettings["SystemTimeZone"];
-
+        private readonly string _videoRootFolder = ConfigurationManager.AppSettings["ISAI.Lessons.VideoRootFolder"];
+        private readonly string _videoDownloadFolder = ConfigurationManager.AppSettings["ISAI.Lessons.VideoDownloadFolder"];
 
         public AppController()
         {
@@ -808,20 +810,31 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     }
                     else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.Download)
                     {
+                        var lessonStreamingToken = new LessonStreamingToken()
+                        {
+                            LessonId = lesson.Id,
+                            ExpiryDate = DateTime.UtcNow.AddHours(2)
+                        };
 
-                        //var azureMediaService = new AzureMediaService();
-                        //var urls = await azureMediaService.GetStreamingUrlsAsync(null, null, null, string.Format("download-locator-{0}", lesson.Id), StreamingPolicyStreamingProtocol.Download);
+                        var lessonStreamingTokenJson = JsonConvert.SerializeObject(lessonStreamingToken);
+                        var encryptedData = cryptoNetKey.EncryptFromString(lessonStreamingTokenJson);
+                        var encryptedToken = HttpServerUtility.UrlTokenEncode(encryptedData);
 
+                        var videoSourcePath = Path.Combine(_videoRootFolder, lessonRequestViewModel.LessonId.ToString());
+                        var downloadZipPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString(), lessonRequestViewModel.LessonId.ToString() + ".zip");
+       
+                        if(!System.IO.File.Exists(downloadZipPath))
+                            ZipService.ZipFolder(downloadZipPath, videoSourcePath);
 
-                        //response.Status = ResponseStatus.OK;
-                        //response.Content = new LessonStreamingResponse()
-                        //{
-                        //    StreamingUrl = urls.First(x => x.Contains(".mp4")) //TODO: this needs to be more specific 
-                        //};
+                        var url = string.Format("/VideoHandler.ashx?lessonId={0}&actionType=download&token={1}", lesson.Id, encryptedToken);
 
-                        //return response;
+                        response.Status = ResponseStatus.OK;
+                        response.Content = new LessonStreamingResponse()
+                        {
+                            StreamingUrl = url,
+                            Token = encryptedToken,
+                        };
 
-                        return new ResponseData<LessonStreamingResponse>();
                     }
                     else
                     {
@@ -926,7 +939,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 .OrderByDescending(x => x.EndDate)
                 .FirstOrDefaultAsync(x => 
                     x.CustomerId == _customerId && 
-                    x.Deleted == false && 
                     x.Active == true);
 
             if (subscription == null)
@@ -1796,6 +1808,47 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             }
 
         }
+
+
+        [Route("api/app/cancelstripesubscription")]
+        [HttpPost]
+        public async Task CancelStripeSubscription()
+        {
+
+            try
+            {
+
+                var subscription = await db.Subscription.FirstAsync(x => x.CustomerId == _customerId);
+
+                var service = new SubscriptionService(this.client);
+                var response = service.Cancel(subscription.StripeSubscriptionId); //TODO: handle this response
+
+                //TODO: need to handled deleteing of scubscriptions as they will expoire after cancellation date
+                subscription.DateModified = DateTime.UtcNow;
+                subscription.ModifiedUserId = _adminUserId;
+                subscription.Deleted = true;
+                subscription.Active = false;
+                db.Entry(subscription).State = EntityState.Modified;
+
+                var stripeWebhookLog = new StripeWebhookLog();
+                stripeWebhookLog.CallBackName = "Stripe Subscription Cancelled by User";
+                stripeWebhookLog.Description = string.Format("Subscription Cancelled for Customer {0} and Subscription {1}", subscription.CustomerId, subscription.StripeSubscriptionId);
+                stripeWebhookLog.CreatedUserId = _adminUserId;
+                stripeWebhookLog.ModifiedUserId = _adminUserId;
+                stripeWebhookLog.DateCreated = DateTimeOffset.UtcNow;
+                stripeWebhookLog.DateModified = DateTimeOffset.UtcNow;
+                db.Entry(stripeWebhookLog).State = EntityState.Added;
+                await db.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        //cancelStripeSubscription
 
 
 

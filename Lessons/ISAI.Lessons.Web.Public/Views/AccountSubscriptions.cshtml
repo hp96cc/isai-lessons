@@ -131,8 +131,14 @@
                         <div class="col-12">
 
                             <!-- Button -->
-                            <h5 style="color: #ff457e;">To cancel your subscription please email <a style="color: #ff457e;text-decoration:underline;" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a></h5>
-                            @*<button id="button-manage-subscription" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SubscriptionPortal();">Manage Subscription</button>*@
+                            <div id="div-manual-subscription">
+                                <h5 style="color: #ff457e;">To cancel your subscription please email <a style="color: #ff457e;text-decoration:underline;" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a></h5>
+                            </div>
+
+                            <button id="button-cancel-subscription" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="PromptCancelSubscription();">Cancel Subscription</button>
+
+                            <button id="button-manage-subscription" class="butn x-small sky  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SubscriptionPortal();">Manage Subscription</button>
+
                             <div id="label-cancelled" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
 
                             </div>
@@ -146,6 +152,26 @@
     </div>
 </section>
 
+
+<div class="modal fade" id="cancelSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="cancelSubscriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelSubscriptionModallLabel">Cancel Subscription</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you wish to cancel this subscription? You will lose all access to Scottish Online Lessons on <strong><span id="subscription-expiry-date"></span></strong>.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="CancelSubscription();">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 @section Scripts {
@@ -165,14 +191,13 @@
 
             var data = await lessonsApp.subscription();
 
-            if (!data)
-            {
-                lessonsApp.logout();
-            }
+            //if (!data)
+            //{
+            //    lessonsApp.logout();
+            //}
             if (data.Status !== 0) 
             {
                 //TODO: better handle expired or no subscriptions here
-                // lessonsApp.logout();
                 HidePreloader();
                 $('#account-nosubscription').show();
             }
@@ -198,12 +223,18 @@
 
                 $('#label-subscription-type').text(subscription.Name);
                 $('#label-subscription-expires').text(new Date(subscription.EndDate).toLocaleDateString());
+                $('#subscription-expiry-date').text(new Date(subscription.EndDate).toLocaleDateString());
 
+              
                 if (subscription.StripeSubscriptionId && subscription.StripeSubscriptionId.startsWith('sub_')) {
                     $('#button-manage-subscription').show();
+                    $('#button-manage-subscription').show();
+                    $('#div-manual-subscription').hide();
                 }
                 else {
                     $('#button-manage-subscription').hide();
+                    $('#button-manage-subscription').hide();
+                    $('#div-manual-subscription').show();
                 }
 
 
@@ -216,13 +247,24 @@
 
         }
 
-        @*
-        //function PromptCancelSubscription() {
 
-        //    $('#cancelSubscriptionModal').modal('show')
+        function PromptCancelSubscription()
+        {
 
-        //}
-        *@
+            $('#cancelSubscriptionModal').modal('show')
+
+        }
+        
+        async function CancelSubscription() {
+
+            var data = await lessonsApp.cancelStripeSubscription();
+
+            //TODO: need to handle
+            HidePreloader();
+            DisplaySubscriptions();
+          
+        }
+        
 
 
     </script>
