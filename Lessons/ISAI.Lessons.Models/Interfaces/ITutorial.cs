@@ -13,6 +13,8 @@ namespace ISAI.Lessons.Models.Interfaces
         decimal TutorialCost { get; set; }
         bool HasCompletedCheckout { get; set; }
         int? LessonId { get; set; }
+
+        int? TutorialSubjectId { get; set; }
         string Name { get; set; }
         bool PendingEmailConfirmationTutor { get; set; }
         bool PendingEmailConfirmationUser { get; set; }

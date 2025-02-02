@@ -72,6 +72,29 @@
 
     };
 
+
+    var subscription = async function ()
+    {
+
+        var url = this.baseUrl + "subscription";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
     var saveCustomer = async function (customer) {
 
         var url = this.baseUrl + "savecustomer";
@@ -115,6 +138,27 @@
             console.log(error);
         }
 
+    };
+
+    var tutorial = async function (request)
+    {
+        var url = this.baseUrl + "tutorial";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
     };
 
     var tutorialSubjectGroups = async function ()
@@ -406,26 +450,6 @@
 
     };
 
-    var getSubscriptions = async function () {
-
-        var url = this.baseUrl + "subscriptions";
-
-        try {
-
-            var data = await $.ajax({
-                url: url,
-                type: "POST",
-                contentType: 'application/json',
-            });
-
-            return data;
-
-        } catch (error) {
-
-            console.log(error);
-
-        }
-    };
 
     var subscriptionPortal = async function () {
 
@@ -616,7 +640,6 @@
         login: login,
         getCustomer: getCustomer,
         getLesson: getLesson,
-        getSubscriptions: getSubscriptions,
         getCustomerDevices: getCustomerDevices,
         customerActivity: customerActivity,
         logout: logout,
@@ -632,10 +655,12 @@
         tutorialPurchase: tutorialPurchase,
         checksession: checksession,
         tutors: tutors,
+        tutorial: tutorial,
         tutorials: tutorials,
         tutorialTimeslots: tutorialTimeslots,
         tutorialSubjects: tutorialSubjects,
-        tutorialSubjectGroups: tutorialSubjectGroups
+        tutorialSubjectGroups: tutorialSubjectGroups,
+        subscription: subscription
 
     }
 

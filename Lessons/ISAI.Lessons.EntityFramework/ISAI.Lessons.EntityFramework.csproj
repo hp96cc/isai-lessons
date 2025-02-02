@@ -339,6 +339,10 @@
     <Compile Include="Migrations\202502011621462_Added Stripe Price Ids to App.Designer.cs">
       <DependentUpon>202502011621462_Added Stripe Price Ids to App.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502020809114_Added Suject to Tutorial.cs" />
+    <Compile Include="Migrations\202502020809114_Added Suject to Tutorial.Designer.cs">
+      <DependentUpon>202502020809114_Added Suject to Tutorial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -418,6 +422,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502011621462_Added Stripe Price Ids to App.resx">
       <DependentUpon>202502011621462_Added Stripe Price Ids to App.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502020809114_Added Suject to Tutorial.resx">
+      <DependentUpon>202502020809114_Added Suject to Tutorial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

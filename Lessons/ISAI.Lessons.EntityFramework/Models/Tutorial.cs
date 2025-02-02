@@ -1,4 +1,5 @@
 ﻿using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Models.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -26,6 +27,11 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         [ForeignKey("LessonId")]
         public Lesson Lesson { get; set; }
+
+        public int? TutorialSubjectId { get; set; }
+
+        [ForeignKey("TutorialSubjectId")]
+        public TutorialSubject TutorialSubject { get; set; }
 
         public string Name { get; set; }
 

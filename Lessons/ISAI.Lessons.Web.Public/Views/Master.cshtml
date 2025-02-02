@@ -413,6 +413,16 @@
 
     </div>
     <!-- end main-wrapper section -->
+
+    <div class="grt-cookie">
+        <div class="grt-cookies-msg">
+            <p>
+                We use cookies to ensure that we give you the best experience on our website. If you continue to use this site we will assume that you accept and understand our <a href="https://www.scottishonlinelessons.com/privacy/" target="_blank">Privacy Policy</a>, and our <a href="https://www.scottishonlinelessons.com/terms/" target="_blank">Terms of Service</a>.
+            </p>
+        </div>
+        <span class="grt-cookie-button">Accept</span>
+    </div>
+
     <!-- start scroll to top -->
     <a href="javascript:void(0)" class="scroll-to-top"><i class="fas fa-angle-up" aria-hidden="true"></i></a>
     <!-- end scroll to top -->
@@ -469,6 +479,9 @@
     <script src="/assets/js/rev_slider/extensions/revolution.extension.slideanims.min.js"></script>
     <script src="/assets/js/rev_slider/extensions/revolution.extension.video.min.js"></script>
     <!-- revolution slider js files end -->
+    <!-- GRT Cookie Consent Plugin -->
+    <script src="/scripts/grt-cookie-consent.js"></script>
+
     <!-- range slider -->
     <script src="/assets/js/ion.rangeSlider.min.js"></script>
 
@@ -511,33 +524,33 @@
         )
     {
 
-    <script>
+        <script>
 
-        $(document).ready(function ()
-        {
-            CheckSession();
-        });
-
-        async function CheckSession()
-        {
-            try
+            $(document).ready(function ()
             {
-                var data = await lessonsApp.checksession();
-                if (data)
+                CheckSession();
+            });
+
+            async function CheckSession()
+            {
+                try
                 {
-                    HidePreloader();
-                    return;
+                    var data = await lessonsApp.checksession();
+                    if (data)
+                    {
+                        HidePreloader();
+                        return;
+                    }
+
+                } catch {
+
                 }
 
-            } catch {
+                location.href = '/account/';
 
             }
 
-            location.href = '/account/';
-            
-        }
-
-    </script>
+        </script>
 
     }
     else if (Model.ContentType.Alias.Contains("account") == false)

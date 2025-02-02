@@ -606,6 +606,7 @@
     <Content Include="scripts\app.js" />
     <Content Include="scripts\browser-detect.js" />
     <Content Include="scripts\fp.min.js" />
+    <Content Include="scripts\grt-cookie-consent.js" />
     <Content Include="scripts\js.cookie.min.js" />
     <Content Include="scripts\luxon.min.js" />
     <Content Include="scripts\mustache.js" />

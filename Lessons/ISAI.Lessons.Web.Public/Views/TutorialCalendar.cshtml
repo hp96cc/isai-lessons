@@ -200,9 +200,34 @@
 
             calendar.appendTo('#Calendar');
 
-            GetTutorialSubjectGroups();
+            CheckSubscription();
 
         });
+
+
+        async function CheckSubscription()
+        {
+            var data = await lessonsApp.subscription();
+
+            if (!isFirstLoad)
+                ShowPreloader();
+
+            if (data)
+            {
+
+                if (data.Status == 0)
+                {
+                    GetTutorialSubjectGroups();
+                }
+                else if (data.ErrorResponse)
+                {
+                    //TODO: add better error handling for this
+                    location.replace('/account/subscriptions');
+                    return;
+                }
+
+            }
+        }
 
         async function GetTutorialSubjectGroups()
         {

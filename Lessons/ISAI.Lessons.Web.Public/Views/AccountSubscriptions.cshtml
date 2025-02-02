@@ -31,14 +31,7 @@
 <section class="p-0">
     <div class="container">
 
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border mb-10" role="status" id="spinner-loading">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
-
+      
 
         <div class="row" id="account-nosubscription" style="display:none;">
             <div class="col-3">
@@ -160,26 +153,33 @@
 
     <script>
 
-        var subscriptions;
+        var subscription;
 
         $(document).ready(function () {
 
-            GetSubscriptions();
+           GetSubscriptions();
 
         });
 
         async function GetSubscriptions() {
 
-            var data = await lessonsApp.getSubscriptions();
+            var data = await lessonsApp.subscription();
 
-            if (!data || data.Status !== 0) 
+            if (!data)
             {
                 lessonsApp.logout();
+            }
+            if (data.Status !== 0) 
+            {
+                //TODO: better handle expired or no subscriptions here
+                // lessonsApp.logout();
+                HidePreloader();
+                $('#account-nosubscription').show();
             }
             else
             {
                 HidePreloader();
-                subscriptions = data.Content;
+                subscription = data.Content;
                 DisplaySubscriptions();
             }
 
@@ -194,8 +194,7 @@
 
         function DisplaySubscriptions() {
 
-            if (subscriptions && subscriptions.length > 0) {
-                var subscription = subscriptions[0];
+            if (subscription) {
 
                 $('#label-subscription-type').text(subscription.Name);
                 $('#label-subscription-expires').text(new Date(subscription.EndDate).toLocaleDateString());

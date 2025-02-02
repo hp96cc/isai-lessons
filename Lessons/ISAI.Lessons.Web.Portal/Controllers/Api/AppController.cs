@@ -82,8 +82,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             this.client = new StripeClient(this.options.SecretKey);
         }
 
-
-
         [Route("api/app/customer")]
         [HttpPost]
         public async Task<ResponseData<Customer>> Customer()
@@ -195,6 +193,41 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+
+        [Route("api/app/tutorial")]
+        [HttpPost]
+        public async Task<ResponseData<Tutorial>> GetTutorial(TutorialRequestViewModel request)
+        {
+            var response = new ResponseData<Tutorial>();
+
+            try
+            {
+                var tutorial = await db.Tutorial
+                    .Include(x => x.TutorUser)
+                    .Include(x => x.TutorialSubjectId)
+                    .Include(x => x.TutorialSubject.TutorialSubjectGroupId)
+                    .Include(x => x.LessonId)
+                    .FirstAsync(x => x.Id == request.TutorialId);
+
+                response.Content = tutorial;
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
 
         [Route("api/app/tutorials")]
         [HttpPost]
@@ -576,6 +609,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     CustomerId = customer.Id,
                     Notes = request.CustomerNotes,
                     LessonId = request.LessonId,
+                    TutorialSubjectId = request.TutorialSubjectId,
                     DurationInMinutes = tutorialDuration,
                     DateTimeStart = request.DateTimeStart,
                     DateTimeEnd = request.DateTimeEnd,
@@ -881,12 +915,13 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             return response;
         }
 
-        async Task<ResponseData<Subscription>> CheckSubscription()
+        [Route("api/app/subscription")]
+        [HttpPost]
+        public async Task<ResponseData<Subscription>> CheckSubscription()
         {
 
             var response = new ResponseData<Subscription>();
 
-            //Check subscription
             var subscription = await db.Subscription
                 .OrderByDescending(x => x.EndDate)
                 .FirstOrDefaultAsync(x => 

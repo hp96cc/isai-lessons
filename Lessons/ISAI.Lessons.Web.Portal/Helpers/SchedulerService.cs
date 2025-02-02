@@ -16,7 +16,9 @@ namespace ISAI.Lessons.Web.Portal.Helpers
         static string _systemGraphUserEmail => ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
         static string _systemAdminEmail => ConfigurationManager.AppSettings["Email.SysAdmin"];
         static string _clientAuditEmail => ConfigurationManager.AppSettings["Email.ClientAudit"];
-        
+
+        static string _returnUrl => ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
+
         static bool _isSendingTutorialEmails = false;
 
         static bool _isDeletingAbandonedCustomers = false;
@@ -59,6 +61,8 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                 {
                     var tutorialsPendingEmailSending = db.Tutorial
                         .Include(x => x.Customer)
+                        .Include(x => x.Lesson)
+                        .Include(x => x.TutorialSubject)
                         .Where(x =>
                                 x.Deleted == false &&
                                 x.HasCompletedCheckout == true &&
@@ -69,7 +73,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                         if (tutorial.PendingEmailConfirmationUser && tutorial.HasCompletedCheckout)
                         {
                             var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", tutorial.DateTimeStart.ToString("dd/MM/yyyy @ HH:mm"));
-                            var htmlBody = EmailService.GetTemplateHTML("https://portal.scottishonlinelessons.com/email-templates/tutorial-confirmation-user/");
+                            var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/tutorial-confirmation-user/");
                             htmlBody = AddDataToEmail(htmlBody, tutorial);
 
                             var graphApi = new MicrosoftGraphApiService();
@@ -85,7 +89,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                         {
                             var tutorUser = db.Users.First(x => x.Id == tutorial.TutorUserId);
                             var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", tutorial.DateTimeStart.ToString("dd/MM/yyyy @ HH:mm"));
-                            var htmlBody = EmailService.GetTemplateHTML("https://portal.scottishonlinelessons.com/email-templates/tutorial-confirmation-tutor/");
+                            var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/tutorial-confirmation-tutor/");
                             htmlBody = AddDataToEmail(htmlBody, tutorial);
 
                             var graphApi = new MicrosoftGraphApiService();
@@ -117,11 +121,26 @@ namespace ISAI.Lessons.Web.Portal.Helpers
         private static string AddDataToEmail(string htmlBody, Tutorial tutorial)
         {
             htmlBody = htmlBody.Replace("{{Name}}", tutorial.Customer.FirstName);
+            htmlBody = htmlBody.Replace("{{Tutor}}", tutorial.TutorUser.Firstname + " " + tutorial.TutorUser.Surname);
             htmlBody = htmlBody.Replace("{{Date}}", tutorial.DateTimeStart.DateTime.ToLongDateString());
             htmlBody = htmlBody.Replace("{{Time}}", tutorial.DateTimeStart.DateTime.ToString("HH:mm") + " to " + tutorial.DateTimeEnd.DateTime.ToString("HH:mm"));
             htmlBody = htmlBody.Replace("{{Duration}}", tutorial.DurationInMinutes + " minutes.");
             htmlBody = htmlBody.Replace("{{Cost}}", string.Format("{0:N2} £", tutorial.TutorialCost));
             htmlBody = htmlBody.Replace("/{{Link}}", tutorial.TeamsLink);
+
+            var lesson = "";
+
+            if(tutorial.Lesson != null)
+            {
+                lesson = string.Format("<strong>Lesson:</strong> " + tutorial.Lesson.Name);
+            } 
+            else if (tutorial.TutorialSubject != null)
+            {
+                lesson = string.Format("<strong>Subject:</strong> " + tutorial.TutorialSubject.Name);
+            }
+
+            htmlBody = htmlBody.Replace("{{Lesson}}", lesson);
+
             return htmlBody;
         }
     }

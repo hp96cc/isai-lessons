@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
 
 namespace ISAI.Lessons.Web.Public.Controllers
 {
@@ -57,8 +58,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
             }
 
         }
-
-
 
         [Route("api/lessonapp/checksession")]
         [HttpPost]
@@ -126,7 +125,38 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-      
+
+        [Route("api/lessonapp/subscription")]
+        [HttpPost]
+        public async Task<ResponseData<Subscription>> CheckSubscription()
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/subscription", null).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<ResponseData<Subscription>>(serialisedContent);
+                    return data;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
+
 
         [Route("api/lessonapp/tutorialsubjectgroups")]
         [HttpPost]
@@ -157,7 +187,40 @@ namespace ISAI.Lessons.Web.Public.Controllers
             }
         }
 
-        [Route("api/lessonapp/tutorials")]
+
+        [Route("api/app/tutorial")]
+        [HttpPost]
+        public async Task<ResponseData<Tutorial>> GetTutorial(TutorialRequestViewModel request)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(request);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/tutorial", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<ResponseData<Tutorial>>(serialisedContent);
+                    return data;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
+            [Route("api/lessonapp/tutorials")]
         [HttpPost]
         public async Task<ResponseData<TutorialResponseViewModel>> GetTutorials()
         {
@@ -394,37 +457,6 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
         }
-
-
-        [Route("api/lessonapp/subscriptions")]
-        [HttpPost]
-        public async Task<ResponseData<List<Subscription>>> Subscriptions()
-        {
-            _httpClient = await _apiService.SetHttpAuthClient();
-
-            try
-            {
-                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/subscriptions", null).ConfigureAwait(false);
-
-                if (httpResponse.IsSuccessStatusCode)
-                {
-
-                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var subscriptions = JsonConvert.DeserializeObject<ResponseData<List<Subscription>>>(serialisedContent);
-                    return subscriptions;
-
-                }
-                else
-                {
-                    throw new HttpResponseException(httpResponse.StatusCode);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
-            }
-        }
-
 
 
         [Route("api/lessonapp/customerdevices")]
