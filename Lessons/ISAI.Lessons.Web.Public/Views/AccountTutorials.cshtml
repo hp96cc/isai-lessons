@@ -53,7 +53,7 @@
 
                         <!-- Heading -->
                         <h3 class="mb-10">My Tutorials</h3>
-                        <p>Below is a list of all of your booked lessons. You can join your lessons from here by selecting JOIN TUTORIAL, which will take you straight to your Microsoft Teams call. If you enjoyed a previous lesson, you can re-book the exact same lesson by clicking on the RE-BOOK TUTORIAL button on a previous session.</p>
+                        <p>Below is a list of all of your booked lessons. You can join your lessons from here by selecting JOIN TUTORIAL, which will take you straight to your Microsoft Teams call. </p>
 
 
 
@@ -116,10 +116,10 @@
                                 <a href="{{TeamsLink}}" target="_blank" class="butn x-small green p-2 pl-3 pr-3 mb-2"><span>Join Tutorial</span></a>
 
                                 {{/IsCompleted}}
-                                {{^IsCompleted}}
+                                @*{{^IsCompleted}}
                                 <a href="/tutorials/calendar/?rebookId={{Id}}" class="butn x-small pink p-2 pl-3 pr-3 mb-2"><span>Re-Book Tutorial</span></a>
 
-                                {{/IsCompleted}}
+                                {{/IsCompleted}}*@
 
 
                             </div>

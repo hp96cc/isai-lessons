@@ -62,11 +62,12 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                     var tutorialsPendingEmailSending = db.Tutorial
                         .Include(x => x.Customer)
                         .Include(x => x.Lesson)
+                        .Include(x => x.TutorUser)
                         .Include(x => x.TutorialSubject)
                         .Where(x =>
                                 x.Deleted == false &&
                                 x.HasCompletedCheckout == true &&
-                                (x.PendingEmailConfirmationTutor || x.PendingEmailConfirmationUser));
+                                (x.PendingEmailConfirmationTutor || x.PendingEmailConfirmationUser)).ToList();
 
                     foreach (var tutorial in tutorialsPendingEmailSending)
                     {

@@ -59,7 +59,7 @@
                     </select>
 
                     <h4>Tutorial Notes</h4>
-                    <p>Please add some notes as to where you need help. This allows the tutor to understand what your struggling with and need support on.</p>
+                    <p>Please add some notes as to where you need help. This allows the tutor to understand what you are struggling with and need support on.</p>
 
 
                     <textarea id="textarea-tutorial-notes" rows="4"></textarea>
@@ -186,16 +186,18 @@
         var maxDate = new Date(today);
         maxDate.setDate(maxDate.getDate() + 15);
 
-        var isFirstLoad = true;
 
         $(document).ready(function ()
         {
-
             calendar = new ej.calendars.Calendar({
                 min: minDate,
                 max: maxDate,
                 value: minDate,
-                cssClass: 'calendarWidth'
+                cssClass: 'calendarWidth',
+                change: function (args)
+                {
+                    GetTimeslots();
+                }
             });
 
             calendar.appendTo('#Calendar');
@@ -209,8 +211,7 @@
         {
             var data = await lessonsApp.subscription();
 
-            if (!isFirstLoad)
-                ShowPreloader();
+            ShowPreloader();
 
             if (data)
             {
@@ -231,8 +232,7 @@
 
         async function GetTutorialSubjectGroups()
         {
-            if (!isFirstLoad)
-                ShowPreloader();
+            ShowPreloader();
 
             var data = await lessonsApp.tutorialSubjectGroups();
 
@@ -246,24 +246,23 @@
                 {
                     DisplayTutorialSubjectGroups(data.Content.TutorialSubjectGroups);
 
-                    if (!isFirstLoad)
-                        HidePreloader();
+
                     return;
                 }
 
             } catch (ex)
             {
             
+                HidePreloader();
                 alert("TODO: Error Handling");
             }
 
-            HidePreloader();
+
         }
 
         async function GetTutorialSubjects()
         {
-            if (!isFirstLoad)
-                ShowPreloader();
+            ShowPreloader();
 
             var request = {
                 TutorialGroupId: parseInt($("#select-tutorial-tutorialsubjectgroup").children("option:selected").val())
@@ -281,17 +280,15 @@
                 {
                     DisplayTutorialSubjects(data.Content.TutorialSubjects);
 
-                    if (!isFirstLoad)
-                        HidePreloader();
                     return;
                 }
 
             } catch (ex)
             {
+                HidePreloader();
                 alert("TODO: Error Handling");
             }
 
-            HidePreloader();
         }
 
         function DisplayTutorialSubjectGroups(tutorialSubjectGroups)
@@ -311,8 +308,7 @@
 
         async function GetTutors()
         {
-            if (!isFirstLoad)
-                ShowPreloader();
+            ShowPreloader();
 
             selectedTutorialSubjectId = parseInt($("#select-tutorial-tutorialsubject").children("option:selected").val());
 
@@ -333,18 +329,14 @@
                 {
                     DisplayTutors(data.Content.Tutors);
 
-                    if (!isFirstLoad)
-                        HidePreloader();
                     return;
                 }
 
             } catch (ex)
             {
-
+                HidePreloader();
                 alert("TODO: Error Handling");
             }
-
-            HidePreloader();
 
 
         }
@@ -361,8 +353,7 @@
         {
             $('#tutorial-booking-summary').hide(); 
 
-            if (!isFirstLoad)
-                ShowPreloader();
+            ShowPreloader();
 
             var tutorId = $("#select-tutorial-tutor").children("option:selected").val();
             selectedTutorId = tutorId;
@@ -392,12 +383,11 @@
 
             } catch (ex)
             {
-
+                HidePreloader();
                 alert("TODO: Error Handling");
             }
 
 
-            HidePreloader();
         }
 
         function DisplayTimeslots(timeslots)

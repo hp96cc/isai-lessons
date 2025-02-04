@@ -601,6 +601,7 @@
     <Content Include="config\logviewer.searches.config.js" />
     <Content Include="Content\Site.css" />
     <Content Include="CryptoNetLogo-icon.ico" />
+    <Content Include="css\grt-cookies-consent.css" />
     <Content Include="css\site.css" />
     <Content Include="Global.asax" />
     <Content Include="scripts\app.js" />

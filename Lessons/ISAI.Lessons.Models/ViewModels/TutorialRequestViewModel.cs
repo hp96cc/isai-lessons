@@ -2,7 +2,7 @@
 {
     public class TutorialRequestViewModel 
     {
-        public int TutorialId { get; set; }
+        public string StripeSessionId { get; set; }
  
 
     }

@@ -198,18 +198,23 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/tutorial")]
         [HttpPost]
-        public async Task<ResponseData<Tutorial>> GetTutorial(TutorialRequestViewModel request)
+        public async Task<ResponseData<Tutorial>> GetTutorialFromStripeSession(TutorialRequestViewModel request)
         {
             var response = new ResponseData<Tutorial>();
 
             try
             {
+
+                var service = new SessionService(this.client);
+                var session = service.Get(request.StripeSessionId);
+                var tutorialId = Convert.ToInt32(session.ClientReferenceId.Replace(_tutorialStripePrefix, string.Empty));
+
                 var tutorial = await db.Tutorial
                     .Include(x => x.TutorUser)
-                    .Include(x => x.TutorialSubjectId)
-                    .Include(x => x.TutorialSubject.TutorialSubjectGroupId)
-                    .Include(x => x.LessonId)
-                    .FirstAsync(x => x.Id == request.TutorialId);
+                    .Include(x => x.TutorialSubject)
+                    .Include(x => x.TutorialSubject.TutorialSubjectGroup)
+                    .Include(x => x.Lesson)
+                    .FirstAsync(x => x.Id == tutorialId);
 
                 response.Content = tutorial;
                 response.Status = ResponseStatus.OK;

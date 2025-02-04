@@ -216,10 +216,13 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
-        [Route("api/app/tutorial")]
+        [Route("api/lessonapp/tutorial")]
         [HttpPost]
         public async Task<ResponseData<Tutorial>> GetTutorial(TutorialRequestViewModel request)
         {
+
+            _httpClient = await _apiService.SetHttpAuthClient();
+
             try
             {
                 var json = JsonConvert.SerializeObject(request);

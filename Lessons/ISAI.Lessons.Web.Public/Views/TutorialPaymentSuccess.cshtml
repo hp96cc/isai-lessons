@@ -2,6 +2,8 @@
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "Master.cshtml";
+
+    var sessionId = Request.QueryString["session_id"];
 }
 
 
@@ -9,7 +11,7 @@
 
     <script>
 
-        location.href = '/tutorials/confirm';
+        location.href = '/tutorials/confirm?session_id=@sessionId';
 
     </script>
 

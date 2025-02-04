@@ -39,8 +39,7 @@
                             <div class="courses-pic">
                                 <a href="@childLesson.Url()">
 
-                                    @*<img src="/assets/lessonthumbs/thumb_@(childLesson.MediaId.Trim()).jpg" alt="@childLesson.Title" />*@
-                                    <img src="/VideoHandler.ashx?lessonId=@(childLesson.MediaId.Trim()).jpg" alt="@childLesson.Title" />
+                                    <img src="/VideoHandler.ashx?lessonThumbId=@(childLesson.MediaId.Trim())" alt="@childLesson.Title" />
                                 </a>
                             </div>
                             <div class="course-desc">

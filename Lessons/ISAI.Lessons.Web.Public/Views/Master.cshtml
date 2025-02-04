@@ -107,15 +107,18 @@
 <head>
 
 
-	<!-- Google Tag Manager -->
-	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-	})(window,document,'script','dataLayer','GTM-5BT7PHFN');</script>
-	<!-- End Google Tag Manager -->
-
-
+    <!-- Google Tag Manager -->
+    <script>
+    (function (w, d, s, l, i)
+        {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-5BT7PHFN');</script>
+    <!-- End Google Tag Manager -->
     <!-- metas -->
     <meta charset="utf-8">
     <meta name="author" content="ISAI Technologies" />
@@ -164,6 +167,8 @@
 
     <!-- Custom Styles -->
     <link href="/css/site.css?v=1" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/css/grt-cookies-consent.css" />
 
 
 
@@ -507,10 +512,13 @@
 
         function ShowPreloader()
         {
-            $('#preloader').fadeOut('normall', function ()
+            if ($("#preloader")[0].checkVisibility() === false)
             {
-                $(this).show();
-            });
+                $('#preloader').fadeOut('normall', function ()
+                {
+                    $(this).show();
+                });
+            }
         }
     </script>
 
@@ -553,7 +561,7 @@
         </script>
 
     }
-    else if (Model.ContentType.Alias.Contains("account") == false)
+    else if (Model.ContentType.Alias.Contains("account") == false && Model.ContentType.Alias.Contains("tutorial") == false)
     {
         <script>
             HidePreloader();

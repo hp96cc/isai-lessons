@@ -41,7 +41,7 @@ namespace ISAI.Lessons.Web.Public
                 int lessonThumbId = Convert.ToInt32(context.Request.QueryString["lessonThumbId"]);
                 var thumbFileName = string.Format(@"{0}{1}\{2}.jpg", _videoRootFolder, lessonThumbId, lessonThumbId);
 
-                if (File.Exists(thumbFileName))
+                if (!File.Exists(thumbFileName))
                 {
                     //TODO: send back default image
                     context.Response.ContentType = "image/jpeg";
@@ -93,12 +93,10 @@ namespace ISAI.Lessons.Web.Public
                 {
                     var segmentNumber = context.Request.QueryString["segmentNumber"];
                     var tsFilePath = Path.Combine(videoRoot, string.Format("{0}.ts", segmentNumber, token));
-                    //var tsFileContents = File.ReadAllBytes(tsFilePath);
 
                     context.Response.BufferOutput = true;
                     context.Response.ContentType = "video/vnd.dlna.mpeg-tts";
                     context.Response.TransmitFile(tsFilePath);
-                    //context.Response.BinaryWrite(tsFileContents);
                     return;
 
                 }
