@@ -126,7 +126,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             htmlBody = htmlBody.Replace("{{Date}}", tutorial.DateTimeStart.DateTime.ToLongDateString());
             htmlBody = htmlBody.Replace("{{Time}}", tutorial.DateTimeStart.DateTime.ToString("HH:mm") + " to " + tutorial.DateTimeEnd.DateTime.ToString("HH:mm"));
             htmlBody = htmlBody.Replace("{{Duration}}", tutorial.DurationInMinutes + " minutes.");
-            htmlBody = htmlBody.Replace("{{Cost}}", string.Format("{0:N2} £", tutorial.TutorialCost));
+            htmlBody = htmlBody.Replace("{{Cost}}", string.Format("£{0:N2}", tutorial.TutorialCost));
             htmlBody = htmlBody.Replace("/{{Link}}", tutorial.TeamsLink);
 
             var lesson = "";
@@ -138,9 +138,12 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             else if (tutorial.TutorialSubject != null)
             {
                 lesson = string.Format("<strong>Subject:</strong> " + tutorial.TutorialSubject.Name);
+            } else
+            {
+
             }
 
-            htmlBody = htmlBody.Replace("{{Lesson}}", lesson);
+            htmlBody = htmlBody.Replace("{{Subject}}", lesson);
 
             return htmlBody;
         }

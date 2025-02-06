@@ -586,7 +586,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     tutorialDescription.AppendLine("<p><b>Related Lesson</b></p>");
                     tutorialDescription.AppendLine("<p>" + lesson.LessonGroup.Name + " - " + lesson.Name + "</p>");
-                    tutorialDescription.AppendLine(string.Format("<p><a href=\"{0}api/lessonumbraco/{1}>View Lesson</a></p>", _baseReturnUrl, lesson.Id));
+                    tutorialDescription.AppendLine(string.Format("<p><a href=\"{0}api/lessonumbraco/{1}\">View Lesson</a></p>", _baseReturnUrl, lesson.Id));
 
                     request.CustomerNotes += "Related Lesson:" + System.Environment.NewLine;
                     request.CustomerNotes += lesson.LessonGroup.Name + " - " + lesson.Name + System.Environment.NewLine;
