@@ -34,7 +34,7 @@
 
        
 
-        <div class="row" id="account-panel">
+        <div class="row">
             <div class="col-3">
 
                 <!-- Nav -->
@@ -46,7 +46,7 @@
                 <div class="row">
 
                     <div class="col-12 text-right">
-                        <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2"><span>New Tutorial</span></a>
+                        <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2"><span>Book a Tutor</span></a>
 
                     </div>
                     <div class="col-12">
@@ -62,7 +62,7 @@
 
                     <div class="col-12 p-1">
                         <div class="row" id="tutorial-list"></div>
-
+                     
 
                     </div>
                 </div>
@@ -117,7 +117,7 @@
 
                                 {{/IsCompleted}}
                                 @*{{^IsCompleted}}
-                                <a href="/tutorials/calendar/?rebookId={{Id}}" class="butn x-small pink p-2 pl-3 pr-3 mb-2"><span>Re-Book Tutorial</span></a>
+                                <a href="/tutorials/calendar/?rebookId={{Id}}" class="butn x-small pink p-2 pl-3 pr-3 mb-2"><span>Re-Book Tutor</span></a>
 
                                 {{/IsCompleted}}*@
 
@@ -183,7 +183,6 @@
 
             $('#tutorial-list').html(itemListHTML);
 
-            $('#account-panel').show();
             $('#spinner-loading').hide();
 
 

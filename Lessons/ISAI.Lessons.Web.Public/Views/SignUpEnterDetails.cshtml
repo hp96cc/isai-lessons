@@ -10,13 +10,8 @@
         Response.Redirect("/account/info");
     }
 
-    /* Validate Subscription Id */
-    if (string.IsNullOrEmpty(Request.QueryString["subscriptionTypeId"]))
-    {
-        throw new Exception("Subcription Type Id is missing");
-    }
+    var isStripeTest = Request.QueryString["IsTest"] != null ? true : false;
 
-    int subscriptionTypeId = Convert.ToInt32(Request.QueryString["subscriptionTypeId"]);
     var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
 
 }
@@ -29,7 +24,7 @@
             <p><strong>@Model.Subtitle</strong></p>
         </div>
     </div>
-</section>
+</section> 
 
 
 <section class="pt-5">
@@ -56,7 +51,7 @@
                     @if (ViewBag.LoggedIn == null)
                     {
 
-                        <h6 class="bg-sky">Your Details</h6>
+                        <h6 class="bg-sky">Signup</h6>
 
                     }
                     else
@@ -72,10 +67,61 @@
 
                         <form method="post" id="register-form" class="needs-validation" novalidate>
 
-                            <input type="hidden" name="input-subscriptiontypeid" id="input-subscriptiontypeid" value="@subscriptionTypeId" />
-
                             <div class="row">
+
+                                <div class="col-12">
+
+                                    <h5>Choose your plan:</h5>
+
+
+                                </div>
+
+                                <div class="col-12" id="div-input-chooseplan">
+                                    <div class="form-group">
+                                        <label>Choose Plan: *</label>
+
+                                        <select id="select-plan" class="form-control" required>
+                                            <option value="100">Primary & Secondary Monthly - £22.50 per month</option>
+                                            <option value="101" selected>Primary & Secondary Annually - £225 per year</option>
+                                            <option value="102">Primary Monthly - £15 per month</option>
+                                            <option value="103">Primary Annually - £150 per year</option>
+                                            <option value="104">Secondary Monthly - £15 per month</option>
+                                            <option value="105">Secondary Annually - £150 per year</option>
+                                        </select>
+                                        <div class="invalid-feedback">Please choose a plan</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12" id="div-input-accesscode" style="display:none;">
+                                    <div class="form-group">
+                                        <label>Access Code *:</label>
+                                        <input type="text" class="form-control" id="input-accesscode" name="input-accesscode" autocomplete="none" />
+                                        <div class="invalid-feedback">Access code is required</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12" id="div-input-toggleaccesscode">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="checkbox-accesscode" onchange="ToggleAccessCode();">
+                                            <label class="custom-control-label" for="checkbox-accesscode">I have an access code</label>
+                                            <span class="invalid-feedback">Access code invalid.</span>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-12">
+
+                                    <h5>Your Details:</h5>
+
+
+                                </div>
+
                                 <div class="col-md-6">
+
                                     <div class="form-group">
                                         <label>Firstname *:</label>
                                         <input type="text" class="form-control" id="input-firstname" name="input-firstname" placeholder="First Name" autocomplete="none" required />
@@ -136,31 +182,16 @@
                                 </div>
 
 
-                                  <div class="col-md-12" id="div-input-toggleaccesscode">
-                                      <div class="custom-control custom-checkbox">
-                                          <input type="checkbox" class="custom-control-input" id="checkbox-autorenewal" required>
-                                          <label class="custom-control-label" for="checkbox-autorenewal">I am aware this will automatically renewal monthly until I cancel it</label>
-                                          <span class="invalid-feedback">You must agree before submitting..</span>
-
-                                      </div>
-                                  </div>
-
                                 <div class="col-md-12" id="div-input-toggleaccesscode">
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="checkbox-accesscode" onchange="ToggleAccessCode();">
-                                        <label class="custom-control-label" for="checkbox-accesscode">I have an access code</label>
-                                        <span class="invalid-feedback">Access code invalid.</span>
+                                        <input type="checkbox" class="custom-control-input" id="checkbox-autorenewal" required>
+                                        <label class="custom-control-label" for="checkbox-autorenewal">I am aware this will automatically renewal monthly until I cancel it</label>
+                                        <span class="invalid-feedback">You must agree before submitting..</span>
 
                                     </div>
                                 </div>
 
-                                <div class="col-md-12" id="div-input-accesscode" style="display:none;">
-                                    <div class="form-group">
-                                        <label>Access Code *:</label>
-                                        <input type="text" class="form-control" id="input-accesscode" name="input-accesscode" autocomplete="none" />
-                                        <div class="invalid-feedback">Access code is required</div>
-                                    </div>
-                                </div>
+
 
 
                                 <div id="form-error-label" class="col-md-12 alert alert-danger m-3 delivery-error-label" role="alert" style="display:none;">
@@ -229,6 +260,7 @@
             if (isAccessCodeChecked) {
 
                 $("#button-checkout").hide();
+                $("#div-input-chooseplan").hide();
                 $("#button-activate").show();
                 $("#div-input-accesscode").show();
                 $('#input-accesscode').attr('required', 'required');
@@ -238,6 +270,7 @@
 
                 $('#input-accesscode').removeAttr('required');
                 $("#button-checkout").show();
+                $("#div-input-chooseplan").show();
                 $("#button-activate").hide();
                 $("#div-input-accesscode").hide();
 
@@ -349,7 +382,7 @@
                     password: $("#input-password").val(),
                     passwordConfirm: $('#input-confirmpassword').val(),
                     acceptMarketing: $('#input-newsletter').prop("checked"),
-                    subscriptionTypeId: parseInt($('#input-subscriptiontypeid').val()),
+                    subscriptionTypeId: parseInt($('#select-plan').val()),
                     hearAbout: $('#input-hearabout').val()
                 }
 
@@ -357,14 +390,14 @@
 
                 if (data.sessionId != null) {
 
-                    var stripe = Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');
-                    //var stripe = Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');
-                    stripe.redirectToCheckout({
-                        sessionId: data.sessionId
-                    }).then(handleResult);
-                    return;
+                    var stripe = @(Html.Raw(isStripeTest ? "Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');" : "Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');"))
 
-                } else {
+                    stripe.redirectToCheckout({
+                    sessionId: data.sessionId
+                    }).then(handleResult);
+                return;
+
+            } else {
 
                     if (data.Errors.length > 0) {
 
@@ -377,11 +410,11 @@
                         errorHTML += '</ul>';
                     }
                     else if (data.Errors.length === 1) {
-                        errorHTML = data.Errors[0];
-                    }
-                    else {
-                        errorHTML = 'Could not create session. Please contact support';
-                    }
+        errorHTML = data.Errors[0];
+    }
+    else {
+        errorHTML = 'Could not create session. Please contact support';
+    }
 
                 }
 

@@ -1,5 +1,4 @@
-﻿using createsend_dotnet;
-using CryptoNet;
+﻿using CryptoNet;
 using Effortless.Net.Encryption;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
@@ -16,7 +15,6 @@ using Stripe.Checkout;
 using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -247,9 +245,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             try
             {
+                var lastMonth = DateTime.Today.AddDays(-31);
+
                 var tutorials = await db.Tutorial
                     .Include(x => x.TutorUser)
-                    .Where(x => x.CustomerId == _customerId && x.Deleted == false)
+                    .Where(x => x.CustomerId == _customerId && x.Deleted == false && x.DateTimeStart > lastMonth)
                     .OrderByDescending(x => x.DateTimeStart)
                     .ToListAsync();
 
@@ -516,12 +516,14 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             try
             {
 
+                var lastMonth = DateTime.Today.AddDays(-31);
+
                 var lessonHistory = await db.CustomerActivity
                 .Include(x => x.CustomerDevice)
                 .Include(x => x.Lesson)
                 .Include(x => x.Lesson.LessonGroup)
                 .OrderByDescending(x => x.StartDateTime)
-                .Where(x => x.CustomerDevice.CustomerId == _customerId && x.Deleted == false)
+                .Where(x => x.CustomerDevice.CustomerId == _customerId && x.Deleted == false && x.StartDateTime > lastMonth)
                 .Skip(request.Page * request.RecordCount)
                 .Take(request.RecordCount)
                 .ToListAsync();
@@ -605,7 +607,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     null
                     );
 
-                var tutorialDuration = request.DateTimeEnd.Subtract(request.DateTimeStart).Minutes;
+
+
+                var tutorialDuration = Convert.ToInt32((request.DateTimeEnd.Ticks - request.DateTimeStart.Ticks) / TimeSpan.TicksPerMinute);
 
                 var tutorial = new Tutorial()
                 {
@@ -747,12 +751,39 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 if (licenceResponse.Status == ResponseStatus.OK)
                 {
 
+                    bool canAccessLesson;
+
                     var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
                         x.Id == lessonRequestViewModel.LessonId &&
                         x.Deleted == false);
 
-                    //If licence is not full access, compare access of lesson
-                    if (licenceResponse.Content.SubscriptionTypeId > 1 && licenceResponse.Content.SubscriptionTypeId != lesson.SubscriptionTypeId)
+                    switch (licenceResponse.Content.SubscriptionTypeId)
+                    {
+                        case 1:
+                        case 100:
+                        case 101:
+                            canAccessLesson = true;
+                            break;
+
+                        case 2:
+                        case 102:
+                        case 103:
+                            canAccessLesson = lesson.SubscriptionTypeId == 2;
+                            break;
+
+                        case 3:
+                        case 104:
+                        case 105:
+                            canAccessLesson = lesson.SubscriptionTypeId == 3;
+                            break;
+
+                        default:
+                            canAccessLesson = false;
+                            break;
+                    }
+
+
+                    if (!canAccessLesson)
                     {
                         response.Status = ResponseStatus.InvalidLicence;
                         response.ErrorResponse = new List<ErrorResponse>()
@@ -989,11 +1020,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         public async Task<ResponseData<bool>> SendEmail(SendEmailRequestViewModel request)
         {
 
-            if(request.CreateFreeTrial)
-            {
-                return await CreateFreeTrail(request);
-            }
-
             var response = new ResponseData<bool>();
             var graphApi = new MicrosoftGraphApiService();
 
@@ -1025,162 +1051,21 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         }
 
 
-        async Task<SubscriptionCode> GenerateTrialCode(string code)
+        async Task<SubscriptionCode> GenerateTrialCode()
         {
             var subscriptionCode = new SubscriptionCode();
             subscriptionCode.Code = Guid.NewGuid().ToString();
 
-            if (code.Equals("AUG30TRIAL")) {
-
-                subscriptionCode.IssuedTo = "August 2021 - 30 Day Free Trial";
-                subscriptionCode.SubscriptionTypeId = 1;
-                subscriptionCode.ValidFrom = new DateTime(2021, 7, 1);
-                subscriptionCode.ValidTo = new DateTime(2021, 9, 1);
-                subscriptionCode.LicenceDays = 30;
-
-            }
-            else if (code.Equals("STCHARLESFREETRIAL"))
-            {
-                subscriptionCode.IssuedTo = "St Charles - 30 Day Free Trial";
-                subscriptionCode.SubscriptionTypeId = 1;
-                subscriptionCode.ValidFrom = new DateTime(2021, 7, 1);
-                subscriptionCode.ValidTo = new DateTime(2021, 10, 8);
-                subscriptionCode.LicenceDays = 30;
-
-            }
-            else
-            {
-                subscriptionCode.IssuedTo = "1 Day Free Trial";
-                subscriptionCode.SubscriptionTypeId = 1;
-                subscriptionCode.ValidFrom = DateTime.Today;
-                subscriptionCode.ValidTo = DateTime.Now.AddDays(1);
-                subscriptionCode.LicenceDays = 1;
-            }
+            subscriptionCode.IssuedTo = "1 Day Free Trial";
+            subscriptionCode.SubscriptionTypeId = 1;
+            subscriptionCode.ValidFrom = DateTime.Today;
+            subscriptionCode.ValidTo = DateTime.Now.AddDays(1);
+            subscriptionCode.LicenceDays = 1;
 
             db.Entry(subscriptionCode).State = EntityState.Added;
             await db.SaveChangesAsync();
 
             return subscriptionCode;
-        }
-
-        public async Task<ResponseData<bool>> CreateFreeTrail(SendEmailRequestViewModel request)
-        {
-            var response = new ResponseData<bool>();
-            
-            try
-            {
-                //TODO: not sure what this class does
-                var code = await GenerateTrialCode("AUG30TRIAL");
-
-
-                if (request.UseMobileForTrial)
-                {
-
-
-                    String message = HttpUtility.UrlEncode(string.Format("Hi {0}, Welcome to Scottish Online Lessons Free Trial. Your access code is:\n\n {1} \n\n Sign up here: https://scottishonlinelessons.com/plans/signup/", request.Name, code.Code));
-                    using (var wb = new WebClient())
-                    {
-                        byte[] smsResponse = wb.UploadValues("https://api.txtlocal.com/send/", new NameValueCollection()
-                    {
-                    {"apikey" , "NzI2ZDM4MzA0NTM0NTk1MzY3NDc3MDM2NjQ3NjY0NTU="},
-                    {"numbers" , "44" + request.Email.Trim().TrimStart("0".ToCharArray()) },
-                    {"message" , message},
-                    {"sender" , "Scottish Online Lessons"}
-                    });
-                        string result = System.Text.Encoding.UTF8.GetString(smsResponse);
-                        //return result;
-
-
-                        var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been sent the following SMS message: <br />{3}</p>", request.Name, request.Email, request.Message, message);
-                        var graphApi = new MicrosoftGraphApiService();
-                        await graphApi.SendEmail(_graphSenderAdminAccount, request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { _graphSenderAdminAccount }, true);
-
-                        response.Content = true;
-                        response.Status = ResponseStatus.OK;
-
-                        return response;
-                    }
-
-                }
-                else
-                {
-
-                    //var clientId = "6ad5bfe4fdd0aed4f49c077d062dd58b";
-                    var apiKey = "373gQZV6QcQAMEFTKtaVKYlOlEAE2qUloFWowSvdqF4hM1wbYNmPjbvASTeNiJ19yJOTsb8b8B7+LVUTBYHE2U+XsEXgbOyoZpcekmudIMfjQhJF5dG6LCWNyUqSB6vD95rgmD/iddmq55L99em2Dg==";
-                    var listId = "666d699af51cdf4ba54574dd36553817";
-
-                    AuthenticationDetails auth = new ApiKeyAuthenticationDetails(apiKey);
-                    var general = new General(auth);
-                    var clients = general.Clients();
-
-                    Subscriber subscriber = new Subscriber(auth, listId);
-
-                    try
-                    {
-                        List<SubscriberCustomField> customFields = new List<SubscriberCustomField>();
-                        customFields.Add(new SubscriberCustomField() { Key = "Name", Value = request.Name });
-                        customFields.Add(new SubscriberCustomField() { Key = "ActivationCode", Value = code.Code });
-
-                        string newSubscriberID = subscriber.Add(request.Email, request.Name, customFields, false, ConsentToTrack.Unchanged);
-
-                        var html = string.Format("<p>{0}</p><p>{1}</p><p>{2}</p><p>User has been added to Campaign Monitor</p>", request.Name, request.Email, request.Message);
-
-                        var graphApi = new MicrosoftGraphApiService();
-                        await graphApi.SendEmail(_graphSenderAdminAccount, request.Subject, html, new List<string>() { "info@scottishonlinelessons.com" }, null, new List<string>() { "sysadmin@isai.co.uk" }, new List<string>() { _graphSenderAdminAccount }, true);
-
-                        response.Content = true;
-                        response.Status = ResponseStatus.OK;
-
-                        return response;
-
-
-                    }
-                    catch (CreatesendException ex)
-                    {
-                        ErrorResult error = (ErrorResult)ex.Data["ErrorResult"];
-                        Console.WriteLine(error.Code);
-                        Console.WriteLine(error.Message);
-
-                        response.Status = ResponseStatus.Failed;
-                        response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
-                                Message = ex.Message,
-                                ErrorDescription = ex.StackTrace
-                            }
-                        };
-                        return response;
-                    }
-                    catch (Exception ex)
-                    {
-                        // Handle some other failure
-                        Console.WriteLine(ex.ToString());
-
-
-                        response.Status = ResponseStatus.Failed;
-                        response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
-                                Message = ex.Message,
-                                ErrorDescription = ex.StackTrace
-                            }
-                        };
-                        return response;
-                    }
-
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                response.Status = ResponseStatus.Failed;
-                response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
-                            Message = ex.Message,
-                            ErrorDescription = ex.StackTrace
-                        }
-                    };
-                return response;
-            }
-
-
-
         }
 
         [Route("api/app/lessons")]
@@ -1563,6 +1448,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     ClientReferenceId = customer.Id.ToString(),
                     SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
                     CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                   
                     PaymentMethodTypes = new List<string>
                     {
                         "card",
@@ -1609,12 +1495,17 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             catch (Exception ex)
             {
 
-
                 var errorMessage = new HttpResponseMessage()
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    ReasonPhrase = ex.Message
+                    ReasonPhrase = ex.Message,
+                    Content = new StringContent(ex.StackTrace)
                 };
+
+                if(ex.InnerException != null)
+                {
+                    errorMessage.Content = new StringContent(ex.StackTrace + ex.InnerException.StackTrace);
+                }
 
                 throw new HttpResponseException(errorMessage);
 
@@ -1723,9 +1614,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 SubscriptionCode subscriptionCode = null;
 
-                if (request.AccessCode.Trim().ToUpper().Equals("FREE1DAYTRIAL") || request.AccessCode.Trim().ToUpper().Equals("STCHARLESFREETRIAL"))
+                if (request.AccessCode.Trim().ToUpper().Equals("FREE1DAYTRIAL"))
                 {
-                    subscriptionCode = await GenerateTrialCode(request.AccessCode.Trim().ToUpper());
+                    subscriptionCode = await GenerateTrialCode();
                 }
                 else
                 {
@@ -1825,14 +1716,27 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var subscription = await db.Subscription.FirstAsync(x => x.CustomerId == _customerId);
 
-                var service = new SubscriptionService(this.client);
-                var response = service.Cancel(subscription.StripeSubscriptionId); //TODO: handle this response
 
-                //TODO: need to handled deleteing of scubscriptions as they will expoire after cancellation date
                 subscription.DateModified = DateTime.UtcNow;
                 subscription.ModifiedUserId = _adminUserId;
-                subscription.Deleted = true;
-                subscription.Active = false;
+
+                try
+                {
+                    var service = new SubscriptionService(this.client);
+                    var response = service.Cancel(subscription.StripeSubscriptionId);
+
+                    //TODO: subscriptioin is kept active to end of billing period. Need to change this on background task 
+                    subscription.Deleted = false;
+                    subscription.Active = true; 
+
+                }
+                catch (Exception ex)
+                {
+                    //TODO: we dont know the state of Stripe here so we need to cancel immediateley.
+                    subscription.Deleted = true;
+                    subscription.Active = false; 
+                }
+
                 db.Entry(subscription).State = EntityState.Modified;
 
                 var stripeWebhookLog = new StripeWebhookLog();
@@ -1968,12 +1872,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                                 .OrderByDescending(x => x.Id)
                                 .FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
 
-                        subscription.Active = true;
-                        subscription.StripeSubscriptionId = checkOutComplete.SubscriptionId;
-                        subscription.DateModified = DateTime.UtcNow;
-                        db.Entry(subscription).State = EntityState.Modified;
-
+                        var subscriptionType = await db.SubscriptionType.FirstAsync(x => x.Id == subscription.SubscriptionTypeId);
                         await db.SaveChangesAsync();
+
+                        //check sequencing
+                        await UpdateCustomerSubscription(checkOutComplete.SubscriptionId, true);
 
                     }
 
@@ -1984,7 +1887,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     // Store the status in your database and check when a user accesses your service.
                     // This approach helps you avoid hitting rate limits.
                     var paidInvoice = stripeEvent.Data.Object as Stripe.Invoice;
-                    await UpdateCustomerSubscription(paidInvoice.SubscriptionId, true, paidInvoice);
+                    await UpdateCustomerSubscription(paidInvoice.SubscriptionId, true);
 
                     break;
                 case "invoice.payment_failed":
@@ -2024,7 +1927,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     StripeSubscriptionId = subscriptionCode.Code,
                     Active = true,
                     StartDate = DateTime.UtcNow,
-                    EndDate = DateTime.UtcNow.AddDays(subscriptionCode.LicenceDays), //TODO: need to support other
+                    EndDate = subscriptionCode.ValidFrom.AddDays(subscriptionCode.LicenceDays), 
                     DateModified = DateTime.UtcNow,
                     DateCreated = DateTime.UtcNow,
                     CreatedUserId = _adminUserId,
@@ -2052,7 +1955,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             else
             {
                 //TODO we should do a change subscription first
-                var subscription = await db.Subscription.FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
+                var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
              
                 if (subscription != null)
                 {
@@ -2098,14 +2001,15 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        async Task UpdateCustomerSubscription(string subscriptionId, bool isActive, Invoice invoice = null)
+        async Task UpdateCustomerSubscription(string subscriptionId, bool isActive)
         {
 
             var subscription = await db.Subscription
                 .Include(x => x.SubscriptionType)
                 .FirstAsync(x => x.StripeSubscriptionId == subscriptionId && x.Deleted == false);
 
-            if (isActive == false)
+            //TODO: 1 day period is added to make sure Subscriptions dont get deleted when being setup. If so, we will just ignore
+            if (isActive == false && subscription.DateCreated < DateTime.Today.AddDays(-1))
             {
                 //TODO: need to make sure Mangage area is fixed and send an email to user
                 subscription.Active = false;
@@ -2113,22 +2017,21 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 subscription.ModifiedUserId = _adminUserId;
 
                 db.Entry(subscription).State = EntityState.Modified;
+                await db.SaveChangesAsync();
 
             } else {
 
                 subscription.Active = true;
-                subscription.EndDate = subscription.EndDate.AddMonths(subscription.SubscriptionType.SubscriptionLengthInMonths);
+                subscription.EndDate = DateTime.Today.AddMonths(subscription.SubscriptionType.SubscriptionLengthInMonths);
                 subscription.DateModified = DateTime.UtcNow;
                 subscription.ModifiedUserId = _adminUserId;
 
                 db.Entry(subscription).State = EntityState.Modified;
+                await db.SaveChangesAsync();
 
             }
-
-            await db.SaveChangesAsync();
-
+          
         }
-
 
     }
 

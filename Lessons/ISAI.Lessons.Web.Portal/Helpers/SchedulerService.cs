@@ -16,34 +16,64 @@ namespace ISAI.Lessons.Web.Portal.Helpers
         static string _systemGraphUserEmail => ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
         static string _systemAdminEmail => ConfigurationManager.AppSettings["Email.SysAdmin"];
         static string _clientAuditEmail => ConfigurationManager.AppSettings["Email.ClientAudit"];
-
         static string _returnUrl => ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
 
         static bool _isSendingTutorialEmails = false;
 
-        static bool _isDeletingAbandonedCustomers = false;
+        static bool _isDeletingAbandonedTutorials = false;
 
-        public static void DeleteAbandonedCustomers()
+        public static void DeleteAbandonedTutorials()
         {
-            if (_isDeletingAbandonedCustomers) return;
+            if (_isDeletingAbandonedTutorials) return;
 
             try
             {
-                _isDeletingAbandonedCustomers = true;
-
+                _isDeletingAbandonedTutorials = true;
 
                 using (var db = new LessonsDbContext())
                 {
+                    var last20Minutes = DateTime.Now.AddMinutes(-20);
+
+                    var tutorials = db.Tutorial
+                        .Include(x => x.TutorUser)
+                        .Where(x => 
+                                x.Deleted == false && 
+                                x.DateCreated < last20Minutes && 
+                                x.HasCompletedCheckout == false)
+                        .ToList();
+
+                    foreach (var tutorial in tutorials)
+                    {
+                        try
+                        {
+
+                            var graphApi = new MicrosoftGraphApiService();
+                            graphApi.DeleteTeamsEvent(tutorial.TutorUser.Email, tutorial.TeamsId).RunSynchronously();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            //TODO: need to log somehow, but also need to ski ones already removed
+                        }
+
+                        tutorial.Deleted = true;
+                        tutorial.DateModified = DateTime.Now;
+                        tutorial.ModifiedUserId = _systemUserId;
+                        db.Entry(tutorial).State = EntityState.Modified;
+
+                        db.SaveChanges();
+
+                    }
 
                 }
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
-                _isDeletingAbandonedCustomers = false;
-                throw ex;
+                var t = true;
             }
             finally
             {
-                _isDeletingAbandonedCustomers = false;
+                _isDeletingAbandonedTutorials = false;
             }
 
 

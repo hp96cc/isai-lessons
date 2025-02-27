@@ -131,6 +131,25 @@ namespace ISAI.Lessons.EntityFramework.Services
         }
 
 
+        public async Task DeleteTeamsEvent(string userName, string eventId)
+
+        {
+            GraphServiceClient graphClient = GetAuthenticatedClient();
+
+            try
+            {
+                var scheduleInformation = new List<ScheduleInformation>();
+                await graphClient.Users[userName].Events[eventId].DeleteAsync();
+            }
+            catch (Exception ex)
+            {
+                //TODO: handle and log
+                throw ex;
+            }
+
+
+        }
+
         public async Task<TeamsEventResponse> CreateOrUpdateTeamsEvent(
             string eventId,
             string userName,

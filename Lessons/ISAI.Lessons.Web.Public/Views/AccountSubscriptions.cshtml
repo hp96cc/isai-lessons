@@ -137,6 +137,8 @@
 
                             <button id="button-cancel-subscription" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="PromptCancelSubscription();">Cancel Subscription</button>
 
+                            <button id="button-change-subscription" class="butn x-small sky  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="PromptChangeSubscription();">Change Subscription</button>
+
                             <button id="button-manage-subscription" class="butn x-small sky  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SubscriptionPortal();">Manage Subscription</button>
 
                             <div id="label-cancelled" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
@@ -164,6 +166,33 @@
             </div>
             <div class="modal-body">
                 Are you sure you wish to cancel this subscription? You will lose all access to Scottish Online Lessons on <strong><span id="subscription-expiry-date"></span></strong>.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="CancelSubscription();">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="changeSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="changeSubscriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeSubscriptionModallLabel">Change Subscription</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You can change to one of the following subscriptions:
+
+                <select id="select-plan" class="form-control">
+       
+                </select>
+                <div class="invalid-feedback">Please choose a plan</div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
@@ -247,12 +276,39 @@
 
         }
 
+        function PromptChangeSubscription()
+        {
+
+            switch (subscription.SubscriptionTypeId)
+            {
+
+
+
+
+
+
+            }
+
+
+            var availablePlans = "select-plan"
+
+
+  //            <option value="100">Primary & Secondary Monthly - £22.50 per month</option>
+  //<option value="101" selected>Primary & Secondary Annually - £225 per year</option>
+  //<option value="102">Primary Monthly - £15 per month</option>
+  //<option value="103">Primary Annually - £150 per year</option>
+  //<option value="104">Secondary Monthly - £15 per month</option>
+  //<option value="105">Secondary Annually - £150 per year</option>
+
+            availablePlans.forEach(x => $("#select-plan").append(new Option(x.Name, x.Id)))
+
+            $('#changeSubscriptionModal').modal('show')
+        }
+
 
         function PromptCancelSubscription()
         {
-
             $('#cancelSubscriptionModal').modal('show')
-
         }
         
         async function CancelSubscription() {

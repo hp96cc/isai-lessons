@@ -221,7 +221,7 @@
 
                                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                                 {
-                                    <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2 "><span>Book Tutorial</span></a>
+                                    <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2 "><span>Book A Tutor</span></a>
 
                                     <a href="/account/info" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2 mr-2"><span>My Account</span></a>
 
@@ -501,24 +501,36 @@
     <script src="~/scripts/app.js?v=10"></script>
 
     <script>
+
+        var isLoaderVisible = true;
+
         function HidePreloader()
         {
-            $('#preloader').fadeOut('normall', function ()
+            //$('#preloader').fadeOut('normall', function ()
+            //{
+            //    $(this).hide();
+            //});
+            if (isLoaderVisible)
             {
-                $(this).hide();
-            });
+                $('#preloader').fadeOut();
+            }
+
+            isLoaderVisible = false;
         }
 
 
         function ShowPreloader()
         {
-            if ($("#preloader")[0].checkVisibility() === false)
+            if (!isLoaderVisible)
             {
-                $('#preloader').fadeOut('normall', function ()
-                {
-                    $(this).show();
-                });
+                //$('#preloader').fadeOut('normall', function ()
+                //{
+                //    $(this).show();
+                //});
+                $('#preloader').fadeIn();
             }
+
+            isLoaderVisible = true;
         }
     </script>
 

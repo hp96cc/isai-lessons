@@ -292,7 +292,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                     BaseAddress = new Uri(_baseUrl)
 
                 };
-
+                 
                 ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -309,6 +309,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
 
         }
+
 
         private async Task<string> ParseHttpError(HttpResponseMessage httpResponse)
         {

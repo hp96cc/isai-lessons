@@ -82,6 +82,11 @@ namespace ISAI.Lessons.Web.Portal
             {
                 TimeZone = TimeZoneInfo.Local
             });
+            RecurringJob.AddOrUpdate("SchedulerService.DeleteAbandonedTutorials", () => SchedulerService.DeleteAbandonedTutorials(), Cron.Minutely, new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local
+            });
+
 
         }
     }

@@ -853,25 +853,12 @@ namespace ISAI.Lessons.Web.Public.Controllers
         public async Task<CreateCustomerPayemntSessionResponse> CreateCustomerPaymentSession(CreateCustomerPayemntSessionRequest model)
         {
 
-            var auth = await GetAuth();
+            SetHttpClient();
 
-            if (auth == null || auth.RefreshToken == null)
-            {
-                SetHttpClient();
-            }
-            else
-            {
-                _httpClient = await _apiService.SetHttpAuthClient();
-            }
 
-          
             try
             {
                 model.AppId = _appId;
-
-                //LIVE id: 
-                //monthly: price_1IxXUFJ81SbG6nzav7NG3Vto
-                //annual: price_1IxXTvJ81SbG6nzajuriP6XZ
                 model.CancelUrl = _baseReturnUrl + "/plans/payment-cancel";
                 model.SuccessUrl = _baseReturnUrl + "/plans/payment-success";
 

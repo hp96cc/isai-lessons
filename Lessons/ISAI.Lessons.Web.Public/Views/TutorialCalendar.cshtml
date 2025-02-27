@@ -30,7 +30,7 @@
             <div class="row align-items-top">
 
 
-                <div class="col-5">
+                <div class="col-md-5 col-s-12 p-2">
 
                     <h4>Select Education Stage</h4>
 
@@ -67,16 +67,30 @@
 
 
                 </div>
-                <div class="col-7">
+                <div class="col-md-7 col-s-12 p-2">
                     <h4>Select a Date</h4>
                     <div id="Calendar"></div>
 
-                    <h4>Pick a time slot</h4>
-                    <div class="overflow-auto" style="max-height:400px">
+                    <div id="tutorial-availability">
 
-                        <div id="timeslots">
 
- 
+                        <h4 class="mb-3 mt-3">Pick a time slot</h4>
+                        <div class="overflow-auto" style="max-height:400px">
+
+                            <div id="timeslots"></div>
+
+
+                        </div>
+
+
+                        </div>
+
+                        <div id="tutorial-noavailability">
+
+                            <h4 class="mb-3 mt-3">No Availailability</h4>
+
+                            <p>Sorry, we have no availability for the option you have chosen. Please try a different date or tutor.</p>
+                            <p>If you require an urgent Tutor please email <a class="text-color-sky" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a> and we wil do our best to find you one.</p>
 
                         </div>
 
@@ -99,7 +113,7 @@
 
                     </p>
 
-                    <button type="button" onclick="ShowConfirmTutorialDialog();" class="butn medium sky btn-lg btn-block p-2">Book Tutorial</button>
+                    <button type="button" onclick="ShowConfirmTutorialDialog();" class="butn medium sky btn-lg btn-block p-2">Book A Tutor</button>
 
                 </div>
 
@@ -209,24 +223,33 @@
 
         async function CheckSubscription()
         {
+            try { 
+
             var data = await lessonsApp.subscription();
 
             ShowPreloader();
 
-            if (data)
+                if (data)
+                {
+                    if (data.Status == 0)
+                    {
+                        GetTutorialSubjectGroups();
+                    }
+                    else if (data.ErrorResponse)
+                    {
+                        //TODO: add better error handling for this
+                        location.replace('/account/subscriptions');
+                        return;
+                    }
+
+                }
+
+            }
+            catch (ex)
             {
 
-                if (data.Status == 0)
-                {
-                    GetTutorialSubjectGroups();
-                }
-                else if (data.ErrorResponse)
-                {
-                    //TODO: add better error handling for this
-                    location.replace('/account/subscriptions');
-                    return;
-                }
-
+                HidePreloader();
+                alert("Check Subscription Error: " + ex.message);
             }
         }
 
@@ -234,10 +257,11 @@
         {
             ShowPreloader();
 
-            var data = await lessonsApp.tutorialSubjectGroups();
-
             try
             {
+
+                var data = await lessonsApp.tutorialSubjectGroups();
+
                 if (!data || data.Status !== 0)
                 {
                     throw new Error('GetTutorialSubjectGroups failed');
@@ -250,11 +274,12 @@
                     return;
                 }
 
-            } catch (ex)
+            }
+            catch (ex)
             {
             
                 HidePreloader();
-                alert("TODO: Error Handling");
+                alert("GetTutorialSubjectGroups Error: " + ex.message);
             }
 
 
@@ -286,7 +311,7 @@
             } catch (ex)
             {
                 HidePreloader();
-                alert("TODO: Error Handling");
+                alert("GetTutorialSubjects Error: " + ex.message);
             }
 
         }
@@ -308,19 +333,22 @@
 
         async function GetTutors()
         {
-            ShowPreloader();
 
-            selectedTutorialSubjectId = parseInt($("#select-tutorial-tutorialsubject").children("option:selected").val());
-
-            var request = {
-                TutorialSubjectId: selectedTutorialSubjectId
-            }
-
-            var data = await lessonsApp.tutors(request);
-
-         
             try
             {
+
+                ShowPreloader();
+
+                selectedTutorialSubjectId = parseInt($("#select-tutorial-tutorialsubject").children("option:selected").val());
+
+                var request = {
+                    TutorialSubjectId: selectedTutorialSubjectId
+                }
+
+                var data = await lessonsApp.tutors(request);
+
+         
+         
                 if (!data || data.Status !== 0)
                 {
                     throw new Error('GetTutors failed');
@@ -335,7 +363,7 @@
             } catch (ex)
             {
                 HidePreloader();
-                alert("TODO: Error Handling");
+                alert("GetTutors Error: " + ex.message);
             }
 
 
@@ -384,7 +412,7 @@
             } catch (ex)
             {
                 HidePreloader();
-                alert("TODO: Error Handling");
+                alert("GetTimeslots Error: " + ex.message);
             }
 
 
@@ -392,8 +420,23 @@
 
         function DisplayTimeslots(timeslots)
         {
-            $("#timeslots").empty();
-            timeslots.forEach(x => $("#timeslots").append('<button type="button" onclick="ShowTutorialSummary(this, ' + x.StartTimeHours + ', ' + x.StartTimeMinutes + ');" class="' + buttonTimeSlotClass + '">' + x.StartTimeHours.toString().padStart(2, "0") + ':' + x.StartTimeMinutes.toString().padStart(2, "0") + '</button>'));
+
+            $("#timeslots").hide();
+            $("#tutorial-noavailability").hide();
+            $("#tutorial-availability").hide();
+
+            if (timeslots.length > 0)
+            {
+                $("#timeslots").empty();
+                timeslots.forEach(x => $("#timeslots").append('<button type="button" onclick="ShowTutorialSummary(this, ' + x.StartTimeHours + ', ' + x.StartTimeMinutes + ');" class="' + buttonTimeSlotClass + '">' + x.StartTimeHours.toString().padStart(2, "0") + ':' + x.StartTimeMinutes.toString().padStart(2, "0") + '</button>'));
+                $("#timeslots").show();
+                $("#tutorial-availability").show();
+            }
+            else
+            {
+                $("#tutorial-noavailability").show();
+            }
+
             isFirstLoad = false;
             HidePreloader();
         }
@@ -442,66 +485,77 @@
 
         async function GoToPurchase()
         {
-            ShowPreloader();
-
-            var request =
-            {
-                lessonId: selectedLessonId,
-                tutorId: selectedTutorId,
-                tutorialSubjectId: selectedTutorialSubjectId,
-                dateTimeStart: this.startTime.toJSON(),
-                dateTimeEnd: this.endTime.toJSON(),
-                customerNotes: $('#textarea-tutorial-notes').val()
-            };
-
-            var data = await lessonsApp.tutorialPurchase(request);
-
-           
-
-            if (data !== null && data.Content.SessionId !== null)
-            {
-                var stripe = Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');
-                //var stripe = Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');
-                stripe.redirectToCheckout({
-                    sessionId: data.Content.SessionId
-                }).then(handleResult);
-
-
-                return;
-
-            } else
+            try
             {
 
-                if (data === null)
+                ShowPreloader();
+
+                var request =
                 {
-                    errorHTML = 'Could not create session. Please contact support';
-                }
-                else if (data.Errors.length > 0)
+                    lessonId: selectedLessonId,
+                    tutorId: selectedTutorId,
+                    tutorialSubjectId: selectedTutorialSubjectId,
+                    dateTimeStart: this.startTime.toJSON(),
+                    dateTimeEnd: this.endTime.toJSON(),
+                    customerNotes: $('#textarea-tutorial-notes').val()
+                };
+
+                var data = await lessonsApp.tutorialPurchase(request);
+
+
+
+                if (data !== null && data.Content.SessionId !== null)
+                {
+                    var stripe = Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');
+                    //var stripe = Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');
+                    stripe.redirectToCheckout({
+                        sessionId: data.Content.SessionId
+                    }).then(handleResult);
+
+
+                    return;
+
+                } else
                 {
 
-                    errorHTML += '<ul>';
-
-                    data.Errors.forEach(function (item)
+                    if (data === null)
                     {
-                        errorHTML += '<li>' + item + '</li>';
-                    });
+                        errorHTML = 'Could not create session. Please contact support';
+                    }
+                    else if (data.Errors.length > 0)
+                    {
 
-                    errorHTML += '</ul>';
-                }
-                else if (data.Errors.length === 1)
-                {
-                    errorHTML = data.Errors[0];
-                }
-                else
-                {
-                    errorHTML = 'Could not create session. Please contact support';
+                        errorHTML += '<ul>';
+
+                        data.Errors.forEach(function (item)
+                        {
+                            errorHTML += '<li>' + item + '</li>';
+                        });
+
+                        errorHTML += '</ul>';
+                    }
+                    else if (data.Errors.length === 1)
+                    {
+                        errorHTML = data.Errors[0];
+                    }
+                    else
+                    {
+                        errorHTML = 'Could not create session. Please contact support';
+                    }
+
+                    alert(errorHTML);
+
                 }
 
-                alert(errorHTML);
+                HidePreloader();
 
+             }
+             catch (ex)
+            {
+
+                HidePreloader();
+                alert("GoToPurchase Error: " + ex.message);
             }
-
-            HidePreloader();
 
         }
 

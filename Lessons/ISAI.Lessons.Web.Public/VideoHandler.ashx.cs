@@ -41,20 +41,28 @@ namespace ISAI.Lessons.Web.Public
                 int lessonThumbId = Convert.ToInt32(context.Request.QueryString["lessonThumbId"]);
                 var thumbFileName = string.Format(@"{0}{1}\{2}.jpg", _videoRootFolder, lessonThumbId, lessonThumbId);
 
+
                 if (!File.Exists(thumbFileName))
                 {
-                    //TODO: send back default image
-                    context.Response.ContentType = "image/jpeg";
-                    context.Response.BinaryWrite(new byte[0]);
-                } 
-                else
-                {
-                    var thumbBytes = File.ReadAllBytes(thumbFileName);
-                    context.Response.ContentType = "image/jpeg";
-                    context.Response.BinaryWrite(thumbBytes);
+                    var legacyIcon = @"C:\Apps\Websites\inetpub-www\wwwroot\Assets\lessonthumbs\thumb_" + lessonThumbId.ToString() + ".jpg";
+                    if (File.Exists(legacyIcon))
+                    {
+                        File.Copy(legacyIcon, thumbFileName);
+                    } else
+                    {
+                        context.Response.ContentType = "image/jpeg";
+                        context.Response.BinaryWrite(new byte[0]);
+                        return;
+                    }
+
                 }
 
+                var thumbBytes = File.ReadAllBytes(thumbFileName);
+                context.Response.ContentType = "image/jpeg";
+                context.Response.BinaryWrite(thumbBytes);
+
                 return;
+
 
             }
 
