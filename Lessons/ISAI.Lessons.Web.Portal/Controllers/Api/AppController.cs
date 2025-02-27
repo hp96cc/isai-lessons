@@ -32,6 +32,7 @@ using TutorialSubjectGroup = ISAI.Lessons.Models.ViewModels.TutorialSubjectGroup
 using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
 using System.Text;
 using ISAI.Lessons.Core.Services;
+using Square.Models;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
 {
@@ -1872,6 +1873,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                                 .OrderByDescending(x => x.Id)
                                 .FirstAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
 
+                        //Add stripe Subcription Id
+                        subscription.StripeSubscriptionId = checkOutComplete.SubscriptionId;
+                        subscription.DateModified = DateTime.UtcNow;
+                        db.Entry(subscription).State = EntityState.Modified;
+
                         var subscriptionType = await db.SubscriptionType.FirstAsync(x => x.Id == subscription.SubscriptionTypeId);
                         await db.SaveChangesAsync();
 
@@ -2001,12 +2007,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        async Task UpdateCustomerSubscription(string subscriptionId, bool isActive)
+        async Task UpdateCustomerSubscription(string stripeSubscriptionId, bool isActive)
         {
 
             var subscription = await db.Subscription
                 .Include(x => x.SubscriptionType)
-                .FirstAsync(x => x.StripeSubscriptionId == subscriptionId && x.Deleted == false);
+                .FirstAsync(x => x.StripeSubscriptionId == stripeSubscriptionId && x.Deleted == false);
 
             //TODO: 1 day period is added to make sure Subscriptions dont get deleted when being setup. If so, we will just ignore
             if (isActive == false && subscription.DateCreated < DateTime.Today.AddDays(-1))
@@ -2022,7 +2028,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             } else {
 
                 subscription.Active = true;
-                subscription.EndDate = DateTime.Today.AddMonths(subscription.SubscriptionType.SubscriptionLengthInMonths);
+
+                subscription.EndDate = DateTime.Today.AddMonths(GetSubscriptionRenewalLength(subscription));
                 subscription.DateModified = DateTime.UtcNow;
                 subscription.ModifiedUserId = _adminUserId;
 
@@ -2031,6 +2038,19 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             }
           
+        }
+
+        private int GetSubscriptionRenewalLength(Subscription subscription)
+        {
+
+            if(subscription.SubscriptionType.StripePriceId !=  null)
+                return subscription.SubscriptionType.SubscriptionLengthInMonths;
+
+            //Handle Legacy Subscription Types where length was not part of Subscription Type
+            if (subscription.Name.ToLower().Contains("annual"))
+                 return 12;
+            else
+                return 1;
         }
 
     }
