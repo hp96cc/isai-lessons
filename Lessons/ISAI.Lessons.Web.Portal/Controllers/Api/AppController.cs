@@ -445,41 +445,59 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var scheduleInfo = availabilityResponse.Value[0];
 
-                var availableStartTime = scheduleInfo.WorkingHours.StartTime.Value.Hour;
-                var availableEndTime = scheduleInfo.WorkingHours.EndTime.Value.Hour;
-
                 var tutorialTimeSlots = new List<TutorialTimeSlot>();
 
-                var availableStartDateTime = startDate.AddHours(availableStartTime);
-                var availableEndDateTime = startDate.AddHours(availableEndTime);
-                var tutorialMinutes = 0;
-
-                while(true)
+                if (scheduleInfo.WorkingHours == null)
                 {
-                    var tutorialStartDateTime = availableStartDateTime.AddMinutes(tutorialMinutes);
-                    var tutorialEndDateTime = availableStartDateTime.AddMinutes(tutorialMinutes + tutorialDuration);
-
-                    if (tutorialEndDateTime > availableEndDateTime)
+                    var message = string.Format("Tutor {0} has not set any working hours. They will not be available until this has been done", tutorUser.Email);
+                    await SendEmail(new SendEmailRequestViewModel()
                     {
-                        //NOTE: Tutorial goes past working hours
-                        break;
-                    }
+                        Email = tutorUser.Email,
+                        Message = message,
+                        Name = tutorUser.Fullname,
+                        Subject = "Tutor Working Hours not setup"
 
-                    var isSlotAvailable = !scheduleInfo.ScheduleItems.Any(x => tutorialStartDateTime >= x.Start.ToDateTime() && tutorialEndDateTime <= x.End.ToDateTime());
+                    });
+                } 
+                else 
+                { 
 
-                    if (isSlotAvailable) {
+                    var availableStartTime = scheduleInfo.WorkingHours.StartTime.Value.Hour;
+                    var availableEndTime = scheduleInfo.WorkingHours.EndTime.Value.Hour;
 
-                        tutorialTimeSlots.Add(new TutorialTimeSlot()
+                    var availableStartDateTime = startDate.AddHours(availableStartTime);
+                    var availableEndDateTime = startDate.AddHours(availableEndTime);
+                    var tutorialMinutes = 0;
+
+                    while (true)
+                    {
+                        var tutorialStartDateTime = availableStartDateTime.AddMinutes(tutorialMinutes);
+                        var tutorialEndDateTime = availableStartDateTime.AddMinutes(tutorialMinutes + tutorialDuration);
+
+                        if (tutorialEndDateTime > availableEndDateTime)
                         {
-                            StartTimeHours = tutorialStartDateTime.Hour,
-                            StartTimeMinutes = tutorialStartDateTime.Minute,
-                            EndTimeHours = tutorialEndDateTime.Hour,
-                            EndTimeMinutes = tutorialEndDateTime.Minute
-                        });
-                    
-                    }
+                            //NOTE: Tutorial goes past working hours
+                            break;
+                        }
 
-                    tutorialMinutes += tutorialDuration;
+                        var isSlotAvailable = !scheduleInfo.ScheduleItems.Any(x => tutorialStartDateTime >= x.Start.ToDateTime() && tutorialEndDateTime <= x.End.ToDateTime());
+
+                        if (isSlotAvailable)
+                        {
+
+                            tutorialTimeSlots.Add(new TutorialTimeSlot()
+                            {
+                                StartTimeHours = tutorialStartDateTime.Hour,
+                                StartTimeMinutes = tutorialStartDateTime.Minute,
+                                EndTimeHours = tutorialEndDateTime.Hour,
+                                EndTimeMinutes = tutorialEndDateTime.Minute
+                            });
+
+                        }
+
+                        tutorialMinutes += tutorialDuration;
+
+                    }
 
                 }
 
@@ -495,7 +513,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         {
                             new ErrorResponse()
                             {
-                                Message = ex.Message
+                                Message = ex.Message + ex.StackTrace
                         }
                     };
 
@@ -1419,12 +1437,25 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         {
             try
             {
+                //TODO: where we are changing a stripe subscription we will need to cancel on Strpe at the same time.
+                var subscriptionType = await db.SubscriptionType.FirstAsync(x => x.Id == request.SubscriptionTypeId);
 
                 ICustomer customer;
 
                 if (User.Identity.IsAuthenticated) { 
 
                     customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
+
+                    var didChangeWithoutCharge = await ChangeSubscriptionIfNoExtraCharge(subscriptionType);
+
+                    if(didChangeWithoutCharge)
+                    {
+                        return new CreateCustomerPayemntSessionResponse
+                        {
+                            SessionId = "NOCHARGE",
+                        };
+                    }
+
                 }
                 else
                 {
@@ -1441,7 +1472,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     customer = register.Customer;
                 }
 
-                var subscriptionType = await db.SubscriptionType.FirstAsync(x => x.Id == request.SubscriptionTypeId);
+               
 
                 var options = new SessionCreateOptions
                 {
@@ -1512,6 +1543,35 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
 
             }
+
+        }
+
+        async Task<bool> ChangeSubscriptionIfNoExtraCharge(SubscriptionType subscriptionType)
+        {
+            var validSubscriptions = await Subscriptions();
+
+            if (validSubscriptions.Content.Count > 0)
+            {
+                var currentSubscription = validSubscriptions.Content[0];
+
+                if (
+                    currentSubscription.SubscriptionTypeId == 102 && subscriptionType.Id == 104 ||
+                    currentSubscription.SubscriptionTypeId == 104 && subscriptionType.Id == 102 ||
+                    currentSubscription.SubscriptionTypeId == 2 && subscriptionType.Id == 104 ||
+                    currentSubscription.SubscriptionTypeId == 3 && subscriptionType.Id == 102)
+                {
+                    currentSubscription.SubscriptionType = subscriptionType;
+                    currentSubscription.DateModified = DateTime.UtcNow;
+                    currentSubscription.ModifiedUserId = _adminUserId;
+                    db.Entry(currentSubscription).State = EntityState.Modified;
+                    await db.SaveChangesAsync();
+                    return true;
+
+                }
+
+            }
+
+            return false;
 
         }
 
@@ -1960,6 +2020,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             } 
             else
             {
+                //TODO: where we are changing a stripe subscription we will need to cancel on Strpe at the same time.
+
                 //TODO we should do a change subscription first
                 var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
              

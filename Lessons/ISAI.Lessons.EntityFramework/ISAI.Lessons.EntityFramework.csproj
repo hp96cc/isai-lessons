@@ -343,6 +343,14 @@
     <Compile Include="Migrations\202502020809114_Added Suject to Tutorial.Designer.cs">
       <DependentUpon>202502020809114_Added Suject to Tutorial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503051008047_Tutor Subject User.cs" />
+    <Compile Include="Migrations\202503051008047_Tutor Subject User.Designer.cs">
+      <DependentUpon>202503051008047_Tutor Subject User.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503051031205_Tutor Subject User 2.cs" />
+    <Compile Include="Migrations\202503051031205_Tutor Subject User 2.Designer.cs">
+      <DependentUpon>202503051031205_Tutor Subject User 2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -425,6 +433,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502020809114_Added Suject to Tutorial.resx">
       <DependentUpon>202502020809114_Added Suject to Tutorial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503051008047_Tutor Subject User.resx">
+      <DependentUpon>202503051008047_Tutor Subject User.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503051031205_Tutor Subject User 2.resx">
+      <DependentUpon>202503051031205_Tutor Subject User 2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

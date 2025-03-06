@@ -50,7 +50,8 @@ namespace ISAI.Lessons.EntityFramework.Services
         {
             GraphServiceClient graphClient = GetAuthenticatedClient();
 
-            if (addressCC == null) addressBCC = new List<string>();
+            if (addressCC == null) addressCC = new List<string>();
+            if (addressBCC == null) addressBCC = new List<string>();
             if (addressReplyTo == null) addressReplyTo = new List<string>();
 
             var message = new Message

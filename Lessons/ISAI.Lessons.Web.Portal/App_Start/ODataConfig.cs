@@ -2,6 +2,7 @@
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Builder;
 using ISAI.Lessons.EntityFramework.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ISAI.Lessons.Web.Portal.App_Start
 {
@@ -26,6 +27,10 @@ namespace ISAI.Lessons.Web.Portal.App_Start
             builder.EntitySet<Subscription>("Subscriptions");
             builder.EntitySet<SubscriptionCode>("SubscriptionCodes");
             builder.EntitySet<SubscriptionType>("SubscriptionTypes");
+            builder.EntitySet<User>("Users");
+            builder.EntitySet<TutorialSubject>("TutorialSubjects");
+            builder.EntitySet<IdentityRole>("Roles");
+            builder.EntitySet<TutorialSubjectTutorUser>("TutorialSubjectTutorUsers");
 
             config.MapODataServiceRoute(
                 routeName: "odata",
@@ -34,7 +39,6 @@ namespace ISAI.Lessons.Web.Portal.App_Start
 
 
             ODataModelBuilder builderReports = new ODataConventionModelBuilder();
-            //builderReports.EntitySet<Reports.Models.OrderLineReport>("OrderLineReports");
 
             config.MapODataServiceRoute(
                 routeName: "odatareports",

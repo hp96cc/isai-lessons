@@ -603,12 +603,15 @@
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\ODataReports\BaseODataReportController.cs" />
+    <Compile Include="Controllers\OData\RolesController.cs" />
+    <Compile Include="Controllers\OData\TutorialSubjectsController.cs" />
     <Compile Include="Controllers\OData\SubscriptionCodesController.cs" />
     <Compile Include="Controllers\OData\SubscriptionTypesController.cs" />
     <Compile Include="Controllers\OData\SubscriptionsController.cs" />
     <Compile Include="Controllers\OData\LessonController.cs" />
     <Compile Include="Controllers\OData\LessonGroupsController.cs" />
     <Compile Include="Controllers\OData\CustomersController.cs" />
+    <Compile Include="Controllers\OData\TutorialSubjectTutorUsersController.cs" />
     <Compile Include="Controllers\OData\UsersController.cs" />
     <Compile Include="Controllers\OData\GenericController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -2838,6 +2841,7 @@
     <Content Include="Scripts\views\app-index.js" />
     <Content Include="Scripts\views\subscriptioncode-index.js" />
     <Content Include="Scripts\views\subscription-index.js" />
+    <Content Include="Scripts\views\user-index.js" />
     <Content Include="Upload\holder.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -2882,9 +2886,6 @@
     <Content Include="Views\Shared\_Navigation.cshtml" />
     <Content Include="Views\Shared\_TopNavbar.cshtml" />
     <Content Include="Views\Shared\_LayoutPreLogin.cshtml" />
-    <Content Include="Views\User\Create.cshtml" />
-    <Content Include="Views\User\Delete.cshtml" />
-    <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Account\ActivateAccount.cshtml" />
     <Content Include="Views\Account\ActivateAccountConfirmation.cshtml" />
@@ -2916,6 +2917,7 @@
     <Folder Include="Content\css\plugins\NewFolder1\" />
     <Folder Include="Docs\" />
     <Folder Include="Temp\Download\" />
+    <Folder Include="Views\TutorialSubjectTutorUsers\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

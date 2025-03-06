@@ -12,6 +12,7 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string TutorUserId { get; set; }
 
+        [InverseProperty("TutorialSubjectTutorUsers")]
         [ForeignKey("TutorUserId")]
         public User TutorUser { get; set; }
     }

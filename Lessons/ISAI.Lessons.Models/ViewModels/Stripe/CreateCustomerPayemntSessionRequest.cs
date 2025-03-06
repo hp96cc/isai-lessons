@@ -15,5 +15,8 @@ namespace ISAI.Lessons.EntityFramework.ViewModels
         public string CancelUrl { get; set; }
 
 
+        [JsonProperty("isSubscriptionChange")]
+        public bool IsSubscriptionChange { get; set; }
+
     }
 }
