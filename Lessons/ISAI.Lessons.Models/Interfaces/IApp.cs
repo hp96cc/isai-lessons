@@ -16,5 +16,9 @@
         string TutorialStripPriceId20Minutes { get; set; }
         string TutorialStripPriceId40Minutes { get; set; }
         string TutorialStripPriceId60Minutes { get; set; }
+
+        decimal TutorialStripApplicationFee20Minutes { get; set; }
+        decimal TutorialStripApplicationFee40Minutes { get; set; }
+        decimal TutorialStripApplicationFee60Minutes { get; set; }
     }
 }

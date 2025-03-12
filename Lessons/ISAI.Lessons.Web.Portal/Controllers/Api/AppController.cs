@@ -341,7 +341,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     var tutors = await db.TutorialSubjectTutorUser
                         .Include(x => x.TutorUser)
                         .Include(x => x.TutorialSubject)
-                        .Where(x => x.TutorUser.Deleted == false && x.TutorialSubjectId == request.TutorialSubjectId)
+                        .Where(x => x.TutorUser.Deleted == false && x.TutorialSubjectId == request.TutorialSubjectId && x.TutorUser.TutorStripeId != null && x.TutorUser.TutorStripeId.Length > 5)
                         .Select(x => new Tutor()
                         {
                             Id = x.TutorUser.Id,
@@ -480,7 +480,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             break;
                         }
 
-                        var isSlotAvailable = !scheduleInfo.ScheduleItems.Any(x => tutorialStartDateTime >= x.Start.ToDateTime() && tutorialEndDateTime <= x.End.ToDateTime());
+                        var isSlotAvailable = !scheduleInfo.ScheduleItems.Any(x =>
+                            (tutorialStartDateTime < x.End.ToDateTime() &&
+                            x.Start.ToDateTime() < tutorialEndDateTime));
+
 
                         if (isSlotAvailable)
                         {
@@ -652,20 +655,24 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 };
 
                 string tutorialPriceId;
+                decimal tutorialFee;
 
                 switch (tutorialDuration)
                 {
                     case 20:
                         tutorial.TutorialCost = customer.App.TutorialCost20Minutes;
                         tutorialPriceId = customer.App.TutorialStripPriceId20Minutes;
+                        tutorialFee = customer.App.TutorialStripApplicationFee20Minutes;
                         break;
                     case 40:
                         tutorial.TutorialCost = customer.App.TutorialCost40Minutes;
                         tutorialPriceId = customer.App.TutorialStripPriceId40Minutes;
+                        tutorialFee = customer.App.TutorialStripApplicationFee40Minutes;
                         break;
                     case 60:
                         tutorial.TutorialCost = customer.App.TutorialCost60Minutes;
                         tutorialPriceId = customer.App.TutorialStripPriceId60Minutes;
+                        tutorialFee = customer.App.TutorialStripApplicationFee60Minutes;
                         break;
                     default:
                         throw new Exception("Invalid Tutorial Duration");
@@ -694,6 +701,15 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             Quantity = 1,
                         },
                     },
+                    PaymentIntentData = new SessionPaymentIntentDataOptions
+                    {
+                        ApplicationFeeAmount = Convert.ToInt32(tutorialFee),
+                        TransferData = new SessionPaymentIntentDataTransferDataOptions
+                        {
+                            Destination = tutor.TutorStripeId,
+                        },
+                        TransferGroup = "TUTORIAL",
+                    }
                 };
                 var service = new SessionService(this.client);
                 var session = await service.CreateAsync(options);
@@ -1494,6 +1510,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             Quantity = 1,
                         },
                     },
+                    
                 };
                 var service = new SessionService(this.client);
 
@@ -1887,7 +1904,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             .Include(x => x.Customer)
                             .FirstAsync(x => x.Id == tutorialId);
                
-
                         tutorial.HasCompletedCheckout = true;
                         tutorial.PendingEmailConfirmationTutor = true;
                         tutorial.PendingEmailConfirmationUser = true;
@@ -2023,10 +2039,14 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 //TODO: where we are changing a stripe subscription we will need to cancel on Strpe at the same time.
 
                 //TODO we should do a change subscription first
-                var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
-             
-                if (subscription != null)
+                var subscriptions = await Subscriptions();
+
+                if(subscriptions.Content != null && subscriptions.Content.Count > 0)
                 {
+                    //shoudl we ever update a subscription or just create a new one?
+                    var subscriptionId = subscriptions.Content[0].Id;
+                    var subscription = await db.Subscription.FirstOrDefaultAsync(x => x.CustomerId == customer.Id && x.Deleted == false);
+
                     subscription.Name = subscriptionType.Name;
                     subscription.Active = false;
                     subscription.StartDate = DateTime.UtcNow;
@@ -2040,7 +2060,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 }
                 else
                 {
-                    subscription = new Subscription()
+                    var subscription = new Subscription()
                     {
                         Name = subscriptionType.Name,
                         CustomerId = customer.Id,
@@ -2055,9 +2075,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     };
 
                     db.Subscription.Add(subscription);
+                    db.Entry(subscription).State = EntityState.Added;
 
                 }
 
+                //TODO: what is change subscription fails?
                 customer.HasCompletedCheckout = false;
                 customer.DateModified = DateTime.UtcNow;
                 customer.ModifiedUserId = _adminUserId;

@@ -45,6 +45,10 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public bool IsTutor { get; set; }
 
+        public string TutorEmail { get; set; }
+
+        public string TutorStripeId { get; set; }
+
         public string AllowedTutorialSubjectTutorUserJson { get; set; }
 
         public DateTime DateCreated { get; set; }

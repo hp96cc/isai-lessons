@@ -351,6 +351,14 @@
     <Compile Include="Migrations\202503051031205_Tutor Subject User 2.Designer.cs">
       <DependentUpon>202503051031205_Tutor Subject User 2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503121326487_Add Support for Stripe Application fee.cs" />
+    <Compile Include="Migrations\202503121326487_Add Support for Stripe Application fee.Designer.cs">
+      <DependentUpon>202503121326487_Add Support for Stripe Application fee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503121329489_Add Support for Stripe Application fee 2.cs" />
+    <Compile Include="Migrations\202503121329489_Add Support for Stripe Application fee 2.Designer.cs">
+      <DependentUpon>202503121329489_Add Support for Stripe Application fee 2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -439,6 +447,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503051031205_Tutor Subject User 2.resx">
       <DependentUpon>202503051031205_Tutor Subject User 2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503121326487_Add Support for Stripe Application fee.resx">
+      <DependentUpon>202503121326487_Add Support for Stripe Application fee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503121329489_Add Support for Stripe Application fee 2.resx">
+      <DependentUpon>202503121329489_Add Support for Stripe Application fee 2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

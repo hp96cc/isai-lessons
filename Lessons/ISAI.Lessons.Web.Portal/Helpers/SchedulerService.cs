@@ -124,7 +124,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                             htmlBody = AddDataToEmail(htmlBody, tutorial);
 
                             var graphApi = new MicrosoftGraphApiService();
-                            graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { tutorUser.Email }, null, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
+                            graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { tutorUser.Email, tutorUser.TutorEmail }, null, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
 
                             tutorial.PendingEmailConfirmationTutor = false;
                             tutorial.DateModified = DateTime.UtcNow;

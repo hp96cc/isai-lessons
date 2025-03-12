@@ -79,6 +79,8 @@ class UserDataManagerAdaptor extends ej.data.ODataV4Adaptor {
         userPatch.Role = value.Role;
         userPatch.Email = value.Email;
         userPatch.Position = value.Position;
+        userPatch.TutorStripeId = value.TutorStripeId;
+        userPatch.TutorEmail = value.TutorEmail;
 
         return {
             type: 'PATCH',
@@ -98,6 +100,8 @@ class UserDataManagerAdaptor extends ej.data.ODataV4Adaptor {
         userPost.Role = value.Role;
         userPost.Email = value.Email;
         userPost.Position = value.Position;
+        userPost.TutorStripeId = value.TutorStripeId;
+        userPost.TutorEmail = value.TutorEmail;
 
 
         return {
@@ -227,6 +231,52 @@ function InituserGrid() {
 
             },
 
+            {
+                field: 'Email',
+                headerText: 'Email',
+            },
+
+            {
+                field: 'Position',
+                headerText: 'Position',
+            },
+
+            {
+                field: 'Role',
+                headerText: 'User Role',
+                edit: {
+                    create: function ()
+                    {
+                        roleDropDownElement = document.createElement('input');
+                        return roleDropDownElement;
+                    },
+                    read: function ()
+                    {
+                        return roleDropDown.value;
+                    },
+                    destroy: function ()
+                    {
+                        roleDropDown.destroy();
+                    },
+                    write: function (args)
+                    {
+
+                        roleDropDown = new ej.dropdowns.DropDownList({
+                            value: args.rowData.Role,
+                            popupHeight: '300px',
+                            floatLabelType: 'Always',
+                            dataSource: rolesDataManager,
+                            fields: { text: 'Name', value: 'Name' },
+                            placeholder: 'Role',
+
+                        });
+
+                        roleDropDown.appendTo(roleDropDownElement);
+                    }
+                }
+            },
+
+
 
             {
 
@@ -293,47 +343,19 @@ function InituserGrid() {
 
 
             {
-                field: 'Email',
-                headerText: 'Email',
+                field: 'TutorStripeId',
+                headerText: 'Stripe Account Id',
+
             },
+
 
             {
-                field: 'Position',
-                headerText: 'Position',
+                field: 'TutorEmail',
+                headerText: 'Tuto Email',
+
             },
+            
 
-            {
-                field: 'Role',
-                headerText: 'User Role',
-                edit: {
-                    create: function () {
-                        roleDropDownElement = document.createElement('input');
-                        return roleDropDownElement;
-                    },
-                    read: function () {
-                        return roleDropDown.value;
-                    },
-                    destroy: function () {
-                        roleDropDown.destroy();
-                    },
-                    write: function (args) {
-
-                        roleDropDown = new ej.dropdowns.DropDownList({
-                            value: args.rowData.Role,
-                            popupHeight: '300px',
-                            floatLabelType: 'Always',
-                            dataSource: rolesDataManager,
-                            fields: { text: 'Name', value: 'Name' },
-                            placeholder: 'Role',
-
-                        });
-
-                        roleDropDown.appendTo(roleDropDownElement);
-                    }
-                }
-            },
-
- 
 
         ],
 

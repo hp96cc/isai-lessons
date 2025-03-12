@@ -409,6 +409,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                 }
                 else
                 {
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     throw new HttpResponseException(httpResponse.StatusCode);
                 }
             }
