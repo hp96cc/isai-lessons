@@ -1,0 +1,43 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.TutorialPaymentFailed>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png" style="background-image: url(/media/1f3fd5lm/blue-header-background.png);">
+    <div class="container">
+        <div class="page-title">
+            <h1>Payment Failed</h1>
+            <p><strong>Payment for your tutorial has failed.</strong></p>
+        </div>
+    </div>
+</section>
+
+<section class="pt-2">
+    <div class="container">
+        <div class="section-heading">
+
+            <span class="title-separator"></span>
+        </div>
+        <div class="row">
+            <div class="col text-center h3">
+
+                <p>Please contact <a href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a> for further assistance</p>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(function ()
+        {
+            HidePreloader();
+
+        });
+
+    </script>
+}

@@ -1,0 +1,578 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.TutorialCalendar>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+
+<!-- start page title section -->
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png">
+    <div class="container">
+        <div class="page-title">
+            <h1>Book Your Session</h1>
+            <div class="page-link">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="javascript:void(0)">Book Your Session</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title section -->
+<!-- start service details section -->
+<section class="pb-2">
+    <div class="container">
+
+  
+        <div id="account-panel">
+
+            <div class="row align-items-top">
+
+
+                <div class="col-md-5 col-s-12 p-2">
+
+                    <h4>Select Education Stage</h4>
+
+
+                    <select id="select-tutorial-tutorialsubjectgroup" onchange="GetTutorialSubjects()" class="form-control form-control-md mb-4">
+                    </select>
+
+                    <h4>Select Subject Area</h4>
+
+                    <select id="select-tutorial-tutorialsubject" onchange="GetTutors()" class="form-control form-control-md mb-4">
+                    </select>
+
+                    <h4>Select Tutor</h4>
+
+                    <select id="select-tutorial-tutor" class="form-control form-control-md mb-4" onchange="GetTimeslots();">
+                    </select>
+
+
+                    <h4>Select Tutorial Duration</h4>
+
+
+                    <select id="select-tutorial-duration" class="form-control form-control-md mb-4" onchange="ChangeTutorialDuration(this)">
+                        <option value="20">20 minutes</option>
+                        <option value="40" selected>40 minutes</option>
+                        <option value="60">60 minutes</option>
+                    </select>
+
+                    <h4>Tutorial Notes</h4>
+                    <p>Please add some notes as to where you need help. This allows the tutor to understand what you are struggling with and need support on.</p>
+
+
+                    <textarea id="textarea-tutorial-notes" rows="4"></textarea>
+
+
+
+                </div>
+                <div class="col-md-7 col-s-12 p-2">
+                    <h4>Select a Date</h4>
+                    <div id="Calendar"></div>
+
+                    <div id="tutorial-availability">
+
+
+                        <h4 class="mb-3 mt-3">Pick a time slot</h4>
+                        <div class="overflow-auto" style="max-height:400px">
+
+                            <div id="timeslots"></div>
+
+
+                        </div>
+
+
+                        </div>
+
+                        <div id="tutorial-noavailability">
+
+                            <h4 class="mb-3 mt-3">No Availailability</h4>
+
+                            <p>Sorry, we have no availability for the option you have chosen. Please try a different date or tutor.</p>
+                            <p>If you require an urgent Tutor please email <a class="text-color-sky" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a> and we wil do our best to find you one.</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="row align-items-top">
+                <div class="col-12 mt-4 d-none" id="tutorial-booking-summary">
+
+                    <h4>Tutorial Booking Summary</h4>
+
+                    <p class="fs-5">
+                        You are booking a <strong id="tutorial-duration-text"></strong> minute long tutorial on
+                        <strong id="tutorial-date-text"> Monday 5th December</strong>
+                        <br />from <strong id="tutorial-start-text">14:00</strong> to <strong id="tutorial-end-text">14:00</strong><br />
+                        Total Cost: <strong>£<span id="tutorial-cost-text">40.00</span> </strong>
+
+                    </p>
+
+                    <button type="button" onclick="ShowConfirmTutorialDialog();" class="butn medium sky btn-lg btn-block p-2">Book A Tutor</button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+</section>
+
+
+<div class="modal fade" id="confirmTutorialModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmTutorialModalLabel">Confirm Tutorial</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <p>
+                    You are requesting a <strong id="tutorial-duration-text-modal"></strong> minute tutorial on:<br />
+                    <strong id="tutorial-date-text-modal"></strong> <br />
+                    from  <strong id="tutorial-start-text-modal">00:00</strong> to <strong id="tutorial-end-text-modal">00:00</strong>
+                    <br />Total Cost: <strong>£<span id="tutorial-cost-text-modal">40.00</span> </strong>
+                </p>
+                <p>To confirm this please click 'Proceed to Purchase' below or click 'No' to choose another time.</p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="GoToPurchase();">Proceed to Purchase</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Head {
+
+    <link href="https://cdn.syncfusion.com/ej2/28.1.33/material.css" rel="stylesheet" type="text/css" />
+
+    <style>
+
+        .calendarWidth {
+            max-width: 600px;
+        }
+    </style>
+
+}
+
+@section Scripts {
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.syncfusion.com/ej2/28.1.33/dist/ej2.min.js" type="text/javascript"></script>
+
+    <script>
+        ej.base.registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH1fd3VXRmlcVUJ1Vko=');
+    </script>
+
+    <script>
+
+        const optionsDate = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        const optionsTime = { hour12: false, hour: '2-digit', minute: '2-digit' };
+        const secondsPerDay = 86400;
+        const baseReturnUrl = "https://localhost:44306/";  //TODO: move to api controller
+        const buttonTimeSlotClass = "timeslotbutton butn sky btn-block p-2 mb-2";
+
+        var selectedLessonId = @(string.IsNullOrEmpty(Request.QueryString["lessonId"]) ? "null" : Request.QueryString["lessonId"]);
+
+        var startTime;
+        var endTime;
+        var calendar;
+        var tutorialDuration = 40;
+        var selectedTutorialSubjectId
+        var costPerTimeSlot;
+        var today = new Date(new Date().setHours(0, 0, 0, 0));
+        var minDate = new Date(today);
+        minDate.setDate(minDate.getDate() + 1);
+        var maxDate = new Date(today);
+        maxDate.setDate(maxDate.getDate() + 15);
+
+
+        $(document).ready(function ()
+        {
+            calendar = new ej.calendars.Calendar({
+                min: minDate,
+                max: maxDate,
+                value: minDate,
+                cssClass: 'calendarWidth',
+                change: function (args)
+                {
+                    GetTimeslots();
+                }
+            });
+
+            calendar.appendTo('#Calendar');
+
+            CheckSubscription();
+
+        });
+
+
+        async function CheckSubscription()
+        {
+            try { 
+
+            var data = await lessonsApp.subscription();
+
+            ShowPreloader();
+
+                if (data)
+                {
+                    if (data.Status == 0)
+                    {
+                        GetTutorialSubjectGroups();
+                    }
+                    else if (data.ErrorResponse)
+                    {
+                        //TODO: add better error handling for this
+                        location.replace('/account/subscriptions');
+                        return;
+                    }
+
+                }
+
+            }
+            catch (ex)
+            {
+
+                HidePreloader();
+                alert("Check Subscription Error: " + ex.message);
+            }
+        }
+
+        async function GetTutorialSubjectGroups()
+        {
+            ShowPreloader();
+
+            try
+            {
+
+                var data = await lessonsApp.tutorialSubjectGroups();
+
+                if (!data || data.Status !== 0)
+                {
+                    throw new Error('GetTutorialSubjectGroups failed');
+                }
+                else
+                {
+                    DisplayTutorialSubjectGroups(data.Content.TutorialSubjectGroups);
+
+
+                    return;
+                }
+
+            }
+            catch (ex)
+            {
+            
+                HidePreloader();
+                alert("GetTutorialSubjectGroups Error: " + ex.message);
+            }
+
+
+        }
+
+        async function GetTutorialSubjects()
+        {
+            ShowPreloader();
+
+            var request = {
+                TutorialGroupId: parseInt($("#select-tutorial-tutorialsubjectgroup").children("option:selected").val())
+            }
+
+            var data = await lessonsApp.tutorialSubjects(request);
+
+            try
+            {
+                if (!data || data.Status !== 0)
+                {
+                    throw new Error('GetTutorialSubjects failed');
+                }
+                else
+                {
+                    DisplayTutorialSubjects(data.Content.TutorialSubjects);
+
+                    return;
+                }
+
+            } catch (ex)
+            {
+                HidePreloader();
+                alert("GetTutorialSubjects Error: " + ex.message);
+            }
+
+        }
+
+        function DisplayTutorialSubjectGroups(tutorialSubjectGroups)
+        {
+            tutorialSubjectGroups.forEach(x => $("#select-tutorial-tutorialsubjectgroup").append(new Option(x.Name, x.Id)))
+            GetTutorialSubjects();
+        }
+
+
+
+        function DisplayTutorialSubjects(tutorialSubjects)
+        {
+            $("#select-tutorial-tutorialsubject").find("option").remove().end();
+            tutorialSubjects.forEach(x => $("#select-tutorial-tutorialsubject").append(new Option(x.Name, x.Id)))
+            GetTutors();
+        }
+
+        async function GetTutors()
+        {
+
+            try
+            {
+
+                ShowPreloader();
+
+                selectedTutorialSubjectId = parseInt($("#select-tutorial-tutorialsubject").children("option:selected").val());
+
+                var request = {
+                    TutorialSubjectId: selectedTutorialSubjectId
+                }
+
+                var data = await lessonsApp.tutors(request);
+
+         
+         
+                if (!data || data.Status !== 0)
+                {
+                    throw new Error('GetTutors failed');
+                }
+                else
+                {
+                    DisplayTutors(data.Content.Tutors);
+
+                    return;
+                }
+
+            } catch (ex)
+            {
+                HidePreloader();
+                alert("GetTutors Error: " + ex.message);
+            }
+
+
+        }
+
+        function DisplayTutors(tutors)
+        {
+            $("#select-tutorial-tutor").find("option").remove().end();
+            tutors.forEach(x => $("#select-tutorial-tutor").append(new Option(x.Name, x.Id)));
+            GetTimeslots();
+        }
+
+
+        async function GetTimeslots()
+        {
+            $('#tutorial-booking-summary').hide(); 
+
+            ShowPreloader();
+
+            var tutorId = $("#select-tutorial-tutor").children("option:selected").val();
+            selectedTutorId = tutorId;
+            var tutorialDate = calendar.value;
+            tutorialDuration = parseInt($("#select-tutorial-duration").children("option:selected").val());
+
+            var request = {
+                TutorId: tutorId,
+                TutorialDate: tutorialDate,
+                TutorialDuration: tutorialDuration
+            };
+
+            var data = await lessonsApp.tutorialTimeslots(request);
+
+            try
+            {
+                if (!data || data.Status !== 0)
+                {
+                    throw new Error('GetTimeslots failed');
+                }
+                else
+                {
+                    costPerTimeSlot = data.Content.CostPerTimeSlot;
+                    DisplayTimeslots(data.Content.TutorialTimeSlots);
+                    return;
+                }
+
+            } catch (ex)
+            {
+                HidePreloader();
+                alert("GetTimeslots Error: " + ex.message);
+            }
+
+
+        }
+
+        function DisplayTimeslots(timeslots)
+        {
+
+            $("#timeslots").hide();
+            $("#tutorial-noavailability").hide();
+            $("#tutorial-availability").hide();
+
+            if (timeslots.length > 0)
+            {
+                $("#timeslots").empty();
+                timeslots.forEach(x => $("#timeslots").append('<button type="button" onclick="ShowTutorialSummary(this, ' + x.StartTimeHours + ', ' + x.StartTimeMinutes + ');" class="' + buttonTimeSlotClass + '">' + x.StartTimeHours.toString().padStart(2, "0") + ':' + x.StartTimeMinutes.toString().padStart(2, "0") + '</button>'));
+                $("#timeslots").show();
+                $("#tutorial-availability").show();
+            }
+            else
+            {
+                $("#tutorial-noavailability").show();
+            }
+
+            isFirstLoad = false;
+            HidePreloader();
+        }
+
+        function addDays(date, days)
+        {
+            const newDate = new Date(date);
+            newDate.setDate(date.getDate() + days);
+            return newDate;
+        }
+
+        function ShowTutorialSummary(sender, startHours, startMinutes)
+        {
+
+            Array.from(document.querySelectorAll('.timeslotbutton')).forEach(
+                (el) => el.classList.remove('pink')
+            );
+
+            sender.classList.add('pink');
+
+            this.startTime = calendar.value;
+            this.startTime.setHours(startHours);
+            this.startTime.setMinutes(startMinutes);
+
+            this.endTime = new Date(startTime.getTime() + tutorialDuration * 60000)
+
+            $('#tutorial-duration-text').text(tutorialDuration);
+            $('#tutorial-start-text').text(startTime.toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-end-text').text(endTime.toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-date-text').text(startTime.toLocaleDateString('en-GB', optionsDate));
+            $('#tutorial-cost-text').text(costPerTimeSlot.toFixed(2));
+
+            $('#tutorial-duration-text-modal').text(tutorialDuration);
+            $('#tutorial-start-text-modal').text(startTime.toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-end-text-modal').text(endTime.toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-date-text-modal').text(startTime.toLocaleDateString('en-GB', optionsDate));
+            $('#tutorial-cost-text-modal').text(tutorialDuration);
+
+            $('#tutorial-booking-summary').removeClass("d-none").show();
+        }
+
+        function ShowConfirmTutorialDialog()
+        {
+            $('#confirmTutorialModal').modal('show');
+        }
+
+        async function GoToPurchase()
+        {
+            try
+            {
+
+                ShowPreloader();
+
+                var request =
+                {
+                    lessonId: selectedLessonId,
+                    tutorId: selectedTutorId,
+                    tutorialSubjectId: selectedTutorialSubjectId,
+                    dateTimeStart: this.startTime.toJSON(),
+                    dateTimeEnd: this.endTime.toJSON(),
+                    customerNotes: $('#textarea-tutorial-notes').val()
+                };
+
+                var data = await lessonsApp.tutorialPurchase(request);
+
+
+
+                if (data !== null && data.Content.SessionId !== null)
+                {
+                    var stripe = Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');
+                    //var stripe = Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');
+                    stripe.redirectToCheckout({
+                        sessionId: data.Content.SessionId
+                    }).then(handleResult);
+
+
+                    return;
+
+                } else
+                {
+
+                    if (data === null)
+                    {
+                        errorHTML = 'Could not create session. Please contact support';
+                    }
+                    else if (data.Errors.length > 0)
+                    {
+
+                        errorHTML += '<ul>';
+
+                        data.Errors.forEach(function (item)
+                        {
+                            errorHTML += '<li>' + item + '</li>';
+                        });
+
+                        errorHTML += '</ul>';
+                    }
+                    else if (data.Errors.length === 1)
+                    {
+                        errorHTML = data.Errors[0];
+                    }
+                    else
+                    {
+                        errorHTML = 'Could not create session. Please contact support';
+                    }
+
+                    alert(errorHTML);
+
+                }
+
+                HidePreloader();
+
+             }
+             catch (ex)
+            {
+
+                HidePreloader();
+                alert("GoToPurchase Error: " + ex.message);
+            }
+
+        }
+
+        async function ChangeTutorialDuration()
+        {
+            await GetTimeslots();
+        }
+
+        var handleResult = function (result)
+        {
+            if (result.error)
+            {
+                alert(result.error.message);
+                HidePreloader();
+            }
+        };
+
+    </script>
+
+}

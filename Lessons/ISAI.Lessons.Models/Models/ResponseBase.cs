@@ -27,9 +27,9 @@ namespace ISAI.Lessons.Models.Models
     public class ErrorResponse
     {
         public ErrorCode Code { get; set; }
-        public String Message { get; set; }
-        public String SessionId { get; set; }
-        public String ErrorDescription { get; set; }
+        public string Message { get; set; }
+        public string SessionId { get; set; }
+        public string ErrorDescription { get; set; }
     }
 
 }

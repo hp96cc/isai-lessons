@@ -32,30 +32,23 @@
 <section class="p-0">
     <div class="container">
 
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border mb-10" role="status" id="spinner-loading">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
 
-                <div class="row" id="account-panel" style="display:none;">
-                    <div class="col-12 col-md-3">
+                <div class="row" id="account-panel">
+                    <div class="col-3">
 
                         <!-- Nav -->
                         @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "devices" } })
 
 
                     </div>
-                    <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                    <div class="col-9">
                         <div class="row">
 
                           
-                                <div class="col-12 text-center">
+                                <div class="col-12">
 
                                     <!-- Heading -->
-                                    <h3 class="mb-10 mt-3">My Devices</h3>
+                                    <h3 class="mb-10">My Devices</h3>
                                     <p>The table below shows your registered devices. You can register up to 2 devices at any one time.</p>
 
 
@@ -117,19 +110,7 @@
                                 </p>
 
                             </div>
-                            <!--<div class="col-3">-->
-
-                                <!-- Heading -->
-                                <!--<h6 class="heading-xxxs text-muted">Date Registered:</h6>-->
-
-                                <!-- Text -->
-                                <!--<p class="mb-lg-0 font-size-sm font-weight-bold">
-                                    <time datetime="2019-09-07">
-                                        {{DateCreated}}
-                                    </time>
-                                </p>
-
-                            </div>-->
+                   
                             <div class="col-2 float-right">
 
                  
@@ -161,23 +142,23 @@
 
             GetDevices();
          
-
         });
 
 
         async function GetDevices() {
 
-            $('#account-panel').hide();
-            $('#spinner-loading').show();
 
             var data = await lessonsApp.getCustomerDevices();
 
             if (!data) {
                 lessonsApp.logout();
             }
-            else if (data.Status !== 0) {
+            else if (data.Status !== 0) 
+            {
                 location.href = '/account/'
-            } else {
+            }
+            else
+            {
                 devices = data.Content;
                 DisplayDevices();
             }
@@ -201,8 +182,7 @@
 
             $('#device-list').html(itemListHTML);
 
-            $('#account-panel').show();
-            $('#spinner-loading').hide();
+            HidePreloader();
 
 
         }
@@ -218,17 +198,18 @@
         async function DeleteDevice() {
 
 
-            $('#account-panel').hide();
-            $('#spinner-loading').show();
+            ShowPreloader()
 
             var data = await lessonsApp.deleteCustomerDevice({ Id: deleteDeviceId});
 
             if (!data) {
                 lessonsApp.logout();
             }
-            else if (data.Status !== 0) {
+            else if (data.Status !== 0) 
+            {
                 location.href = '/account/'
             } else {
+
                 GetDevices();
             }
 

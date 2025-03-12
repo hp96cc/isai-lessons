@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -6,7 +8,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class User : IdentityUser, Lessons.Models.Interfaces.IUser
+    public class User : IdentityUser,  IUser
     {
 
         public User()
@@ -41,6 +43,14 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public bool Deleted { get; set; }
 
+        public bool IsTutor { get; set; }
+
+        public string TutorEmail { get; set; }
+
+        public string TutorStripeId { get; set; }
+
+        public string AllowedTutorialSubjectTutorUserJson { get; set; }
+
         public DateTime DateCreated { get; set; }
 
         public DateTime DateModified { get; set; }
@@ -49,7 +59,9 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string CreatedBy { get; set; }
 
-      
+
+        [InverseProperty("TutorUser")]
+        public virtual List<TutorialSubjectTutorUser> TutorialSubjectTutorUsers { get; set; }
 
     }
 

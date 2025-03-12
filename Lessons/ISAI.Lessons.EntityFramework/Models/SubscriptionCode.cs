@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ISAI.Lessons.Models.Interfaces;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class SubscriptionCode : BaseModel
+    public class SubscriptionCode : BaseModel, ISubscriptionCode
     {
 
         public string IssuedTo { get; set; }

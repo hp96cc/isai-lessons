@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ISAI.Lessons.Mobile.Views.LaunchPage"
+             xmlns:vm="clr-namespace:ISAI.Lessons.Mobile.ViewModels"
+             Title="{Binding Title}"
+              
+             >
+
+    <ContentPage.Content>
+        <StackLayout Padding="20" VerticalOptions="CenterAndExpand">
+
+
+            <Image
+                    Source="logo.png"
+                    WidthRequest="250"
+                    Margin="10,50,10,50"
+                
+                    />
+
+
+            <ActivityIndicator IsRunning="true" />
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

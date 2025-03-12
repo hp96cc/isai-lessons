@@ -1,12 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using ISAI.Lessons.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class CustomerDevice : BaseModel
+    public class CustomerDevice : BaseModel, ICustomerDevice
     {
 
         public string Name { get; set; }

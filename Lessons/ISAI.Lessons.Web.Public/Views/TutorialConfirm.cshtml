@@ -1,0 +1,98 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.TutorialConfirm>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+    var sessionId = Request.QueryString["session_id"];
+}
+
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png" style="background-image: url(/media/1f3fd5lm/blue-header-background.png);">
+    <div class="container">
+        <div class="page-title">
+            <h1>Congratulations</h1>
+            <p><strong>Your tutor session is confirmed.</strong></p>
+        </div>
+    </div>
+</section>
+
+<section class="pt-2">
+    <div class="container">
+        <div class="section-heading">
+
+            <span class="title-separator"></span>
+        </div>
+        <div class="row">
+            <div class="col h4">
+
+                <p>Hi,</p>
+                <p>A tutorial session has been booked as follows:</p>
+                <p><strong>Date: <span id="tutorial-date"></span></strong><br /><strong>Time: <span id="tutorial-starttime"></span></strong><br /><strong>Duration: <span id="tutorial-duration"></span></strong><br /><strong>Cost: <span id="tutorial-cost"></span></strong><br /><br /></p>
+                <p>Please make sure you have joined your session 10 minutes before to get your notes ready.</p>
+                <p>If you don’t have a Microsoft account, Download the app <u>here</u>. <strong style="color:red;">(this needs work, its doesn't make sense - craig)</strong></p>
+                <p>Well done! Lets get learning. 💪</p>
+                <p><br />Thanks<br /><br />Scottish Online Lessons Team</p>
+
+                <p>If you have any issues, please contact <a style="text-decoration:underline" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a></p>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+
+    <script>
+
+        const optionsDate = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        const optionsTime = { hour12: false, hour: '2-digit', minute: '2-digit' };
+        var tutorial;
+
+        $(document).ready(function ()
+        {
+            GetTutorial();
+
+        });
+
+        async function GetTutorial()
+        {
+
+            ShowPreloader();
+
+            var request = {
+                StripeSessionId: '@sessionId'
+            }
+
+            var data = await lessonsApp.tutorial(request);
+
+            if (!data)
+            {
+                lessonsApp.logout();
+            }
+            else if (data.Status !== 0) 
+            {
+                location.href = '/account/'
+            }
+            else
+            {
+                tutorial = data.Content;
+                DisplayTutorial();
+            }
+
+
+        }
+
+        async function DisplayTutorial()
+        {
+
+            $('#tutorial-date').text(new Date(tutorial.DateTimeStart).toLocaleDateString('en-GB', optionsDate));
+            $('#tutorial-starttime').text(new Date(tutorial.DateTimeStart).toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-duration').text(tutorial.DurationInMinutes + ' minutes');
+            $('#tutorial-cost').text('£' + tutorial.TutorialCost);
+
+            HidePreloader();
+
+
+        }
+
+
+    </script>
+}

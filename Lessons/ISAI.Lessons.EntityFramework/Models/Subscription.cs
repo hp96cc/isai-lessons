@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using ISAI.Lessons.Models.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class Subscription : BaseModel
+    public class Subscription : BaseModel, ISubscription
     {
 
         public int CustomerId { get; set; }
@@ -23,7 +21,7 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public DateTimeOffset EndDate { get; set; }
 
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true; //TODO: check
 
         [ForeignKey("SubscriptionTypeId")]
         public SubscriptionType SubscriptionType { get; set; }

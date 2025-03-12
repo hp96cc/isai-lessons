@@ -1,0 +1,54 @@
+﻿using ISAI.Lessons.Models.Interfaces;
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ISAI.Lessons.AppModels.Models
+{
+    public class Customer : BaseModel, ICustomer
+    {
+
+        public int AppId { get; set; }
+
+        [ForeignKey("AppId")]
+        public App App { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string CompanyName { get; set; }
+
+        public string Email { get; set; }
+
+        public string Telephone { get; set; }
+
+        public bool AcceptMarketing { get; set; }
+
+        public bool HasCompletedCheckout { get; set; }
+
+        public string PostRegistrationAccessCode { get; set; }
+
+        public string StripeCustomerId { get; set; }
+
+        public bool AllowAdminOverride { get; set; }
+        public string HearAbout { get; set; }
+        public int MaxDevicesAllowed { get; set; }
+
+
+        [JsonIgnore]
+        public string PaymentSessionId { get; set; }
+
+        [JsonIgnore]
+        public string PasswordSalt { get; set; }
+
+        [JsonIgnore]
+        public string PasswordHash { get; set; }
+
+        [NotMapped]
+        public string Password { get; set; }
+
+        [NotMapped]
+        public string PasswordConfirm { get; set; }
+
+    }
+}

@@ -1,6 +1,6 @@
-﻿using ISAI.Lessons.Core.Extensions;
-using ISAI.Lessons.Models.Interfaces;
-using ISAI.Lessons.Models.Models;
+﻿using ISAI.Lessons.Models.Interfaces;
+using ISAI.Lessons.Models.Interfaces.App;
+using ISAI.Lessons.Models.Models.App;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace ISAI.Lessons.Core.Services
 {
     public class SqliteService : ISqliteService
     {
-        public const string DatabaseFilename = "Lessons_v8.db3";
+        public const string DatabaseFilename = "Lessons_v9.db3";
 
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
@@ -134,7 +134,8 @@ namespace ISAI.Lessons.Core.Services
         }
 
 
-        public async Task<VideoDownload> GetVideoDownloadForLessonAsync(int lessonId) {
+        public async Task<VideoDownload> GetVideoDownloadForLessonAsync(int lessonId)
+        {
 
             return await Database.Table<VideoDownload>().FirstOrDefaultAsync(x => x.LessonId == lessonId);
         }

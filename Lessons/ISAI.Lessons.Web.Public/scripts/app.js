@@ -4,7 +4,6 @@
     var baseUrl = '/api/lessonapp/';
     var lesson = null;
 
-
     var login = async function (username, password) {
 
         var result = false;
@@ -15,24 +14,20 @@
         });
 
         try {
-
             var data = await $.ajax({
                 url: url,
                 data: requestData,
                 type: "POST",
                 contentType: 'application/json',
             });
-
             result = true;
 
-        } catch (error) {
-
+        } catch (error) 
+        {
             console.log(error);
-
         }
 
         return result;
-
     };
 
     var getCustomer = async function () {
@@ -40,20 +35,85 @@
         var url = this.baseUrl + "customer";
 
         try {
-
             var data = await $.ajax({
                 url: url,
                 type: "POST",
                 contentType: 'application/json',
             });
 
-            //this.customer = data;
             return data;
 
-        } catch (error) {
-
+        } catch (error) 
+        {
             console.log(error);
+        }
 
+    };
+
+
+    var cancelStripeSubscription = async function ()
+    {
+
+        var url = this.baseUrl + "cancelstripesubscription";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
+    var checksession = async function ()
+    {
+
+        var url = this.baseUrl + "checksession";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
+
+    var subscription = async function ()
+    {
+
+        var url = this.baseUrl + "subscription";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
         }
 
     };
@@ -73,12 +133,185 @@
 
             return data;
 
-        } catch (error) {
-
+        } catch (error) 
+        {
             console.log(error);
-
         }
 
+    };
+
+    var tutorials = async function ()
+    {
+
+        var url = this.baseUrl + "tutorials";
+
+        try
+        {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
+    var tutorial = async function (request)
+    {
+        var url = this.baseUrl + "tutorial";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+    var tutorialSubjectGroups = async function ()
+    {
+
+        var url = this.baseUrl + "tutorialsubjectgroups";
+
+        try
+        {
+
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            return data;
+
+        } catch (error) 
+        {
+            console.log(error);
+        }
+
+    };
+
+    var tutorialSubjects = async function (request)
+    {
+        var url = this.baseUrl + "tutorialsubjects";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+    var tutorialTimeslots = async function (request)
+    {
+        var url = this.baseUrl + "tutorialtimeslots";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+
+    var tutors = async function (request)
+    {
+        var url = this.baseUrl + "tutors";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+    var tutorialCreate = async function (tutorial)
+    {
+        var url = this.baseUrl + "tutorialcreate";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(tutorial),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+
+    var tutorialPurchase = async function (tutorialPurchase)
+    {
+        var url = this.baseUrl + "tutorialpurchase";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(tutorialPurchase),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
     };
 
 
@@ -97,10 +330,10 @@
 
             return data;
 
-        } catch (error) {
-
+        }
+        catch (error) 
+        {
             console.log(error);
-
         }
 
     };
@@ -240,26 +473,6 @@
 
     };
 
-    var getSubscriptions = async function () {
-
-        var url = this.baseUrl + "subscriptions";
-
-        try {
-
-            var data = await $.ajax({
-                url: url,
-                type: "POST",
-                contentType: 'application/json',
-            });
-
-            return data;
-
-        } catch (error) {
-
-            console.log(error);
-
-        }
-    };
 
     var subscriptionPortal = async function () {
 
@@ -330,15 +543,17 @@
     };
 
 
-    var getCustomerActivity = async function () {
+    var customerActivity = async function (request) {
 
         var url = this.baseUrl + "customeractivity";
+        var requestData = JSON.stringify(request);
 
         try {
 
             var data = await $.ajax({
                 url: url,
                 type: "POST",
+                data: requestData,
                 contentType: 'application/json',
             });
 
@@ -448,9 +663,8 @@
         login: login,
         getCustomer: getCustomer,
         getLesson: getLesson,
-        getSubscriptions: getSubscriptions,
         getCustomerDevices: getCustomerDevices,
-        getCustomerActivity: getCustomerActivity,
+        customerActivity: customerActivity,
         logout: logout,
         createCustomerPaymentSession: createCustomerPaymentSession,
         subscriptionPortal: subscriptionPortal,
@@ -459,7 +673,18 @@
         sendEmail: sendEmail,
         saveCustomer: saveCustomer,
         deleteCustomerDevice: deleteCustomerDevice,
-        sendFreeTrailRequest: sendFreeTrailRequest
+        sendFreeTrailRequest: sendFreeTrailRequest,
+        tutorialCreate: tutorialCreate,
+        tutorialPurchase: tutorialPurchase,
+        checksession: checksession,
+        tutors: tutors,
+        tutorial: tutorial,
+        tutorials: tutorials,
+        tutorialTimeslots: tutorialTimeslots,
+        tutorialSubjects: tutorialSubjects,
+        tutorialSubjectGroups: tutorialSubjectGroups,
+        subscription: subscription,
+        cancelStripeSubscription: cancelStripeSubscription
 
     }
 

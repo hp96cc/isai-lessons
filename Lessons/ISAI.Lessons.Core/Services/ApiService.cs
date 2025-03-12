@@ -2,11 +2,15 @@
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
+using ISAI.Lessons.Models.Models.App;
 using ISAI.Lessons.Models.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/tutor_upgrade
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -25,22 +29,12 @@ namespace ISAI.Lessons.EntityFramework.Services
         HttpClient _httpClient;
         IAuthService _authService;
 
-        public ApiService(bool isDevelopment, IAuthService authService)
+        public ApiService(IAuthService authService, string baseUrl, string baseReturnUrl)
         {
 
             _authService = authService;
-
-            if (isDevelopment)
-            {
-                _baseUrl = "https://localhost:44392/";
-                _baseReturnUrl = "https://localhost:44306/";
-            }
-            else
-            {
-                _baseUrl = "https://app.scottishonlinelessons.com/";
-                _baseReturnUrl = "https://scottishonlinelessons/";
-            }
-
+            _baseUrl = baseUrl;
+            _baseReturnUrl = baseReturnUrl;
         }
 
 
@@ -95,6 +89,10 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature/tutor_upgrade
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
@@ -135,7 +133,11 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> feature/tutor_upgrade
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
@@ -301,7 +303,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                     BaseAddress = new Uri(_baseUrl)
 
                 };
-
+                 
                 ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -318,6 +320,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
 
         }
+
 
         private async Task<string> ParseHttpError(HttpResponseMessage httpResponse)
         {

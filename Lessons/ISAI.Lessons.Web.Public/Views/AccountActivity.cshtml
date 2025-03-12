@@ -31,31 +31,24 @@
 <section class="p-0">
     <div class="container">
 
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border mb-10" role="status" id="spinner-loading">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="row" id="account-panel" style="display:none;">
-            <div class="col-12 col-md-3">
+       
+        <div class="row" id="account-panel">
+            <div class="col-3">
 
                 <!-- Nav -->
                 @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "activity" } })
 
 
             </div>
-            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+            <div class="col-9">
                 <div class="row">
 
 
-                    <div class="col-12 text-center">
+                    <div class="col-12">
 
                         <!-- Heading -->
-                        <h3 class="mb-10 mt-3">Activity</h3>
-                        <p>The table below shows the last 7 days of activity</p>
+                        <h3 class="mb-10">Activity</h3>
+                        <p>The table below shows your viewing history</p>
 
 
 
@@ -87,31 +80,49 @@
                 <div class="card card-sm">
                     <div class="card-body bg-light">
                         <div class="row">
-                            <div class="col-7">
+                            <div class="col-6">
 
                                 <!-- Heading -->
-                                <h6 class="heading-xxxs text-muted">Lesson:</h6>
+                                <h6 class="heading-xxxs text-muted">
+                                    Lesson: {{LessonName}}
+                                </h6>
 
                                 <!-- Text -->
                                 <p class="mb-lg-0 font-size-sm ">
-                                    <a href="/lessons/primary/year-1/literacy/test-lesson-1/" target="_blank">Primary > Lieteracy > How to Spell&nbsp;&nbsp;<i class="far fa-play-circle"></i></a>
+                                    {{LessonGroupName}}
                                 </p>
 
                             </div>
-                            <div class="col-5">
+                            <div class="col-6">
 
                                 <!-- Heading -->
                                 <h6 class="heading-xxxs text-muted">Date / Time Watched:</h6>
 
                                 <!-- Text -->
                                 <p class="mb-lg-0 font-size-sm font-weight-bold">
-                                    <time datetime="2019-09-07">
-                                        23rd March 2021 - 14:13
+                                    <time datetime="{{DateTimeWatched}}">
+                                        {{DateTimeWatched}}
                                     </time>
                                 </p>
 
                             </div>
-                           
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-10 mt-2">
+
+                                <div class="row">
+                                    <div class="col-10 mt-2">
+
+                                        <a href="/api/lessonumbraco/{{LessonId}}" class="butn x-small green p-2 pl-3 pr-3 mb-2"><span>Watch Again</span></a>
+
+
+                                    </div>
+
+                                </div>
+
+                            </div>
 
                         </div>
                     </div>
@@ -127,39 +138,38 @@
 
     <script>
 
-        var activity;
+        var activity = [];
 
         $(document).ready(function () {
 
-            //GetAddresses();
-            activity = [{}, {}, {}];
-            DisplayActivity();
+            GetActivity();
 
         });
 
 
-        function GetAddresses() {
+        async function GetActivity() {
 
+            var request = {
+                Page: 0,
+                RecordCount: 20
+            };
 
-            var url = baseUrl + "/api/shopping/addresses/";
+            var data = await lessonsApp.customerActivity(request);
 
-            $.ajax({
-                url: url,
-                type: "GET",
-                contentType: 'application/x-www-form-urlencoded',
-                headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
-                success: function (data) {
-
-                    addresses = data;
-                    DisplayAddresses();
-
-                },
-                error: function (xhRequest, ErrorText, thrownError) {
-
-                    console.log(ErrorText);
-
-                }
-            });
+            if (!data)
+            {
+                lessonsApp.logout();
+            }
+            else if (data.Status !== 0)
+            {
+                location.href = '/account/'
+            }
+            else
+            {
+                HidePreloader();
+                activity = data.Content.LessonHistory;
+                DisplayActivity();
+            }
 
         }
 
@@ -179,49 +189,10 @@
 
             $('#activity-list').html(itemListHTML);
 
-            $('#account-panel').show();
-            $('#spinner-loading').hide();
-
+            HidePreloader();
 
         }
 
-
-
-        function PromptDeleteAddress(id) {
-
-            deleteAddressId = id;
-
-        }
-
-        function DeleteAddress() {
-
-
-            $('#deleteAddressModal').modal('hide');
-
-            $('#account-panel').hide();
-            $('#spinner-loading').show();
-
-            var url = baseUrl + "/api/shopping/address?id=" + deleteAddressId;
-
-            $.ajax({
-                url: url,
-                type: "DELETE",
-                contentType: 'application/x-www-form-urlencoded',
-                headers: { 'x-cart-id': btoa(cartId + ':' + customerId), 'x-app-id': btoa(appId) },
-                success: function (data) {
-
-                    GetAddresses();
-
-                },
-                error: function (xhRequest, ErrorText, thrownError) {
-
-                    console.log(ErrorText);
-                    alert("Error: Could not load data. See browser log for details.");
-
-                }
-            });
-
-        }
 
 
     </script>

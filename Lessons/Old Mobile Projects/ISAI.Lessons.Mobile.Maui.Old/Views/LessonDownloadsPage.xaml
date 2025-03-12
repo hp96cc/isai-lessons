@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ISAI.Lessons.Mobile.Views.LessonDownloadsPage"
+             Title="{Binding Title}"
+             xmlns:local="clr-namespace:ISAI.Lessons.Mobile.ViewModels"  
+             xmlns:model="clr-namespace:ISAI.Lessons.Models.Models;assembly=ISAI.Lessons.Models"  
+             >
+
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+                Text="Delete All"
+                Order="Primary"
+                Priority="0"
+                Command="{Binding DeleteAllCommand}" />
+    </ContentPage.ToolbarItems>
+
+
+        <CollectionView x:Name="ItemsListView"
+                ItemsSource="{Binding Items}"
+                SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                      <Grid
+                          Padding="10,10,10,0"
+                          x:DataType="model:VideoDownload">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+                           <Label Text="{Binding LessonName}"
+                                  Grid.Column="0"
+                                  Grid.Row="0"
+                                  LineBreakMode="WordWrap" 
+                        
+                                  FontSize="16"
+                                  FontAttributes="Bold"   
+                                  Margin="5,3,5,0"   
+                               />
+
+                         <Label Text="{Binding VideoDownloadStatusCode}"
+                                    Grid.Column="1"
+                                  Grid.Row="0"
+                                LineBreakMode="WordWrap" 
+                                
+                                FontSize="14"
+                               TextColor="Red"
+                                Margin="5,3,5,0"
+                               HorizontalOptions="EndAndExpand"
+                               />
+
+
+                        <Label Text="{Binding LessonGroup}"
+                                Grid.Column="0"
+                                Grid.Row="1"
+                                LineBreakMode="WordWrap" 
+                          
+                                FontSize="14"
+                                Margin="5,0,5,10"    
+                               />
+
+                        <BoxView
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                HeightRequest="0.5"
+                                BackgroundColor="LightGray"
+                                VerticalOptions="End"/>
+
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                NumberOfTapsRequired="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:LessonDownloadsViewModel}}, Path=ItemTapped}"		
+                                CommandParameter="{Binding .}">
+                            </TapGestureRecognizer>
+                        </Grid.GestureRecognizers>
+    </Grid>
+
+
+                  
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+</ContentPage>

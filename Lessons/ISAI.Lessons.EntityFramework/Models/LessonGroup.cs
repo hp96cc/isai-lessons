@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ISAI.Lessons.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class LessonGroup : BaseModel
+    public class LessonGroup : BaseModel, ILessonGroup
     {
-        
         public string Name { get; set; }
 
         public int AppId { get; set; }
 
         [ForeignKey("AppId")]
         public App App { get; set; }
+
+        public int TutorialSubjectId { get; set; }
+
+        [ForeignKey("TutorialSubjectId")]
+        public TutorialSubject TutorialSubject { get; set; }
 
         public int? ParentLessonGroupId { get; set; }
 
@@ -30,6 +30,8 @@ namespace ISAI.Lessons.EntityFramework.Models
         public int ListOrder { get; set; }
 
         public bool HasSubGroups { get; set; }
+
+
 
 
     }

@@ -2,6 +2,7 @@
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "Master.cshtml";
+    var isStripeTest = Request.QueryString["IsTest"] != null ? true : false;
 }
 
 <!-- BREADCRUMB -->
@@ -31,34 +32,28 @@
 <section class="p-0">
     <div class="container">
 
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border mb-10" role="status" id="spinner-loading">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
 
 
         <div class="row" id="account-nosubscription" style="display:none;">
-            <div class="col-12 col-md-3">
+            <div class="col-3">
 
                 <!-- Nav -->
                 @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "subscriptions" } })
 
 
             </div>
-            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+            <div class="col-9">
                 <div class="row">
 
 
-                    <div class="col-12 text-center">
+                    <div class="col-12">
 
                         <!-- Heading -->
-                        <h3 class="mb-10 mt-3">Subscriptions</h3>
+                        <h3 class="mb-10">Subscriptions</h3>
                         <p>You currently have no Subscriptions.</p>
 
-                        <a href="/plans/" class="butn x-small pink  p-2 pl-4 pr-4 ml-4 mb-2 mt-3">Subscribe Now</a>
+                        <button id="button-create-subscription" class="butn x-small pink  p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="PromptCreateSubscription();">Create Subscription</button>
+
 
 
                     </div>
@@ -70,21 +65,21 @@
         </div>
 
         <div class="row" id="account-panel" style="display:none;">
-            <div class="col-12 col-md-3">
+            <div class="col-3">
 
                 <!-- Nav -->
                 @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "subscriptions" } })
 
 
             </div>
-            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+            <div class="col-9">
                 <div class="row">
 
 
-                    <div class="col-12 text-center">
+                    <div class="col-12">
 
                         <!-- Heading -->
-                        <h3 class="mb-10 mt-3">Subscriptions</h3>
+                        <h3 class="mb-10">Subscriptions</h3>
                         <p>Your current subscription is shown below.</p>
 
 
@@ -138,8 +133,18 @@
                         <div class="col-12">
 
                             <!-- Button -->
-                            <h5 style="color: #ff457e;">To cancel your subscription please email <a style="color: #ff457e;text-decoration:underline;" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a></h5>
-                            @*<button id="button-manage-subscription" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SubscriptionPortal();">Manage Subscription</button>*@
+                            <div id="div-manual-subscription">
+                                <h5 style="color: #ff457e;">To cancel your subscription please email <a style="color: #ff457e;text-decoration:underline;" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a></h5>
+                            </div>
+
+                            <button id="button-cancel-subscription" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="PromptCancelSubscription();">Cancel Subscription</button>
+
+                            <button id="button-change-subscription" class="butn x-small sky  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="PromptChangeSubscription();">Change Subscription</button>
+
+                            <button id="button-manage-subscription" class="butn x-small sky  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3" type="button" onclick="SubscriptionPortal();">Manage Payment Details</button>
+
+                           
+
                             <div id="label-cancelled" class="alert alert-success alert-dismissible fade show mt-4" role="alert" style="display:none;">
 
                             </div>
@@ -153,99 +158,363 @@
     </div>
 </section>
 
-@*
-    <!-- Modal -->
-    <div class="modal fade" id="cancelSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="cancelSubscriptionModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cancelSubscriptionModalLabel">Cancel Subscription</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you wish to cancel your subscription?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="butn x-small float-left p-2 pl-4 pr-4 ml-4 mb-2 mt-3" data-dismiss="modal">No, I want to keep it</button>
-                    <button type="button" class="butn x-small pink  float-right p-2 pl-4 pr-4 ml-4 mb-2 mt-3">Yes, Cancel My Subscription</button>
-                </div>
+
+<div class="modal fade" id="cancelSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="cancelSubscriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelSubscriptionModallLabel">Cancel Subscription</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you wish to cancel this subscription? You will lose all access to Scottish Online Lessons on <strong><span id="subscription-expiry-date"></span></strong>.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="CancelSubscription();">Yes</button>
             </div>
         </div>
     </div>
-*@
+</div>
+
+
+<div class="modal fade" id="changeSubscriptionModal" tabindex="-1" role="dialog" aria-labelledby="changeSubscriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeSubscriptionModallLabel">Change Subscription</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div id="changeSubscriptionModal-choose">
+
+                    Please choose one from one of the available subscriptions:
+
+                    <select id="changeSubscriptionModal-select" class="form-control mt-3 mb-3">
+                        <option value="100">Primary & Secondary Monthly - £22.50 per month</option>
+                        <option value="101">Primary & Secondary Annually - £225 per year</option>
+                        <option value="102">Primary Monthly - £15 per month</option>
+                        <option value="103">Primary Annually - £150 per year</option>
+                        <option value="104">Secondary Monthly - £15 per month</option>
+                        <option value="105">Secondary Annually - £150 per year</option>
+                    </select>
+
+                </div>
+
+                <div id="changeSubscriptionModal-confirm">
+
+                    <p><span id="changeSubscriptionModal-confirm-text">You have chosen to change to the following subscription.</span></p>
+                    <p><strong><span id="changeSubscriptionModal-selected-subscription"></span></strong></p>
+                    <p>To confirm this change and go to payment (if required) please click 'Confirm'</p>
+
+                    <p style="color:red;" id="form-error-label"></p>
+
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="changeSubscriptionModal-button-no" type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button id="changeSubscriptionModal-button-goback" type="button" class="btn btn-secondary" onclick="GoBackChangeSubscription();">Go Back</button>
+                <button id="changeSubscriptionModal-button-confirm" type="button" class="btn btn-primary" onclick="ConfirmChangeSubscription();">Yes</button>
+                <button id="changeSubscriptionModal-button-complete" type="button" class="btn btn-primary" onclick="CompleteChangeSubscription();">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Head {
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+}
 
 @section Scripts {
 
 
     <script>
 
-        var subscriptions;
+        var subscription;
 
-        $(document).ready(function () {
+        $(document).ready(function ()
+        {
 
             GetSubscriptions();
 
         });
 
-        async function GetSubscriptions() {
+        async function GetSubscriptions()
+        {
 
-            var data = await lessonsApp.getSubscriptions();
+            var data = await lessonsApp.subscription();
 
-            if (!data || data.Status !== 0) {
-                lessonsApp.logout();
-            } else {
-                subscriptions = data.Content;
+            //if (!data)
+            //{
+            //    lessonsApp.logout();
+            //}
+            if (data.Status !== 0)
+            {
+                //TODO: better handle expired or no subscriptions here
+                HidePreloader();
+                $('#account-nosubscription').show();
+            }
+            else
+            {
+                HidePreloader();
+                subscription = data.Content;
                 DisplaySubscriptions();
             }
 
 
         }
 
-        async function SubscriptionPortal() {
+        async function SubscriptionPortal()
+        {
 
             await lessonsApp.subscriptionPortal();
 
         }
 
-        function DisplaySubscriptions() {
+        function DisplaySubscriptions()
+        {
 
-            if (subscriptions && subscriptions.length > 0) {
-                var subscription = subscriptions[0];
+            if (subscription)
+            {
 
                 $('#label-subscription-type').text(subscription.Name);
                 $('#label-subscription-expires').text(new Date(subscription.EndDate).toLocaleDateString());
+                $('#subscription-expiry-date').text(new Date(subscription.EndDate).toLocaleDateString());
 
-                if (subscription.StripeSubscriptionId && subscription.StripeSubscriptionId.startsWith('sub_')) {
+
+                if (subscription.StripeSubscriptionId && subscription.StripeSubscriptionId.startsWith('sub_'))
+                {
+                    $('#button-change-subscription').show();
                     $('#button-manage-subscription').show();
+                    $('#button-cancel-subscription').show();
+                    $('#div-manual-subscription').hide();
                 }
-                else {
+                else
+                {
+                    $('#button-change-subscription').hide();
                     $('#button-manage-subscription').hide();
+                    $('#button-cancel-subscription').hide();
+                    $('#div-manual-subscription').show();
                 }
 
-
+                $('#button-create-subscription').hide();
                 $('#account-panel').show();
 
-            } else {
+            } else
+            {
 
+                $('#button-change-subscription').hide();
                 $('#account-nosubscription').show();
+                $('#button-create-subscription').show();
             }
 
 
 
-            $('#spinner-loading').hide();
+        }
+
+        function PromptCreateSubscription()
+        {
+
+            $('#changeSubscriptionModallLabel').text("Create Subscription");
+            $('#changeSubscriptionModal-confirm-text').text("You have chosen to create to the following subscription.");
+
+            $('#changeSubscriptionModal-button-no').show();
+            $('#changeSubscriptionModal-button-goback').hide();
+            $('#changeSubscriptionModal-button-confirm').show();
+            $('#changeSubscriptionModal-button-complete').hide();
+            $('#changeSubscriptionModal-choose').show();
+            $('#changeSubscriptionModal-confirm').hide();
+            $('#changeSubscriptionModal').modal('show')
+
+        }
+
+        function PromptChangeSubscription()
+        {
+
+            $('#changeSubscriptionModal-button-no').show();
+            $('#changeSubscriptionModal-button-goback').hide();
+            $('#changeSubscriptionModal-button-confirm').show();
+            $('#changeSubscriptionModal-button-complete').hide();
+            $('#changeSubscriptionModal-choose').show();
+            $('#changeSubscriptionModal-confirm').hide();
+
+
+            if (subscription.SubscriptionTypeId === 101)
+            {
+                //no upgrade available
+            }
+            else if (
+                subscription.Name.toLowerCase().includes('annual') ||
+                subscription.SubscriptionTypeId === 103 ||
+                subscription.SubscriptionTypeId === 105)
+            {
+                $("option[value='100']").remove();
+                $("option[value='102']").remove();
+                $("option[value='104']").remove();
+
+                if (subscription.SubscriptionTypeId === 103)
+                {
+                    $("option[value=105]").html('Secondary Annually - No Addtional Charge');
+                    $("option[value='103']").remove();
+                }
+
+                if (subscription.SubscriptionTypeId === 105)
+                { 
+                    $("option[value=103]").html('Primary Annually - No Addtional Charge');
+                    $("option[value='105']").remove();
+                }
+                    
+
+            }
+            else if (subscription.SubscriptionTypeId === 100)
+            {
+                $("option[value='100']").remove();
+                $("option[value='102']").remove();
+                $("option[value='104']").remove();
+            }
+            else if (subscription.SubscriptionTypeId === 102)
+            {
+                $("option[value='102']").remove();
+                $("option[value=104]").html('Secondary Monthly - No Addtional Charge');
+            }
+            else if (subscription.SubscriptionTypeId === 104)
+            {
+                $("option[value='104']").remove();
+                $("option[value=102]").html('Primary Monthly - No Addtional Charge');
+   
+            }
+
+            //TODO: need to handle primary to secondary switch and give no payment details
+
+            $('#changeSubscriptionModal').modal('show')
+        }
+
+        function ConfirmChangeSubscription()
+        {
+            var selectedSubsctiptionText = $('#changeSubscriptionModal-select').children(":selected").text();
+            $('#changeSubscriptionModal-selected-subscription').text(selectedSubsctiptionText);
+
+            $('#changeSubscriptionModal-button-no').hide();
+            $('#changeSubscriptionModal-button-goback').show();
+            $('#changeSubscriptionModal-button-confirm').hide();
+            $('#changeSubscriptionModal-button-complete').show();
+            $('#changeSubscriptionModal-choose').hide();
+            $('#changeSubscriptionModal-confirm').show();
+        }
+
+        function GoBackChangeSubscription()
+        {
+            $('#changeSubscriptionModal-button-no').show();
+            $('#changeSubscriptionModal-button-goback').hide();
+            $('#changeSubscriptionModal-button-confirm').show();
+            $('#changeSubscriptionModal-button-complete').hide();
+            $('#changeSubscriptionModal-choose').show();
+            $('#changeSubscriptionModal-confirm').hide();
+        }
+
+        async function CompleteChangeSubscription()
+        {
+            ShowPreloader();
+            $('#form-error-label').text('');
+            $('#form-error-label').hide();
+
+            var form = document.getElementById("register-form");
+
+            var errorHTML = '';
+
+            var paymentSessionObject = {
+
+                subscriptionTypeId: parseInt($('#changeSubscriptionModal-select').val()),
+                isSubscriptionChange: true
+            }
+
+            var data = await lessonsApp.createCustomerPaymentSession(paymentSessionObject);
+
+            if (data.sessionId != null)
+            {
+
+                if (data.sessionId === 'NOCHARGE')
+                {
+                    await GetSubscriptions();
+                    return;
+                }
+
+
+                var stripe = @(Html.Raw(isStripeTest ? "Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');" : "Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');"))
+
+                    stripe.redirectToCheckout({
+                        sessionId: data.sessionId
+                    }).then(handleResult);
+                return;
+
+            } else
+            {
+
+                if (data.Errors.length > 0)
+                {
+
+                    errorHTML += '<ul>';
+
+                    data.Errors.forEach(function (item)
+                    {
+                        errorHTML += '<li>' + item + '</li>';
+                    });
+
+                    errorHTML += '</ul>';
+                }
+                else if (data.Errors.length === 1)
+                {
+                    errorHTML = data.Errors[0];
+                }
+                else
+                {
+                    errorHTML = 'Could not create session. Please contact support';
+                }
+
+            }
+
+            $('#form-error-label').html(errorHTML);
+            $('#form-error-label').show();
+            HidePreloader();
 
 
         }
 
-        @*
-        //function PromptCancelSubscription() {
+        var handleResult = function (result)
+        {
+            if (result.error)
+            {
+                showErrorMessage(result.error.message);
+                $('#spinner-loading').hide();
+            }
+        };
 
-        //    $('#cancelSubscriptionModal').modal('show')
+        function PromptCancelSubscription()
+        {
+            $('#cancelSubscriptionModal').modal('show')
+        }
 
-        //}
-        *@
+        async function CancelSubscription()
+        {
+
+            var data = await lessonsApp.cancelStripeSubscription();
+
+            //TODO: need to handle
+            HidePreloader();
+            DisplaySubscriptions();
+
+        }
+
 
 
     </script>

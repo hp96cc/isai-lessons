@@ -1,0 +1,18 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.TutorialPaymentSuccess>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+
+    var sessionId = Request.QueryString["session_id"];
+}
+
+
+@section Scripts {
+
+    <script>
+
+        location.href = '/tutorials/confirm?session_id=@sessionId';
+
+    </script>
+
+}

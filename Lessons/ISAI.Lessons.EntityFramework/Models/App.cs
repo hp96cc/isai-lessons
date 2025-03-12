@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ISAI.Lessons.Models.Interfaces;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class App : BaseModel
+    public class App : BaseModel, IApp
     {
 
         public string Name { get; set; }
@@ -23,7 +19,18 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string StripeLiveSecretApiKey { get; set; }
 
+        public decimal TutorialCost20Minutes { get; set; }
 
+        public decimal TutorialCost40Minutes { get; set; }
+
+        public decimal TutorialCost60Minutes { get; set; }
+        public string TutorialStripPriceId20Minutes { get; set; }
+        public string TutorialStripPriceId40Minutes { get; set; }
+        public string TutorialStripPriceId60Minutes { get; set; }
+
+        public decimal TutorialStripApplicationFee20Minutes { get; set; }
+        public decimal TutorialStripApplicationFee40Minutes { get; set; }
+        public decimal TutorialStripApplicationFee60Minutes { get; set; }
     }
 
 }

@@ -33,30 +33,24 @@
 <section class="p-0">
     <div class="container">
 
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="spinner-border mb-10" role="status" id="spinner-loading">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
+        
 
-        <div class="row" id="account-panel" style="display:none;">
-            <div class="col-12 col-md-3">
+        <div class="row" id="account-panel">
+            <div class="col-3">
 
                 <!-- Nav -->
                 @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "info" } })
 
 
             </div>
-            <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+            <div class="col-9">
                 <div class="row">
 
               
-                        <div class="col-12 text-center">
+                        <div class="col-12">
 
                             <!-- Heading -->
-                            <h3 class="mb-10 mt-3">My Details</h3>
+                            <h3 class="mb-10">My Details</h3>
                             <p>Your details are below. If you wish to make changes, please adjust as correct and click the 'Save Changes' button</p>
 
                         </div>
@@ -176,13 +170,16 @@
 
             var data = await lessonsApp.getCustomer();
 
-            //if (lessonsApp.customer == null) {
             if (!data) {
                 lessonsApp.logout();
             }
-            else if (data.Status !== 0) {
+            else if (data.Status !== 0) 
+            {
                 location.href = '/account/'
-            } else {
+            }
+            else
+            {
+                HidePreloader();
                 customer = data.Content;
                 DisplayCustomer();
             }

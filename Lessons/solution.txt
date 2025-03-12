@@ -4,7 +4,7 @@ fCgr:*8E3r&?.ARU
 
 Portal Login
 support@isai.co.uk
-(\b2unW?e%@.7uKj
++%$(u2E5\@j7
 
 Azure VM Login
 LessonsAdmin	
@@ -20,3 +20,8 @@ uteach123@@**
 Git Login
 craig.champion
 ojti33iiubno46panf3q6xq2ebuvvoialndzuciohofn2xmwtjva
+
+ER Migration
+Add-Migration '<<NewName>>'
+
+Update-Database -Script -SourceMigration: '<<PreviousName>>' -TargetMigration: '<<NewName>>'

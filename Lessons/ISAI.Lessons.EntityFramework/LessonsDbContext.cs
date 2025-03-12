@@ -8,7 +8,7 @@ namespace ISAI.Lessons.EntityFramework
     public class LessonsDbContext : IdentityDbContext<User>
     {
 
-        public LessonsDbContext() : base("PrintContext")
+        public LessonsDbContext() : base("DefaultConnection")
         {
             Configuration.LazyLoadingEnabled = false;
         }
@@ -36,6 +36,15 @@ namespace ISAI.Lessons.EntityFramework
 
         public DbSet<CustomerDevice> CustomerDevice { get; set; }
 
+        public DbSet<Tutorial> Tutorial { get; set; }
+
+        public DbSet<StripeWebhookLog> StripeWebhookLog { get; set; }
+
+        public DbSet<TutorialSubject> TutorialSubject { get; set; }
+
+        public DbSet<TutorialSubjectGroup> TutorialSubjectGroup { get; set; }
+
+        public DbSet<TutorialSubjectTutorUser> TutorialSubjectTutorUser { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

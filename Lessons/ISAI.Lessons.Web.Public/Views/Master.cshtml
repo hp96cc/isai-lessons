@@ -2,13 +2,12 @@
 @{
     Layout = null;
 
+    ViewBag.LoggedIn = false;
 
     /* Check is logged in */
     if (Request.Cookies["lessons_access_token"] != null && Request.Cookies["lessons_access_token"].Value.ToString().Length > 100)
     {
-
         ViewBag.LoggedIn = true;
-
     }
 
 
@@ -42,19 +41,10 @@
 
 
     var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
-    bool isUKSite = canonicalUrl.Contains("portal.ukonlinelessons.com");
-
-    if (isUKSite)
-    {
-        metaTitle = "UK " + metaTitle;
-    }
-    else
-    {
-        metaTitle = "Scottish " + metaTitle;
-    }
+    metaTitle = "Scottish " + metaTitle;
 
 
-    }
+}
 
 
 @helper RenderMenuItem(IPublishedContent page, int menudepth)
@@ -117,15 +107,18 @@
 <head>
 
 
-	<!-- Google Tag Manager -->
-	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-	})(window,document,'script','dataLayer','GTM-5BT7PHFN');</script>
-	<!-- End Google Tag Manager -->
-
-
+    <!-- Google Tag Manager -->
+    <script>
+    (function (w, d, s, l, i)
+        {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-5BT7PHFN');</script>
+    <!-- End Google Tag Manager -->
     <!-- metas -->
     <meta charset="utf-8">
     <meta name="author" content="ISAI Technologies" />
@@ -148,7 +141,6 @@
 
     <link rel="canonical" href="@canonicalUrl" />
 
-    <meta name="facebook-domain-verification" content="a56dkbvit59ngwbbynr8snzqi80hsy" />
     <meta name="apple-itunes-app" content="app-id=1435441337">
 
     <!-- favicon -->
@@ -176,70 +168,17 @@
     <!-- Custom Styles -->
     <link href="/css/site.css?v=1" rel="stylesheet" />
 
+    <link rel="stylesheet" href="/css/grt-cookies-consent.css" />
+
 
 
     @RenderSection("Head", required: false)
 
 
-    <!-- Facebook Pixel Code -->
-    <script>
-        !function (f, b, e, v, n, t, s) {
-            if (f.fbq) return; n = f.fbq = function () {
-                n.callMethod ?
-                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-            };
-            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-            n.queue = []; t = b.createElement(e); t.async = !0;
-            t.src = v; s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '4717593798270440');
-        fbq('track', 'PageView');
-    </script>
-    <noscript>
-        <img height="1" width="1" style="display:none"
-             src="https://www.facebook.com/tr?id=4717593798270440&ev=PageView&noscript=1" />
-    </noscript>
-    <!-- End Facebook Pixel Code -->
-
-
-    <script type="text/javascript">
-        adroll_adv_id = "NPNG7NFM2BFALEZ2ZFWUFY";
-        adroll_pix_id = "FNKKQG7SXBBLRPUGNLMV7D";
-        adroll_version = "2.0";
-
-        (function (w, d, e, o, a) {
-            w.__adroll_loaded = true;
-            w.adroll = w.adroll || [];
-            w.adroll.f = ['setProperties', 'identify', 'track'];
-            var roundtripUrl = "https://s.adroll.com/j/" + adroll_adv_id
-                + "/roundtrip.js";
-            for (a = 0; a < w.adroll.f.length; a++) {
-                w.adroll[w.adroll.f[a]] = w.adroll[w.adroll.f[a]] || (function (n) {
-                    return function () {
-                        w.adroll.push([n, arguments])
-                    }
-                })(w.adroll.f[a])
-            }
-
-            e = d.createElement('script');
-            o = d.getElementsByTagName('script')[0];
-            e.async = 1;
-            e.src = roundtripUrl;
-            o.parentNode.insertBefore(e, o);
-        })(window, document);
-        adroll.track("pageView");
-    </script>
-
 </head>
 
 <body>
 
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5BT7PHFN"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 
     <!-- start page loading -->
     <div id="preloader">
@@ -261,44 +200,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
                         <div class="col-12 col-sm-12">
-@*
-                            <ul class="top-social-icon float-left">
-
-                                @foreach (var socialLink in home.SocialLinks)
-                                {
-                                    if (socialLink.Link != null)
-                                    {
-
-                                        <li><a href="@socialLink.Link.Url"><i class="fab @socialLink.IconPrefix"></i></a></li>
-                                    }
-                                }
-
-
-                            </ul>
-*@
+                
                             <div class="top-right-bar">
                                 <div class="justify-content-center h3 text-white  float-right"></div>
 
 
                                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                                 {
+                                    <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2 "><span>Book A Tutor</span></a>
 
-                                    <a href="/account/info" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>My Account</span></a>
+                                    <a href="/account/info" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2 mr-2"><span>My Account</span></a>
 
                                 }
                                 else
                                 {
-@*
-                                    if (isUKSite)
-                                    {
-                                        <a href="https://ukonlinelessons.com/" target="_blank" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
-                                        <a href="/plans/signup" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
-                                    }
-                                    else
-                                    {
-                                        <a href="/plans" class="butn x-small pink float-right p-2 pl-3 pr-3 ml-2 mb-2"><span>Sign Up</span></a>
-                                    }
-*@
+                             
                                     <a href="/account/?redirectUrl=@(Url.Encode(Model.Url()))" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
 
                                 }
@@ -323,16 +239,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                         <!-- start logo -->
 
 
-                                        @if (isUKSite)
-                                        {
-                                            <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogoUK.MediaUrl()" alt="@home.Title"></a>
-                                        }
-                                        else
-                                        {
-                                            <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogo.MediaUrl()" alt="@home.Title"></a>
-                                        }
-
-
+                                        <a href="/" class="navbar-brand"><img id="logo" src="@home.TopLeftLogo.MediaUrl()" alt="@home.Title"></a>
 
 
 
@@ -422,7 +329,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         @RenderBody()
 
         <footer>
-            <div class="footer-bg">
+            <div class="footer-bg pt-4 pb-4">
                 <div class="container">
                     @*<div class="row">
 
@@ -485,7 +392,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div class="footer-bar">
                 <div class="container">
-                    <p>&copy; @DateTime.Today.Year @(isUKSite ? "UK" : "Scottish") Online Lessons. All Rights Reserved. <br /><br />Web and App Development by <a href="https://isai.co.uk" target="_blank" class="text-white" style="text-decoration:underline;">ISAI</a> and <a href="https://craigchampion.com" target="_blank" class="text-white" style="text-decoration:underline;">Craig Champion Software Development</a></p>
+                    <p>&copy; @DateTime.Today.Year Scottish Online Lessons. All Rights Reserved. <br /><br />Web and App Development by <a href="https://isai.co.uk" target="_blank" class="text-white" style="text-decoration:underline;">ISAI</a> and <a href="https://craigchampion.com" target="_blank" class="text-white" style="text-decoration:underline;">Craig Champion Software Development</a></p>
                 </div>
             </div>
         </footer>
@@ -493,6 +400,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     </div>
     <!-- end main-wrapper section -->
+
+    <div class="grt-cookie">
+        <div class="grt-cookies-msg">
+            <p>
+                We use cookies to ensure that we give you the best experience on our website. If you continue to use this site we will assume that you accept and understand our <a href="https://www.scottishonlinelessons.com/privacy/" target="_blank">Privacy Policy</a>, and our <a href="https://www.scottishonlinelessons.com/terms/" target="_blank">Terms of Service</a>.
+            </p>
+        </div>
+        <span class="grt-cookie-button">Accept</span>
+    </div>
+
     <!-- start scroll to top -->
     <a href="javascript:void(0)" class="scroll-to-top"><i class="fas fa-angle-up" aria-hidden="true"></i></a>
     <!-- end scroll to top -->
@@ -549,6 +466,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script src="/assets/js/rev_slider/extensions/revolution.extension.slideanims.min.js"></script>
     <script src="/assets/js/rev_slider/extensions/revolution.extension.video.min.js"></script>
     <!-- revolution slider js files end -->
+    <!-- GRT Cookie Consent Plugin -->
+    <script src="/scripts/grt-cookie-consent.js"></script>
+
     <!-- range slider -->
     <script src="/assets/js/ion.rangeSlider.min.js"></script>
 
@@ -560,132 +480,87 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- custom scripts -->
     <script src="/assets/js/main.js"></script>
 
-    <script src="~/scripts/app.js?v=9"></script>
-
-
-    <script src="~/scripts/cookieconsent.js"></script>
+    <script src="~/scripts/app.js?v=10"></script>
 
     <script>
-        // obtain cookieconsent plugin
-        var cc = initCookieConsent();
 
-        // run plugin with config object
-        cc.run({
-            autorun: true,
-            delay: 0,
-            current_lang: 'en',
-            theme_css: "/css/cookieconsent.css",
-            autoclear_cookies: true,
-            cookie_expiration: 365,
+        var isLoaderVisible = true;
 
-            gui_options: {
-                consent_modal: {
-                    layout: 'cloud',
-                    position: 'bottom',
-                    transition: 'slide'
-                },
-                settings_modal: {
-                    layout: 'box',
-                    transition: 'slide'
-                }
-            },
-
-            onAccept: function (cookies) {
-                if (cc.allowedCategory('analytics_cookies')) {
-                    cc.loadScript('https://www.google-analytics.com/analytics.js', function () {
-                        ga('create', 'UA-XXXXXXXX-Y', 'auto');  //replace UA-XXXXXXXX-Y with your tracking code
-                        ga('send', 'pageview');
-                    });
-                }
-            },
-
-            languages: {
-                en: {
-                    consent_modal: {
-                        title: "I use cookies",
-                        description: 'Hi, this website uses essential cookies to ensure its proper operation and tracking cookies to understand how you interact with it. The latter will be set only upon approval. <a aria-label="Cookie policy" class="cc-link" href="#">Read more</a>',
-                        primary_btn: {
-                            text: 'Accept',
-                            role: 'accept_all'				//'accept_selected' or 'accept_all'
-                        },
-                        secondary_btn: {
-                            text: 'Settings',
-                            role: 'settings'				//'settings' or 'accept_necessary'
-                        }
-                    },
-                    settings_modal: {
-                        title: 'Cookie preferences',
-                        save_settings_btn: "Save settings",
-                        accept_all_btn: "Accept all",
-                        cookie_table_headers: [
-                            { col1: "Name" },
-                            { col2: "Domain" },
-                            { col3: "Expiration" },
-                            { col4: "Description" },
-                            { col5: "Type" }
-                        ],
-                        blocks: [
-                            {
-                                title: "Cookie usage",
-                                description: 'I use cookies to ensure the basic functionalities of the website and to enhance your online experience. You can choose for each category to opt-in/out whenever you want.'
-                            }, {
-                                title: "Strictly necessary cookies",
-                                description: 'These cookies are essential for the proper functioning of my website. Without these cookies, the website would not work properly.',
-                                toggle: {
-                                    value: 'necessary_cookies',
-                                    enabled: true,
-                                    readonly: true
-                                }
-                            }, {
-                                title: "Analytics cookies",
-                                description: 'These cookies ollect information about how you use the website, which pages you visited and which links you clicked on. All of the data is anonymized and cannot be used to identify you.',
-                                toggle: {
-                                    value: 'analytics_cookies',
-                                    enabled: false,
-                                    readonly: false
-                                },
-                                cookie_table: [
-                                    {
-                                        col1: '_ga',
-                                        col2: 'google.com',
-                                        col3: '2 years',
-                                        col4: 'description ...',
-                                        col5: 'Permanent cookie'
-                                    },
-                                    {
-                                        col1: '_gat',
-                                        col2: 'google.com',
-                                        col3: '1 minute',
-                                        col4: 'description ...',
-                                        col5: 'Permanent cookie'
-                                    },
-                                    {
-                                        col1: '_gid',
-                                        col2: 'google.com',
-                                        col3: '1 day',
-                                        col4: 'description ...',
-                                        col5: 'Permanent cookie'
-                                    }
-                                ]
-                            }, {
-                                title: "More information",
-                                description: 'For any queries in relation to my policy on cookies and your choices, please <a class="cc-link" href="#yourwebsite">contact me</a>.',
-                            }
-                        ]
-                    }
-                }
+        function HidePreloader()
+        {
+            //$('#preloader').fadeOut('normall', function ()
+            //{
+            //    $(this).hide();
+            //});
+            if (isLoaderVisible)
+            {
+                $('#preloader').fadeOut();
             }
-        });
+
+            isLoaderVisible = false;
+        }
+
+
+        function ShowPreloader()
+        {
+            if (!isLoaderVisible)
+            {
+                //$('#preloader').fadeOut('normall', function ()
+                //{
+                //    $(this).show();
+                //});
+                $('#preloader').fadeIn();
+            }
+
+            isLoaderVisible = true;
+        }
     </script>
 
 
-    <script>
-        window.fwSettings = {
-            'widget_id': 80000006775
-        };
-        !function () { if ("function" != typeof window.FreshworksWidget) { var n = function () { n.q.push(arguments) }; n.q = [], window.FreshworksWidget = n } }()
-    </script>
-    <script type='text/javascript' src='https://euc-widget.freshworks.com/widgets/80000006775.js' async defer></script>
+    @if (Model.ContentType.Alias != "accountHome" &&
+        Model.ContentType.Alias.Contains("account") == false &&
+        Model.ContentType.Alias.Contains("tutorial") == false &&
+        Model.Url().Contains("/plans/") == false &&
+        Model.Url().Contains("forgot-password") == false &&
+        Model.Url().Contains("reset-password") == false
+        )
+    {
+
+        <script>
+
+            $(document).ready(function ()
+            {
+                CheckSession();
+            });
+
+            async function CheckSession()
+            {
+                try
+                {
+                    var data = await lessonsApp.checksession();
+                    if (data)
+                    {
+                        HidePreloader();
+                        return;
+                    }
+
+                } catch {
+
+                }
+
+                location.href = '/account/';
+
+            }
+
+        </script>
+
+    }
+    else if (Model.ContentType.Alias.Contains("account") == false && Model.ContentType.Alias.Contains("tutorial") == false)
+    {
+        <script>
+            HidePreloader();
+        </script>
+    }
 
     @RenderSection("Scripts", required: false)
 

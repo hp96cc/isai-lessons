@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ISAI.Lessons.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class Lesson : BaseModel
+    public class Lesson : BaseModel, ILesson
     {
-        
         public int AppId { get; set; }
 
         [ForeignKey("AppId")]
@@ -35,13 +30,13 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string AssetId { get; set; }
 
-        public string SourceUrl{ get; set; }
+        public string SourceUrl { get; set; }
 
         public bool PendingDownload { get; set; }
 
         public string BitmovinId { get; set; }
 
-       
+
 
     }
 }

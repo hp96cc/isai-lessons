@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ISAI.Lessons.Mobile.Views.AboutPage"
+             xmlns:vm="clr-namespace:ISAI.Lessons.Mobile.ViewModels"
+             Title="{Binding Title}">
+    
+    <ContentPage.BindingContext>
+        <vm:AboutViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <StackLayout Padding="20" VerticalOptions="StartAndExpand">
+
+
+            <Image
+                    Source="logo.png"
+                    WidthRequest="250"
+                    Margin="10,50,10,50"
+                
+                    />
+
+          
+            <Button 
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Browse Lessons" 
+                Command="{Binding BrowseLessonsCommand}" />
+
+
+            <Button 
+
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Downloaded Lessons"
+                IsVisible="false"
+                Command="{Binding DownloadedLessonsCommaned}" />
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ISAI.Lessons.Models.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
-    public class SubscriptionType : BaseModel
+    public class SubscriptionType : BaseModel, ISubscriptionType
     {
         public string Name { get; set; }
+
+        public string StripePriceId { get; set; }
+
+        public int SubscriptionLengthInMonths { get; set; }
 
         public int AppId { get; set; }
 

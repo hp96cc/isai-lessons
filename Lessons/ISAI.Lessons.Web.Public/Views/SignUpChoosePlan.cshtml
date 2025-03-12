@@ -1,41 +1,6 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.SignUpChoosePlan>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
-    Layout = "Master.cshtml";
+    Response.Redirect("/account/subscriptions", true);
 }
 
-<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()" style="background-image: url('@Model.BackgroundImage.MediaUrl()');">
-    <div class="container">
-        <div class="page-title">
-            <h1>@Model.Title</h1>
-            <p><strong>@Model.Subtitle</strong></p>
-        </div>
-    </div>
-</section>
-
-<section class="pt-2">
-    <div class="container">
-        <div class="section-heading">
-
-            @Model.HTmlcontent
-
-            <span class="title-separator"></span>
-        </div>
-
-        <div class="row">
-            @Html.Partial("Partials/_Plans")
-        </div>
-            <div class="row pt-5">
-
-                <div class="col-6 text-center">
-                    <a target="_blank" href="https://play.google.com/store/apps/details?id=uk.co.isai.uteachlessons.pupil.droid&amp;pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" style="height:100px;"></a>
-                </div>
-
-
-                <div class="col-6  text-center">
-                    <a href="https://apps.apple.com/us/app/scottish-online-lessons/id1435441337" target="_blank"><img alt="Download in the App Store" src="/media/gkhevzea/apple-download.svg" style="height:100px;padding:15px;"></a>
-                </div>
-
-            </div>
-        </div>
-</section>

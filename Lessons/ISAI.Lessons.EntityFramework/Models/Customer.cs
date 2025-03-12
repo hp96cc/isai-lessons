@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
 using ISAI.Lessons.Models.Interfaces;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 
 namespace ISAI.Lessons.EntityFramework.Models
 {
@@ -39,6 +38,8 @@ namespace ISAI.Lessons.EntityFramework.Models
         public bool AllowAdminOverride { get; set; }
 
 
+
+
         [JsonIgnore]
         public string PaymentSessionId { get; set; }
 
@@ -49,10 +50,11 @@ namespace ISAI.Lessons.EntityFramework.Models
         public string PasswordHash { get; set; }
 
         [NotMapped]
-        public string Password{ get; set; }
+        public string Password { get; set; }
 
         [NotMapped]
         public string PasswordConfirm { get; set; }
 
+        public virtual ICollection<Tutorial> Tutorials { get; set; }
     }
 }
