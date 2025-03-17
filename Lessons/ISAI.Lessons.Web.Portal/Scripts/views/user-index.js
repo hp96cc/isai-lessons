@@ -351,7 +351,7 @@ function InituserGrid() {
 
             {
                 field: 'TutorEmail',
-                headerText: 'Tuto Email',
+                headerText: 'Tutor Email',
 
             },
             

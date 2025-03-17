@@ -46,6 +46,11 @@ namespace ISAI.Lessons.EntityFramework
 
         public DbSet<TutorialSubjectTutorUser> TutorialSubjectTutorUser { get; set; }
 
+
+        public DbSet<GroupTutorial> GroupTutorial { get; set; }
+
+        public DbSet<GroupTutorialCustomer> GroupTutorialCustomer { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?> 
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -359,6 +359,10 @@
     <Compile Include="Migrations\202503121329489_Add Support for Stripe Application fee 2.Designer.cs">
       <DependentUpon>202503121329489_Add Support for Stripe Application fee 2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503171059031_Added Group Tutorial.cs" />
+    <Compile Include="Migrations\202503171059031_Added Group Tutorial.Designer.cs">
+      <DependentUpon>202503171059031_Added Group Tutorial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -368,6 +372,8 @@
     <Compile Include="Models\Lesson.cs" />
     <Compile Include="Models\LessonGroup.cs" />
     <Compile Include="Models\StripeWebhookLog.cs" />
+    <Compile Include="Models\GroupTutorialCustomer.cs" />
+    <Compile Include="Models\GroupTutorial.cs" />
     <Compile Include="Models\TutorialSubjectGroup.cs" />
     <Compile Include="Models\TutorialSubject.cs" />
     <Compile Include="Models\TutorialSubjectTutorUser.cs" />
@@ -453,6 +459,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503121329489_Add Support for Stripe Application fee 2.resx">
       <DependentUpon>202503121329489_Add Support for Stripe Application fee 2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503171059031_Added Group Tutorial.resx">
+      <DependentUpon>202503171059031_Added Group Tutorial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -70,7 +70,7 @@
     </Reference>
     <Reference Include="DevDefined.OAuth, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a3261f5b4697e67d, processorArchitecture=MSIL">
       <HintPath>..\packages\DevDefined.OAuth.0.2\lib\DevDefined.OAuth.dll</HintPath>
-    </Reference> 
+    </Reference>
     <Reference Include="Effortless.Net.Encryption, Version=3.3.0.0, Culture=neutral, PublicKeyToken=603f9a8e5bb15e51, processorArchitecture=MSIL">
       <HintPath>..\packages\Effortless.Net.Encryption.3.3.0\lib\net40\Effortless.Net.Encryption.dll</HintPath>
     </Reference>
@@ -598,6 +598,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Api\AppController.cs" />
     <Compile Include="Controllers\Api\BaseApiController.cs" />
+    <Compile Include="Controllers\GroupTutorialController.cs" />
     <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Controllers\BaseAdminController.cs" />
     <Compile Include="Controllers\BaseAuthroizationController.cs" />
@@ -606,6 +607,7 @@
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\ODataReports\BaseODataReportController.cs" />
+    <Compile Include="Controllers\OData\GroupTutorialsController.cs" />
     <Compile Include="Controllers\OData\RolesController.cs" />
     <Compile Include="Controllers\OData\TutorialSubjectsController.cs" />
     <Compile Include="Controllers\OData\SubscriptionCodesController.cs" />
@@ -2838,6 +2840,7 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="Documents\holder.txt" />
+    <Content Include="Scripts\views\grouptutorial-index.js" />
     <Content Include="Scripts\views\lesson-index.js" />
     <Content Include="Scripts\views\lessongroup-index.js" />
     <Content Include="Scripts\views\customer-index.js" />
@@ -2914,6 +2917,7 @@
     <Content Include="Views\Lesson\Index.cshtml" />
     <Content Include="Views\Subscription\Index.cshtml" />
     <Content Include="Views\SubscriptionCode\Index.cshtml" />
+    <Content Include="Views\GroupTutorial\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

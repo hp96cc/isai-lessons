@@ -31,6 +31,7 @@ namespace ISAI.Lessons.Web.Portal.App_Start
             builder.EntitySet<TutorialSubject>("TutorialSubjects");
             builder.EntitySet<IdentityRole>("Roles");
             builder.EntitySet<TutorialSubjectTutorUser>("TutorialSubjectTutorUsers");
+            builder.EntitySet<GroupTutorial>("GroupTutorials");
 
             config.MapODataServiceRoute(
                 routeName: "odata",

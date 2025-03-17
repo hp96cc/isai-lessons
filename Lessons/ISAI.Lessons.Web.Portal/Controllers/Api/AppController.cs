@@ -32,7 +32,6 @@ using TutorialSubjectGroup = ISAI.Lessons.Models.ViewModels.TutorialSubjectGroup
 using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
 using System.Text;
 using ISAI.Lessons.Core.Services;
-using Square.Models;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
 {
