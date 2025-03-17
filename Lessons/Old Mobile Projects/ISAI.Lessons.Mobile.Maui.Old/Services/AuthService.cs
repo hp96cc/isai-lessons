@@ -2,7 +2,7 @@
 using ISAI.Lessons.Models.Models;
 using System.Diagnostics;
 
-namespace ISAI.Lessons.Mobile.Services
+namespace ISAI.Lessons.Mobile.Maui.Services
 {
     public class AuthService : IAuthService
     {

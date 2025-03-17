@@ -7,10 +7,6 @@ using ISAI.Lessons.Models.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/tutor_upgrade
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -89,10 +85,7 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
-<<<<<<< HEAD
-=======
 
->>>>>>> feature/tutor_upgrade
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,
@@ -133,11 +126,7 @@ namespace ISAI.Lessons.EntityFramework.Services
             }
             catch (Exception ex)
             {
-<<<<<<< HEAD
-                
-=======
 
->>>>>>> feature/tutor_upgrade
                 response.Status = ResponseStatus.Failed;
                 response.ErrorResponse = new List<ErrorResponse>() { new ErrorResponse () {
                         Message = ex.Message,

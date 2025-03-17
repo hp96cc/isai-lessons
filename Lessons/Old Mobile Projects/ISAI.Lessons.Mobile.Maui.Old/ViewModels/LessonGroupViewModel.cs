@@ -1,6 +1,16 @@
-﻿using ISAI.Lessons.Models.Interfaces;
+﻿using ISAI.Lessons.Mobile.Models;
+using ISAI.Lessons.Mobile.Views;
+using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace ISAI.Lessons.Mobile.ViewModels
 {

@@ -1,7 +1,9 @@
 ﻿using ISAI.Lessons.EntityFramework.Services;
+using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
+using Microsoft.AppCenter.Crashes;
 using System.Diagnostics;
 
 namespace ISAI.Lessons.Mobile.ViewModels
@@ -96,6 +98,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
                 Debug.WriteLine(ex.StackTrace);
 
                 DependencyService.Get<IHud>().Dismiss();

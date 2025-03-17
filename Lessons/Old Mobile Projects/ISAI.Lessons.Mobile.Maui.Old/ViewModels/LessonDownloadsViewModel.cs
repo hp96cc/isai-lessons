@@ -1,5 +1,11 @@
-﻿using ISAI.Lessons.Models.Interfaces;
+﻿using ISAI.Lessons.Mobile.Models;
+using ISAI.Lessons.Mobile.Models.Messages;
+using ISAI.Lessons.Mobile.Views;
+using ISAI.Lessons.Models.Enums;
+using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace ISAI.Lessons.Mobile.ViewModels
@@ -21,14 +27,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
             DeleteAllCommand = new Command(async () => await DeleteAllVideoDownloads());
             Title = "Lesson Downloads";
 
-            //MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
-            //{
-             //   MainThread.BeginInvokeOnMainThread(async () =>
-              //  {
-                //    await DisplayVideoDownloads(true);
-                //});
-              //
-            //});
+            MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await DisplayVideoDownloads(true);
+                });
+              
+            });
 
         }
 

@@ -62,6 +62,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         public AppController()
         {
+
             cryptoNetKey = new CryptoNetAes(new FileInfo(_aesKeyFile));
 
             if (User.Identity.IsAuthenticated)
@@ -2111,48 +2112,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             } else {
 
-<<<<<<< HEAD
-                string subscriptionName;
-                int subscriptionTypeId;
-                int subscriptionMonths;
-
-                switch (invoice.Lines.ElementAt(0).Plan.Id)
-                {
-
-                    case "price_1QcjgOJ81SbG6nza4UPk6uid":
-                    case "price_1J0LLgJ81SbG6nzad3BrKr0L":
-                        subscriptionName = "Secondary Annual Subscription";
-                        subscriptionTypeId = 3;
-                        subscriptionMonths = 12;
-                        break;
-
-                    case "price_1QcjhQJ81SbG6nzaN3MfE7N4":
-                    case "price_1J0LLMJ81SbG6nzasmeqA5KF":
-                        subscriptionName = "Secondary Monthly Subscription";
-                        subscriptionTypeId = 3;
-                        subscriptionMonths = 1;
-                        break;
-
-                    case "price_1IxXUFJ81SbG6nzav7NG3Vto":
-                    case "price_1QcjiYJ81SbG6nzajhmWnLr4":
-                        subscriptionName = "Primary Monthly Subscription";
-                        subscriptionTypeId = 2;
-                        subscriptionMonths = 1;
-                        break;
-
-                    case "price_1Qcji0J81SbG6nza5UsAUbm2":
-                    case "price_1IxXTvJ81SbG6nzajuriP6XZ":
-                    default:
-                        subscriptionName = "Primary Annual Subscription";
-                        subscriptionTypeId = 2;
-                        subscriptionMonths = 12;
-                        break;
-                }
-
-                subscription.Name = subscriptionName;
-                subscription.SubscriptionTypeId = subscriptionTypeId;
-=======
->>>>>>> feature/tutor_upgrade
                 subscription.Active = true;
 
                 subscription.EndDate = DateTime.Today.AddMonths(GetSubscriptionRenewalLength(subscription));

@@ -1,5 +1,7 @@
 ﻿using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
+using ISAI.Lessons.Mobile.Maui.Services;
+using ISAI.Lessons.Mobile.Models.Messages;
 using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
@@ -133,13 +135,13 @@ namespace ISAI.Lessons.Mobile.ViewModels
             DownloadCommand = new Command(OnDownloadClicked);
             DeleteDownload = new Command(OnDeleteDownloadClicked);
 
-          //  MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
-            //{
-              //  MainThread.BeginInvokeOnMainThread(async () =>
-               // {
-                 //   await CheckDownloadStatus();
-                //});
-            //});
+            MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await CheckDownloadStatus();
+                });
+            });
 
 
         }
@@ -345,13 +347,13 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 await DependencyService.Get<ISqliteService>().DeleteVideoDownloadAsync(_videoDownload);
                 await CheckDownloadStatus();
 
-                //var sender = new DownloadCompleteMessage()
-                //{
-                //    LessonId = _lessonId,
-                //    VideoDownloadStatusCode = VideoDownloadStatusCode.Successful
-                //};
+                var sender = new DownloadCompleteMessage()
+                {
+                    LessonId = _lessonId,
+                    VideoDownloadStatusCode = VideoDownloadStatusCode.Successful
+                };
 
-                //MessagingCenter.Send(sender, "DownloadComplete");
+                MessagingCenter.Send(sender, "DownloadComplete");
             }
 
            

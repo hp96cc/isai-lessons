@@ -1,4 +1,4 @@
-﻿namespace ISAI.Lessons.Mobile.Services
+﻿namespace ISAI.Lessons.Mobile.Maui.Services
 {
     public static class AppIdService
     {
