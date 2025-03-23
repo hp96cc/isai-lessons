@@ -24,4 +24,5 @@ ojti33iiubno46panf3q6xq2ebuvvoialndzuciohofn2xmwtjva
 ER Migration
 Add-Migration '<<NewName>>'
 
+
 Update-Database -Script -SourceMigration: '<<PreviousName>>' -TargetMigration: '<<NewName>>'

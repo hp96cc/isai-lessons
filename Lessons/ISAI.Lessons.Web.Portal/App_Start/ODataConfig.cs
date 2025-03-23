@@ -3,6 +3,7 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Builder;
 using ISAI.Lessons.EntityFramework.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
+using ISAI.Lessons.EntityFramework.Reports;
 
 namespace ISAI.Lessons.Web.Portal.App_Start
 {
@@ -15,7 +16,7 @@ namespace ISAI.Lessons.Web.Portal.App_Start
             config.EnableDependencyInjection();
 
             // Web API configuration and services
-            config.Count().Filter().OrderBy().Expand().Select().MaxTop(10000);
+            config.Count().Filter().OrderBy().Expand().Select().MaxTop(100000);
 
             ODataModelBuilder builder = new ODataConventionModelBuilder();
             builder.EntitySet<App>("Apps");
@@ -32,6 +33,7 @@ namespace ISAI.Lessons.Web.Portal.App_Start
             builder.EntitySet<IdentityRole>("Roles");
             builder.EntitySet<TutorialSubjectTutorUser>("TutorialSubjectTutorUsers");
             builder.EntitySet<GroupTutorial>("GroupTutorials");
+            builder.EntitySet<Tutorial>("Tutorials");
 
             config.MapODataServiceRoute(
                 routeName: "odata",
@@ -40,6 +42,7 @@ namespace ISAI.Lessons.Web.Portal.App_Start
 
 
             ODataModelBuilder builderReports = new ODataConventionModelBuilder();
+            builderReports.EntitySet<LessonActivityReport>("LessonActivityReports");
 
             config.MapODataServiceRoute(
                 routeName: "odatareports",

@@ -1,21 +1,21 @@
 ﻿
 using Microsoft.AspNet.OData;
 
-namespace ISAI.Lessons.Web.Portal.Controllers.OData
+namespace ISAI.Lessons.Web.Portal.Controllers.ODataReports
 {
    public class BaseODataReportController : ODataController
     {
 
-        //protected Scf.Reports.Models.Reports db = new Scf.Reports.Models.Reports();
+        protected ISAI.Lessons.EntityFramework.Reports.LessonReports db = new ISAI.Lessons.EntityFramework.Reports.LessonReports();
 
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        db.Dispose();
-        //    }
-        //    base.Dispose(disposing);
-        //}
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
     }
 }

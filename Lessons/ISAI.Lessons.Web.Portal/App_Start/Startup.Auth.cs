@@ -87,6 +87,12 @@ namespace ISAI.Lessons.Web.Portal
                 TimeZone = TimeZoneInfo.Local
             });
 
+            RecurringJob.AddOrUpdate("SchedulerService.CreateTeamsMeetingForGroupLessons", () => SchedulerService.CreateTeamsMeetingForGroupLessons(), Cron.Minutely, new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local
+            });
+
+
 
         }
     }

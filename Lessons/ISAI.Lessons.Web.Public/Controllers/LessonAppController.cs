@@ -117,7 +117,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var registerResponse = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
 
-                    if (registerResponse.Content != null)
+                    if (registerResponse.Content != null && model.Email != null)
                     {
                         await Login(new LoginRequestViewModel()
                         {
@@ -933,7 +933,8 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var stripeCheckoutSessionResponse = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
-                    if (stripeCheckoutSessionResponse.Content != null)
+                
+                    if (stripeCheckoutSessionResponse.Content != null && model.Email != null)
                     {
                         await Login(new LoginRequestViewModel()
                         {
@@ -1036,7 +1037,7 @@ namespace ISAI.Lessons.Web.Public.Controllers
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var stripeCheckoutSessionResponse = JsonConvert.DeserializeObject<CreateCustomerPayemntSessionResponse>(serialisedContent);
 
-                    if (stripeCheckoutSessionResponse.Errors == null)
+                    if (stripeCheckoutSessionResponse.Errors == null && model.Email != null)
                     {
                         await Login(new LoginRequestViewModel()
                         {

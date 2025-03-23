@@ -18,10 +18,82 @@ namespace ISAI.Lessons.Web.Portal.Helpers
         static string _clientAuditEmail => ConfigurationManager.AppSettings["Email.ClientAudit"];
         static string _returnUrl => ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
 
+        static string _systemTimeZone = ConfigurationManager.AppSettings["SystemTimeZone"];
+
         static bool _isSendingTutorialEmails = false;
 
         static bool _isDeletingAbandonedTutorials = false;
 
+        static bool _isCreateTeamsMeetingForGroupLessons = false;
+
+        public static void CreateTeamsMeetingForGroupLessons()
+        {
+            if (_isCreateTeamsMeetingForGroupLessons) return;
+
+            try
+            {
+                _isCreateTeamsMeetingForGroupLessons = true;
+
+                using (var db = new LessonsDbContext())
+                {
+
+
+                    var groupTutorials = db.GroupTutorial
+                        .Include(x => x.TutorUser)
+                        .Where(x => x.Deleted == false && string.IsNullOrEmpty(x.TeamsId)).ToList();
+
+                    foreach (var groupTutorial in groupTutorials)
+                    {
+                        try
+                        {
+
+                            var graphApi = new MicrosoftGraphApiService();
+                            var teamsEventResponse = graphApi.CreateOrUpdateTeamsEvent(
+                                                           null,
+                                                           groupTutorial.TutorUser.Email,
+                                                           "Group Tutorial " + groupTutorial.Name,
+                                                           groupTutorial.Description,
+                                                           _systemTimeZone,
+                                                           groupTutorial.DateTimeStart.ToString("s"),
+                                                           groupTutorial.DateTimeEnd.ToString("s"),
+                                                           null
+                                                           ).Result;
+
+
+
+                            groupTutorial.TeamsId = teamsEventResponse.Id;
+                            groupTutorial.TeamsLink = teamsEventResponse.WebLink;
+                            groupTutorial.Deleted = true;
+                            groupTutorial.DateModified = DateTime.Now;
+                            groupTutorial.ModifiedUserId = _systemUserId;
+                            db.Entry(groupTutorial).State = EntityState.Modified;
+
+                            db.SaveChanges();
+
+
+                        }
+                        catch (Exception ex)
+                        {
+                            //TODO: need to log somehow, but also need to ski ones already removed
+                        }
+
+                   
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                var t = true;
+            }
+            finally
+            {
+                _isCreateTeamsMeetingForGroupLessons = false;
+            }
+
+
+        }
         public static void DeleteAbandonedTutorials()
         {
             if (_isDeletingAbandonedTutorials) return;
