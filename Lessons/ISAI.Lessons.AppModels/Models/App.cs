@@ -21,12 +21,12 @@ namespace ISAI.Lessons.AppModels.Models
         public decimal TutorialCost20Minutes { get; set; }
         public decimal TutorialCost40Minutes { get; set; }
         public decimal TutorialCost60Minutes { get; set; }
-        public string TutorialStripPriceId20Minutes { get; set; }
-        public string TutorialStripPriceId40Minutes { get; set; }
-        public string TutorialStripPriceId60Minutes { get; set; }
+        
         public decimal TutorialStripApplicationFee20Minutes { get; set; }
         public decimal TutorialStripApplicationFee40Minutes { get; set; }
         public decimal TutorialStripApplicationFee60Minutes { get; set; }
+
+        public string GroupTutorialStripePriceId { get; set; }
     }
 
 }

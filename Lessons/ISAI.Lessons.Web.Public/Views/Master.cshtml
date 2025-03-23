@@ -44,6 +44,7 @@
     metaTitle = "Scottish " + metaTitle;
 
 
+
 }
 
 
@@ -522,7 +523,8 @@
         Model.ContentType.Alias.Contains("tutorial") == false &&
         Model.Url().Contains("/plans/") == false &&
         Model.Url().Contains("forgot-password") == false &&
-        Model.Url().Contains("reset-password") == false
+        Model.Url().Contains("reset-password") == false &&
+        Model.Url().Contains("confirm-group-tutorial") == false
         )
     {
 
@@ -548,14 +550,14 @@
 
                 }
 
-                location.href = '/account/';
+                location.href = '/account/?redirectUrl=@(Url.Encode(Model.Url()))';
 
             }
 
         </script>
 
     }
-    else if (Model.ContentType.Alias.Contains("account") == false && Model.ContentType.Alias.Contains("tutorial") == false)
+    else if (Model.ContentType.Alias.Contains("confirm-group-tutorial") == false && Model.ContentType.Alias.Contains("account") == false && Model.ContentType.Alias.Contains("tutorial") == false)
     {
         <script>
             HidePreloader();

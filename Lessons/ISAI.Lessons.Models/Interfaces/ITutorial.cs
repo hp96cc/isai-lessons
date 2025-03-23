@@ -23,5 +23,7 @@ namespace ISAI.Lessons.Models.Interfaces
         string TeamsId { get; set; }
         string TeamsLink { get; set; }
         string TutorUserId { get; set; }
+
+        int? GroupTutorialId { get; set; }
     }
 }

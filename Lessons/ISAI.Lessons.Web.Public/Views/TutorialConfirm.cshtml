@@ -3,12 +3,13 @@
 @{
     Layout = "Master.cshtml";
     var sessionId = Request.QueryString["session_id"];
+    var tutorStripeId = Request.QueryString["tutorStripeId"];
 }
 
 <section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png" style="background-image: url(/media/1f3fd5lm/blue-header-background.png);">
     <div class="container">
         <div class="page-title">
-            <h1>Congratulations</h1>
+            <h1>Tutorial Signup Confirmation</h1>
             <p><strong>Your tutor session is confirmed.</strong></p>
         </div>
     </div>
@@ -16,27 +17,57 @@
 
 <section class="pt-2">
     <div class="container">
-        <div class="section-heading">
 
-            <span class="title-separator"></span>
-        </div>
-        <div class="row">
-            <div class="col h4">
+        <div class="row justify-content-center mt-3" id="account-grouptutorial">
+            <div class="col-6">
 
-                <p>Hi,</p>
-                <p>A tutorial session has been booked as follows:</p>
-                <p><strong>Date: <span id="tutorial-date"></span></strong><br /><strong>Time: <span id="tutorial-starttime"></span></strong><br /><strong>Duration: <span id="tutorial-duration"></span></strong><br /><strong>Cost: <span id="tutorial-cost"></span></strong><br /><br /></p>
+                <h3>Tutorial Signup Confirmation</h3>
+                <p>
+                    Congratulations, a tutorial session has been booked as follows:
+                </p>
+
+                <table class="table table-striped">
+
+                    <tr>
+                        <td>Date:</td>
+                        <td><strong id="tutorial-date"></strong></td>
+                    </tr>
+                    <tr>
+                        <td>Time:</td>
+                        <td><strong id="tutorial-starttime">00:00</strong> to <strong id="tutorial-endtime">00:00</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Duration:</td>
+                        <td><strong><span id="tutorial-duration"></span></strong></td>
+                    </tr>
+                    <tr>
+                        <td>Cost:</td>
+                        <td><strong><span id="tutorial-cost"></span></strong></td>
+                    </tr>
+                </table>
+
+
                 <p>Please make sure you have joined your session 10 minutes before to get your notes ready.</p>
-                <p>If you don’t have a Microsoft account, Download the app <u>here</u>. <strong style="color:red;">(this needs work, its doesn't make sense - craig)</strong></p>
-                <p>Well done! Lets get learning. 💪</p>
-                <p><br />Thanks<br /><br />Scottish Online Lessons Team</p>
+                <p>For more information on how to join a tutorial <a class="textlink" target="_blank" href="/faqs/">click here</a></p>
 
-                <p>If you have any issues, please contact <a style="text-decoration:underline" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a></p>
+
+                <p>If you have any issues, please contact <a class="textlink" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a></p>
+
+                <a type="button" class="butn x-small green p-2 pl-3 pr-3 mb-2" href="/account/tutorials">View My Tutorials</a>
+
+
 
             </div>
+            </div>
+
+
+
         </div>
-    </div>
+
+
 </section>
+
+
 
 @section Scripts {
 
@@ -58,18 +89,20 @@
             ShowPreloader();
 
             var request = {
-                StripeSessionId: '@sessionId'
+                StripeSessionId: '@sessionId',
+                TutorStripeId: @(Html.Raw(string.IsNullOrWhiteSpace(tutorStripeId) ? "null" : "'" + tutorStripeId + "'"))
             }
 
             var data = await lessonsApp.tutorial(request);
 
+            //TODO: need to handle an error here
             if (!data)
             {
-                lessonsApp.logout();
+                //lessonsApp.logout('/account/tutorials');
             }
-            else if (data.Status !== 0) 
+            else if (data.Status !== 0)
             {
-                location.href = '/account/'
+                //location.href = '/account/tutorials';
             }
             else
             {
@@ -85,6 +118,7 @@
 
             $('#tutorial-date').text(new Date(tutorial.DateTimeStart).toLocaleDateString('en-GB', optionsDate));
             $('#tutorial-starttime').text(new Date(tutorial.DateTimeStart).toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-endtime').text(new Date(tutorial.DateTimeEnd).toLocaleTimeString('en-GB', optionsTime));
             $('#tutorial-duration').text(tutorial.DurationInMinutes + ' minutes');
             $('#tutorial-cost').text('£' + tutorial.TutorialCost);
 

@@ -3,16 +3,10 @@
 @{
     Layout = "Master.cshtml";
 
-    var sessionId = Request.QueryString["session_id"];
-}
+    Response.Redirect(Request.RawUrl.Replace("payment-success", "confirm"));
 
 
-@section Scripts {
-
-    <script>
-
-        location.href = '/tutorials/confirm?session_id=@sessionId';
-
-    </script>
 
 }
+
+

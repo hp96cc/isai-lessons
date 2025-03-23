@@ -2,7 +2,9 @@
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "Master.cshtml";
-    var isStripeTest = Request.QueryString["IsTest"] != null ? true : false;
+    var isStripeTest = (Request.ServerVariables["HTTP_HOST"].ToLower().Contains("localhost")
+        ||
+        Request.ServerVariables["HTTP_HOST"].ToLower().Contains("test"))? true : false;
 }
 
 <!-- BREADCRUMB -->

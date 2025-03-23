@@ -95,6 +95,51 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         }
 
+        [Route("api/lessonapp/register")]
+        [HttpPost]
+        public async Task<ResponseData<Customer>> Register(RegisterRequestViewModel model)
+        {
+            SetHttpClient();
+
+            try
+            {
+                model.AppId = _appId;
+
+                var json = JsonConvert.SerializeObject(model);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/registercustomer", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var registerResponse = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
+
+                    if (registerResponse.Content != null)
+                    {
+                        await Login(new LoginRequestViewModel()
+                        {
+                            Email = model.Email,
+                            Password = model.Password
+                        });
+                    }
+                    return registerResponse;
+                }
+                else 
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
+
         [Route("api/lessonapp/customer")]
         [HttpPost]
         public async Task<ResponseData<Customer>> Customer()
@@ -184,6 +229,67 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
         }
 
+
+        [Route("api/lessonapp/grouptutorials")]
+        [HttpPost]
+        public async Task<ResponseData<TutorialResponseViewModel>> GetGroupTutorials()
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/grouptutorials", null).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<ResponseData<TutorialResponseViewModel>> (serialisedContent);
+                    return data;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
+
+        [Route("api/lessonapp/grouptutorial")]
+        [HttpPost]
+        public async Task<ResponseData<GroupTutorial>> GetGroupTutorial(int groupTutorialId)
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/grouptutorial?groupTutorialId=" + groupTutorialId, null).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<ResponseData<GroupTutorial>>(serialisedContent);
+                    return data;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
 
 
         [Route("api/lessonapp/tutorialsubjectgroups")]
@@ -383,7 +489,43 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
 
 
-        [Route("api/lessonapp/tutorialpurchase")]
+        [Route("api/lessonapp/grouptutorialpurchase")]
+        [HttpPost]
+        public async Task<ResponseData<GroupTutorialPurchaseResponseViewModel>> GroupTutorialPurchase(GroupTutorialPurchaseRequestViewModel request)
+        {
+            _httpClient = await _apiService.SetHttpAuthClient();
+
+            try
+            {
+                request.CancelUrl = _baseReturnUrl + "/tutorials/payment-failed";
+                request.SuccessUrl = _baseReturnUrl + "/tutorials/payment-success";
+
+                var json = JsonConvert.SerializeObject(request);
+                HttpContent content = new StringContent(json);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/grouptutorialpurchase", content).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var response = JsonConvert.DeserializeObject<ResponseData<GroupTutorialPurchaseResponseViewModel>>(serialisedContent);
+                    return response;
+                }
+                else
+                {
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+
+            [Route("api/lessonapp/tutorialpurchase")]
         [HttpPost]
         public async Task<ResponseData<TutorialPurchaseResponseViewModel>> TutorialPurchase(TutorialPurchaseRequestViewModel request)
         {
@@ -791,6 +933,14 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var stripeCheckoutSessionResponse = JsonConvert.DeserializeObject<ResponseData<Customer>>(serialisedContent);
+                    if (stripeCheckoutSessionResponse.Content != null)
+                    {
+                        await Login(new LoginRequestViewModel()
+                        {
+                            Email = model.Email,
+                            Password = model.Password
+                        });
+                    }
                     return stripeCheckoutSessionResponse;
                 }
                 else
@@ -885,6 +1035,15 @@ namespace ISAI.Lessons.Web.Public.Controllers
 
                     var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var stripeCheckoutSessionResponse = JsonConvert.DeserializeObject<CreateCustomerPayemntSessionResponse>(serialisedContent);
+
+                    if (stripeCheckoutSessionResponse.Errors == null)
+                    {
+                        await Login(new LoginRequestViewModel()
+                        {
+                            Email = model.Email,
+                            Password = model.Password
+                        });
+                    }
                     return stripeCheckoutSessionResponse;
                 }
                 else

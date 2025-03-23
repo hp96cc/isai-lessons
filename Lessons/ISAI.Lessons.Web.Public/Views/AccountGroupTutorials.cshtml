@@ -1,9 +1,8 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountTutorials>
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.AccountGroupTutorials>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "Master.cshtml";
 }
-
 
 <!-- BREADCRUMB -->
 <nav class="py-4">
@@ -17,7 +16,7 @@
                         <a class="text-gray-400" href="index.html">Home</a>
                     </li>
                     <li class="breadcrumb-item active">
-                        Tutorials
+                        Group Tutorials
                     </li>
                 </ol>
 
@@ -32,28 +31,25 @@
 <section class="p-0">
     <div class="container">
 
-       
+
 
         <div class="row">
             <div class="col-3">
 
                 <!-- Nav -->
-                @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "tutorials" } })
+                @Html.Partial("Partials/_AccountMenu", new ViewDataDictionary { { "active-menu", "group-tutorials" } })
 
 
             </div>
             <div class="col-9">
                 <div class="row">
 
-                    <div class="col-12 text-right">
-                        <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2"><span>Book a Tutor</span></a>
-
-                    </div>
+                 
                     <div class="col-12">
 
                         <!-- Heading -->
-                        <h3 class="mb-10">My Tutorials</h3>
-                        <p>Below is a list of all of your booked lessons. You can join your lessons from here by selecting JOIN TUTORIAL, which will take you straight to your Microsoft Teams call. </p>
+                        <h3 class="mb-10">Group Tutorials</h3>
+                        <p>Below is a list of our pre-planned Group Tutorials. </p>
 
 
 
@@ -62,7 +58,7 @@
 
                     <div class="col-12 p-1">
                         <div class="row" id="tutorial-list"></div>
-                     
+
 
                     </div>
                 </div>
@@ -88,54 +84,47 @@
 
                                 <!-- Heading -->
                                 <h6 class="heading-xxxs text-muted">
-                                    {{Date}} @@ {{TimeStart}} to {{TimeEnd}}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    {{Date}} @@ {{TimeStart}} to {{TimeEnd}}
 
-                                    {{#IsGroupTutorial}}
-                                    <span class="mr-3 badge badge-primary p2" style="background-color: #18b8ff;">Group Tutorial</span>
-                                    {{/IsGroupTutorial}}
+                                    {{#IsUserSignedUp}}
+                                    &nbsp;&nbsp;&nbsp;<span class="mr-3 badge badge-primary p2" style="background-color: #ff457e;">Signed Up</span>
 
+                                    {{/IsUserSignedUp}}
                                 </h6>
 
                                 <!-- Text -->
-                                <p class="mb-lg-0 font-size-sm font-weight-bold">
-                                    {{Name}}
+                                <p class="mb-lg-0 font-size-sm">
+                                    <span class=" font-weight-bold">{{Name}}</span><br />
+                                    {{Description}}
                                 </p>
 
+                             
 
                             </div>
-                            <div class="col-2 float-right">
-
-                                <!--{{#IsCompleted}}-->
-                                <!-- Button -->
-                                <!--<button class="btn btn-circle float-right p-0" data-toggle="modal" data-target="#deleteDeviceModal" onclick="alert('TODO: What are the terms to delete a tutorial?')">
-                                    <i class="far fa-trash-alt delete-button"></i>
-                                </button>
-                                {{/IsCompleted}}-->
-
-                            </div>
+                        
 
 
                         </div>
                         <div class="row">
                             <div class="col-10 mt-2">
 
-                                {{#IsCompleted}}
-                                <a href="{{TeamsLink}}" target="_blank" class="butn x-small green p-2 pl-3 pr-3 mb-2"><span>Join Tutorial</span></a>
+                                
 
-                                {{/IsCompleted}}
-                                @*{{^IsCompleted}}
-                                <a href="/tutorials/calendar/?rebookId={{Id}}" class="butn x-small pink p-2 pl-3 pr-3 mb-2"><span>Re-Book Tutor</span></a>
+                                {{^IsUserSignedUp}}
 
-                                {{/IsCompleted}}*@
+                                <a href="/tutorials/confirm-group-tutorial?groupTutorialId={{Id}}"  class="butn x-small green p-2 pl-3 pr-3 mb-2"><span>Book Tutorial</span></a>
 
+                                {{/IsUserSignedUp}}
+
+                               
 
                             </div>
-                    
+
                         </div>
 
                     </div>
 
-        </div>
+                </div>
 
 
     </template>
@@ -146,34 +135,34 @@
 
         $(document).ready(function ()
         {
-            GetTutorials();
+            GetGroupTutorials();
         });
 
 
-        async function GetTutorials()
+        async function GetGroupTutorials()
         {
 
-            var data = await lessonsApp.tutorials();
+            var data = await lessonsApp.grouptutorials();
 
             if (!data)
             {
-               lessonsApp.logout('/account/?redirectUrl=@(Url.Encode(Model.Url()))');
+               //lessonsApp.logout('/account/');
             }
             else if (data.Status !== 0)
             {
-                location.href = '/account/?redirectUrl=@(Url.Encode(Model.Url()))';
+                //location.href = '/account/';
             }
             else
             {
                 HidePreloader();
                 tutorials = data.Content.Tutorials;
-                DisplayTutorials();
+                DisplayGroupTutorials();
             }
 
 
         }
 
-        async function DisplayTutorials()
+        async function DisplayGroupTutorials()
         {
 
             $('#tutorial-list').html('');

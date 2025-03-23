@@ -32,6 +32,11 @@ using TutorialSubjectGroup = ISAI.Lessons.Models.ViewModels.TutorialSubjectGroup
 using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
 using System.Text;
 using ISAI.Lessons.Core.Services;
+using Microsoft.Extensions.Options;
+using System.ClientModel.Primitives;
+using Microsoft.Ajax.Utilities;
+using RequestOptions = Stripe.RequestOptions;
+using Syncfusion.EJ2.Diagrams;
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
 {
@@ -45,8 +50,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         string _baseUrl;
         string _baseReturnUrl;
 
-        StripeOptions options;
+        StripeOptions optionsPlatform;
+        StripeOptions optionsConnectedAccounts;
         IStripeClient client;
+        IStripeClient clientConnectedAccounts;
         ICryptoNet cryptoNetKey;
 
         private readonly string _adminUserId = ConfigurationManager.AppSettings["SystemUserId"];
@@ -54,6 +61,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         private readonly string _base64Iv = ConfigurationManager.AppSettings["Video.Base64Iv"];
         private readonly string _aesKeyFile = ConfigurationManager.AppSettings["Video.AesKeyFile"];
         private readonly string _tutorialStripePrefix = ConfigurationManager.AppSettings["Stripe.TutorialPrefix"];
+        private readonly string _groupTutorialStripePrefix = ConfigurationManager.AppSettings["Stripe.GroupTutorialPrefix"];
         private readonly string _graphSenderAdminAccount = ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
         private readonly string _systemTimeZone = ConfigurationManager.AppSettings["SystemTimeZone"];
         private readonly string _videoRootFolder = ConfigurationManager.AppSettings["ISAI.Lessons.VideoRootFolder"];
@@ -70,17 +78,25 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 _appId = Convert.ToInt32(User.Identity.GetClaim("AppId"));
             }
 
-            this.options = new StripeOptions()
+            this.optionsPlatform = new StripeOptions()
             {
                 PublishableKey = ConfigurationManager.AppSettings["STRIPE_PUBLISHABLE_KEY"],
                 SecretKey = ConfigurationManager.AppSettings["STRIPE_SECRET_KEY"],
-                WebhookSecret = ConfigurationManager.AppSettings["STRIPE_WEBHOOK_SECRET"],
+                WebhookSecret = ConfigurationManager.AppSettings["STRIPE_WEBHOOK_SECRET_PLATFORM"],
+            };
+
+            this.optionsConnectedAccounts = new StripeOptions()
+            {
+                PublishableKey = ConfigurationManager.AppSettings["STRIPE_PUBLISHABLE_KEY"],
+                SecretKey = ConfigurationManager.AppSettings["STRIPE_SECRET_KEY"],
+                WebhookSecret = ConfigurationManager.AppSettings["STRIPE_WEBHOOK_SECRET_CONNECTEDACCOUNTS"],
             };
 
             _baseUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
             _baseReturnUrl = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
 
-            this.client = new StripeClient(this.options.SecretKey);
+            this.client = new StripeClient(this.optionsPlatform.SecretKey);
+            this.clientConnectedAccounts = new StripeClient(this.optionsConnectedAccounts.SecretKey);
         }
 
         [Route("api/app/customer")]
@@ -154,6 +170,99 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+
+        [Route("api/app/grouptutorials")]
+        [HttpPost]
+        public async Task<ResponseData<TutorialResponseViewModel>> GetGroupTutorials()
+        {
+            var response = new ResponseData<TutorialResponseViewModel>()
+            {
+                Content = new TutorialResponseViewModel()
+            };
+
+            try
+            {
+                var earlisetStartDate = DateTime.Today.AddDays(1);
+
+                var groupTutorials = await db.GroupTutorial
+                    .Include(x => x.TutorUser)
+                    .Where(x => x.Deleted == false && x.DateTimeStart > earlisetStartDate)
+                    .OrderBy(x => x.DateTimeStart)
+                    .ToListAsync();
+
+                var customerTutorials = await db.Tutorial.Where(x => x.CustomerId == _customerId &&
+                                                        x.Deleted == false &&
+                                                        x.HasCompletedCheckout &&
+                                                        x.GroupTutorialId != null
+                                                        ).ToListAsync();
+
+
+                response.Content.Tutorials = groupTutorials.Select(x => new Lessons.Models.ViewModels.Tutorial()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    IsCompleted = x.DateTimeStart > DateTime.Now,
+                    Date = x.DateTimeStart.Date.ToString("dddd, dd MMMM yyyy"),
+                    TimeStart = x.DateTimeStart.ToString("HH:mm"),
+                    TimeEnd = x.DateTimeEnd.ToString("HH:mm"),
+                    TeamsLink = x.TeamsLink,
+                    TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
+                    IsUserSignedUp = customerTutorials.Any(y => y.GroupTutorialId == x.Id)
+
+                }).ToList();
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
+
+        [Route("api/app/grouptutorial")]
+        [HttpPost]
+        public async Task<ResponseData<GroupTutorial>> GetGroupTutorial(int groupTutorialId)
+        {
+            var response = new ResponseData<GroupTutorial>();
+
+            try
+            {
+                var groupTutorial = await db.GroupTutorial
+                    .Where(x => x.Id == groupTutorialId)
+                    .FirstAsync();
+
+                response.Content = groupTutorial;
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
+
+
         [Route("api/app/tutorialsubjectgroups")]
         [HttpPost]
         public async Task<ResponseData<TutorialSubjectGroupResponseViewModel>> GetTutorialSubjectGroups()
@@ -200,13 +309,39 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         public async Task<ResponseData<Tutorial>> GetTutorialFromStripeSession(TutorialRequestViewModel request)
         {
             var response = new ResponseData<Tutorial>();
-
             try
             {
 
-                var service = new SessionService(this.client);
-                var session = service.Get(request.StripeSessionId);
-                var tutorialId = Convert.ToInt32(session.ClientReferenceId.Replace(_tutorialStripePrefix, string.Empty));
+                SessionService service;
+                Session session;
+
+                if (string.IsNullOrWhiteSpace(request.TutorStripeId))
+                {
+                    service = new SessionService(this.client);
+                    session = service.Get(request.StripeSessionId);
+                } 
+                else
+                {
+                    var requestOptions = new Stripe.RequestOptions
+                    {
+                        StripeAccount = request.TutorStripeId,
+                    };
+                    service = new SessionService(this.clientConnectedAccounts);
+                    session = service.Get(request.StripeSessionId, null, requestOptions);
+
+                }
+                
+
+                int tutorialId;
+
+                if (session.ClientReferenceId.StartsWith(_groupTutorialStripePrefix))
+                {
+                    tutorialId = Convert.ToInt32(session.ClientReferenceId.Replace(_groupTutorialStripePrefix, string.Empty));
+                } else
+                {
+                    tutorialId = Convert.ToInt32(session.ClientReferenceId.Replace(_tutorialStripePrefix, string.Empty));
+                }
+
 
                 var tutorial = await db.Tutorial
                     .Include(x => x.TutorUser)
@@ -250,7 +385,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 var tutorials = await db.Tutorial
                     .Include(x => x.TutorUser)
-                    .Where(x => x.CustomerId == _customerId && x.Deleted == false && x.DateTimeStart > lastMonth)
+                    .Where(x => x.CustomerId == _customerId && x.Deleted == false && x.HasCompletedCheckout  && x.DateTimeStart > lastMonth)
                     .OrderByDescending(x => x.DateTimeStart)
                     .ToListAsync();
 
@@ -264,7 +399,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     TimeStart = x.DateTimeStart.ToString("HH:mm"),
                     TimeEnd = x.DateTimeEnd.ToString("HH:mm"),
                     TeamsLink = x.TeamsLink,
-                    TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname
+                    TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
+                    GroupTutorialId = x.GroupTutorialId
                 }).ToList();
                 response.Status = ResponseStatus.OK;
                 return response;
@@ -341,11 +477,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     var tutors = await db.TutorialSubjectTutorUser
                         .Include(x => x.TutorUser)
                         .Include(x => x.TutorialSubject)
-                        .Where(x => x.TutorUser.Deleted == false && x.TutorialSubjectId == request.TutorialSubjectId && x.TutorUser.TutorStripeId != null && x.TutorUser.TutorStripeId.Length > 5)
+                        .Where(x => x.TutorUser.Deleted == false && x.TutorialSubjectId == request.TutorialSubjectId && !string.IsNullOrEmpty(x.TutorUser.TutorEmail) && x.TutorUser.TutorStripeId != null && x.TutorUser.TutorStripeId.Length > 5)
                         .Select(x => new Tutor()
                         {
                             Id = x.TutorUser.Id,
                             Name = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
+                            TutorStripeId = x.TutorUser.TutorStripeId
                         })
                         .Distinct()
                         .ToListAsync();
@@ -362,11 +499,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     var tutors = await db.TutorialSubjectTutorUser
                        .Include(x => x.TutorUser)
                        .Include(x => x.TutorialSubject)
-                       .Where(x => x.TutorUser.Deleted == false && x.TutorialSubjectId == lesson.LessonGroup.TutorialSubjectId)
+                       .Where(x => x.TutorUser.Deleted == false && x.TutorialSubjectId == lesson.LessonGroup.TutorialSubjectId && !string.IsNullOrEmpty(x.TutorUser.TutorEmail) && x.TutorUser.TutorStripeId != null && x.TutorUser.TutorStripeId.Length > 5)
                        .Select(x => new Tutor()
                        {
                            Id = x.TutorUser.Id,
                            Name = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
+                           TutorStripeId = x.TutorUser.TutorStripeId
                        })
                        .Distinct()
                        .ToListAsync();
@@ -577,6 +715,144 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         }
 
 
+        [Route("api/app/grouptutorialpurchase")]
+        [HttpPost]
+        public async Task<ResponseData<GroupTutorialPurchaseResponseViewModel>> GroupTutorialPurchase(GroupTutorialPurchaseRequestViewModel request)
+        {
+            try
+            {
+
+                var response = new ResponseData<GroupTutorialPurchaseResponseViewModel>();
+
+                //Create Tutorial
+                var customer = await db.Customer
+                    .Include(x => x.App)
+                    .FirstAsync(x => x.Id == _customerId);
+
+                var groupTutorial = await db.GroupTutorial
+                    .Include(x => x.TutorUser)
+                    .FirstAsync(x => x.Id == request.GroupTutorialId);
+
+                var tutor = groupTutorial.TutorUser;
+
+                var tutorialDuration = Convert.ToInt32((groupTutorial.DateTimeEnd.Ticks - groupTutorial.DateTimeStart.Ticks) / TimeSpan.TicksPerMinute);
+
+
+                var tutorial = await db.Tutorial.FirstOrDefaultAsync(x => x.GroupTutorialId == groupTutorial.Id && x.CustomerId == customer.Id);
+
+                if (tutorial != null)
+                {
+                    if (tutorial.HasCompletedCheckout == true && !string.IsNullOrEmpty(tutorial.StripePaymentId))
+                    {
+                        response.Status = ResponseStatus.Failed;
+                        response.ErrorResponse = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse() {
+                                Message = "You have already joined this tutorial."
+                            }
+                        };
+
+                        return response;
+                    }
+
+                }
+                else
+                {
+
+                    tutorial = new Tutorial()
+                    {
+                        Name = groupTutorial.Name,
+                        TeamsId = groupTutorial.TeamsId,
+                        TeamsLink = groupTutorial.TeamsLink,
+                        TutorialCost = 25,
+                        AppId = 1,
+                        GroupTutorialId = groupTutorial.Id,
+                        CustomerId = customer.Id,
+                        DurationInMinutes = tutorialDuration,
+                        DateTimeStart = groupTutorial.DateTimeStart,
+                        DateTimeEnd = groupTutorial.DateTimeEnd,
+                        TutorUserId = tutor.Id,
+                        Deleted = false,
+                        DateCreated = DateTime.UtcNow,
+                        CreatedUserId = _adminUserId,
+                        DateModified = DateTime.UtcNow,
+                        ModifiedUserId = _adminUserId
+                    };
+
+                    db.Entry(tutorial).State = EntityState.Added;
+                    await db.SaveChangesAsync();
+
+                }
+
+
+                var options = new SessionCreateOptions
+                {
+                    // NOTE: https://stripe.com/docs/api/checkout/sessions/create
+                    ClientReferenceId = _groupTutorialStripePrefix + tutorial.Id.ToString(),
+                    SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                    CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                    PaymentMethodTypes = new List<string>
+                    {
+                        "card",
+                    },
+                    Mode = "payment",
+                    LineItems = new List<SessionLineItemOptions>
+                    {
+                        new SessionLineItemOptions
+                        {
+                            Price = customer.App.GroupTutorialStripePriceId, 
+                            Quantity = 1,
+                        },
+                    }
+
+                };
+
+                var service = new SessionService(this.client);
+                var session = await service.CreateAsync(options);
+
+                tutorial.StripePaymentSessionId = session.Id;
+                tutorial.HasCompletedCheckout = false;
+                db.Entry(tutorial).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+
+                response.Status = ResponseStatus.OK;
+                response.Content = new GroupTutorialPurchaseResponseViewModel
+                {
+                    SessionId = session.Id,
+                };
+                return response;
+
+            }
+            catch (StripeException e)
+            {
+                Console.WriteLine(e.StripeError.Message);
+
+                var errorMessage = new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ReasonPhrase = e.StripeError.Message
+                };
+
+                throw new HttpResponseException(errorMessage);
+
+            }
+            catch (Exception ex)
+            {
+
+                var errorMessage = new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ReasonPhrase = ex.Message
+                };
+
+                throw new HttpResponseException(errorMessage);
+
+            }
+
+
+        }
+
+
         [Route("api/app/tutorialpurchase")]
         [HttpPost]
         public async Task<ResponseData<TutorialPurchaseResponseViewModel>> TutorialPurchase(TutorialPurchaseRequestViewModel request)
@@ -661,17 +937,17 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     case 20:
                         tutorial.TutorialCost = customer.App.TutorialCost20Minutes;
-                        tutorialPriceId = customer.App.TutorialStripPriceId20Minutes;
+                        tutorialPriceId = tutor.TutorialStripPriceId20Minutes;
                         tutorialFee = customer.App.TutorialStripApplicationFee20Minutes;
                         break;
                     case 40:
                         tutorial.TutorialCost = customer.App.TutorialCost40Minutes;
-                        tutorialPriceId = customer.App.TutorialStripPriceId40Minutes;
+                        tutorialPriceId = tutor.TutorialStripPriceId40Minutes;
                         tutorialFee = customer.App.TutorialStripApplicationFee40Minutes;
                         break;
                     case 60:
                         tutorial.TutorialCost = customer.App.TutorialCost60Minutes;
-                        tutorialPriceId = customer.App.TutorialStripPriceId60Minutes;
+                        tutorialPriceId = tutor.TutorialStripPriceId60Minutes;
                         tutorialFee = customer.App.TutorialStripApplicationFee60Minutes;
                         break;
                     default:
@@ -686,8 +962,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     // NOTE: https://stripe.com/docs/api/checkout/sessions/create
                     ClientReferenceId = _tutorialStripePrefix + tutorial.Id.ToString(),
-                    SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
-                    CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                    SuccessUrl = request.SuccessUrl + "?tutorStripeId=" + tutor.TutorStripeId + "&session_id={CHECKOUT_SESSION_ID}",
+                    CancelUrl = request.CancelUrl + "?tutorStripeId=" + tutor.TutorStripeId + "&session_id={CHECKOUT_SESSION_ID}",
                     PaymentMethodTypes = new List<string>
                     {
                         "card",
@@ -701,18 +977,23 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             Quantity = 1,
                         },
                     },
+                    
                     PaymentIntentData = new SessionPaymentIntentDataOptions
                     {
-                        ApplicationFeeAmount = Convert.ToInt32(tutorialFee),
-                        TransferData = new SessionPaymentIntentDataTransferDataOptions
-                        {
-                            Destination = tutor.TutorStripeId,
-                        },
-                        TransferGroup = "TUTORIAL",
+                        ApplicationFeeAmount = Convert.ToInt32(tutorialFee * 100),
+
                     }
+                    
                 };
-                var service = new SessionService(this.client);
-                var session = await service.CreateAsync(options);
+
+                var requestOptions = new RequestOptions
+                {
+                    StripeAccount = tutor.TutorStripeId,
+                };
+
+
+                var service = new SessionService(this.clientConnectedAccounts);
+                var session = await service.CreateAsync(options, requestOptions);
 
                 tutorial.StripePaymentSessionId = session.Id;
                 tutorial.HasCompletedCheckout = false;
@@ -1442,6 +1723,124 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
+        [Route("api/app/customersignup")]
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<CreateCustomerPayemntSessionResponse> CustomerSignup(CreateCustomerPayemntSessionRequest request)
+        {
+            try
+            {
+                //TODO: where we are changing a stripe subscription we will need to cancel on Strpe at the same time.
+                var subscriptionType = await db.SubscriptionType.FirstAsync(x => x.Id == request.SubscriptionTypeId);
+
+                Customer customer;
+
+                if (User.Identity.IsAuthenticated)
+                {
+
+                    customer = await db.Customer.FirstAsync(x => x.Id == _customerId);
+
+                    var didChangeWithoutCharge = await ChangeSubscriptionIfNoExtraCharge(subscriptionType);
+
+                    if (didChangeWithoutCharge)
+                    {
+                        return new CreateCustomerPayemntSessionResponse
+                        {
+                            SessionId = "NOCHARGE",
+                        };
+                    }
+
+                }
+                else
+                {
+                    var register = await RegisterCustomer(request);
+
+
+                    if (register.Content == null)
+                    {
+                        return new CreateCustomerPayemntSessionResponse()
+                        {
+                            SessionId = null,
+                            Errors = register.ErrorResponse.Select(x => x.Message).ToList()
+                        };
+                    }
+                    customer = register.Content;
+                }
+
+
+
+                var options = new SessionCreateOptions
+                {
+                    // See https://stripe.com/docs/api/checkout/sessions/create
+                    ClientReferenceId = customer.Id.ToString(),
+                    SuccessUrl = request.SuccessUrl + "?session_id={CHECKOUT_SESSION_ID}",
+                    CancelUrl = request.CancelUrl + "?session_id={CHECKOUT_SESSION_ID}",
+
+                    PaymentMethodTypes = new List<string>
+                    {
+                        "card",
+                    },
+                    Mode = "subscription",
+                    LineItems = new List<SessionLineItemOptions>
+                    {
+                        new SessionLineItemOptions
+                        {
+                            Price = subscriptionType.StripePriceId,
+                            Quantity = 1,
+                        },
+                    },
+
+                };
+                var service = new SessionService(this.client);
+
+                var session = await service.CreateAsync(options);
+
+                customer.PaymentSessionId = session.Id;
+                db.Entry(customer).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+
+                await CreateCustomerSubscription((Customer)customer, subscriptionType);
+
+                return new CreateCustomerPayemntSessionResponse
+                {
+                    SessionId = session.Id,
+                };
+            }
+            catch (StripeException e)
+            {
+                Console.WriteLine(e.StripeError.Message);
+
+                var errorMessage = new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ReasonPhrase = e.StripeError.Message
+                };
+
+                throw new HttpResponseException(errorMessage);
+
+
+            }
+            catch (Exception ex)
+            {
+
+                var errorMessage = new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ReasonPhrase = ex.Message,
+                    Content = new StringContent(ex.StackTrace)
+                };
+
+                if (ex.InnerException != null)
+                {
+                    errorMessage.Content = new StringContent(ex.StackTrace + ex.InnerException.StackTrace);
+                }
+
+                throw new HttpResponseException(errorMessage);
+
+
+            }
+
+        }
 
 
         #region Stripe Integration
@@ -1477,15 +1876,15 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     var register = await RegisterCustomer(request);
 
-                    if (register.Customer == null)
+                    if (register.Content == null)
                     {
                         return new CreateCustomerPayemntSessionResponse()
                         {
                             SessionId = null,
-                            Errors = register.Errors
+                            Errors = register.ErrorResponse.Select(x => x.Message).ToList()
                         };
                     }
-                    customer = register.Customer;
+                    customer = register.Content;
                 }
 
                
@@ -1592,10 +1991,20 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
 
-        async Task<RegisterResponseViewModel> RegisterCustomer(RegisterRequestViewModel model)
+        [Route("api/app/registercustomer")]
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ResponseData<Customer>> RegisterCustomer(RegisterRequestViewModel model)
         {
+            var response = new ResponseData<Customer>();
             var customer = await db.Customer.FirstOrDefaultAsync(x => x.AppId == model.AppId && x.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase));
             var errors = new List<string>();
+
+
+            if (customer != null)
+            {
+                errors.Add("User already exists. Please login.");
+            }
 
             if (model.Password != model.PasswordConfirm)
             {
@@ -1624,57 +2033,39 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 var saltBase64 = Convert.ToBase64String(salt);
                 var hashedPasswordBase64 = Convert.ToBase64String(hashedPassword);
 
-                if (customer != null)
+                customer = new Customer()
                 {
-                    //Customer has not completed checkout so we will override them here
-                    customer.AppId = model.AppId;
-                    customer.FirstName = model.FirstName;
-                    customer.LastName = model.LastName;
-                    customer.Email = email;
-                    customer.PasswordSalt = saltBase64;
-                    customer.PasswordHash = hashedPasswordBase64;
-                    customer.AcceptMarketing = model.AcceptMarketing;
-                    customer.HasCompletedCheckout = false;
-                    customer.MaxDevicesAllowed = 2;
-                    customer.HearAbout = model.HearAbout;
+                    AppId = model.AppId,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = email,
+                    PasswordSalt = saltBase64,
+                    PasswordHash = hashedPasswordBase64,
+                    AcceptMarketing = model.AcceptMarketing,
+                    HasCompletedCheckout = false,
+                    MaxDevicesAllowed = 2,
+                    HearAbout = model.HearAbout
+                };
 
-                    db.Entry(customer).State = EntityState.Modified;
-                }
-                else
-                {
-                    customer = new Customer()
-                    {
-                        AppId = model.AppId,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = email,
-                        PasswordSalt = saltBase64,
-                        PasswordHash = hashedPasswordBase64,
-                        AcceptMarketing = model.AcceptMarketing,
-                        HasCompletedCheckout = false,
-                        MaxDevicesAllowed = 2,
-                        HearAbout = model.HearAbout
-                    };
-
-                    db.Customer.Add(customer);
-                }
+                db.Customer.Add(customer);
 
 
 
                 await db.SaveChangesAsync();
 
-                return new RegisterResponseViewModel()
-                {
-                    Customer = customer
-                };
+                response.Status = ResponseStatus.OK;
+                response.Content = customer;
+                return response;
 
             }
 
-            return new RegisterResponseViewModel()
+            response.Status = ResponseStatus.Failed;
+            response.ErrorResponse = new List<ErrorResponse>();
+            response.ErrorResponse = errors.Select(x => new ErrorResponse()
             {
-                Customer = null,
-                Errors = errors
-            };
+                Message = x
+            }).ToList();
+            return response;
 
         }
 
@@ -1698,7 +2089,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 }
                 else
                 {
-
                     var accessCode = request.AccessCode.Trim().ToUpper();
                     subscriptionCode = await db.SubscriptionCode.FirstOrDefaultAsync(x =>
                         x.Code == accessCode &&
@@ -1712,11 +2102,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                     var register = await RegisterCustomer(request);
 
-                    if (register.Customer == null)
+                    if (register.Content == null)
                     {
-                        if(register.Errors != null && register.Errors.Count > 0)
+                        if(register.ErrorResponse != null && register.ErrorResponse.Count > 0)
                         {
-                            throw new Exception(register.Errors[0]);
+                            throw new Exception(register.ErrorResponse[0].Message);
                         }
                         else
                         {
@@ -1725,9 +2115,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                        
                     }
 
-                    await CreateCustomerSubscription((Customer)register.Customer, null, subscriptionCode);
+                    await CreateCustomerSubscription((Customer)register.Content, null, subscriptionCode);
 
-                    response.Content = (Customer)register.Customer;
+                    response.Content = (Customer)register.Content;
                     response.Status = ResponseStatus.OK;
 
                     return response;
@@ -1865,7 +2255,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 stripeEvent = EventUtility.ConstructEvent(
                     json,
                     stripeSignature,
-                    options.WebhookSecret
+                    json.Contains("\"" + _tutorialStripePrefix) ? optionsConnectedAccounts.WebhookSecret : optionsPlatform.WebhookSecret,
+                    throwOnApiVersionMismatch: false
                 );
 
                 Console.WriteLine($"Webhook notification with type: {stripeEvent.Type} found for {stripeEvent.Id}");
@@ -1932,6 +2323,27 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             );
 
                     }
+
+                    else if (checkOutComplete.ClientReferenceId.StartsWith(_groupTutorialStripePrefix))
+                    {
+                        var tutorialId = Convert.ToInt32(checkOutComplete.ClientReferenceId.Replace(_groupTutorialStripePrefix, string.Empty));
+                        var tutorial = await db.Tutorial
+                            .Include(x => x.TutorUser)
+                            .Include(x => x.Customer)
+                            .FirstAsync(x => x.Id == tutorialId);
+
+                        tutorial.HasCompletedCheckout = true;
+                        tutorial.PendingEmailConfirmationTutor = false; //NOTE: we dont email the tutor for group tutorials
+                        tutorial.PendingEmailConfirmationUser = true;
+                        tutorial.StripePaymentId = checkOutComplete.PaymentIntentId;
+                        tutorial.DateModified = DateTime.UtcNow;
+                        db.Entry(tutorial).State = EntityState.Modified;
+
+                        await db.SaveChangesAsync();
+
+
+                    }
+
                     else
                     {
 

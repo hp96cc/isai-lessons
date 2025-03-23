@@ -158,11 +158,11 @@
 
             if (!data)
             {
-                lessonsApp.logout();
+                lessonsApp.logout('/account/?redirectUrl=@(Url.Encode(Model.Url()))');
             }
             else if (data.Status !== 0)
             {
-                location.href = '/account/'
+                location.href = '/account/?redirectUrl=@(Url.Encode(Model.Url()))';
             }
             else
             {

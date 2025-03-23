@@ -14,5 +14,7 @@ namespace ISAI.Lessons.Models.ViewModels
 
         public string Name { get; set; }
 
+        public string TutorStripeId { get; set; }
+
     }
 }

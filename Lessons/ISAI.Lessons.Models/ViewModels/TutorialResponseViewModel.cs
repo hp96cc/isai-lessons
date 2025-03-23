@@ -13,6 +13,8 @@ namespace ISAI.Lessons.Models.ViewModels
 
         public string Name { get; set; }
 
+        public string Description { get; set; }
+
         public bool IsCompleted { get; set; }
 
         public string TeamsLink { get; set; }
@@ -25,6 +27,9 @@ namespace ISAI.Lessons.Models.ViewModels
 
         public string TutorName { get; set; }
 
+        public int? GroupTutorialId { get; set; }
+
+        public bool IsUserSignedUp { get; set; }
     }
 
 }

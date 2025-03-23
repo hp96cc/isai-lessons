@@ -1,5 +1,4 @@
 ﻿using ISAI.Lessons.Models.Interfaces;
-using ISAI.Lessons.Models.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -33,6 +32,12 @@ namespace ISAI.Lessons.EntityFramework.Models
         [ForeignKey("TutorialSubjectId")]
         public TutorialSubject TutorialSubject { get; set; }
 
+
+        [ForeignKey("GroupTutorialId")]
+        public GroupTutorial GroupTutorial { get; set; }
+
+        public int? GroupTutorialId { get; set; }
+
         public string Name { get; set; }
 
         public DateTimeOffset DateTimeStart { get; set; }
@@ -63,6 +68,9 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         [JsonIgnore]
         public bool PendingEmailConfirmationTutor { get; set; }
-     
+
+ 
+
+
     }
 }

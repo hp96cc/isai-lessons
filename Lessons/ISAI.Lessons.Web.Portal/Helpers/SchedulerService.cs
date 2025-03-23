@@ -47,8 +47,11 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                         try
                         {
 
-                            var graphApi = new MicrosoftGraphApiService();
-                            graphApi.DeleteTeamsEvent(tutorial.TutorUser.Email, tutorial.TeamsId).RunSynchronously();
+                            if (!tutorial.GroupTutorialId.HasValue)
+                            {
+                                var graphApi = new MicrosoftGraphApiService();
+                                graphApi.DeleteTeamsEvent(tutorial.TutorUser.Email, tutorial.TeamsId).RunSynchronously();
+                            }
 
                         }
                         catch (Exception ex)

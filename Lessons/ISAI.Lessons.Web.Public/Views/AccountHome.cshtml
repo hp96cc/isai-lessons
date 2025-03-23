@@ -3,14 +3,19 @@
 @{
     Layout = "Master.cshtml";
 
-    var redirectUrl = "https://" + Request.ServerVariables["HTTP_HOST"];
+    string redirectUrl = null;
 
     if(Request.QueryString["redirectUrl"] != null)
     {
-        redirectUrl += Request.QueryString["redirectUrl"].ToString();
+        redirectUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Request.QueryString["redirectUrl"].ToString();
     }
 
+    var signUpUrl = "/plans/signup";
 
+    if (redirectUrl != null)
+    {
+        signUpUrl += "?redirectUrl=" + redirectUrl;
+    }
 
 }
 
@@ -109,6 +114,12 @@
                                         Sign In
                                     </button>
 
+
+                                </div>
+                                <div class="col-12 d-flex justify-content-center mt-3">
+                                    <div class="form-group">
+                                        Don't have an account? <a class="font-size-sm text-reset" href="@signUpUrl"><u>Sign up Here</u></a>
+                                    </div>
 
                                 </div>
                             </div>

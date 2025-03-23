@@ -1,0 +1,212 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.ConfirmGroupTutorial>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+
+    int groupTutorialId = Convert.ToInt32(Request.QueryString["groupTutorialId"]);
+    var isStripeTest = (Request.ServerVariables["HTTP_HOST"].ToLower().Contains("localhost")
+        ||
+        Request.ServerVariables["HTTP_HOST"].ToLower().Contains("test")) ? true : false;
+}
+
+
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="/media/1f3fd5lm/blue-header-background.png" style="background-image: url(/media/1f3fd5lm/blue-header-background.png);">
+    <div class="container">
+        <div class="page-title">
+            <h1>Group Tutorial Signup</h1>
+         
+        </div>
+    </div>
+</section>
+
+<section class="pt-2">
+    <div class="container">
+
+            <div class="row justify-content-center mt-3" id="account-grouptutorial" style="display:none;">
+                <div class="col-6">
+
+                    <h3>Group Tutorial Signup</h3>
+                    <p>
+                        You are requesting to join the following tutorial:</p>
+
+                    <table class="table table-striped">
+                        <tr>
+                            <td>Name:</td>
+                            <td><strong id="tutorial-name"></strong></td>
+                        </tr>
+                        <tr>
+                            <td>Date:</td>
+                            <td><strong id="tutorial-date"></strong></td>
+                        </tr>
+                        <tr>
+                            <td>Time:</td>
+                            <td><strong id="tutorial-starttime">00:00</strong> to <strong id="tutorial-endtime">00:00</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Cost:</td>
+                            <td><strong><span id="tutorial-cost">40.00</span></strong></td>
+                        </tr>
+                    </table>
+
+                      
+                     
+                    <p>To confirm this please click 'Proceed to Purchase'.</p>
+                    <button type="button" class="butn x-small green p-2 pl-3 pr-3 mb-2" data-dismiss="modal" onclick="GoToPurchase();">Proceed to Purchase</button>
+
+
+                    <div id="error-label" class="alert alert-danger mt-3 delivery-error-label" role="alert" style="display:none;">
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+</section>
+
+@section Scripts {
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <script>
+
+        const optionsDate = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        const optionsTime = { hour12: false, hour: '2-digit', minute: '2-digit' };
+        var groupTutorialId = @groupTutorialId;
+        var groupTutorial;
+
+        $(document).ready(function ()
+        {
+            GetGroupTutorial();
+
+        });
+
+        async function GetGroupTutorial()
+        {
+
+            var request = {
+
+            }
+
+            var data = await lessonsApp.grouptutorial(groupTutorialId);
+
+            if (!data)
+            {
+                lessonsApp.logout('/account/?redirectUrl=@(Url.Encode(Model.Url() + "?groupTutorialId=" + groupTutorialId))');
+            }
+            else if (data.Status !== 0)
+            {
+                alert('error');
+            }
+            else
+            {
+                tutorial = data.Content;
+                DisplayGroupTutorial();
+            }
+
+
+        }
+
+        async function DisplayGroupTutorial()
+        {
+
+            $('#tutorial-name').text(tutorial.Name);
+            $('#tutorial-date').text(new Date(tutorial.DateTimeStart).toLocaleDateString('en-GB', optionsDate));
+            $('#tutorial-starttime').text(new Date(tutorial.DateTimeStart).toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-endtime').text(new Date(tutorial.DateTimeEnd).toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-duration').text(tutorial.DurationInMinutes + ' minutes');
+            $('#tutorial-cost').text('£25');
+
+            $('#account-grouptutorial').show();
+            HidePreloader();
+
+        }
+
+
+        async function GoToPurchase()
+        {
+            try
+            {
+                $('#error-label').hide();
+                ShowPreloader();
+
+                var request =
+                {
+                    GroupTutorialId: groupTutorialId,
+
+                };
+
+                var data = await lessonsApp.grouptutorialpurchase(request);
+
+
+
+                if (data !== null && data.Content != null && data.Content.SessionId !== null)
+                {
+
+                     var stripe = @(Html.Raw(isStripeTest ? "Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');" : "Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');"))
+
+                         stripe.redirectToCheckout({
+                             sessionId: data.Content.SessionId
+                         }).then(handleResult);
+                     return;
+
+                } else
+                {
+                    var errorHTML = '';
+
+                    if (data === null)
+                    {
+                        errorHTML = 'Could not create session. Please contact support';
+                    }
+                    else if (data.ErrorResponse.length > 0)
+                    {
+
+                        errorHTML += '<ul>';
+
+                        data.ErrorResponse.forEach(function (item)
+                        {
+                            errorHTML += '<li>' + item.Message + '</li>';
+                        });
+
+                        errorHTML += '</ul>';
+                    }
+                
+                    else
+                    {
+                        errorHTML = 'Could not create session. Please contact support';
+                    }
+
+                    $('#error-label').html(errorHTML);
+                    $('#error-label').show();
+
+                }
+
+                HidePreloader();
+
+            }
+            catch (ex)
+            {
+
+                HidePreloader();
+                $('#error-label').html(ex.message);
+                $('#error-label').show();
+  
+            }
+        }
+
+
+        var handleResult = function (result)
+        {
+            if (result.error)
+            {
+
+                $('#error-label').html(result.error.message);
+                $('#error-label').show();
+                HidePreloader();
+            }
+        };
+
+    </script>
+}

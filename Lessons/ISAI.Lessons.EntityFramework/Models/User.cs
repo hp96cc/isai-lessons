@@ -49,6 +49,10 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public string TutorStripeId { get; set; }
 
+        public string TutorialStripPriceId20Minutes { get; set; }
+        public string TutorialStripPriceId40Minutes { get; set; }
+        public string TutorialStripPriceId60Minutes { get; set; }
+
         public string AllowedTutorialSubjectTutorUserJson { get; set; }
 
         public DateTime DateCreated { get; set; }

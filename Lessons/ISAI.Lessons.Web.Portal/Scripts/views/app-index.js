@@ -94,69 +94,6 @@
                 width: 200
             },
 
-            {
-                field: 'TutorialCost20Minutes',
-                headerText: 'Tutorial Cost 20 Mins',
-                validationRules: { required: true },
-                width: 150
-            },
-
-            {
-                field: 'TutorialCost40Minutes',
-                headerText: 'Tutorial Cost 40 Mins',
-                validationRules: { required: true },
-                width: 150
-            },
-
-            {
-                field: 'TutorialCost60Minutes',
-                headerText: 'Tutorial Cost 40 Mins',
-                validationRules: { required: true },
-                width: 200
-            },
-
-            {
-                field: 'TutorialStripPriceId20Minutes',
-                headerText: 'Tutorial Stripe Id 20 Mins',
-                validationRules: { required: true },
-                width: 200
-            },
-
-            {
-                field: 'TutorialStripPriceId40Minutes',
-                headerText: 'Tutorial Stripe Id 40 Mins',
-                validationRules: { required: true },
-                width: 200
-            },
-
-            {
-                field: 'TutorialStripPriceId60Minutes',
-                headerText: 'Tutorial Stripe Id 60 Mins',
-                validationRules: { required: true },
-                width: 200
-            },
-
-            {
-                field: 'TutorialStripApplicationFee20Minutes',
-                headerText: 'Tutorial Fee 20 Mins',
-                validationRules: { required: true },
-                width: 200
-            },
-
-            {
-                field: 'TutorialStripApplicationFee40Minutes',
-                headerText: 'Tutorial Fee 40 Mins',
-                validationRules: { required: true },
-                width: 200
-            },
-
-            {
-                field: 'TutorialStripApplicationFee60Minutes',
-                headerText: 'Tutorial Fee 60 Mins',
-                validationRules: { required: true },
-                width: 200
-            },
-
 
 
 

@@ -363,6 +363,22 @@
     <Compile Include="Migrations\202503171059031_Added Group Tutorial.Designer.cs">
       <DependentUpon>202503171059031_Added Group Tutorial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503210744246_Add Tutor Price ids.cs" />
+    <Compile Include="Migrations\202503210744246_Add Tutor Price ids.Designer.cs">
+      <DependentUpon>202503210744246_Add Tutor Price ids.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503220735410_add group tutorial to app.cs" />
+    <Compile Include="Migrations\202503220735410_add group tutorial to app.Designer.cs">
+      <DependentUpon>202503220735410_add group tutorial to app.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503221004596_add group tutorial to tutorial.cs" />
+    <Compile Include="Migrations\202503221004596_add group tutorial to tutorial.Designer.cs">
+      <DependentUpon>202503221004596_add group tutorial to tutorial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503221250497_Removed Customer Group Tutorials.cs" />
+    <Compile Include="Migrations\202503221250497_Removed Customer Group Tutorials.Designer.cs">
+      <DependentUpon>202503221250497_Removed Customer Group Tutorials.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -372,7 +388,6 @@
     <Compile Include="Models\Lesson.cs" />
     <Compile Include="Models\LessonGroup.cs" />
     <Compile Include="Models\StripeWebhookLog.cs" />
-    <Compile Include="Models\GroupTutorialCustomer.cs" />
     <Compile Include="Models\GroupTutorial.cs" />
     <Compile Include="Models\TutorialSubjectGroup.cs" />
     <Compile Include="Models\TutorialSubject.cs" />
@@ -462,6 +477,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503171059031_Added Group Tutorial.resx">
       <DependentUpon>202503171059031_Added Group Tutorial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503210744246_Add Tutor Price ids.resx">
+      <DependentUpon>202503210744246_Add Tutor Price ids.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503220735410_add group tutorial to app.resx">
+      <DependentUpon>202503220735410_add group tutorial to app.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503221004596_add group tutorial to tutorial.resx">
+      <DependentUpon>202503221004596_add group tutorial to tutorial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503221250497_Removed Customer Group Tutorials.resx">
+      <DependentUpon>202503221250497_Removed Customer Group Tutorials.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

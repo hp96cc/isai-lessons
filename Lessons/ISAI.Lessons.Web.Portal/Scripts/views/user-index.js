@@ -81,6 +81,9 @@ class UserDataManagerAdaptor extends ej.data.ODataV4Adaptor {
         userPatch.Position = value.Position;
         userPatch.TutorStripeId = value.TutorStripeId;
         userPatch.TutorEmail = value.TutorEmail;
+        userPatch.TutorialStripPriceId20Minutes = value.TutorialStripPriceId20Minutes;
+        userPatch.TutorialStripPriceId40Minutes = value.TutorialStripPriceId40Minutes;
+        userPatch.TutorialStripPriceId60Minutes = value.TutorialStripPriceId60Minutes;
 
         return {
             type: 'PATCH',
@@ -102,7 +105,9 @@ class UserDataManagerAdaptor extends ej.data.ODataV4Adaptor {
         userPost.Position = value.Position;
         userPost.TutorStripeId = value.TutorStripeId;
         userPost.TutorEmail = value.TutorEmail;
-
+        userPost.TutorialStripPriceId20Minutes = value.TutorialStripPriceId20Minutes;
+        userPost.TutorialStripPriceId40Minutes = value.TutorialStripPriceId40Minutes;
+        userPost.TutorialStripPriceId60Minutes = value.TutorialStripPriceId60Minutes;
 
         return {
             type: 'POST',
@@ -354,6 +359,26 @@ function InituserGrid() {
                 headerText: 'Tutor Email',
 
             },
+
+            {
+                field: 'TutorialStripPriceId20Minutes',
+                headerText: 'Stripe Price Id 20 Mins',
+
+            },
+
+            {
+                field: 'TutorialStripPriceId40Minutes',
+                headerText: 'Stripe Price Id 40 Mins',
+
+            },
+
+            {
+                field: 'TutorialStripPriceId60Minutes',
+                headerText: 'Stripe Price Id 60 Mins',
+
+            },
+
+
             
 
 

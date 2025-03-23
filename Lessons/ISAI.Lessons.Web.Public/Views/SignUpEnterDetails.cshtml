@@ -10,7 +10,18 @@
         Response.Redirect("/account/info");
     }
 
-    var isStripeTest = Request.QueryString["IsTest"] != null ? true : false;
+    string redirectUrl = null;
+
+    if (Request.QueryString["redirectUrl"] != null)
+    {
+        redirectUrl = Request.QueryString["redirectUrl"].ToString();
+    }
+
+    var isGroupTutorial = redirectUrl != null && redirectUrl.Contains("groupTutorialId");
+
+    var isStripeTest = (Request.ServerVariables["HTTP_HOST"].ToLower().Contains("localhost")
+        ||
+        Request.ServerVariables["HTTP_HOST"].ToLower().Contains("test")) ? true : false;
 
     var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
 
@@ -20,8 +31,8 @@
 <section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()" style="background-image: url(@Model.BackgroundImage.MediaUrl());">
     <div class="container">
         <div class="page-title">
-            <h1>@Model.Title</h1>
-            <p><strong>@Model.Subtitle</strong></p>
+            <h1>Signup</h1>
+            <p><strong>To sign up for a Scottish Online Lessons account please complete the details below.</strong></p>
         </div>
     </div>
 </section> 
@@ -30,34 +41,13 @@
 <section class="pt-5">
 
     <div class="container">
-        <div class="section-heading">
-
-            @if (ViewBag.LoggedIn == null)
-            {
-
-                @Model.PageContent
-
-
-
-            }
-
-            <span class="title-separator"></span>
-        </div>
+   
         <div class="row">
             <div class="col-lg-8 col-md-10 center-col">
 
                 <div class="block-info">
 
-                    @if (ViewBag.LoggedIn == null)
-                    {
-
-                        <h6 class="bg-sky">Signup</h6>
-
-                    }
-                    else
-                    {
-                        <h6 class="bg-sky">Redirecting to Payment</h6>
-                    }
+                    <h6 class="bg-sky">Signup</h6>
 
                     <div class="padding-50px-all md-padding-50px-all sm-padding-25px-all">
 
@@ -69,51 +59,78 @@
 
                             <div class="row">
 
-                                <div class="col-12">
+                           
 
-                                    <h5>Choose your plan:</h5>
+                                <div id="section-confirmgrouptutorial" style="display:none;">
 
+                                   
+
+                                   
 
                                 </div>
 
-                                <div class="col-12" id="div-input-chooseplan">
-                                    <div class="form-group">
-                                        <label>Choose Plan: *</label>
 
-                                        <select id="select-plan" class="form-control" required>
-                                            <option value="100">Primary & Secondary Monthly - £22.50 per month</option>
-                                            <option value="101" selected>Primary & Secondary Annually - £225 per year</option>
-                                            <option value="102">Primary Monthly - £15 per month</option>
-                                            <option value="103">Primary Annually - £150 per year</option>
-                                            <option value="104">Secondary Monthly - £15 per month</option>
-                                            <option value="105">Secondary Annually - £150 per year</option>
-                                        </select>
-                                        <div class="invalid-feedback">Please choose a plan</div>
+                                <div id="section-chooseplan" style="display:none;">
+
+                                    <div class="col-12">
+
+                                        <h5>Choose your plan:</h5>
+
+
                                     </div>
-                                </div>
 
-                                <div class="col-md-12" id="div-input-accesscode" style="display:none;">
-                                    <div class="form-group">
-                                        <label>Access Code *:</label>
-                                        <input type="text" class="form-control" id="input-accesscode" name="input-accesscode" autocomplete="none" />
-                                        <div class="invalid-feedback">Access code is required</div>
-                                    </div>
-                                </div>
+                                    <div class="col-12" id="div-input-chooseplan">
+                                        <div class="form-group">
+                                            <label>Choose Plan: *</label>
 
-                                <div class="col-md-12" id="div-input-toggleaccesscode">
-                                    <div class="form-group">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="checkbox-accesscode" onchange="ToggleAccessCode();">
-                                            <label class="custom-control-label" for="checkbox-accesscode">I have an access code</label>
-                                            <span class="invalid-feedback">Access code invalid.</span>
-
+                                            <select id="select-plan" class="form-control" required>
+                                                <option value="100">Primary & Secondary Monthly - £22.50 per month</option>
+                                                <option value="101" selected>Primary & Secondary Annually - £225 per year</option>
+                                                <option value="102">Primary Monthly - £15 per month</option>
+                                                <option value="103">Primary Annually - £150 per year</option>
+                                                <option value="104">Secondary Monthly - £15 per month</option>
+                                                <option value="105">Secondary Annually - £150 per year</option>
+                                            </select>
+                                            <div class="invalid-feedback">Please choose a plan</div>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-12" id="div-input-accesscode" style="display:none;">
+                                        <div class="form-group">
+                                            <label>Access Code *:</label>
+                                            <input type="text" class="form-control" id="input-accesscode" name="input-accesscode" autocomplete="none" />
+                                            <div class="invalid-feedback">Access code is required</div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-12" id="div-input-toggleaccesscode">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="checkbox-accesscode" onchange="ToggleAccessCode();">
+                                                <label class="custom-control-label" for="checkbox-accesscode">I have an access code</label>
+                                                <span class="invalid-feedback">Access code invalid.</span>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+
+                                 
+                                        <small>
+                                            To access your Free Trial please fill in the below contact form with your details and select ’I have an access code’. In this section please enter 'FREE1DAYTRIAL'
+                                        </small>
+
+
+                                    </div>
+
                                 </div>
 
+                          
 
 
-                                <div class="col-12">
+                                <div class="col-12 mt-4">
 
                                     <h5>Your Details:</h5>
 
@@ -182,7 +199,7 @@
                                 </div>
 
 
-                                <div class="col-md-12" id="div-input-toggleaccesscode">
+                                <div class="col-md-12" id="div-input-autorenewal" style="display:none;">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="checkbox-autorenewal" required>
                                         <label class="custom-control-label" for="checkbox-autorenewal">I am aware this will automatically renewal monthly until I cancel it</label>
@@ -201,7 +218,8 @@
 
 
                                 <div class="col-md-12 margin-35px-top sm-margin-25px-top">
-                                    <button type="button" id="button-checkout" onclick="GoToPayment();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Go To Payment</button>
+                                    <button type="button" id="button-signup" style="display:none;" onclick="Signup();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Signup</button>
+                                    <button type="button" id="button-checkout" style="display:none;" onclick="GoToPayment();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Go To Payment</button>
                                     <button type="button" id="button-activate" style="display:none;" onclick="Activate();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Activate Access Code</button>
 
                                 </div>
@@ -233,7 +251,8 @@
     <script>
 
         var loggedIn = false;
-        
+        var isGroupTutorial = @(isGroupTutorial ? "true;" : "false;")
+
         @if(ViewBag.LoggedIn != null)
         {
             @:loggedIn = true
@@ -241,13 +260,32 @@
 
         $(document).ready(function () {
 
-            if (loggedIn) {
-                $('#register-form').hide();
-                $('#spinner-loading').show();
-                GoToPayment();
+            if (loggedIn)
+            {
+                location.href = '/account/';
             } else {
                 $('#register-form').show();
-                
+
+            }
+
+            if (isGroupTutorial)
+            {
+                $('#section-confirmgrouptutorial').show();
+                $('#section-chooseplan').hide();
+                $('#div-input-toggleaccesscode').hide();
+                $('#button-checkout').hide();
+                $('#button-signup').show();
+                $('#div-input-autorenewal').hide();
+                $('#checkbox-autorenewal').removeAttr('required');
+            }
+            else
+            {
+                $('#section-confirmgrouptutorial').hide();
+                $('#section-chooseplan').show();
+                $('#div-input-toggleaccesscode').show();
+                $('#button-checkout').show();
+                $('#button-signup').hide();
+                $('#div-input-autorenewal').show();
             }
 
         });
@@ -346,20 +384,87 @@
             }
         }
 
-        async function GoToPayment() {
+        async function Signup()
+        {
+            $('#form-error-label').text('');
+            $('#form-error-label').hide();
+
+            var form = document.getElementById("register-form");
+
+            if (loggedIn == false && form.checkValidity() === false)
+            {
+
+                event.preventDefault();
+                event.stopPropagation();
+                form.classList.add('was-validated');
+
+            } else
+            {
+
+
+                $('#register-form').hide();
+                $('#spinner-loading').show();
+                var errorHTML = '';
+
+                var registerObject = {
+
+                    firstName: $("#input-firstname").val(),
+                    lastName: $("#input-lastname").val(),
+                    email: $("#input-email").val(),
+                    password: $("#input-password").val(),
+                    passwordConfirm: $('#input-confirmpassword').val(),
+                    acceptMarketing: $('#input-newsletter').prop("checked"),
+                    hearAbout: $('#input-hearabout').val()
+                }
+
+                var data = await lessonsApp.register(registerObject);
+
+                if (data && data.Content != null)
+                {
+
+                      @if(string.IsNullOrWhiteSpace(redirectUrl))
+                      {
+                          @:location.href = "/account/info";
+                      }
+                      else
+                      {
+                          @:location.href = "@redirectUrl";
+                      }
+                    return;
+
+
+                }
+                else
+                {
+
+                    errorHTML = 'Could not create account. Please contact support';
+                }
+
+                $('#form-error-label').html(errorHTML);
+                $('#form-error-label').show();
+                $('#register-form').show();
+                $('#spinner-loading').hide();
+
+            }
+        }
+
+        async function GoToPayment()
+        {
 
             $('#form-error-label').text('');
             $('#form-error-label').hide();
 
             var form = document.getElementById("register-form");
 
-            if (loggedIn == false && form.checkValidity() === false) {
+            if (loggedIn == false && form.checkValidity() === false)
+            {
 
                 event.preventDefault();
                 event.stopPropagation();
                 form.classList.add('was-validated');
 
-            } else {
+            } else
+            {
 
                 if (/^\s*$/.test($('#input-subscriptiontypeid').val()))
                 {
@@ -388,33 +493,39 @@
 
                 var data = await lessonsApp.createCustomerPaymentSession(paymentSessionObject);
 
-                if (data.sessionId != null) {
+                if (data.sessionId != null)
+                {
 
                     var stripe = @(Html.Raw(isStripeTest ? "Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');" : "Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');"))
 
-                    stripe.redirectToCheckout({
-                    sessionId: data.sessionId
-                    }).then(handleResult);
-                return;
+                        stripe.redirectToCheckout({
+                            sessionId: data.sessionId
+                        }).then(handleResult);
+                    return;
 
-            } else {
+                } else
+                {
 
-                    if (data.Errors.length > 0) {
+                    if (data.Errors.length > 0)
+                    {
 
                         errorHTML += '<ul>';
 
-                        data.Errors.forEach(function (item) {
+                        data.Errors.forEach(function (item)
+                        {
                             errorHTML += '<li>' + item + '</li>';
                         });
 
                         errorHTML += '</ul>';
                     }
-                    else if (data.Errors.length === 1) {
-        errorHTML = data.Errors[0];
-    }
-    else {
-        errorHTML = 'Could not create session. Please contact support';
-    }
+                    else if (data.Errors.length === 1)
+                    {
+                        errorHTML = data.Errors[0];
+                    }
+                    else
+                    {
+                        errorHTML = 'Could not create session. Please contact support';
+                    }
 
                 }
 

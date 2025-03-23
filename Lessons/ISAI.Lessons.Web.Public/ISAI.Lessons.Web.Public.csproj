@@ -617,6 +617,7 @@
     <Compile Include="App_Data\Models\AboutPage.generated.cs" />
     <Compile Include="App_Data\Models\AccountActivity.generated.cs" />
     <Compile Include="App_Data\Models\AccountDevices.generated.cs" />
+    <Compile Include="App_Data\Models\AccountGroupTutorials.generated.cs" />
     <Compile Include="App_Data\Models\AccountHome.generated.cs" />
     <Compile Include="App_Data\Models\AccountInfo.generated.cs" />
     <Compile Include="App_Data\Models\AccountLogout.generated.cs" />
@@ -625,6 +626,7 @@
     <Compile Include="App_Data\Models\AppVideoPage.generated.cs" />
     <Compile Include="App_Data\Models\BlogGroup.generated.cs" />
     <Compile Include="App_Data\Models\BlogItem.generated.cs" />
+    <Compile Include="App_Data\Models\ConfirmGroupTutorial.generated.cs" />
     <Compile Include="App_Data\Models\ContactElement.generated.cs" />
     <Compile Include="App_Data\Models\ContactPage.generated.cs" />
     <Compile Include="App_Data\Models\ContentBoxWithLink.generated.cs" />
@@ -752,6 +754,9 @@
     <Content Include="Views\TutorialPayment.cshtml" />
     <Content Include="Views\TutorialPaymentFailed.cshtml" />
     <Content Include="Views\TutorialPaymentSuccess.cshtml" />
+    <Content Include="Views\ConfirmGroupTutorial.cshtml" />
+    <Content Include="Views\EmailTemplate.cshtml" />
+    <Content Include="Views\AccountGroupTutorials.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

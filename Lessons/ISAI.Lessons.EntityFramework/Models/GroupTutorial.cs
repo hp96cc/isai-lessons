@@ -1,5 +1,6 @@
 ﻿using ISAI.Lessons.Models.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ISAI.Lessons.EntityFramework.Models
@@ -22,6 +23,8 @@ namespace ISAI.Lessons.EntityFramework.Models
         public string Description { get; set; }
         public string TeamsId { get; set; }
         public string TeamsLink { get; set; }
+
+        public virtual List<Tutorial> Tutorials { get; set; }
 
     }
 }

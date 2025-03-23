@@ -141,7 +141,7 @@
         $(document).ready(function () {
 
             GetDevices();
-         
+
         });
 
 
@@ -151,11 +151,11 @@
             var data = await lessonsApp.getCustomerDevices();
 
             if (!data) {
-                lessonsApp.logout();
+                lessonsApp.logout('/account/?redirectUrl=@(Url.Encode(Model.Url()))');
             }
-            else if (data.Status !== 0) 
+            else if (data.Status !== 0)
             {
-                location.href = '/account/'
+                location.href = '/account/?redirectUrl=@(Url.Encode(Model.Url()))';
             }
             else
             {
@@ -203,11 +203,11 @@
             var data = await lessonsApp.deleteCustomerDevice({ Id: deleteDeviceId});
 
             if (!data) {
-                lessonsApp.logout();
+                lessonsApp.logout('/account/?redirectUrl=@(Url.Encode(Model.Url()))');
             }
-            else if (data.Status !== 0) 
+            else if (data.Status !== 0)
             {
-                location.href = '/account/'
+                location.href = '/account/?redirectUrl=@(Url.Encode(Model.Url()))';
             } else {
 
                 GetDevices();

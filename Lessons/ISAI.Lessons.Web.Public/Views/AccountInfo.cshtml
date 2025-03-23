@@ -171,11 +171,11 @@
             var data = await lessonsApp.getCustomer();
 
             if (!data) {
-                lessonsApp.logout();
+                lessonsApp.logout('/account/?redirectUrl=@(Url.Encode(Model.Url()))');
             }
-            else if (data.Status !== 0) 
+            else if (data.Status !== 0)
             {
-                location.href = '/account/'
+                location.href = '/account/?redirectUrl=@(Url.Encode(Model.Url()))';
             }
             else
             {
@@ -241,7 +241,7 @@
 
                 if (data.ErrorResponse !== null && data.ErrorResponse.length > 0) {
                     errorMessage = data.ErrorResponse[0].Message;
-                } 
+                }
 
                 $("#account-error-label").text(errorMessage);
                 $("#account-error-label").show();

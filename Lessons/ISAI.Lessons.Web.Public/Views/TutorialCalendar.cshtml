@@ -2,6 +2,9 @@
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "Master.cshtml";
+    var isStripeTest = (Request.ServerVariables["HTTP_HOST"].ToLower().Contains("localhost")
+        ||
+        Request.ServerVariables["HTTP_HOST"].ToLower().Contains("test")) ? true : false;
 }
 
 
@@ -192,8 +195,12 @@
         var endTime;
         var calendar;
         var tutorialDuration = 40;
+        var tutorialCost = 32;
         var selectedTutorialSubjectId
         var costPerTimeSlot;
+        var tutors;
+        var selectedTutorId;
+        var selectedTutor;
         var today = new Date(new Date().setHours(0, 0, 0, 0));
         var minDate = new Date(today);
         minDate.setDate(minDate.getDate() + 1);
@@ -223,7 +230,7 @@
 
         async function CheckSubscription()
         {
-            try { 
+            try {
 
             var data = await lessonsApp.subscription();
 
@@ -277,7 +284,7 @@
             }
             catch (ex)
             {
-            
+
                 HidePreloader();
                 alert("GetTutorialSubjectGroups Error: " + ex.message);
             }
@@ -347,15 +354,14 @@
 
                 var data = await lessonsApp.tutors(request);
 
-         
-         
                 if (!data || data.Status !== 0)
                 {
                     throw new Error('GetTutors failed');
                 }
                 else
                 {
-                    DisplayTutors(data.Content.Tutors);
+                    tutors = data.Content.Tutors;
+                    DisplayTutors();
 
                     return;
                 }
@@ -369,7 +375,7 @@
 
         }
 
-        function DisplayTutors(tutors)
+        function DisplayTutors()
         {
             $("#select-tutorial-tutor").find("option").remove().end();
             tutors.forEach(x => $("#select-tutorial-tutor").append(new Option(x.Name, x.Id)));
@@ -379,14 +385,30 @@
 
         async function GetTimeslots()
         {
-            $('#tutorial-booking-summary').hide(); 
+            $('#tutorial-booking-summary').hide();
 
             ShowPreloader();
 
             var tutorId = $("#select-tutorial-tutor").children("option:selected").val();
             selectedTutorId = tutorId;
+            selectedTutor = tutors.find(x => x.Id === selectedTutorId);
             var tutorialDate = calendar.value;
             tutorialDuration = parseInt($("#select-tutorial-duration").children("option:selected").val());
+
+            switch (tutorialDuration)
+            {
+                case 20:
+                    tutorialCost = 25;
+                    break;
+
+                case 40:
+                    tutorialCost = 32;
+                    break;
+
+                case 60:
+                    tutorialCost = 42;
+                    break;
+            }
 
             var request = {
                 TutorId: tutorId,
@@ -473,7 +495,7 @@
             $('#tutorial-start-text-modal').text(startTime.toLocaleTimeString('en-GB', optionsTime));
             $('#tutorial-end-text-modal').text(endTime.toLocaleTimeString('en-GB', optionsTime));
             $('#tutorial-date-text-modal').text(startTime.toLocaleDateString('en-GB', optionsDate));
-            $('#tutorial-cost-text-modal').text(tutorialDuration);
+            $('#tutorial-cost-text-modal').text(tutorialCost);
 
             $('#tutorial-booking-summary').removeClass("d-none").show();
         }
@@ -506,8 +528,14 @@
 
                 if (data !== null && data.Content.SessionId !== null)
                 {
-                    var stripe = Stripe('pk_test_EbunoXzEjoMoXlgWQzcxnkiM');
-                    //var stripe = Stripe('pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx');
+
+                    var stripePlatformId = @(Html.Raw(isStripeTest ? "'pk_test_EbunoXzEjoMoXlgWQzcxnkiM'" : "'pk_live_MbN9ohZ2EZLr8J98eg5Uq2hx'"));
+
+
+                    var stripe = Stripe(stripePlatformId, {
+                        stripeAccount: selectedTutor.TutorStripeId,
+                    });
+
                     stripe.redirectToCheckout({
                         sessionId: data.Content.SessionId
                     }).then(handleResult);

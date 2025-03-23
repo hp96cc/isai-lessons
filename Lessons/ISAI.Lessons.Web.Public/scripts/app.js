@@ -184,6 +184,30 @@
         }
     };
 
+
+    var grouptutorialpurchase = async function (request)
+    {
+        var url = this.baseUrl + "grouptutorialpurchase";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+    
+
     var tutorialSubjectGroups = async function ()
     {
 
@@ -270,6 +294,48 @@
             console.log(error);
         }
     };
+
+    var grouptutorials = async function (request)
+    {
+        var url = this.baseUrl + "grouptutorials";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+    var grouptutorial = async function (groupTutorialId)
+    {
+        var url = this.baseUrl + "grouptutorial?groupTutorialId=" + groupTutorialId;
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
 
     var tutorialCreate = async function (tutorial)
     {
@@ -389,6 +455,36 @@
 
 
     };
+
+
+    var register = async function (registerRequestViewModel)
+    {
+
+        var result = null;
+        var url = this.baseUrl + "register";
+
+        try
+        {
+
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(registerRequestViewModel),
+                type: "POST",
+                contentType: 'application/json',
+            });
+
+            result = data;
+
+        } catch (error)
+        {
+
+            console.log(error);
+
+        }
+
+        return result;
+
+    }
 
 
     var signupWithAccessCode = async function (registerRequestViewModel) {
@@ -629,7 +725,7 @@
 
 
 
-    var logout = async function() {
+    var logout = async function(redirectUrl) {
 
 
         var url = this.baseUrl + "logout";
@@ -642,7 +738,8 @@
                 contentType: 'application/json',
             });
 
-            window.location.href = '/account/';
+            window.location.href = redirectUrl;
+
 
         } catch (error) {
 
@@ -684,7 +781,11 @@
         tutorialSubjects: tutorialSubjects,
         tutorialSubjectGroups: tutorialSubjectGroups,
         subscription: subscription,
-        cancelStripeSubscription: cancelStripeSubscription
+        cancelStripeSubscription: cancelStripeSubscription,
+        register: register,
+        grouptutorial: grouptutorial,
+        grouptutorials: grouptutorials,
+        grouptutorialpurchase: grouptutorialpurchase
 
     }
 
