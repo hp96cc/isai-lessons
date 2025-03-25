@@ -63,7 +63,6 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
                             groupTutorial.TeamsId = teamsEventResponse.Id;
                             groupTutorial.TeamsLink = teamsEventResponse.WebLink;
-                            groupTutorial.Deleted = true;
                             groupTutorial.DateModified = DateTime.Now;
                             groupTutorial.ModifiedUserId = _systemUserId;
                             db.Entry(groupTutorial).State = EntityState.Modified;

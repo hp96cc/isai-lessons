@@ -1,0 +1,188 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.GroupTutorialPublic>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+}
+
+<!-- BREADCRUMB -->
+
+<!-- CONTENT -->
+<section class="p-0 pt-5">
+    <div class="container">
+
+
+
+        <div class="row">
+       
+            <div class="col-12">
+                <div class="row">
+
+
+                    <div class="col-12 text-center">
+
+                        <!-- Heading -->
+                        <h3 class="mb-10">Group Tutorials</h3>
+                        <p>Below is a list of our pre-planned Group Tutorials. </p>
+
+
+
+                    </div>
+
+
+                    <div class="col-12 p-1">
+                        <div class="row" id="tutorial-list"></div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class="modal fade" id="confirmTutorialModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmTutorialModalLabel">Book Group Tutorial</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+
+                <p>To Book a Group Tutorial you need to have a Scottish Online Lessons account.</p>
+
+                <button type="button" class="butn x-small green m-3" style="min-width:125px;" data-dismiss="modal">Login</button>
+
+                <button type="button" class="butn x-small green m-3" style="min-width:125px;" data-dismiss="modal">Register</button>
+
+            </div>
+            <div class="modal-footer">
+              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <template id="template-tutorial">
+
+        <div class="col-12 p-0">
+            <div class="card-body pt-0">
+
+                <!-- Info -->
+                <div class="card card-sm">
+                    <div class="card-body bg-light">
+                        <div class="row">
+                            <div class="col-10">
+
+                                <!-- Heading -->
+                                <h6 class="heading-xxxs text-muted">
+                                    {{Date}} @@ {{TimeStart}} to {{TimeEnd}}
+
+                             
+                                </h6>
+
+                                <!-- Text -->
+                                <p class="mb-lg-0 font-size-sm">
+                                    <span class=" font-weight-bold">{{Name}}</span><br />
+                                    {{Description}}
+                                </p>
+
+
+
+                            </div>
+
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-10 mt-2">
+
+
+
+                                <a href="#" onclick="BookTutorial({{Id}})" class="butn x-small green p-2 pl-3 pr-3 mb-2"><span>Book Tutorial</span></a>
+
+  
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+    </template>
+
+    <script>
+
+        var tutorials = [];
+
+        $(document).ready(function ()
+        {
+            GetGroupTutorials();
+        });
+
+
+        async function GetGroupTutorials()
+        {
+
+            var data = await lessonsApp.grouptutorialspublic();
+
+            if (!data)
+            {
+               //lessonsApp.logout('/account/');
+            }
+            else if (data.Status !== 0)
+            {
+                //location.href = '/account/';
+            }
+            else
+            {
+                HidePreloader();
+                tutorials = data.Content.Tutorials;
+                DisplayGroupTutorials();
+            }
+
+
+        }
+
+        async function DisplayGroupTutorials()
+        {
+
+            $('#tutorial-list').html('');
+
+            var itemListHTML = '';
+            var templateItem = $('#template-tutorial').html();
+
+            tutorials.forEach(function (item)
+            {
+                item.IsGroupTutorial = item.GroupTutorialId ? true : false;
+                itemListHTML += Mustache.render(templateItem, item);
+
+            });
+
+
+            $('#tutorial-list').html(itemListHTML);
+
+            $('#spinner-loading').hide();
+
+
+        }
+
+        function BookTutorial(groupTutorialId)
+        {
+            $('#confirmTutorialModal').modal('show');
+            ///tutorials/confirm-group-tutorial?groupTutorialId={{Id}}
+        }
+
+       
+
+    </script>
+}
+

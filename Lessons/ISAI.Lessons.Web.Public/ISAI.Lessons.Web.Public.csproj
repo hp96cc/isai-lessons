@@ -641,6 +641,7 @@
     <Compile Include="App_Data\Models\File.generated.cs" />
     <Compile Include="App_Data\Models\Folder.generated.cs" />
     <Compile Include="App_Data\Models\ForgotPassword.generated.cs" />
+    <Compile Include="App_Data\Models\GroupTutorialPublic.generated.cs" />
     <Compile Include="App_Data\Models\Home.generated.cs" />
     <Compile Include="App_Data\Models\HomeScroller.generated.cs" />
     <Compile Include="App_Data\Models\Image.generated.cs" />
@@ -757,6 +758,7 @@
     <Content Include="Views\ConfirmGroupTutorial.cshtml" />
     <Content Include="Views\EmailTemplate.cshtml" />
     <Content Include="Views\AccountGroupTutorials.cshtml" />
+    <Content Include="Views\GroupTutorialPublic.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

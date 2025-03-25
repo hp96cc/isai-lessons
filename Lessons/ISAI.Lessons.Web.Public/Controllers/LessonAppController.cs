@@ -230,6 +230,36 @@ namespace ISAI.Lessons.Web.Public.Controllers
         }
 
 
+        [Route("api/lessonapp/grouptutorialspublic")]
+        [HttpPost]
+        public async Task<ResponseData<TutorialResponseViewModel>> GetGroupTutorialsPublic()
+        {
+            SetHttpClient();
+
+            try
+            {
+                HttpResponseMessage httpResponse = await _httpClient.PostAsync("api/app/grouptutorialspublic", null).ConfigureAwait(false);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+
+                    var serialisedContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<ResponseData<TutorialResponseViewModel>>(serialisedContent);
+                    return data;
+
+                }
+                else
+                {
+                    throw new HttpResponseException(httpResponse.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
         [Route("api/lessonapp/grouptutorials")]
         [HttpPost]
         public async Task<ResponseData<TutorialResponseViewModel>> GetGroupTutorials()

@@ -316,6 +316,29 @@
         }
     };
 
+    var grouptutorialspublic = async function (request)
+    {
+        var url = this.baseUrl + "grouptutorialspublic";
+
+        try
+        {
+            var data = await $.ajax({
+                url: url,
+                data: JSON.stringify(request),
+                type: "POST",
+                contentType: 'application/json',
+            });
+            return data;
+
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+
+
     var grouptutorial = async function (groupTutorialId)
     {
         var url = this.baseUrl + "grouptutorial?groupTutorialId=" + groupTutorialId;
@@ -785,7 +808,8 @@
         register: register,
         grouptutorial: grouptutorial,
         grouptutorials: grouptutorials,
-        grouptutorialpurchase: grouptutorialpurchase
+        grouptutorialpurchase: grouptutorialpurchase,
+        grouptutorialspublic: grouptutorialspublic
 
     }
 

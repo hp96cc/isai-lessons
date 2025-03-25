@@ -171,6 +171,59 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         }
 
 
+        [Route("api/app/grouptutorialspublic")]
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ResponseData<TutorialResponseViewModel>> GetGroupTutorialsPublic()
+        {
+            var response = new ResponseData<TutorialResponseViewModel>()
+            {
+                Content = new TutorialResponseViewModel()
+            };
+
+            try
+            {
+                var earlisetStartDate = DateTime.Today.AddDays(1);
+
+                var groupTutorials = await db.GroupTutorial
+                    .Include(x => x.TutorUser)
+                    .Where(x => x.Deleted == false && x.DateTimeStart > earlisetStartDate)
+                    .OrderBy(x => x.DateTimeStart)
+                    .ToListAsync();
+
+                response.Content.Tutorials = groupTutorials.Select(x => new Lessons.Models.ViewModels.Tutorial()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    IsCompleted = x.DateTimeStart > DateTime.Now,
+                    Date = x.DateTimeStart.Date.ToString("dddd, dd MMMM yyyy"),
+                    TimeStart = x.DateTimeStart.ToString("HH:mm"),
+                    TimeEnd = x.DateTimeEnd.ToString("HH:mm"),
+                    TeamsLink = x.TeamsLink,
+                    TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
+                    IsUserSignedUp = false
+
+                }).ToList();
+                response.Status = ResponseStatus.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ResponseStatus.Failed;
+                response.ErrorResponse = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse()
+                            {
+                                Message = ex.Message
+                        }
+                    };
+
+                return response;
+            }
+
+        }
+
         [Route("api/app/grouptutorials")]
         [HttpPost]
         public async Task<ResponseData<TutorialResponseViewModel>> GetGroupTutorials()

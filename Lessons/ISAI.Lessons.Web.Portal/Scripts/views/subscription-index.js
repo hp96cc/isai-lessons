@@ -16,6 +16,12 @@
         crossDomain: true
     });
 
+    var subscriptionTypeDataManager = new ej.data.DataManager({
+        url: '/odata/subscriptiontypes',
+        adaptor: new ej.data.ODataV4Adaptor(),
+        crossDomain: true
+    });
+
     var CustomerGrid = new ej.grids.Grid({
         dataSource: CustomerDataManager,
         editSettings: { allowEditing: true, allowAdding: false, allowDeleting: false, mode: 'Dialog', newRowPosition: 'Top' },
@@ -45,7 +51,7 @@
                 this.columns[3].visible = false;
                 this.columns[4].visible = false;
                 this.columns[5].visible = false;
-                this.columns[6].visible = false;
+      
 
 
             } else if (args.requestType === "save" || args.requestType === "cancel") {
@@ -55,7 +61,7 @@
                 this.columns[3].visible = true;
                 this.columns[4].visible = true;
                 this.columns[5].visible = true;
-                this.columns[6].visible = true;
+           
 
             }
         },
@@ -114,15 +120,6 @@
 
             },
 
-            {
-                field: 'SubscriptionType.Name',
-                headerText: 'Subscription Type',
-                allowEditing: false,
-                width: 200
-
-            },
-
-
 
             
 
@@ -132,6 +129,20 @@
                 allowEditing: false,
                 width: 150
             },
+
+
+            {
+                field: 'SubscriptionTypeId',
+                headerText: 'Subscription Type',
+                allowEditing: true,
+                foreignKeyField: 'Id',
+                foreignKeyValue: 'Name',
+                dataSource: subscriptionTypeDataManager,
+                width: 200
+
+            },
+
+
 
             {
                 field: 'StartDate',

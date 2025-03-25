@@ -481,7 +481,7 @@
     <!-- custom scripts -->
     <script src="/assets/js/main.js"></script>
 
-    <script src="~/scripts/app.js?v=10"></script>
+    <script src="~/scripts/app.js?v=11"></script>
 
     <script>
 
@@ -524,6 +524,7 @@
         Model.Url().Contains("/plans/") == false &&
         Model.Url().Contains("forgot-password") == false &&
         Model.Url().Contains("reset-password") == false &&
+        Model.Url().Contains("/group-tutorials") == false &&
         Model.Url().Contains("confirm-group-tutorial") == false
         )
     {
