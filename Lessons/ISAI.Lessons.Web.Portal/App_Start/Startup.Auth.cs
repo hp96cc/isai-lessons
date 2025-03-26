@@ -92,6 +92,10 @@ namespace ISAI.Lessons.Web.Portal
                 TimeZone = TimeZoneInfo.Local
             });
 
+            RecurringJob.AddOrUpdate("SchedulerService.SystemHeartBeat", () => SchedulerService.SystemHeartBeat(), Cron.Minutely, new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local
+            });
 
 
         }

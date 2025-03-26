@@ -7,11 +7,14 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
+using System.Net.Http;
 
 namespace ISAI.Lessons.Web.Portal.Helpers
 {
     public static class SchedulerService
     {
+
+        static string _systemBaseUrl => ConfigurationManager.AppSettings["SAI.Lessons.Web.Portal.Url"];
         static string _systemUserId => ConfigurationManager.AppSettings["SystemUserId"];
         static string _systemGraphUserEmail => ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
         static string _systemAdminEmail => ConfigurationManager.AppSettings["Email.SysAdmin"];
@@ -25,6 +28,21 @@ namespace ISAI.Lessons.Web.Portal.Helpers
         static bool _isDeletingAbandonedTutorials = false;
 
         static bool _isCreateTeamsMeetingForGroupLessons = false;
+
+
+        public static void SystemHeartBeat()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var response = client.GetAsync(_systemBaseUrl + "?guid=" + Guid.NewGuid().ToString()).GetAwaiter().GetResult(); ;
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    bool b = true;
+                }
+
+            }
+        }
 
         public static void CreateTeamsMeetingForGroupLessons()
         {
