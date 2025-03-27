@@ -34,7 +34,7 @@ function InitGrid()
 
     groupTutorialsGrid = new ej.grids.Grid({
         dataSource: groupTutorialsDataManager,
-        query: new ej.data.Query(),
+        query: new ej.data.Query().expand("TutorUser"),
         editSettings: { showDeleteConfirmDialog: true, allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog', newRowPosition: 'Top' },
         allowPaging: true,
         allowSorting: true,
@@ -49,6 +49,10 @@ function InitGrid()
         pageSettings: { pageCount: 4, pageSize: 50 },
         toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel'],
         width: 'auto',
+        dataBound: function ()
+        {
+            groupTutorialsGrid.autoFitColumns();
+        },
         actionBegin: function (args)
         {
 
@@ -92,6 +96,23 @@ function InitGrid()
                 width: 70,
             },
 
+
+            {
+                field: 'TutorUser.Fullname',
+                headerText: 'Tutor',
+                validationRules: { required: true },
+                width: 300,
+                allowSorting: false
+            },
+
+
+            {
+                field: 'TutorUser.Email',
+                headerText: 'Tutor Email',
+                validationRules: { required: true },
+                width: 300,
+                allowSorting: false
+            },
 
             {
                 field: 'Name',

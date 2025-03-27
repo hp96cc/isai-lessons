@@ -208,14 +208,17 @@
 
                                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                                 {
-                                    <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2 "><span>Book A Tutor</span></a>
+                                    <a href="/tutorials/calendar/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2 "><span>Book A 1:1 Tutor</span></a>
+
+                                    <a href="/account/group-tutorials/" class="butn x-small pink float-right p-2 pl-3 pr-3 mb-2 mr-2"><span>Book A Group Tutorial</span></a>
+
 
                                     <a href="/account/info" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2 mr-2"><span>My Account</span></a>
 
                                 }
                                 else
                                 {
-                             
+
                                     <a href="/account/?redirectUrl=@(Url.Encode(Model.Url()))" class="butn x-small green float-right p-2 pl-3 pr-3 mb-2"><span>Sign In</span></a>
 
                                 }
