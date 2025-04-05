@@ -27,7 +27,7 @@
 <section class="pb-2">
     <div class="container">
 
-  
+
         <div id="account-panel">
 
             <div class="row align-items-top">
@@ -86,16 +86,14 @@
                         </div>
 
 
-                        </div>
+                    </div>
 
-                        <div id="tutorial-noavailability">
+                    <div id="tutorial-noavailability">
 
-                            <h4 class="mb-3 mt-3">No Availailability</h4>
+                        <h4 class="mb-3 mt-3">No Availailability</h4>
 
-                            <p>Sorry, we have no availability for the option you have chosen. Please try a different date or tutor.</p>
-                            <p>If you require an urgent Tutor please email <a class="text-color-sky" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a> and we wil do our best to find you one.</p>
-
-                        </div>
+                        <p>Sorry, we have no availability for the option you have chosen. Please try a different date or tutor.</p>
+                        <p>If you require an urgent Tutor please email <a class="text-color-sky" href="mailto:info@scottishonlinelessons.com">info@scottishonlinelessons.com</a> and we wil do our best to find you one.</p>
 
                     </div>
 
@@ -103,27 +101,29 @@
 
             </div>
 
-            <div class="row align-items-top">
-                <div class="col-12 mt-4 d-none" id="tutorial-booking-summary">
+        </div>
 
-                    <h4>Tutorial Booking Summary</h4>
+        <div class="row align-items-top">
+            <div class="col-12 mt-4 d-none" id="tutorial-booking-summary">
 
-                    <p class="fs-5">
-                        You are booking a <strong id="tutorial-duration-text"></strong> minute long tutorial on
-                        <strong id="tutorial-date-text"> Monday 5th December</strong>
-                        <br />from <strong id="tutorial-start-text">14:00</strong> to <strong id="tutorial-end-text">14:00</strong><br />
-                        Total Cost: <strong>£<span id="tutorial-cost-text">40.00</span> </strong>
+                <h4>Tutorial Booking Summary</h4>
 
-                    </p>
+                <p class="fs-5">
+                    You are booking a <strong id="tutorial-duration-text"></strong> minute long tutorial on
+                    <strong id="tutorial-date-text"> Monday 5th December</strong>
+                    <br />from <strong id="tutorial-start-text">14:00</strong> to <strong id="tutorial-end-text">14:00</strong><br />
+                    Total Cost: <strong>£<span id="tutorial-cost-text">40.00</span> </strong>
 
-                    <button type="button" onclick="ShowConfirmTutorialDialog();" class="butn medium sky btn-lg btn-block p-2">Book A Tutor</button>
+                </p>
 
-                </div>
-
+                <button type="button" onclick="ShowConfirmTutorialDialog();" class="butn medium sky btn-lg btn-block p-2">Book A Tutor</button>
 
             </div>
 
+
         </div>
+
+    </div>
     </div>
 
 
@@ -174,6 +174,7 @@
 
 @section Scripts {
 
+    <script src="~/scripts/luxon.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.syncfusion.com/ej2/28.1.33/dist/ej2.min.js" type="text/javascript"></script>
 
@@ -183,14 +184,14 @@
 
     <script>
 
-        const optionsDate = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
-        const optionsTime = { hour12: false, hour: '2-digit', minute: '2-digit' };
         const secondsPerDay = 86400;
         const baseReturnUrl = "https://localhost:44306/";  //TODO: move to api controller
         const buttonTimeSlotClass = "timeslotbutton butn sky btn-block p-2 mb-2";
 
         var selectedLessonId = @(string.IsNullOrEmpty(Request.QueryString["lessonId"]) ? "null" : Request.QueryString["lessonId"]);
 
+
+        var calendarDateLuxon;
         var startTime;
         var endTime;
         var calendar;
@@ -382,6 +383,19 @@
             GetTimeslots();
         }
 
+        function GetBritishDate()
+        {
+            var tutorialDate = calendar.value;
+            const day = `${tutorialDate.getDate()}`.padStart(2, '0');
+            const month = `${tutorialDate.getMonth() + 1}`.padStart(2, '0');
+            const year = tutorialDate.getFullYear();
+
+            var isoDateString = `${year}-${month}-${day}`;
+            calendarDateLuxon = luxon.DateTime.fromISO(isoDateString, { zone: "Europe/London" });
+
+            console.log(calendarDateLuxon.toString());
+        }
+
 
         async function GetTimeslots()
         {
@@ -392,7 +406,14 @@
             var tutorId = $("#select-tutorial-tutor").children("option:selected").val();
             selectedTutorId = tutorId;
             selectedTutor = tutors.find(x => x.Id === selectedTutorId);
-            var tutorialDate = calendar.value;
+
+            GetBritishDate();
+
+            //var tutorialDate = calendar.value;
+
+            //HACK this is required as Json wont strinfy the date correctly
+            //tutorialDate = new Date(Date.UTC(tutorialDate.getFullYear(), tutorialDate.getMonth(), tutorialDate.getDate(), tutorialDate.getHours(), tutorialDate.getMinutes()))
+
             tutorialDuration = parseInt($("#select-tutorial-duration").children("option:selected").val());
 
             switch (tutorialDuration)
@@ -412,7 +433,7 @@
 
             var request = {
                 TutorId: tutorId,
-                TutorialDate: tutorialDate,
+                TutorialDate: calendarDateLuxon.toJSON(),
                 TutorialDuration: tutorialDuration
             };
 
@@ -479,22 +500,29 @@
 
             sender.classList.add('pink');
 
-            this.startTime = calendar.value;
-            this.startTime.setHours(startHours);
-            this.startTime.setMinutes(startMinutes);
+            this.startTime = calendarDateLuxon.plus({ hours: startHours, minutes: startMinutes });
+            this.endTime = this.startTime.plus({ minutes: tutorialDuration });
+            ///this.startTime = calendarDateLuxon.toJSDate();
+            //this.startTime.setHours(startHours);
+            //this.startTime.setMinutes(startMinutes);
 
-            this.endTime = new Date(startTime.getTime() + tutorialDuration * 60000)
+            //this.endTime = new Date(startTime.getTime() + tutorialDuration * 60000)
 
             $('#tutorial-duration-text').text(tutorialDuration);
-            $('#tutorial-start-text').text(startTime.toLocaleTimeString('en-GB', optionsTime));
-            $('#tutorial-end-text').text(endTime.toLocaleTimeString('en-GB', optionsTime));
-            $('#tutorial-date-text').text(startTime.toLocaleDateString('en-GB', optionsDate));
+            //$('#tutorial-start-text').text(startTime.toLocaleTimeString('en-GB', optionsTime));
+
+            $('#tutorial-start-text').text(startTime.toFormat("HH:mm"));
+
+            //$('#tutorial-end-text').text(endTime.toLocaleTimeString('en-GB', optionsTime));
+
+            $('#tutorial-end-text').text(endTime.toFormat("HH:mm"));
+            $('#tutorial-date-text').text(startTime.toFormat("DDDD"));
             $('#tutorial-cost-text').text(costPerTimeSlot.toFixed(2));
 
             $('#tutorial-duration-text-modal').text(tutorialDuration);
-            $('#tutorial-start-text-modal').text(startTime.toLocaleTimeString('en-GB', optionsTime));
-            $('#tutorial-end-text-modal').text(endTime.toLocaleTimeString('en-GB', optionsTime));
-            $('#tutorial-date-text-modal').text(startTime.toLocaleDateString('en-GB', optionsDate));
+            $('#tutorial-start-text-modal').text(startTime.toFormat("HH:mm"));
+            $('#tutorial-end-text-modal').text(endTime.toFormat("HH:mm"));
+            $('#tutorial-date-text-modal').text(startTime.toFormat("DDDD"));
             $('#tutorial-cost-text-modal').text(tutorialCost);
 
             $('#tutorial-booking-summary').removeClass("d-none").show();
@@ -517,8 +545,8 @@
                     lessonId: selectedLessonId,
                     tutorId: selectedTutorId,
                     tutorialSubjectId: selectedTutorialSubjectId,
-                    dateTimeStart: this.startTime.toJSON(),
-                    dateTimeEnd: this.endTime.toJSON(),
+                    dateTimeStart: this.startTime.toUTC().toJSON(),
+                    dateTimeEnd: this.endTime.toUTC().toJSON(),
                     customerNotes: $('#textarea-tutorial-notes').val()
                 };
 

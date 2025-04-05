@@ -58,11 +58,11 @@
 
 
             </div>
-            </div>
-
-
-
         </div>
+
+
+
+    </div>
 
 
 </section>
@@ -71,6 +71,8 @@
 
 @section Scripts {
 
+    <script src="~/scripts/luxon.min.js"></script>
+    
     <script>
 
         const optionsDate = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
@@ -116,9 +118,14 @@
         async function DisplayTutorial()
         {
 
+            var startTime = luxon.DateTime.fromISO(tutorial.DateTimeStart);
+            var endTime = luxon.DateTime.fromISO(tutorial.DateTimeEnd);
+            startTime = startTime.setZone('Europe/London');
+            endTime = endTime.setZone('Europe/London');
+
             $('#tutorial-date').text(new Date(tutorial.DateTimeStart).toLocaleDateString('en-GB', optionsDate));
-            $('#tutorial-starttime').text(new Date(tutorial.DateTimeStart).toLocaleTimeString('en-GB', optionsTime));
-            $('#tutorial-endtime').text(new Date(tutorial.DateTimeEnd).toLocaleTimeString('en-GB', optionsTime));
+            $('#tutorial-starttime').text(startTime.toFormat('HH:mm'));
+            $('#tutorial-endtime').text(endTime.toFormat('HH:mm'));
             $('#tutorial-duration').text(tutorial.DurationInMinutes + ' minutes');
             $('#tutorial-cost').text('£' + tutorial.TutorialCost);
 

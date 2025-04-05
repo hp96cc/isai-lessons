@@ -35,7 +35,7 @@ function InitGrid()
     groupTutorialsGrid = new ej.grids.Grid({
         dataSource: groupTutorialsDataManager,
         query: new ej.data.Query().expand("TutorUser"),
-        editSettings: { showDeleteConfirmDialog: true, allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog', newRowPosition: 'Top' },
+        editSettings: { showDeleteConfirmDialog: true, allowEditing: false, allowAdding: true, allowDeleting: true, mode: 'Dialog', newRowPosition: 'Top' },
         allowPaging: true,
         allowSorting: true,
         sortSettings: { columns: [{ field: 'DateTimeStart', direction: 'Descending' }] },
@@ -60,16 +60,20 @@ function InitGrid()
             if (args.requestType === "beginEdit" || args.requestType === 'add')
             {
                 this.columns[1].visible = false;
-                this.columns[8].visible = false;
-                this.columns[9].visible = false;
+                this.columns[2].visible = false;
+                this.columns[3].visible = false;
+                this.columns[10].visible = false;
+                this.columns[11].visible = false;
 
 
             } 
             else if (args.requestType === "save" || args.requestType === "cancel")
             {
                 this.columns[1].visible = true;
-                this.columns[8].visible = true;
-                this.columns[9].visible = true;
+                this.columns[2].visible = true;
+                this.columns[3].visible = true;
+                this.columns[10].visible = true;
+                this.columns[11].visible = true;
 
             }
         },

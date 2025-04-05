@@ -1,6 +1,7 @@
 ﻿using ISAI.Lessons.EntityFramework;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
+using Microsoft.Ajax.Utilities;
 using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
     public static class SchedulerService
     {
 
-        static string _systemBaseUrl => ConfigurationManager.AppSettings["SAI.Lessons.Web.Portal.Url"];
+        static string _systemBaseUrl => ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
         static string _systemUserId => ConfigurationManager.AppSettings["SystemUserId"];
         static string _systemGraphUserEmail => ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
         static string _systemAdminEmail => ConfigurationManager.AppSettings["Email.SysAdmin"];
@@ -65,6 +66,11 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                         try
                         {
 
+                            var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
+                            var startDate = TimeZoneInfo.ConvertTimeFromUtc(groupTutorial.DateTimeStart.DateTime, gmtStandardTimeZone);
+                            var endDate = TimeZoneInfo.ConvertTimeFromUtc(groupTutorial.DateTimeEnd.DateTime, gmtStandardTimeZone);
+
+
                             var graphApi = new MicrosoftGraphApiService();
                             var teamsEventResponse = graphApi.CreateOrUpdateTeamsEvent(
                                                            null,
@@ -72,8 +78,8 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                                                            "Group Tutorial " + groupTutorial.Name,
                                                            groupTutorial.Description,
                                                            _systemTimeZone,
-                                                           groupTutorial.DateTimeStart.ToString("s"),
-                                                           groupTutorial.DateTimeEnd.ToString("s"),
+                                                           startDate.ToString("s"),
+                                                           endDate.ToString("s"),
                                                            null
                                                            ).Result;
 
@@ -193,14 +199,30 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
                     foreach (var tutorial in tutorialsPendingEmailSending)
                     {
+
+                        var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
+                        var startDate = TimeZoneInfo.ConvertTimeFromUtc(tutorial.DateTimeStart.DateTime, gmtStandardTimeZone);
+
+
                         if (tutorial.PendingEmailConfirmationUser && tutorial.HasCompletedCheckout)
                         {
-                            var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", tutorial.DateTimeStart.ToString("dd/MM/yyyy @ HH:mm"));
+                        
+                            var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", startDate.ToString("dd/MM/yyyy @ HH:mm"));
                             var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/tutorial-confirmation-user/");
                             htmlBody = AddDataToEmail(htmlBody, tutorial);
 
+                            var addressCC = new List<string>();
+
+                            if(tutorial.GroupTutorialId.HasValue)
+                            {
+                                addressCC.Add(tutorial.TutorUser.Email);
+
+                                if(!string.IsNullOrWhiteSpace(tutorial.TutorUser.TutorEmail))
+                                    addressCC.Add(tutorial.TutorUser.TutorEmail);
+                            }
+
                             var graphApi = new MicrosoftGraphApiService();
-                            graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { tutorial.Customer.Email }, null, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
+                            graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { tutorial.Customer.Email }, addressCC, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
 
                             tutorial.PendingEmailConfirmationUser = false;
                             tutorial.DateModified = DateTime.UtcNow;
@@ -211,7 +233,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                         if (tutorial.PendingEmailConfirmationTutor)
                         {
                             var tutorUser = db.Users.First(x => x.Id == tutorial.TutorUserId);
-                            var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", tutorial.DateTimeStart.ToString("dd/MM/yyyy @ HH:mm"));
+                            var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", startDate.ToString("dd/MM/yyyy @ HH:mm"));
                             var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/tutorial-confirmation-tutor/");
                             htmlBody = AddDataToEmail(htmlBody, tutorial);
 
@@ -243,10 +265,16 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         private static string AddDataToEmail(string htmlBody, Tutorial tutorial)
         {
+
+            var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
+            var startDate = TimeZoneInfo.ConvertTimeFromUtc(tutorial.DateTimeStart.DateTime, gmtStandardTimeZone);
+            var endDate = TimeZoneInfo.ConvertTimeFromUtc(tutorial.DateTimeEnd.DateTime, gmtStandardTimeZone);
+
+
             htmlBody = htmlBody.Replace("{{Name}}", tutorial.Customer.FirstName);
             htmlBody = htmlBody.Replace("{{Tutor}}", tutorial.TutorUser.Firstname + " " + tutorial.TutorUser.Surname);
-            htmlBody = htmlBody.Replace("{{Date}}", tutorial.DateTimeStart.DateTime.ToLongDateString());
-            htmlBody = htmlBody.Replace("{{Time}}", tutorial.DateTimeStart.DateTime.ToString("HH:mm") + " to " + tutorial.DateTimeEnd.DateTime.ToString("HH:mm"));
+            htmlBody = htmlBody.Replace("{{Date}}", startDate.ToLongDateString());
+            htmlBody = htmlBody.Replace("{{Time}}", startDate.ToString("HH:mm") + " to " + endDate.ToString("HH:mm"));
             htmlBody = htmlBody.Replace("{{Duration}}", tutorial.DurationInMinutes + " minutes.");
             htmlBody = htmlBody.Replace("{{Cost}}", string.Format("£{0:N2}", tutorial.TutorialCost));
             htmlBody = htmlBody.Replace("/{{Link}}", tutorial.TeamsLink);

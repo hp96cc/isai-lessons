@@ -12,6 +12,8 @@
         ViewBag.LoggedIn = true;
 
     }
+
+    bool showExtraInfo = Request.QueryString["ExtraInfo"] != null;
 }
 
 @{
@@ -157,6 +159,10 @@
                             </div>
                         </div>
                       
+
+                        @if (showExtraInfo)
+                        {
+
                         <div class="widget-sidebar">
 
                             <div class="block-info">
@@ -273,7 +279,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        }
 
                     </div>
                 </div>

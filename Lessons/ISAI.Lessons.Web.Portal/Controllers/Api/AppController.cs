@@ -37,6 +37,9 @@ using System.ClientModel.Primitives;
 using Microsoft.Ajax.Utilities;
 using RequestOptions = Stripe.RequestOptions;
 using Syncfusion.EJ2.Diagrams;
+using ImageResizer.ExtensionMethods;
+using Azure.Core;
+
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
 {
@@ -191,15 +194,17 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     .OrderBy(x => x.DateTimeStart)
                     .ToListAsync();
 
+                var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
+                
                 response.Content.Tutorials = groupTutorials.Select(x => new Lessons.Models.ViewModels.Tutorial()
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Description = x.Description,
                     IsCompleted = x.DateTimeStart > DateTime.Now,
-                    Date = x.DateTimeStart.Date.ToString("dddd, dd MMMM yyyy"),
-                    TimeStart = x.DateTimeStart.ToString("HH:mm"),
-                    TimeEnd = x.DateTimeEnd.ToString("HH:mm"),
+                    Date = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeStart.DateTime, gmtStandardTimeZone).ToString("dddd, dd MMMM yyyy"),
+                    TimeStart = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeStart.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
+                    TimeEnd = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeEnd.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
                     TeamsLink = x.TeamsLink,
                     TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
                     IsUserSignedUp = false
@@ -249,6 +254,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                                                         x.GroupTutorialId != null
                                                         ).ToListAsync();
 
+                var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
+
 
                 response.Content.Tutorials = groupTutorials.Select(x => new Lessons.Models.ViewModels.Tutorial()
                 {
@@ -256,9 +263,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     Name = x.Name,
                     Description = x.Description,
                     IsCompleted = x.DateTimeStart > DateTime.Now,
-                    Date = x.DateTimeStart.Date.ToString("dddd, dd MMMM yyyy"),
-                    TimeStart = x.DateTimeStart.ToString("HH:mm"),
-                    TimeEnd = x.DateTimeEnd.ToString("HH:mm"),
+                    Date = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeStart.DateTime, gmtStandardTimeZone).ToString("dddd, dd MMMM yyyy"),
+                    TimeStart = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeStart.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
+                    TimeEnd = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeEnd.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
                     TeamsLink = x.TeamsLink,
                     TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
                     IsUserSignedUp = customerTutorials.Any(y => y.GroupTutorialId == x.Id)
@@ -442,15 +449,17 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     .OrderByDescending(x => x.DateTimeStart)
                     .ToListAsync();
 
+                var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
 
+  
                 response.Content.Tutorials = tutorials.Select(x => new Lessons.Models.ViewModels.Tutorial()
                 {
                     Id = x.Id,
                     Name = x.Name,
                     IsCompleted = x.DateTimeStart > DateTime.Now,
-                    Date = x.DateTimeStart.Date.ToString("dddd, dd MMMM yyyy"),
-                    TimeStart = x.DateTimeStart.ToString("HH:mm"),
-                    TimeEnd = x.DateTimeEnd.ToString("HH:mm"),
+                    Date = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeStart.DateTime, gmtStandardTimeZone).ToString("dddd, dd MMMM yyyy"),
+                    TimeStart = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeStart.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
+                    TimeEnd = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeEnd.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
                     TeamsLink = x.TeamsLink,
                     TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
                     GroupTutorialId = x.GroupTutorialId
@@ -908,6 +917,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         [Route("api/app/tutorialpurchase")]
         [HttpPost]
+
         public async Task<ResponseData<TutorialPurchaseResponseViewModel>> TutorialPurchase(TutorialPurchaseRequestViewModel request)
         {
             try
@@ -946,6 +956,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     request.CustomerNotes += string.Format("{0}api/lessonumbraco/{1}", _baseReturnUrl, lesson.Id);
                 }
 
+
+                var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
+
+                var startDate = TimeZoneInfo.ConvertTimeFromUtc(request.DateTimeStart, gmtStandardTimeZone);
+                var endDate = TimeZoneInfo.ConvertTimeFromUtc(request.DateTimeEnd, gmtStandardTimeZone);
+
                 var graphApi = new MicrosoftGraphApiService();
                 var teamsEventResponse = await graphApi.CreateOrUpdateTeamsEvent(
                     null,
@@ -953,14 +969,14 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     teamsEventTutorialName,
                     tutorialDescription.ToString(),
                     _systemTimeZone,
-                    request.DateTimeStart.ToString("s"),
-                    request.DateTimeEnd.ToString("s"),
+                    startDate.ToString("s"),
+                    endDate.ToString("s"),
                     null
                     );
 
 
 
-                var tutorialDuration = Convert.ToInt32((request.DateTimeEnd.Ticks - request.DateTimeStart.Ticks) / TimeSpan.TicksPerMinute);
+                var tutorialDuration = Convert.ToInt32((endDate.Ticks - startDate.Ticks) / TimeSpan.TicksPerMinute);
 
                 var tutorial = new Tutorial()
                 {
@@ -1106,6 +1122,51 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             return response;
 
         }
+        [Route("api/app/lessondownload")]
+        [AllowAnonymous]
+        [HttpPost]
+        public ResponseData<LessonStreamingResponse> LessonDownload(LessonRequestViewModel lessonRequestViewModel)
+        {
+            var response = new ResponseData<LessonStreamingResponse>();
+
+
+            var lessonStreamingToken = new LessonStreamingToken()
+            {
+                LessonId = lessonRequestViewModel.LessonId,
+                ExpiryDate = DateTime.UtcNow.AddHours(2)
+            };
+
+            var lessonStreamingTokenJson = JsonConvert.SerializeObject(lessonStreamingToken);
+            var encryptedData = cryptoNetKey.EncryptFromString(lessonStreamingTokenJson);
+            var encryptedToken = HttpServerUtility.UrlTokenEncode(encryptedData);
+
+            var videoSourcePath = Path.Combine(_videoRootFolder, lessonRequestViewModel.LessonId.ToString());
+            var downloadZipPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString(), lessonRequestViewModel.LessonId.ToString() + ".zip");
+            var downloadFolderPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString());
+
+            if (!System.IO.File.Exists(downloadZipPath))
+            {
+
+                if (!Directory.Exists(downloadFolderPath))
+                    Directory.CreateDirectory(downloadFolderPath);
+
+                ZipService.ZipFolder(downloadZipPath, videoSourcePath);
+
+            }
+
+            var url = string.Format("/VideoHandler.ashx?lessonId={0}&actionType=download&token={1}", lessonRequestViewModel.LessonId, encryptedToken);
+
+            response.Status = ResponseStatus.OK;
+            response.Content = new LessonStreamingResponse()
+            {
+                StreamingUrl = url,
+                Token = encryptedToken,
+            };
+
+            return response;
+
+        }
+
 
         [Route("api/app/lessonmediaurl")]
         [HttpPost]

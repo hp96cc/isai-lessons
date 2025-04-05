@@ -20,7 +20,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
         [EnableQuery]
         public IQueryable<Tutorial> GetTutorials()
         {
-            return db.Tutorial.Where(x => x.Deleted == false);
+            return db.Tutorial.Where(x => x.Deleted == false && x.HasCompletedCheckout);
         }
 
 

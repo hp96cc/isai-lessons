@@ -67,6 +67,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
                 return BadRequest(ModelState);
             }
 
+            GroupTutorial.TutorUser = null;
+
             db.GroupTutorial.Add(GroupTutorial);
 
             try

@@ -77,7 +77,7 @@ namespace ISAI.Lessons.Web.Public
 
                 if (actionType == "download")
                 {
-                    var zipFilePath = Path.Combine(_videoDownloadFolder, string.Format("{0}/{1}.zip", lessonId, lessonId));
+                    var zipFilePath = Path.Combine(_videoDownloadFolder, lessonId, lessonId + ".zip");
                     var zipFilePathContents = Parsem3u8File(File.ReadAllText(zipFilePath), lessonId, token, isApp);
 
                     context.Response.BufferOutput = true;

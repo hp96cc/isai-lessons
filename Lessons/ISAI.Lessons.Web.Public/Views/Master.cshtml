@@ -108,19 +108,10 @@
 <head>
 
 
-    <!-- Google Tag Manager -->
-    <script>
-    (function (w, d, s, l, i)
-        {
-            w[l] = w[l] || []; w[l].push({
-                'gtm.start':
-                    new Date().getTime(), event: 'gtm.js'
-            }); var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-5BT7PHFN');</script>
-    <!-- End Google Tag Manager -->
-    <!-- metas -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0HPZ6XTBEP"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-0HPZ6XTBEP');</script>
+
     <meta charset="utf-8">
     <meta name="author" content="ISAI Technologies" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -524,7 +515,8 @@
     @if (Model.ContentType.Alias != "accountHome" &&
         Model.ContentType.Alias.Contains("account") == false &&
         Model.ContentType.Alias.Contains("tutorial") == false &&
-        Model.Url().Contains("/plans/") == false &&
+         Model.Url().Contains("terms") == false &&
+        Model.Url().Contains("plans") == false &&
         Model.Url().Contains("forgot-password") == false &&
         Model.Url().Contains("reset-password") == false &&
         Model.Url().Contains("/group-tutorials") == false &&
