@@ -1,10 +1,8 @@
 ﻿using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.Mobile.Android.Helpers;
-using ISAI.Lessons.Mobile.Droid;
 using ISAI.Lessons.Mobile.Droid.Helpers;
 using ISAI.Lessons.Mobile.Maui.Platforms.Android.Helpers;
 using ISAI.Lessons.Models.Interfaces.App;
@@ -27,9 +25,6 @@ namespace ISAI.Lessons.Mobile
             DependencyService.Register<IVideoDownloadService, VideoDownloadService>();
             DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.Register<IDeviceOrientation, DeviceOrientation>();
-
-            //DownloadBrodacast downloadBrodacast = new DownloadBrodacast();
-            //RegisterReceiver(downloadBrodacast, new IntentFilter(DownloadManager.ActionDownloadComplete));
 
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

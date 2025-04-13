@@ -27,6 +27,7 @@ namespace ISAI.Lessons.Mobile.Views
 #endif
             });
 
+            
 
             _lessonId = lessonId;
             //VideoView.Source = "file:///data/user/0/uk.co.isai.uteachlessons.pupil.droid/files/420/420.m3u8";

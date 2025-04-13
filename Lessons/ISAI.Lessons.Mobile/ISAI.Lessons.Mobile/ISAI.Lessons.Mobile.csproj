@@ -25,7 +25,7 @@
 		<ApplicationTitle>Scottish Online Lessons</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>uk.co.isai.lessons.mobile.maui</ApplicationId>
+		<ApplicationId>uk.co.isai.uteachlessons.pupil.ios</ApplicationId>
 		<ApplicationIdGuid>73048105-4e03-45ba-879d-dd173cd0db51</ApplicationIdGuid>
 
 		<!-- Versions -->
@@ -41,6 +41,14 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios' and '$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<CodesignEntitlement>Entitlements.plist</CodesignEntitlement>
+		<CodesignKey>Apple Distribution: ISAI Technologies Ltd (T5X7RSN9L7)</CodesignKey>
+		<CodesignProvision>Lesson Distribution</CodesignProvision>
+		<MtouchInterpreter>all</MtouchInterpreter>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -59,11 +67,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="EmbedIO" Version="3.5.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.0.4" />
-		<PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.10" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.11" />
+		<PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.11" />
 	</ItemGroup>
 
 	<ItemGroup>

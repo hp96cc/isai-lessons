@@ -1,9 +1,13 @@
-﻿using ISAI.Lessons.Core.Services;
+﻿using System.Threading.Tasks;
+using EmbedIO;
+using EmbedIO.WebApi;
+using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.Models.Interfaces.App;
 using ISAI.Lessons.Models.Interfaces;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui;
 using ISAI.Lessons.Mobile.Services;
+using Microsoft.Maui.Storage;
 
 namespace ISAI.Lessons.Mobile
 {
@@ -26,7 +30,24 @@ namespace ISAI.Lessons.Mobile
         {
             await DependencyService.Get<ISqliteService>().InitializeAsync();
 
+            var url = "http://localhost:9696/";
+            var server = CreateWebServer(url);
+            server.RunAsync();
+
         }
 
+        private static WebServer CreateWebServer(string url)
+        {
+            var server = new WebServer(o => o
+                    .WithUrlPrefix(url)
+                    .WithMode(HttpListenerMode.EmbedIO))
+                .WithLocalSessionManager()
+                .WithStaticFolder("/", FileSystem.Current.AppDataDirectory, true);
+
+            return server;
+        }
+
+
     }
+
 }
