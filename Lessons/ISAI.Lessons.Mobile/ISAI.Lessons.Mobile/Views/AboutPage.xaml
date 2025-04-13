@@ -33,7 +33,6 @@
                 Margin="10"
                 VerticalOptions="Center" 
                 Text="Downloaded Lessons"
-                IsVisible="false"
                 Command="{Binding DownloadedLessonsCommaned}" />
 
         </StackLayout>

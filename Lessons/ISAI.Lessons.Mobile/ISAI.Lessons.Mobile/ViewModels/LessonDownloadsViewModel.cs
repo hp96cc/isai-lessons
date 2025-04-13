@@ -6,6 +6,8 @@ using ISAI.Lessons.Models.Models.App;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.ApplicationModel;
 using System.Threading.Tasks;
+using System.IO;
+using Microsoft.Maui.Storage;
 
 namespace ISAI.Lessons.Mobile.ViewModels
 {
@@ -25,16 +27,6 @@ namespace ISAI.Lessons.Mobile.ViewModels
             ItemTapped = new Command<VideoDownload>(OnItemSelected);
             DeleteAllCommand = new Command(async () => await DeleteAllVideoDownloads());
             Title = "Lesson Downloads";
-
-            MessagingCenter.Subscribe<DownloadCompleteMessage>(this, "DownloadComplete", (sender) =>
-            {
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await DisplayVideoDownloads(true);
-                });
-              
-            });
-
         }
 
 
@@ -80,8 +72,17 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             if (result)
             {
+
+                var downloads = (await DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync());
+
+                foreach(var  download in downloads)
+                {
+                    Directory.Delete(Path.Combine(FileSystem.Current.AppDataDirectory, download.LessonId.ToString()), true);
+                }
+
                 DependencyService.Get<IVideoDownloadService>().DeleteAllDownloads();
                 await DependencyService.Get<ISqliteService>().DeleteAllVideoDownloadsAsync();
+
                 await DisplayVideoDownloads(true);
             }
 

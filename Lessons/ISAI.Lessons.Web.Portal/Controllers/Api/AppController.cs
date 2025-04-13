@@ -1276,6 +1276,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     }
                     else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.Download)
                     {
+                        
+
                         var lessonStreamingToken = new LessonStreamingToken()
                         {
                             LessonId = lesson.Id,
@@ -1287,7 +1289,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         var encryptedToken = HttpServerUtility.UrlTokenEncode(encryptedData);
 
                         var videoSourcePath = Path.Combine(_videoRootFolder, lessonRequestViewModel.LessonId.ToString());
-                        var downloadZipPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString(), lessonRequestViewModel.LessonId.ToString() + ".zip");
+                        var downloadZipPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString() + ".zip");
        
                         if(!System.IO.File.Exists(downloadZipPath))
                             ZipService.ZipFolder(downloadZipPath, videoSourcePath);

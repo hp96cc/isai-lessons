@@ -45,17 +45,7 @@
                                   Margin="5,3,5,0"   
                                />
 
-                         <Label Text="{Binding VideoDownloadStatusCode}"
-                                    Grid.Column="1"
-                                  Grid.Row="0"
-                                LineBreakMode="WordWrap" 
-                                
-                                FontSize="14"
-                               TextColor="Red"
-                                Margin="5,3,5,0"
-                               HorizontalOptions="EndAndExpand"
-                               />
-
+                        
 
                         <Label Text="{Binding LessonGroup}"
                                 Grid.Column="0"

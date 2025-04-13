@@ -7,6 +7,7 @@ using System.Web;
 using ISAI.Lessons.Models.ViewModels;
 using System.Configuration;
 using System.Runtime.Remoting.Contexts;
+using AngleSharp.Network.Default;
 
 namespace ISAI.Lessons.Web.Public
 {
@@ -77,8 +78,9 @@ namespace ISAI.Lessons.Web.Public
 
                 if (actionType == "download")
                 {
-                    var zipFilePath = Path.Combine(_videoDownloadFolder, lessonId, lessonId + ".zip");
-                    var zipFilePathContents = Parsem3u8File(File.ReadAllText(zipFilePath), lessonId, token, isApp);
+                    var zipFilePath = Path.Combine(_videoDownloadFolder, lessonId + ".zip");
+
+                    context.Response.AddHeader("content-disposition", "attachment;filename=\"" + lessonId + ".zip\"");
 
                     context.Response.BufferOutput = true;
                     context.Response.ContentType = "application/zip";
