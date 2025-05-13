@@ -26,27 +26,7 @@ namespace ISAI.Lessons.Mobile
             return new Window(new AppShell());
         }
 
-        protected override async void OnStart()
-        {
-            await DependencyService.Get<ISqliteService>().InitializeAsync();
-
-            var url = "http://localhost:9696/";
-            var server = CreateWebServer(url);
-            server.RunAsync();
-
-        }
-
-        private static WebServer CreateWebServer(string url)
-        {
-            var server = new WebServer(o => o
-                    .WithUrlPrefix(url)
-                    .WithMode(HttpListenerMode.EmbedIO))
-                .WithLocalSessionManager()
-                .WithStaticFolder("/", FileSystem.Current.AppDataDirectory, true);
-
-            return server;
-        }
-
+        
 
     }
 
