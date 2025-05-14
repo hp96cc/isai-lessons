@@ -1,8 +1,10 @@
-﻿using ISAI.Lessons.Models.Enums;
+﻿using EmbedIO;
+using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces.App;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Storage;
 
 namespace ISAI.Lessons.Mobile.Views
 {
@@ -11,9 +13,19 @@ namespace ISAI.Lessons.Mobile.Views
     {
         private int _lessonId;
 
+        private WebServer server;
+
         public VideoPage(int lessonId, string streamingUrl)
         {
             InitializeComponent();
+            
+            server = new WebServer(o => o
+                    .WithUrlPrefix("http://localhost:9696/")
+                    .WithMode(HttpListenerMode.EmbedIO))
+                .WithLocalSessionManager()
+                .WithStaticFolder("/", FileSystem.Current.AppDataDirectory, true);
+    
+            server.RunAsync();
 
             Microsoft.Maui.Handlers.WebViewHandler.Mapper.AppendToMapping("AllowLocalPlay", (handler, view) =>
             {
@@ -27,13 +39,14 @@ namespace ISAI.Lessons.Mobile.Views
 #endif
             });
 
+            
 
             _lessonId = lessonId;
             //VideoView.Source = "file:///data/user/0/uk.co.isai.uteachlessons.pupil.droid/files/420/420.m3u8";
             VideoView.Source = streamingUrl;
 
         }
-
+        
         protected async override void OnAppearing()
         {
             base.OnAppearing();
@@ -47,6 +60,8 @@ namespace ISAI.Lessons.Mobile.Views
 
         protected override void OnDisappearing()
         {
+            server = null;
+            
             base.OnDisappearing();
             DependencyService.Get<IDeviceOrientation>().UnlockOrientation();
         }

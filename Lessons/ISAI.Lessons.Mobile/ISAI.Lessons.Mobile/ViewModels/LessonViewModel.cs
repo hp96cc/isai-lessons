@@ -112,14 +112,14 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             }
         }
-        string _sourceUrl = "https://portal.scottishonlinelessons.com/";
+        string _sourceUrl = "https://portal.scottishonlinelessons.com";
 
 
         public LessonViewModel(int lessonId)
         {
             _lessonId = lessonId;
             _downloadedFilePath = Path.Combine(FileSystem.Current.AppDataDirectory, _lessonId.ToString());
-            ImageUrl = string.Format("{0}VideoHandler.ashx?lessonThumbId={1}", _sourceUrl, _lessonId);
+            ImageUrl = string.Format("{0}/VideoHandler.ashx?lessonThumbId={1}", _sourceUrl, _lessonId);
 
             CanDownload = true;
             CanDeleteDownload = false;
@@ -210,7 +210,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                 if (streamingUrlResponse.Status == ResponseStatus.OK)
                 {
-                    var lessonPage = new VideoPage(_lesson.Id, _sourceUrl + "/" + streamingUrlResponse.Content.StreamingUrl);
+                    var lessonPage = new VideoPage(_lesson.Id, _sourceUrl + streamingUrlResponse.Content.StreamingUrl);
                     await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 }
                 else if (streamingUrlResponse.ErrorResponse != null)
@@ -298,7 +298,8 @@ namespace ISAI.Lessons.Mobile.ViewModels
                             LessonName = Lesson.Name,
                             LessonGroup = Breadcrumb,
                             DateDownloaded = DateTime.Now,
-                            DownloadUrl = m3u8FilePath,
+                            //DownloadUrl = m3u8FilePath,
+                            DownloadUrl = string.Format("http://localhost:9696/{0}/{1}.m3u8", _lesson.Id, _lesson.Id)
 
                         };
 

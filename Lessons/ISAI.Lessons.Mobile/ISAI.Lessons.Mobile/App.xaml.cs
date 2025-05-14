@@ -1,9 +1,13 @@
-﻿using ISAI.Lessons.Core.Services;
+﻿using System.Threading.Tasks;
+using EmbedIO;
+using EmbedIO.WebApi;
+using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.Models.Interfaces.App;
 using ISAI.Lessons.Models.Interfaces;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui;
 using ISAI.Lessons.Mobile.Services;
+using Microsoft.Maui.Storage;
 
 namespace ISAI.Lessons.Mobile
 {
@@ -22,11 +26,8 @@ namespace ISAI.Lessons.Mobile
             return new Window(new AppShell());
         }
 
-        protected override async void OnStart()
-        {
-            await DependencyService.Get<ISqliteService>().InitializeAsync();
-
-        }
+        
 
     }
+
 }

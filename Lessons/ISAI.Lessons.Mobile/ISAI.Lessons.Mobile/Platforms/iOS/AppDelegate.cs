@@ -20,17 +20,8 @@ namespace ISAI.Lessons.Mobile
             DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.Register<IHud, Hud>();
             DependencyService.Register<IDeviceOrientation, DeviceOrientation>();
-            DependencyService.Register<IVideoDownloadService, VideoDownloadService>();
-
+            
             return base.FinishedLaunching(app, options);
-        }
-
-
-        [Export("application:handleEventsForBackgroundURLSession:completionHandler:")]
-        public void HandleEventsForBackgroundUrl(UIApplication application, string sessionIdentifier, Action completionHandler)
-        {
-            //TODO:
-            //CrossDownloadManager.BackgroundSessionCompletionHandler = completionHandler;
         }
 
 
