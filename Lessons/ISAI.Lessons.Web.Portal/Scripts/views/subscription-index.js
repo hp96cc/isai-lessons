@@ -22,6 +22,9 @@
         crossDomain: true
     });
 
+    var filterSettings = [];
+    filterSettings.push({ field: 'Deleted', operator: 'equal', predicate: 'and', value: false });
+
     var CustomerGrid = new ej.grids.Grid({
         dataSource: CustomerDataManager,
         editSettings: { allowEditing: true, allowAdding: false, allowDeleting: false, mode: 'Dialog', newRowPosition: 'Top' },
@@ -37,7 +40,8 @@
         height: '100%',
         width: '100%',
         filterSettings: {
-            type: 'Excel'
+            type: 'Excel',
+            columns: filterSettings
         },
         pageSettings: { pageCount: 4, pageSize: 50 },
         toolbar: [/*'Add'*/ 'Edit', /*'Delete',*/ 'Update', 'Cancel', 'ExcelExport', 'PdfExport', 'CsvExport'],
@@ -166,6 +170,16 @@
             {
                 field: 'Active',
                 headerText: 'Active',
+                displayAsCheckBox: true,
+                editType: "booleanedit",
+                width: 120
+
+            },
+
+
+            {
+                field: 'Deleted',
+                headerText: 'Deleted',
                 displayAsCheckBox: true,
                 editType: "booleanedit",
                 width: 120

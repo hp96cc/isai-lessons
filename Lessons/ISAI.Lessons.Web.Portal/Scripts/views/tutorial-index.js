@@ -26,6 +26,7 @@ function InitDataManagers()
 function InitGrid()
 {
 
+
     tutorialsGrid = new ej.grids.Grid({
         dataSource: tutorialsDataManager,
         query: new ej.data.Query().expand("Customer,TutorUser,GroupTutorial,Lesson"),
