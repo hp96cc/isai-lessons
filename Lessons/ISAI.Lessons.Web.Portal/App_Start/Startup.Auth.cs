@@ -97,6 +97,11 @@ namespace ISAI.Lessons.Web.Portal
                 TimeZone = TimeZoneInfo.Local
             });
 
+            RecurringJob.AddOrUpdate("SchedulerService.PromptForAbandonedSubscription", () => SchedulerService.PromptForAbandonedSubscription(), Cron.Hourly, new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local
+            });
+
 
         }
     }

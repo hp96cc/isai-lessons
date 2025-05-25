@@ -28,5 +28,7 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public int SubscriptionTypeId { get; set; }
 
+        public bool HasAbondonedSubscriptionEmailBeenSent { get; set; }
+
     }
 }

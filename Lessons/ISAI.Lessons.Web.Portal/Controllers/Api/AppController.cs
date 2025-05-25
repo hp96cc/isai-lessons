@@ -634,6 +634,9 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 var endDate = startDate.AddDays(1).AddSeconds(-1);
                 var tutorialDuration = request.TutorialDuration;
 
+                if(startDate < DateTime.Now.AddHours(8))
+                    startDate = DateTime.Now.AddHours(8);
+
                 var graphApi = new MicrosoftGraphApiService();
                 var availabilityResponse = await graphApi.GetAvailability(
                     _graphSenderAdminAccount, 

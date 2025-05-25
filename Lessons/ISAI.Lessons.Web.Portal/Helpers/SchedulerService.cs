@@ -1,7 +1,6 @@
 ﻿using ISAI.Lessons.EntityFramework;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
-using Microsoft.Ajax.Utilities;
 using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
@@ -14,7 +13,6 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 {
     public static class SchedulerService
     {
-
         static string _systemBaseUrl => ConfigurationManager.AppSettings["ISAI.Lessons.Web.Portal.Url"];
         static string _systemUserId => ConfigurationManager.AppSettings["SystemUserId"];
         static string _systemGraphUserEmail => ConfigurationManager.AppSettings["MicrosoftGraph.SenderEmail"];
@@ -30,6 +28,8 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         static bool _isCreateTeamsMeetingForGroupLessons = false;
 
+        static bool _isSendingAbandonedSubscriptionEmails = false;
+
 
         public static void SystemHeartBeat()
         {
@@ -42,6 +42,59 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                     bool b = true;
                 }
 
+            }
+        }
+
+        public static void PromptForAbandonedSubscription()
+        {
+                if (_isSendingAbandonedSubscriptionEmails) return;
+
+                try
+                {
+
+                using (var db = new LessonsDbContext())
+                {
+                    var dateTime1HourAgo = DateTime.Now.AddHours(1);
+                    var dateTimeFeatureStarted = new DateTime(2025, 05, 19);
+
+                    var subscriptions = db.Subscription
+                        .Include(x => x.Customer)
+                        .Where(
+                        x => x.Deleted == false &&
+                        x.Active == false &&
+                        x.HasAbondonedSubscriptionEmailBeenSent == false &&
+                        x.DateCreated == dateTime1HourAgo &&
+                        x.DateCreated == dateTimeFeatureStarted)
+                        .ToList();
+
+                    foreach (var subscription in subscriptions)
+                    {
+
+                        var subject = "Scottish Online Lessons";
+                        var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/abandoned-subscription/");
+
+                        var graphApi = new MicrosoftGraphApiService();
+                        graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { subscription.Customer.Email }, new List<string> { "info@scottishonlinelessons.com" }, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
+
+                        subscription.HasAbondonedSubscriptionEmailBeenSent = true;
+                        subscription.DateModified = DateTime.UtcNow;
+                        subscription.ModifiedUserId = _systemUserId;
+                        db.Entry(subscription).State = EntityState.Modified;
+
+                    }
+
+                    db.SaveChanges();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var t = true;
+            }
+            finally
+            {
+                _isSendingAbandonedSubscriptionEmails = false;
             }
         }
 

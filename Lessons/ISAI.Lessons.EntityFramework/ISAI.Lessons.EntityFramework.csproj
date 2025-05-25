@@ -379,6 +379,10 @@
     <Compile Include="Migrations\202503221250497_Removed Customer Group Tutorials.Designer.cs">
       <DependentUpon>202503221250497_Removed Customer Group Tutorials.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505181140487_HasAbondonedSubscriptionEmailBeenSent.cs" />
+    <Compile Include="Migrations\202505181140487_HasAbondonedSubscriptionEmailBeenSent.Designer.cs">
+      <DependentUpon>202505181140487_HasAbondonedSubscriptionEmailBeenSent.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -491,6 +495,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503221250497_Removed Customer Group Tutorials.resx">
       <DependentUpon>202503221250497_Removed Customer Group Tutorials.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505181140487_HasAbondonedSubscriptionEmailBeenSent.resx">
+      <DependentUpon>202505181140487_HasAbondonedSubscriptionEmailBeenSent.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
