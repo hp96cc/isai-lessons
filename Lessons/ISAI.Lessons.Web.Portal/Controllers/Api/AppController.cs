@@ -1516,7 +1516,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 if (licenceResponse.Content.SubscriptionTypeId == 1)
                 {
-                    var lessons = await db.Lesson.Where(x => x.Deleted == false && x.AssetId != null).ToListAsync();
+                    var lessons = await db.Lesson.Where(x => x.Deleted == false && x.PendingDownload == false).ToListAsync();
 
                     response.Content = lessons;
                     response.Status = ResponseStatus.OK;
@@ -1524,7 +1524,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 }
                 else
                 {
-                    var lessons = await db.Lesson.Where(x => x.Deleted == false && x.AssetId != null && x.SubscriptionTypeId == x.SubscriptionTypeId).ToListAsync();
+                    var lessons = await db.Lesson.Where(x => x.Deleted == false && x.PendingDownload == false && x.SubscriptionTypeId == x.SubscriptionTypeId).ToListAsync();
 
                     response.Content = lessons;
                     response.Status = ResponseStatus.OK;
