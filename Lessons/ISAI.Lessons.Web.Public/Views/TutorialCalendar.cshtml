@@ -502,18 +502,10 @@
 
             this.startTime = calendarDateLuxon.plus({ hours: startHours, minutes: startMinutes });
             this.endTime = this.startTime.plus({ minutes: tutorialDuration });
-            ///this.startTime = calendarDateLuxon.toJSDate();
-            //this.startTime.setHours(startHours);
-            //this.startTime.setMinutes(startMinutes);
-
-            //this.endTime = new Date(startTime.getTime() + tutorialDuration * 60000)
 
             $('#tutorial-duration-text').text(tutorialDuration);
-            //$('#tutorial-start-text').text(startTime.toLocaleTimeString('en-GB', optionsTime));
 
             $('#tutorial-start-text').text(startTime.toFormat("HH:mm"));
-
-            //$('#tutorial-end-text').text(endTime.toLocaleTimeString('en-GB', optionsTime));
 
             $('#tutorial-end-text').text(endTime.toFormat("HH:mm"));
             $('#tutorial-date-text').text(startTime.toFormat("DDDD"));

@@ -312,16 +312,14 @@
 
             $(document).ready(function () {
                 $("#panel-nolicence").hide();
-
-
             });
 
     function initFingerprintJS() {
         FingerprintJS.load().then(fp => {
             fp.get().then(result => {
                 LessonsApp.visitorId = result.visitorId;
-                //console.log(LessonsApp.visitorId);
-                SetLessonUrl();
+                console.log(LessonsApp.visitorId);
+                
             });
         });
             }
@@ -353,15 +351,6 @@
 
             };
 
-            ////TODO: remove stars
-            //var myPlayer = videojs('sol-video', {
-            //    fill: true
-            //});
-
-            //myPlayer.src({ type: 'video/mp4', src: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4' });
-            //$('#spinner-loading').hide();
-            //return;
-            ////TODO: remove ends
 
             var data = await lessonsApp.lessonStreamingUrl(model);
 

@@ -531,6 +531,7 @@
                 CheckSession();
             });
 
+
             async function CheckSession()
             {
                 try
@@ -539,6 +540,12 @@
                     if (data)
                     {
                         HidePreloader();
+
+                        if (typeof SetLessonUrl === 'function')
+                        {
+                            SetLessonUrl();
+                        }
+
                         return;
                     }
 

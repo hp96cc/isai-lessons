@@ -271,7 +271,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
             }
 
-            throw new Exception("Authorisaton failed");
+            throw new Exception("Authorisaton failed (2) - " + response.StatusCode + response.Content);
 
         }
 
@@ -305,7 +305,9 @@ namespace ISAI.Lessons.EntityFramework.Services
 
             }
 
-            throw new Exception("Authorisaton failed");
+            var errorDetail = auth == null ? "Auth Null" : "Access Token Null";
+
+            throw new Exception("Authorisaton failed (1) - " + errorDetail);
 
 
         }
