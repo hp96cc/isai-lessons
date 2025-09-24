@@ -1,4 +1,5 @@
-﻿using ISAI.Lessons.Models.Interfaces;
+﻿using ISAI.Lessons.Core.Extensions;
+using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Interfaces.App;
 using ISAI.Lessons.Models.Models.App;
 using SQLite;
@@ -13,7 +14,7 @@ namespace ISAI.Lessons.Core.Services
 {
     public class SqliteService : ISqliteService
     {
-        public const string DatabaseFilename = "Lessons_v10.db3";
+        public const string DatabaseFilename = "Lessons_v11.db3";
 
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
@@ -37,7 +38,7 @@ namespace ISAI.Lessons.Core.Services
 
         public SqliteService()
         {
-            //InitializeAsync().SafeFireAndForget(false);
+     
         }
 
         public async Task InitializeAsync()

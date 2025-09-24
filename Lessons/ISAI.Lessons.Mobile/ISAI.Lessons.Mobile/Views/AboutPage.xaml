@@ -3,11 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ISAI.Lessons.Mobile.Views.AboutPage"
              xmlns:vm="clr-namespace:ISAI.Lessons.Mobile.ViewModels"
-             Title="{Binding Title}">
-    
-    <ContentPage.BindingContext>
-        <vm:AboutViewModel />
-    </ContentPage.BindingContext>
+             Title="Scottish Online Lessons">
 
     <ContentPage.Content>
         <StackLayout Padding="20" VerticalOptions="StartAndExpand">
@@ -20,12 +16,12 @@
                 
                     />
 
-          
+        
             <Button 
                 Margin="10"
                 VerticalOptions="Center" 
                 Text="Browse Lessons" 
-                Command="{Binding BrowseLessonsCommand}" />
+                Clicked="Button_Lessons_Clicked" />
 
 
             <Button 
@@ -33,7 +29,31 @@
                 Margin="10"
                 VerticalOptions="Center" 
                 Text="Downloaded Lessons"
-                Command="{Binding DownloadedLessonsCommaned}" />
+                Clicked="Button_Downloads_Clicked" />
+
+
+            <Button 
+
+                Margin="10"
+                VerticalOptions="Center" 
+                Text="Refresh Lesson Data"
+                Clicked="Button_Refresh_Clicked" />
+
+
+            <Label
+                Margin="5,20,5,0"
+                x:Name="LabelAppVersion"
+                VerticalOptions="Center" 
+                HorizontalTextAlignment="Center"
+                Text="App Version: " />
+
+
+            <Label
+                Margin="5,0,5,0"
+                x:Name="LabelDeviceData"
+                VerticalOptions="Center" 
+                HorizontalTextAlignment="Center"
+                Text="Device: " />
 
         </StackLayout>
     </ContentPage.Content>
