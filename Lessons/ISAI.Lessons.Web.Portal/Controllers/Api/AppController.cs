@@ -456,7 +456,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    IsCompleted = x.DateTimeStart > DateTime.Now,
+                    IsCompleted = x.DateTimeEnd > DateTime.Now,
                     Date = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeStart.DateTime, gmtStandardTimeZone).ToString("dddd, dd MMMM yyyy"),
                     TimeStart = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeStart.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
                     TimeEnd = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeEnd.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
@@ -634,8 +634,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                 var endDate = startDate.AddDays(1).AddSeconds(-1);
                 var tutorialDuration = request.TutorialDuration;
 
-                if(startDate < DateTime.Now.AddHours(8))
-                    startDate = DateTime.Now.AddHours(8);
 
                 var graphApi = new MicrosoftGraphApiService();
                 var availabilityResponse = await graphApi.GetAvailability(
@@ -669,6 +667,13 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     var availableEndTime = scheduleInfo.WorkingHours.EndTime.Value.Hour;
 
                     var availableStartDateTime = startDate.AddHours(availableStartTime);
+
+                    var minStartingDate = DateTime.Now.AddHours(8);
+                    if (minStartingDate.Day == DateTime.Today.Day && minStartingDate > availableStartDateTime)
+                    {
+                        availableStartDateTime = DateTime.Today.AddHours(minStartingDate.Hour);
+                    }
+
                     var availableEndDateTime = startDate.AddHours(availableEndTime);
                     var tutorialMinutes = 0;
 
