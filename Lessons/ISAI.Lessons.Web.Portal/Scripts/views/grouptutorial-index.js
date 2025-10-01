@@ -62,8 +62,8 @@ function InitGrid()
                 this.columns[1].visible = false;
                 this.columns[2].visible = false;
                 this.columns[3].visible = false;
+                this.columns[9].visible = false;
                 this.columns[10].visible = false;
-                this.columns[11].visible = false;
 
 
             } 
@@ -72,8 +72,8 @@ function InitGrid()
                 this.columns[1].visible = true;
                 this.columns[2].visible = true;
                 this.columns[3].visible = true;
+                this.columns[9].visible = true;
                 this.columns[10].visible = true;
-                this.columns[11].visible = true;
 
             }
         },
@@ -185,16 +185,16 @@ function InitGrid()
 
             },
 
-            {
+            //{
 
-                field: 'TutorialCostPerPerson',
-                headerText: 'Price Per Person',
-                minWidth: 125,
-                format: "n2",
-                defaultValue: 0,
-                validationRules: { required: true },
-                editType: 'numericedit'
-            },
+            //    field: 'TutorialCostPerPerson',
+            //    headerText: 'Price Per Person',
+            //    minWidth: 125,
+            //    format: "n2",
+            //    defaultValue: 0,
+            //    validationRules: { required: true },
+            //    editType: 'numericedit'
+            //},
 
             {
                 field: 'DateTimeStart',
