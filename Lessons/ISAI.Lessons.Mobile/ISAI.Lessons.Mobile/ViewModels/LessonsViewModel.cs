@@ -1,84 +1,84 @@
-﻿using ISAI.Lessons.Mobile.Views;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
-using ISAI.Lessons.Models.Models.App;
-using ISAI.Lessons.Models.Interfaces.App;
+﻿//using ISAI.Lessons.Mobile.Views;
+//using System.Collections.ObjectModel;
+//using System.Linq;
+//using System.Threading.Tasks;
+//using Microsoft.Maui.Controls;
+//using ISAI.Lessons.Models.Models.App;
+//using ISAI.Lessons.Models.Interfaces.App;
 
-namespace ISAI.Lessons.Mobile.ViewModels
-{
+//namespace ISAI.Lessons.Mobile.ViewModels
+//{
 
-    public class LessonsViewModel : BaseViewModel
-    {
+//    public class LessonsViewModel : BaseViewModel
+//    {
 
-        int _lessonGroupId;
-        bool _hasAppeared;
+//        int _lessonGroupId;
+//        bool _hasAppeared;
 
-        Lesson _selectedItem;
-        public ObservableCollection<Lesson> Items { get; }
+//        Lesson _selectedItem;
+//        public ObservableCollection<Lesson> Items { get; }
        
-        public Command<Lesson> ItemTapped { get; }
+//        public Command<Lesson> ItemTapped { get; }
 
-        public LessonsViewModel(int lessonGroupId)
-        {
-            _lessonGroupId = lessonGroupId;
-            Items = new ObservableCollection<Lesson>();
-            ItemTapped = new Command<Lesson>(OnItemSelected);
+//        public LessonsViewModel(int lessonGroupId)
+//        {
+//            _lessonGroupId = lessonGroupId;
+//            Items = new ObservableCollection<Lesson>();
+//            ItemTapped = new Command<Lesson>(OnItemSelected);
 
-        }
-
-
-        async Task DisplayLessons()
-        {
-
-            if (_hasAppeared) return;
-            _hasAppeared = true;
-
-            Items.Clear();
-
-            var lessons = (await DependencyService.Get<ISqliteService>().GetLessonsAsync(_lessonGroupId))
-                        .OrderBy(x => x.ListOrder)
-                        .ToList();
-
-            foreach (var item in lessons)
-            {
-                if (item.LessonGroupId == _lessonGroupId)
-                {
-                    Items.Add(item);
-                }
-            }
-        }
+//        }
 
 
-        public async void OnAppearing()
-        {
-            Title = Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_lessonGroupId)).Name;
-            SelectedItem = null;
-            await DisplayLessons();
-        }
+//        async Task DisplayLessons()
+//        {
 
-        public Lesson SelectedItem
-        {
-            get => _selectedItem;
-            set
-            {
-                SetProperty(ref _selectedItem, value);
-                OnItemSelected(value);
-            }
-        }
+//            if (_hasAppeared) return;
+//            _hasAppeared = true;
+
+//            Items.Clear();
+
+//            var lessons = (await DependencyService.Get<ISqliteService>().GetLessonsAsync(_lessonGroupId))
+//                        .OrderBy(x => x.ListOrder)
+//                        .ToList();
+
+//            foreach (var item in lessons)
+//            {
+//                if (item.LessonGroupId == _lessonGroupId)
+//                {
+//                    Items.Add(item);
+//                }
+//            }
+//        }
 
 
-        async void OnItemSelected(Lesson item)
-        {
-            if (item == null)
-                return;
+//        public async void OnAppearing()
+//        {
+//            Title = Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_lessonGroupId)).Name;
+//            SelectedItem = null;
+//            await DisplayLessons();
+//        }
 
-            _selectedItem = item;
+//        public Lesson SelectedItem
+//        {
+//            get => _selectedItem;
+//            set
+//            {
+//                SetProperty(ref _selectedItem, value);
+//                OnItemSelected(value);
+//            }
+//        }
 
-            var lessonPage = new LessonPage(_selectedItem.Id);
-            await Shell.Current.Navigation.PushAsync(lessonPage, true);
 
-        }
-    }
-}
+//        async void OnItemSelected(Lesson item)
+//        {
+//            if (item == null)
+//                return;
+
+//            _selectedItem = item;
+
+//            var lessonPage = new LessonPage(_selectedItem.Id);
+//            await Shell.Current.Navigation.PushAsync(lessonPage, true);
+
+//        }
+//    }
+//}

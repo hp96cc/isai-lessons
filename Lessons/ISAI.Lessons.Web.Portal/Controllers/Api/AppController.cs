@@ -834,7 +834,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         Name = groupTutorial.Name,
                         TeamsId = groupTutorial.TeamsId,
                         TeamsLink = groupTutorial.TeamsLink,
-                        TutorialCost = 25,
+                        TutorialCost = 15,
                         AppId = 1,
                         GroupTutorialId = groupTutorial.Id,
                         CustomerId = customer.Id,
