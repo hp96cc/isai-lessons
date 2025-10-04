@@ -44,18 +44,18 @@ namespace ISAI.Lessons.Mobile.Views
             if (SfItemsListView.SelectedItem != null)
             {
 
-                //HACK: hasSubGroups gets returned as false on release and so we need to re-get from database
+                //BUG: On release hasSubGroups always returns false. Do a a check for subgroups now instead.
                 var selectedItem = SfItemsListView.SelectedItem as LessonGroup;
-                var lessonGroup = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(selectedItem.Id));
+                var hasSubGroups = (await DependencyService.Get<ISqliteService>().GetLessonGroupsAsync(selectedItem.Id)).Any();
 
-                if (lessonGroup.HasSubGroups)
+                if (hasSubGroups)
                 {
-                    var lessonGroupPage = new LessonGroupPage(lessonGroup.Id);
+                    var lessonGroupPage = new LessonGroupPage(selectedItem.Id);
                     await Shell.Current.Navigation.PushAsync(lessonGroupPage, true);
                 }
                 else
                 {
-                    var lessonsPage = new LessonsPage(lessonGroup.Id);
+                    var lessonsPage = new LessonsPage(selectedItem.Id);
                     await Shell.Current.Navigation.PushAsync(lessonsPage, true);
                 }
 

@@ -34,7 +34,7 @@
                                 FontSize="16"
                                 FontAttributes="Bold"  
                                 Margin="5,5,5,10"   
-                  />
+                        />
 
 
                     <BoxView HeightRequest="0.5"
