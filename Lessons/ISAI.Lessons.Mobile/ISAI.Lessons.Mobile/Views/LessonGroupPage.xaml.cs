@@ -18,14 +18,16 @@ namespace ISAI.Lessons.Mobile.Views
         {
             InitializeComponent();
             _parentId = parentId;
-            ItemsListView.SelectionChanged += ItemsListView_SelectionChanged;
+            SfItemsListView.SelectionChanged += SfItemsListView_SelectionChanged;
 
         }
+
 
         public LessonGroupPage()
         {
             InitializeComponent();
-            ItemsListView.SelectionChanged += ItemsListView_SelectionChanged;
+            SfItemsListView.SelectionChanged += SfItemsListView_SelectionChanged;
+
         }
 
         protected override async void OnAppearing()
@@ -34,12 +36,12 @@ namespace ISAI.Lessons.Mobile.Views
             await DisplayLessonGroups();
         }
 
-        private async void ItemsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void SfItemsListView_SelectionChanged(object sender, Syncfusion.Maui.ListView.ItemSelectionChangedEventArgs e)
         {
-            if (ItemsListView.SelectedItem != null)
+            if (SfItemsListView.SelectedItem != null)
             {
 
-                var selectedItem = ItemsListView.SelectedItem as LessonGroup;
+                var selectedItem = SfItemsListView.SelectedItem as LessonGroup;
                 
 
                 if (selectedItem.HasSubGroups)
@@ -55,7 +57,7 @@ namespace ISAI.Lessons.Mobile.Views
 
             }
 
-            ItemsListView.SelectedItem = null;
+            SfItemsListView.SelectedItem = null;
 
 
         }
@@ -79,8 +81,7 @@ namespace ISAI.Lessons.Mobile.Views
                         .ThenBy(x => x.ListOrder)
                         .ToList();
 
-            ItemsListView.ItemsSource = lessonGroups;
-
+            SfItemsListView.ItemsSource = lessonGroups;
 
 
         }

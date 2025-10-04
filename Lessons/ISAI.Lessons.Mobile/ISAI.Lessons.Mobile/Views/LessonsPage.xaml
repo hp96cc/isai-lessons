@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ISAI.Lessons.Mobile.Views.LessonsPage"
-             xmlns:model="clr-namespace:ISAI.Lessons.Models.Models.App;assembly=ISAI.Lessons.Models"  
+             xmlns:model="clr-namespace:ISAI.Lessons.Models.Models.App;assembly=ISAI.Lessons.Models" 
+                 xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              >
 
 
@@ -24,27 +25,30 @@
         </Style>
     </ContentPage.Resources>
 
-    <CollectionView x:Name="ItemsListView"
-                SelectionMode="Single">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <StackLayout Padding="10" x:DataType="model:Lesson">
-                        <Label Text="{Binding Name}" 
-                            LineBreakMode="WordWrap" 
-                            
-                            FontSize="16"
-                            FontAttributes="Bold"
-                            Margin="5,5,5,10"   
-                               />
 
-                        <BoxView HeightRequest="0.5"
-                                BackgroundColor="LightGray"
-                                VerticalOptions="End"/>
+    <syncfusion:SfListView x:Name="SfItemsListView">
 
-                       
-                    </StackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        <syncfusion:SfListView.ItemTemplate>
+            <DataTemplate>
+                <StackLayout Padding="10">
+                    <Label Text="{Binding Name}" 
+        LineBreakMode="WordWrap" 
+        
+        FontSize="16"
+        FontAttributes="Bold"
+        Margin="5,5,5,10"   
+           />
+
+                    <BoxView HeightRequest="0.5"
+            BackgroundColor="LightGray"
+            VerticalOptions="End"/>
+
+
+                </StackLayout>
+            </DataTemplate>
+        </syncfusion:SfListView.ItemTemplate>
+
+    </syncfusion:SfListView>
+
   
 </ContentPage>

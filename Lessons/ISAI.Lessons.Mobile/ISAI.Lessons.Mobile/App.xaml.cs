@@ -1,13 +1,9 @@
-﻿using System.Threading.Tasks;
-using EmbedIO;
-using EmbedIO.WebApi;
-using ISAI.Lessons.Core.Services;
+﻿using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.Models.Interfaces.App;
 using ISAI.Lessons.Models.Interfaces;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui;
 using ISAI.Lessons.Mobile.Services;
-using Microsoft.Maui.Storage;
 
 namespace ISAI.Lessons.Mobile
 {
@@ -15,6 +11,8 @@ namespace ISAI.Lessons.Mobile
     {
         public App()
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWH9edHRWRWlZUEx2V0tWYEg=");
+
             InitializeComponent();
 
             DependencyService.Register<ISqliteService, SqliteService>();

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
+using Syncfusion.Maui.Core.Hosting;
 
 namespace ISAI.Lessons.Mobile
 {
@@ -18,6 +19,8 @@ namespace ISAI.Lessons.Mobile
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+            builder.ConfigureSyncfusionCore();
 
 #if DEBUG
     		builder.Logging.AddDebug();
