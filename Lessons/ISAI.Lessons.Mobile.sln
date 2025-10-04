@@ -36,6 +36,7 @@ Global
 		{69BDF1EE-5E98-4DE0-89E8-5DCC7562C50D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{69BDF1EE-5E98-4DE0-89E8-5DCC7562C50D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69BDF1EE-5E98-4DE0-89E8-5DCC7562C50D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69BDF1EE-5E98-4DE0-89E8-5DCC7562C50D}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

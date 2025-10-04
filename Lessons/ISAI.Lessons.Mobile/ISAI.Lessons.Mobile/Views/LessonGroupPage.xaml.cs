@@ -4,6 +4,7 @@ using ISAI.Lessons.Models.Models.App;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Xaml;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,17 +44,18 @@ namespace ISAI.Lessons.Mobile.Views
             if (SfItemsListView.SelectedItem != null)
             {
 
+                //HACK: hasSubGroups gets returned as false on release and so we need to re-get from database
                 var selectedItem = SfItemsListView.SelectedItem as LessonGroup;
-                
+                var lessonGroup = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(selectedItem.Id));
 
-                if (selectedItem.HasSubGroups)
+                if (lessonGroup.HasSubGroups)
                 {
-                    var lessonGroupPage = new LessonGroupPage(selectedItem.Id);
+                    var lessonGroupPage = new LessonGroupPage(lessonGroup.Id);
                     await Shell.Current.Navigation.PushAsync(lessonGroupPage, true);
                 }
                 else
                 {
-                    var lessonsPage = new LessonsPage(selectedItem.Id);
+                    var lessonsPage = new LessonsPage(lessonGroup.Id);
                     await Shell.Current.Navigation.PushAsync(lessonsPage, true);
                 }
 
@@ -69,11 +71,10 @@ namespace ISAI.Lessons.Mobile.Views
 
             string title = "Lessons";
             if (_parentId.HasValue)
-                Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_parentId.Value)).Name;
+              Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_parentId.Value)).Name;
 
             var lessonGroups = (await DependencyService.Get<ISqliteService>().GetLessonGroupsAsync(_parentId))
-                .OrderBy(x => x.ParentLessonGroupId)
-                        .ThenBy(x => x.ListOrder)
+                        .OrderBy(x => x.ListOrder)
                         .ToList();
 
             MainThread.BeginInvokeOnMainThread(() =>
@@ -81,6 +82,8 @@ namespace ISAI.Lessons.Mobile.Views
                 Title = title;
                 SfItemsListView.ItemsSource = lessonGroups;
                 SfItemsListView.RefreshView();
+
+
             });
 
         }
