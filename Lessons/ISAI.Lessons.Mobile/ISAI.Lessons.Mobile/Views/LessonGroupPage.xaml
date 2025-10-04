@@ -36,7 +36,8 @@
                                 Margin="5,5,5,10"   
                   />
 
-                        <BoxView HeightRequest="0.5"
+
+                    <BoxView HeightRequest="0.5"
                    BackgroundColor="LightGray"
                    VerticalOptions="End"/>
 
