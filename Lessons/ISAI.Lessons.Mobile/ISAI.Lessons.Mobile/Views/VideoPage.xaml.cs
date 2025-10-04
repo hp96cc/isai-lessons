@@ -22,8 +22,8 @@ namespace ISAI.Lessons.Mobile.Views
             server = new WebServer(o => o
                     .WithUrlPrefix("http://localhost:9696/")
                     .WithMode(HttpListenerMode.EmbedIO))
-                .WithLocalSessionManager()
-                .WithStaticFolder("/", FileSystem.Current.AppDataDirectory, true);
+                    .WithLocalSessionManager()
+                    .WithStaticFolder("/", FileSystem.Current.AppDataDirectory, true);
     
             server.RunAsync();
 

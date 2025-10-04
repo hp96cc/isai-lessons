@@ -6,6 +6,8 @@ namespace ISAI.Lessons.Models.ViewModels
 {
     public class LessonStreamingResponse
     {
+        public LessonStreamingResponse() { }
+
         public string StreamingUrl { get; set; }
 
         public string Token { get; set; }
@@ -13,6 +15,8 @@ namespace ISAI.Lessons.Models.ViewModels
 
     public class LessonStreamingToken
     {
+        public LessonStreamingToken() { }
+
         public int LessonId { get; set; }
 
         public DateTime ExpiryDate { get; set; }

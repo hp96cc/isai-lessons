@@ -4,6 +4,8 @@ using ISAI.Lessons.Models.Interfaces;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui;
 using ISAI.Lessons.Mobile.Services;
+using Newtonsoft.Json;
+using System;
 
 namespace ISAI.Lessons.Mobile
 {
@@ -17,6 +19,8 @@ namespace ISAI.Lessons.Mobile
 
             DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.RegisterSingleton<IAuthService>(new AuthService());
+
+            Console.Write("ISAI: App Loaded");
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

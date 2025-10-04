@@ -11,6 +11,7 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Devices;
 using Microsoft.Maui.Storage;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
@@ -180,7 +181,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
             if (videoDownload != null)
             {
-                var lessonPage = new VideoPage(_lesson.Id, videoDownload.DownloadUrl);
+                var lessonPage = new VideoPage(Lesson.Id, videoDownload.DownloadUrl);
   
                 await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 DependencyService.Get<IHud>().Dismiss();
@@ -195,7 +196,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                 var lessonRequestViewModel = new LessonRequestViewModel()
                 {
-                    LessonId = _lesson.Id,
+                    LessonId = Lesson.Id,
                     RemoteMediaType = RemoteMediaType.EncryptedStream,
                     CustomerDevice = new CustomerDeviceViewModel()
                     {
@@ -205,21 +206,28 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     }
                 };
 
+
+                Console.Write("ISAI:" + JsonConvert.SerializeObject(lessonRequestViewModel));
+
+                Console.Write("ISAI:" + lessonRequestViewModel.LessonId + lessonRequestViewModel.RemoteMediaType.ToString() + lessonRequestViewModel.CustomerDevice.Name + lessonRequestViewModel.CustomerDevice.DeviceIdentifier + lessonRequestViewModel.CustomerDevice.DeviceType);
+
+
                 var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
                 DependencyService.Get<IHud>().Dismiss();
 
                 if (streamingUrlResponse.Status == ResponseStatus.OK)
                 {
-                    var lessonPage = new VideoPage(_lesson.Id, _sourceUrl + streamingUrlResponse.Content.StreamingUrl);
+
+                    var lessonPage = new VideoPage(Lesson.Id, _sourceUrl + streamingUrlResponse.Content.StreamingUrl);
                     await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 }
                 else if (streamingUrlResponse.ErrorResponse != null)
                 {
-                    DependencyService.Get<IHud>().ShowError(streamingUrlResponse.ErrorResponse[0].Message, TimeSpan.FromSeconds(5));
+                    DependencyService.Get<IHud>().ShowError(streamingUrlResponse.ErrorResponse[0].Message, TimeSpan.FromSeconds(3));
               }
                 else
                 {
-                    DependencyService.Get<IHud>().ShowError("Cannot stream at this time.", TimeSpan.FromSeconds(5));
+                    DependencyService.Get<IHud>().ShowError("Cannot stream at this time.", TimeSpan.FromSeconds(3));
                 }
 
 
@@ -246,12 +254,12 @@ namespace ISAI.Lessons.Mobile.ViewModels
             {
 
                 var db = DependencyService.Get<ISqliteService>();
-                var lessonGroup = await db.GetLessonGroupAsync(_lesson.LessonGroupId);
+                var lessonGroup = await db.GetLessonGroupAsync(Lesson.LessonGroupId);
                 var apiService = new ApiService(DependencyService.Get<IAuthService>(), Constants.BasePortalUrl, Constants.BaseReturnUrl);
 
                 var lessonRequestViewModel = new LessonRequestViewModel()
                 {
-                    LessonId = _lesson.Id,
+                    LessonId = Lesson.Id,
                     RemoteMediaType = RemoteMediaType.Download,
                     CustomerDevice = new CustomerDeviceViewModel()
                     {
@@ -270,22 +278,22 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                     var downloadUrl = _sourceUrl + streamingUrlResponse.Content.StreamingUrl;
                   
-                    var downloadStatus = await DownloadFileAsync(downloadUrl, _downloadedFilePath, _lesson.Id + ".zip");
+                    var downloadStatus = await DownloadFileAsync(downloadUrl, _downloadedFilePath, Lesson.Id + ".zip");
 
                     if (downloadStatus)
                     {
 
-                        ZipService.ExtractZipFile(_downloadedFilePath + "/" + _lesson.Id + ".zip", _downloadedFilePath);
+                        ZipService.ExtractZipFile(_downloadedFilePath + "/" + Lesson.Id + ".zip", _downloadedFilePath);
 
                         //Rewrite the m3u8.key key location
-                        var m3u8FilePath = _downloadedFilePath + "/" + _lesson.Id + ".m3u8";
+                        var m3u8FilePath = _downloadedFilePath + "/" + Lesson.Id + ".m3u8";
                         var searchText = "#EXT-X-KEY:METHOD=AES-128,URI=\"";
 
                         var m3u8FileText = File.ReadAllText(m3u8FilePath);
                         var keyStartLocation = m3u8FileText.IndexOf(searchText) + searchText.Length;
                         var keyEndLocation = m3u8FileText.IndexOf("\"", keyStartLocation);
                         var currentKeyLocationText = m3u8FileText.Substring(keyStartLocation, keyEndLocation - keyStartLocation);
-                        var deviceKeyLocationText = string.Format("{0}.m3u8.key", _lesson.Id);
+                        var deviceKeyLocationText = string.Format("{0}.m3u8.key", Lesson.Id);
 
                         m3u8FileText = m3u8FileText.Replace(currentKeyLocationText, deviceKeyLocationText);
 
@@ -294,12 +302,12 @@ namespace ISAI.Lessons.Mobile.ViewModels
                         videoDownload = new VideoDownload()
                         {
                             Id = Guid.NewGuid(),
-                            LessonId = _lesson.Id,
+                            LessonId = Lesson.Id,
                             LessonName = Lesson.Name,
                             LessonGroup = Breadcrumb,
                             DateDownloaded = DateTime.Now,
                             //DownloadUrl = m3u8FilePath,
-                            DownloadUrl = string.Format("http://localhost:9696/{0}/{1}.m3u8", _lesson.Id, _lesson.Id)
+                            DownloadUrl = string.Format("http://localhost:9696/{0}/{1}.m3u8", Lesson.Id, Lesson.Id)
 
                         };
 
