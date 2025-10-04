@@ -29,20 +29,17 @@
     <syncfusion:SfListView x:Name="SfItemsListView">
 
         <syncfusion:SfListView.ItemTemplate>
-            <DataTemplate>
-                <StackLayout Padding="10">
-                    <Label Text="{Binding Name}" 
-        LineBreakMode="WordWrap" 
-        
-        FontSize="16"
-        FontAttributes="Bold"
-        Margin="5,5,5,10"   
-           />
+            <DataTemplate x:DataType="{x:Type model:Lesson}">
+                    <StackLayout Padding="10">
+                    <Label  Text="{Binding Name}" 
+                            LineBreakMode="WordWrap" 
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Margin="5,5,5,10" />
 
                     <BoxView HeightRequest="0.5"
-            BackgroundColor="LightGray"
-            VerticalOptions="End"/>
-
+                             BackgroundColor="LightGray"
+                             VerticalOptions="End"/>
 
                 </StackLayout>
             </DataTemplate>

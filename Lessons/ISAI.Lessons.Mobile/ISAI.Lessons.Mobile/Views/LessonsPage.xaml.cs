@@ -1,5 +1,6 @@
 ﻿using ISAI.Lessons.Models.Interfaces.App;
 using ISAI.Lessons.Models.Models.App;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Xaml;
 using System.Linq;
@@ -21,10 +22,10 @@ namespace ISAI.Lessons.Mobile.Views
             SfItemsListView.SelectionChanged += SfItemsListView_SelectionChanged;
         }
 
-        protected async override void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            await DisplayLessons();
+            Task.Run(async () => await DisplayLessons());
 
         }
 
@@ -47,13 +48,18 @@ namespace ISAI.Lessons.Mobile.Views
 
         async Task DisplayLessons()
         {
-            Title = Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_lessonGroupId)).Name;
+            var title = Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_lessonGroupId)).Name;
 
             var lessons = (await DependencyService.Get<ISqliteService>().GetLessonsAsync(_lessonGroupId))
                        .OrderBy(x => x.ListOrder)
-            .ToList();
+                        .ToList();
 
-            SfItemsListView.ItemsSource = lessons;
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Title = title;
+                SfItemsListView.ItemsSource = lessons;
+                SfItemsListView.RefreshView();
+            });
 
         }
 
