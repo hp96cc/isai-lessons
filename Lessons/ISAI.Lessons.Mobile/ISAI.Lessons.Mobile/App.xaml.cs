@@ -6,6 +6,7 @@ using Microsoft.Maui;
 using ISAI.Lessons.Mobile.Services;
 using Newtonsoft.Json;
 using System;
+using Microsoft.Maui.ApplicationModel;
 
 namespace ISAI.Lessons.Mobile
 {
@@ -19,6 +20,8 @@ namespace ISAI.Lessons.Mobile
 
             DependencyService.Register<ISqliteService, SqliteService>();
             DependencyService.RegisterSingleton<IAuthService>(new AuthService());
+
+            Application.Current.UserAppTheme = AppTheme.Light;
 
             Console.Write("ISAI: App Loaded");
         }
