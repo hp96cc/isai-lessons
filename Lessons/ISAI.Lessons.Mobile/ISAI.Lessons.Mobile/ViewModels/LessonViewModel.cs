@@ -131,24 +131,24 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         }
 
-        public async void OnAppearing()
+        public void OnAppearing()
         {
             var db = DependencyService.Get<ISqliteService>();
 
-            Lesson = await db.GetLessonAsync(_lessonId);
+            Lesson = db.GetLesson(_lessonId);
             Title = Lesson.Name;
 
-            var lessongroupHierarchy = await db.GetLessonGroupHierarchyAsync(Lesson.LessonGroupId);
+            var lessongroupHierarchy = db.GetLessonGroupHierarchy(Lesson.LessonGroupId);
             Breadcrumb = string.Join(" > ", lessongroupHierarchy.Select(x => x.Name));
 
-            await CheckDownloadStatus();
+            CheckDownloadStatus();
 
 
         }
 
-        async Task CheckDownloadStatus() {
+        void CheckDownloadStatus() {
 
-            videoDownload = await DependencyService.Get<ISqliteService>().GetVideoDownloadForLessonAsync(_lessonId);
+            videoDownload = DependencyService.Get<ISqliteService>().GetVideoDownloadForLesson(_lessonId);
             DownloadErrorText = string.Empty;
 
             if (videoDownload != null)
@@ -161,7 +161,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 CanDeleteDownload = false;
                 CanDownload = false;
 
-                var videoDownloadCount = (await DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync()).Count;
+                var videoDownloadCount = (DependencyService.Get<ISqliteService>().GetVideoDownloads()).Count;
 
                 if (videoDownloadCount >= 10)
                 {
@@ -254,7 +254,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
             {
 
                 var db = DependencyService.Get<ISqliteService>();
-                var lessonGroup = await db.GetLessonGroupAsync(Lesson.LessonGroupId);
+                var lessonGroup = db.GetLessonGroup(Lesson.LessonGroupId);
                 var apiService = new ApiService(DependencyService.Get<IAuthService>(), Constants.BasePortalUrl, Constants.BaseReturnUrl);
 
                 var lessonRequestViewModel = new LessonRequestViewModel()
@@ -311,7 +311,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
                         };
 
-                        await DependencyService.Get<ISqliteService>().SaveVideoDownloadAsync(videoDownload);
+                        DependencyService.Get<ISqliteService>().SaveVideoDownload(videoDownload);
 
                         CanDeleteDownload = true;
                         CanDownload = false;
@@ -377,8 +377,8 @@ namespace ISAI.Lessons.Mobile.ViewModels
             if(result)
             {
                 Directory.Delete(_downloadedFilePath, true);
-                await DependencyService.Get<ISqliteService>().DeleteVideoDownloadAsync(videoDownload);
-                await CheckDownloadStatus();
+                DependencyService.Get<ISqliteService>().DeleteVideoDownload(videoDownload);
+                CheckDownloadStatus();
             }
 
           

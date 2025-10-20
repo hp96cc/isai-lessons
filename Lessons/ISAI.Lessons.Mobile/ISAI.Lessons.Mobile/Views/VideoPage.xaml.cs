@@ -47,12 +47,12 @@ namespace ISAI.Lessons.Mobile.Views
 
         }
         
-        protected async override void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
             var db = DependencyService.Get<ISqliteService>();
 
-            var lesson  = await db.GetLessonAsync(_lessonId);
+            var lesson  = db.GetLesson(_lessonId);
 
             Title = lesson.Name;
             DependencyService.Get<IDeviceOrientation>().LockOrientation(DeviceOrientations.Landscape);

@@ -35,7 +35,7 @@ namespace ISAI.Lessons.Mobile.Views
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            Task.Run(async () => await DisplayLessonGroups());
+            DisplayLessonGroups();
 
         }
 
@@ -46,7 +46,7 @@ namespace ISAI.Lessons.Mobile.Views
 
                 //BUG: On release hasSubGroups always returns false. Do a a check for subgroups now instead.
                 var selectedItem = SfItemsListView.SelectedItem as LessonGroup;
-                var hasSubGroups = (await DependencyService.Get<ISqliteService>().GetLessonGroupsAsync(selectedItem.Id)).Any();
+                var hasSubGroups = DependencyService.Get<ISqliteService>().GetLessonGroups(selectedItem.Id).Any();
 
                 if (hasSubGroups)
                 {
@@ -66,14 +66,14 @@ namespace ISAI.Lessons.Mobile.Views
 
         }
 
-        async Task DisplayLessonGroups()
+        void DisplayLessonGroups()
         {
 
             string title = "Lessons";
             if (_parentId.HasValue)
-              Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_parentId.Value)).Name;
+              Title = ( DependencyService.Get<ISqliteService>().GetLessonGroup(_parentId.Value)).Name;
 
-            var lessonGroups = (await DependencyService.Get<ISqliteService>().GetLessonGroupsAsync(_parentId))
+            var lessonGroups = (DependencyService.Get<ISqliteService>().GetLessonGroups(_parentId))
                         .OrderBy(x => x.ListOrder)
                         .ToList();
 

@@ -16,9 +16,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
         public async Task OnAppearing()
         {
 
-            await DependencyService.Get<ISqliteService>().InitializeAsync();
+            DependencyService.Get<ISqliteService>().Initialize();
 
-            var appUser = await DependencyService.Get<ISqliteService>().GetUserAsync();
+            var appUser = DependencyService.Get<ISqliteService>().GetUser();
 
             if (appUser != null)
             {

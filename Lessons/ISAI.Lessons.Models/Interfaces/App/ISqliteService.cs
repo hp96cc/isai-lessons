@@ -7,41 +7,41 @@ namespace ISAI.Lessons.Models.Interfaces.App
     public interface ISqliteService
     {
 
-        Task InitializeAsync();
+        void Initialize();
 
-        Task<AppUser> GetUserAsync();
+       AppUser GetUser();
 
-        Task DeleteUserAsync(AppUser appUser);
+        void DeleteUser(AppUser appUser);
 
-        Task SaveUserAsync(AppUser appUser);
+        void SaveUser(AppUser appUser);
 
-        Task<List<LessonGroup>> GetLessonGroupsAsync(int? parentId = null);
+        List<LessonGroup> GetLessonGroups(int? parentId = null);
 
-        Task<List<LessonGroup>> GetLessonGroupHierarchyAsync(int lessonGroupId);
+        List<LessonGroup> GetLessonGroupHierarchy(int lessonGroupId);
 
-        Task<LessonGroup> GetLessonGroupAsync(int lessonGroupId);
+        LessonGroup GetLessonGroup(int lessonGroupId);
 
-        Task SaveLessonGroupsAsync(List<LessonGroup> lessongroups);
+        void SaveLessonGroups(List<LessonGroup> lessongroups);
 
-        Task<List<Lesson>> GetLessonsAsync(int lessonGroupId);
+        List<Lesson> GetLessons(int lessonGroupId);
 
-        Task<List<VideoDownload>> GetVideoDownloadsAsync();
+        List<VideoDownload> GetVideoDownloads();
 
-        Task<VideoDownload> GetVideoDownloadForLessonAsync(int lessonId);
+        VideoDownload GetVideoDownloadForLesson(int lessonId);
 
-        Task DeleteVideoDownloadAsync(VideoDownload videoDownload);
+        void DeleteVideoDownload(VideoDownload videoDownload);
 
-        Task DeleteAllVideoDownloadsAsync();
+        void DeleteAllVideoDownloads();
 
-        Task SaveVideoDownloadAsync(VideoDownload videoDownload);
+        void SaveVideoDownload(VideoDownload videoDownload);
 
-        Task<Lesson> GetLessonAsync(int lessonId);
+        Lesson GetLesson(int lessonId);
 
-        Task SaveLessonsAsync(List<Lesson> lessons);
+        void SaveLessons(List<Lesson> lessons);
 
-        Task SaveLessonAsync(Lesson lesson);
+        void SaveLesson(Lesson lesson);
 
-        Task DeleteDatabaseAsync();
+        void DeleteDatabase();
 
     }
 }

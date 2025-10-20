@@ -52,7 +52,7 @@ namespace ISAI.Lessons.Mobile.Views
 
                 if (lessonGroupResponse.Status == ResponseStatus.OK)
                 {
-                    await DependencyService.Get<ISqliteService>().SaveLessonGroupsAsync(lessonGroupResponse.Content);
+                    DependencyService.Get<ISqliteService>().SaveLessonGroups(lessonGroupResponse.Content);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace ISAI.Lessons.Mobile.Views
 
                 if (lessonResponse.Status == ResponseStatus.OK)
                 {
-                    await DependencyService.Get<ISqliteService>().SaveLessonsAsync(lessonResponse.Content);
+                    DependencyService.Get<ISqliteService>().SaveLessons(lessonResponse.Content);
                 }
                 else
                 {

@@ -25,7 +25,7 @@ namespace ISAI.Lessons.Mobile.Views
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            Task.Run(async () => await DisplayLessons());
+            DisplayLessons();
 
         }
 
@@ -46,11 +46,11 @@ namespace ISAI.Lessons.Mobile.Views
 
         }
 
-        async Task DisplayLessons()
+        void DisplayLessons()
         {
-            var title = Title = (await DependencyService.Get<ISqliteService>().GetLessonGroupAsync(_lessonGroupId)).Name;
+            var title = Title = (DependencyService.Get<ISqliteService>().GetLessonGroup(_lessonGroupId)).Name;
 
-            var lessons = (await DependencyService.Get<ISqliteService>().GetLessonsAsync(_lessonGroupId))
+            var lessons = (DependencyService.Get<ISqliteService>().GetLessons(_lessonGroupId))
                        .OrderBy(x => x.ListOrder)
                         .ToList();
 

@@ -30,7 +30,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         }
 
 
-        async Task DisplayVideoDownloads(bool forceReload = false)
+        void DisplayVideoDownloads(bool forceReload = false)
         {
 
             if (_hasAppeared && !forceReload) return;
@@ -38,7 +38,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             Items.Clear();
 
-            var lessons = (await DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync());
+            var lessons = DependencyService.Get<ISqliteService>().GetVideoDownloads();
 
             foreach (var item in lessons)
             {
@@ -49,10 +49,10 @@ namespace ISAI.Lessons.Mobile.ViewModels
         }
 
 
-        public async void OnAppearing()
+        public void OnAppearing()
         {
             SelectedItem = null;
-            await DisplayVideoDownloads(false);
+            DisplayVideoDownloads(false);
         }
 
         public VideoDownload SelectedItem
@@ -73,7 +73,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
             if (result)
             {
 
-                var downloads = (await DependencyService.Get<ISqliteService>().GetVideoDownloadsAsync());
+                var downloads = DependencyService.Get<ISqliteService>().GetVideoDownloads();
 
                 foreach(var  download in downloads)
                 {
@@ -81,9 +81,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 }
 
                 DependencyService.Get<IVideoDownloadService>().DeleteAllDownloads();
-                await DependencyService.Get<ISqliteService>().DeleteAllVideoDownloadsAsync();
+                DependencyService.Get<ISqliteService>().DeleteAllVideoDownloads();
 
-                await DisplayVideoDownloads(true);
+                DisplayVideoDownloads(true);
             }
 
 

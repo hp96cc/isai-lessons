@@ -86,7 +86,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
                         MaxFileDownloads = 3
                     };
 
-                    await DependencyService.Get<ISqliteService>().SaveUserAsync(appUser);
+                    DependencyService.Get<ISqliteService>().SaveUser(appUser);
 
                     DependencyService.Get<IHud>().ShowSpinner("Downloading Lesson Data...");
                      await DownloadLessonData();
@@ -130,7 +130,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             if (lessonGroupResponse.Status == ResponseStatus.OK)
             {
-                await DependencyService.Get<ISqliteService>().SaveLessonGroupsAsync(lessonGroupResponse.Content);
+                DependencyService.Get<ISqliteService>().SaveLessonGroups(lessonGroupResponse.Content);
             }
             else
             {
@@ -145,7 +145,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
             if (lessonResponse.Status == ResponseStatus.OK)
             {
-                await DependencyService.Get<ISqliteService>().SaveLessonsAsync(lessonResponse.Content);
+                DependencyService.Get<ISqliteService>().SaveLessons(lessonResponse.Content);
             }
             else
             {

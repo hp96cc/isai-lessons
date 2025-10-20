@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ISAI.Lessons.Core.Services
 {
@@ -24,12 +23,12 @@ namespace ISAI.Lessons.Core.Services
             }
         }
 
-        static readonly Lazy<SQLiteAsyncConnection> lazyInitializer = new Lazy<SQLiteAsyncConnection>(() =>
+        static readonly Lazy<SQLiteConnection> lazyInitializer = new Lazy<SQLiteConnection>(() =>
         {
-            return new SQLiteAsyncConnection(DatabasePath, Flags);
+            return new SQLiteConnection(DatabasePath, Flags);
         });
 
-        static SQLiteAsyncConnection Database => lazyInitializer.Value;
+        static SQLiteConnection Database => lazyInitializer.Value;
 
         static bool initialized = false;
 
@@ -38,28 +37,28 @@ namespace ISAI.Lessons.Core.Services
      
         }
 
-        public async Task InitializeAsync()
+        public  void Initialize()
         {
             if (!initialized)
             {
                 if (!Database.TableMappings.Any(m => m.MappedType.Name == typeof(LessonGroup).Name))
                 {
-                    await Database.CreateTableAsync<LessonGroup>(CreateFlags.None).ConfigureAwait(false);
+                    Database.CreateTable<LessonGroup>(CreateFlags.None);
                 }
 
                 if (!Database.TableMappings.Any(m => m.MappedType.Name == typeof(Lesson).Name))
                 {
-                    await Database.CreateTableAsync<Lesson>(CreateFlags.None).ConfigureAwait(false);
+                   Database.CreateTable<Lesson>(CreateFlags.None);
                 }
 
                 if (!Database.TableMappings.Any(m => m.MappedType.Name == typeof(VideoDownload).Name))
                 {
-                    await Database.CreateTableAsync<VideoDownload>(CreateFlags.None).ConfigureAwait(false);
+                   Database.CreateTable<VideoDownload>(CreateFlags.None);
                 }
 
                 if (!Database.TableMappings.Any(m => m.MappedType.Name == typeof(AppUser).Name))
                 {
-                    await Database.CreateTableAsync<AppUser>(CreateFlags.None).ConfigureAwait(false);
+                   Database.CreateTable<AppUser>(CreateFlags.None);
                 }
 
                 initialized = true;
@@ -68,46 +67,46 @@ namespace ISAI.Lessons.Core.Services
         }
 
 
-        public async Task DeleteDatabaseAsync()
+        public  void DeleteDatabase()
         {
 
-            await Database.DeleteAllAsync<LessonGroup>().ConfigureAwait(false);
-            await Database.DeleteAllAsync<Lesson>().ConfigureAwait(false);
-            await Database.DeleteAllAsync<VideoDownload>().ConfigureAwait(false);
-            await Database.DeleteAllAsync<AppUser>().ConfigureAwait(false);
+           Database.DeleteAll<LessonGroup>();
+           Database.DeleteAll<Lesson>();
+           Database.DeleteAll<VideoDownload>();
+           Database.DeleteAll<AppUser>();
 
             Console.WriteLine("Database deleted");
 
         }
 
-        public async Task<AppUser> GetUserAsync()
+        public AppUser GetUser()
         {
-            return await Database.Table<AppUser>().FirstOrDefaultAsync();
+            return Database.Table<AppUser>().FirstOrDefault();
         }
 
-        public async Task DeleteUserAsync(AppUser appUser)
+        public void DeleteUser(AppUser appUser)
         {
-            await Database.DeleteAsync<AppUser>(appUser.Id);
+           Database.Delete<AppUser>(appUser.Id);
         }
 
-        public async Task SaveUserAsync(AppUser appUser)
+        public void SaveUser(AppUser appUser)
         {
-            await Database.InsertOrReplaceAsync(appUser);
+           Database.InsertOrReplace(appUser);
         }
 
-        public async Task<List<LessonGroup>> GetLessonGroupsAsync(int? parentId = null)
+        public  List<LessonGroup> GetLessonGroups(int? parentId = null)
         {
-            return await Database.Table<LessonGroup>().Where(x => x.ParentLessonGroupId == parentId).ToListAsync();
+            return Database.Table<LessonGroup>().Where(x => x.ParentLessonGroupId == parentId).ToList();
         }
 
-        public async Task<List<LessonGroup>> GetLessonGroupHierarchyAsync(int lessonGroupId)
+        public  List<LessonGroup> GetLessonGroupHierarchy(int lessonGroupId)
         {
             var lessonGroups = new List<LessonGroup>();
             int? currentLessonGroupId = lessonGroupId;
 
             while (currentLessonGroupId.HasValue)
             {
-                var lessonGroup = await Database.Table<LessonGroup>().Where(x => x.Id == currentLessonGroupId.Value).FirstAsync();
+                var lessonGroup =Database.Table<LessonGroup>().Where(x => x.Id == currentLessonGroupId.Value).First();
                 lessonGroups.Add(lessonGroup);
                 currentLessonGroupId = lessonGroup.ParentLessonGroupId;
             }
@@ -115,64 +114,64 @@ namespace ISAI.Lessons.Core.Services
             return lessonGroups;
         }
 
-        public async Task<LessonGroup> GetLessonGroupAsync(int lessonGroupId)
+        public LessonGroup GetLessonGroup(int lessonGroupId)
         {
-            return await Database.Table<LessonGroup>().FirstAsync(x => x.Id == lessonGroupId);
+            return Database.Table<LessonGroup>().First(x => x.Id == lessonGroupId);
 
         }
 
-        public async Task<List<Lesson>> GetLessonsAsync(int lessonGroupId)
+        public List<Lesson> GetLessons(int lessonGroupId)
         {
-            return await Database.Table<Lesson>().Where(x => x.LessonGroupId == lessonGroupId).ToListAsync();
+            return Database.Table<Lesson>().Where(x => x.LessonGroupId == lessonGroupId).ToList();
         }
 
-        public async Task<List<VideoDownload>> GetVideoDownloadsAsync()
+        public  List<VideoDownload> GetVideoDownloads()
         {
-            return await Database.Table<VideoDownload>().OrderBy(x => x.LessonName).ToListAsync();
+            return Database.Table<VideoDownload>().OrderBy(x => x.LessonName).ToList();
         }
 
 
-        public async Task<VideoDownload> GetVideoDownloadForLessonAsync(int lessonId)
+        public VideoDownload GetVideoDownloadForLesson(int lessonId)
         {
 
-            return await Database.Table<VideoDownload>().FirstOrDefaultAsync(x => x.LessonId == lessonId);
+            return Database.Table<VideoDownload>().FirstOrDefault(x => x.LessonId == lessonId);
         }
 
-        public async Task DeleteVideoDownloadAsync(VideoDownload videoDownload)
+        public void DeleteVideoDownload(VideoDownload videoDownload)
         {
-            await Database.DeleteAsync<VideoDownload>(videoDownload.Id);
+           Database.Delete<VideoDownload>(videoDownload.Id);
         }
 
-        public async Task DeleteAllVideoDownloadsAsync()
+        public void DeleteAllVideoDownloads()
         {
-            await Database.DeleteAllAsync<VideoDownload>().ConfigureAwait(false);
+           Database.DeleteAll<VideoDownload>();
         }
 
-        public async Task SaveVideoDownloadAsync(VideoDownload videoDownload)
+        public void SaveVideoDownload(VideoDownload videoDownload)
         {
-            await Database.InsertOrReplaceAsync(videoDownload);
+           Database.InsertOrReplace(videoDownload);
         }
 
-        public async Task<Lesson> GetLessonAsync(int lessonId)
+        public  Lesson GetLesson(int lessonId)
         {
-            return await Database.Table<Lesson>().FirstOrDefaultAsync(x => x.Id == lessonId);
+            return Database.Table<Lesson>().FirstOrDefault(x => x.Id == lessonId);
         }
-        public async Task SaveLessonGroupsAsync(List<LessonGroup> lessongroups)
+        public void SaveLessonGroups(List<LessonGroup> lessongroups)
         {
-            await Database.DeleteAllAsync<LessonGroup>();
-            await Database.InsertAllAsync(lessongroups);
-        }
-
-        public async Task SaveLessonsAsync(List<Lesson> lessons)
-        {
-            await Database.DeleteAllAsync<Lesson>();
-            await Database.InsertAllAsync(lessons);
-
+           Database.DeleteAll<LessonGroup>();
+           Database.InsertAll(lessongroups);
         }
 
-        public async Task SaveLessonAsync(Lesson lesson)
+        public void SaveLessons(List<Lesson> lessons)
         {
-            await Database.InsertOrReplaceAsync(lesson);
+           Database.DeleteAll<Lesson>();
+           Database.InsertAll(lessons);
+
+        }
+
+        public void SaveLesson(Lesson lesson)
+        {
+           Database.InsertOrReplace(lesson);
         }
     }
 }
