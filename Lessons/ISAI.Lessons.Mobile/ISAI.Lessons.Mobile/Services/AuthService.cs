@@ -12,7 +12,7 @@ namespace ISAI.Lessons.Mobile.Services
 
         public async Task<Auth> GetAuth()
         {
-            var user = await DependencyService.Get<ISqliteService>().GetUserAsync();
+            var user = DependencyService.Get<ISqliteService>().GetUser();
 
             if (user != null)
             {
@@ -37,14 +37,14 @@ namespace ISAI.Lessons.Mobile.Services
 
         public async Task SetAuth(Auth auth)
         {
-            var user = await DependencyService.Get<ISqliteService>().GetUserAsync();
+            var user = DependencyService.Get<ISqliteService>().GetUser();
 
             if (user != null)
             {
                 user.AccessToken = auth.AccessToken;
                 user.RefreshToken = auth.RefreshToken;
 
-                await DependencyService.Get<ISqliteService>().SaveUserAsync(user);
+                DependencyService.Get<ISqliteService>().SaveUser(user);
 
                 Debug.WriteLine("SAVE Refresh: {0}", user.RefreshToken);
 
