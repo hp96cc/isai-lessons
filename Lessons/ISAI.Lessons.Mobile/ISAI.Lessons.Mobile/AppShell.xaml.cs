@@ -13,7 +13,7 @@ namespace ISAI.Lessons.Mobile
 
         private async void OnMenuItemClicked(object sender, EventArgs e)
         {
-            await DependencyService.Get<ISqliteService>().DeleteDatabaseAsync();
+            DependencyService.Get<ISqliteService>().DeleteDatabase();
             await Shell.Current.GoToAsync("//LoginPage");
         }
     }
