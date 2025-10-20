@@ -207,9 +207,26 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     TimeEnd = TimeZoneInfo.ConvertTimeFromUtc(x.DateTimeEnd.DateTime, gmtStandardTimeZone).ToString("HH:mm"),
                     TeamsLink = x.TeamsLink,
                     TutorName = x.TutorUser.Firstname + " " + x.TutorUser.Surname,
-                    IsUserSignedUp = false
+                    IsUserSignedUp = false,
+                    GroupTutorialGroupId = x.GroupTutorialGroupId,
 
                 }).ToList();
+
+                response.Content.GroupTutorialGroups = await db.GroupTutorialGroup
+                                        .Where(x => x.Deleted == false)
+                                        .OrderBy(x => x.ListOrder)
+                                        .Select(x => new ISAI.Lessons.Models.ViewModels.GroupTutorialGroup()
+                                        {
+                                            Id = x.Id,
+                                            Name = x.Name,
+                                            ListOrder = x.ListOrder
+                                        }).ToListAsync();
+
+                foreach(var group in response.Content.GroupTutorialGroups)
+                {
+                    group.Tutorials = response.Content.Tutorials.Where(x => x.GroupTutorialGroupId == group.Id).ToList();    
+                }
+
                 response.Status = ResponseStatus.OK;
                 return response;
             }
@@ -1248,7 +1265,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
 
                     //Log the view
-                    var dbCustomerDevice = db.CustomerDevice.FirstOrDefault(x => x.DeviceIdentifier == lessonRequestViewModel.CustomerDevice.DeviceIdentifier); //This is now called twice, should be refactored
+                    var dbCustomerDevice = db.CustomerDevice.FirstOrDefault(x => x.CustomerId == _customerId && x.DeviceIdentifier == lessonRequestViewModel.CustomerDevice.DeviceIdentifier); //This is now called twice, should be refactored
 
                     var customerActivity = new CustomerActivity()
                     {

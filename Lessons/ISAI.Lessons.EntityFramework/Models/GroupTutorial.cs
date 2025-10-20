@@ -7,6 +7,10 @@ namespace ISAI.Lessons.EntityFramework.Models
 {
     public class GroupTutorial : BaseModel, IGroupTutorial
     {
+
+        public int? GroupTutorialGroupId { get; set; }
+        GroupTutorialGroup GroupTutorialGroup { get; set; }
+
         public int AppId { get; set; }
 
         [ForeignKey("AppId")]

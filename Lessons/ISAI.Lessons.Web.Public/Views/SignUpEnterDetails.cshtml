@@ -31,8 +31,23 @@
 <section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()" style="background-image: url(@Model.BackgroundImage.MediaUrl());">
     <div class="container">
         <div class="page-title">
-            <h1>Signup</h1>
-            <p><strong>To sign up for a Scottish Online Lessons account please complete the details below.</strong></p>
+
+            @if (isGroupTutorial)
+            {
+
+                <h2 style="color: #18b8ff;">Start Learning with Scottish Online Lessons Today</h2>
+                <p><strong>To register for a free SOL account to book group sessions, please complete the details below</strong></p>
+
+            }
+            else
+            {
+
+                <h2 style="color: #18b8ff;">Start Learning with Scottish Online Lessons Today</h2>
+                <p><strong>Join thousands of Scottish pupils already learning smarter – anytime, anywhere.</strong></p>
+
+            }
+
+
         </div>
     </div>
 </section>
@@ -220,6 +235,10 @@
                                     <button type="button" id="button-signup" style="display:none;" onclick="Signup();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Signup</button>
                                     <button type="button" id="button-checkout" style="display:none;" onclick="GoToPayment();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Go To Payment</button>
                                     <button type="button" id="button-activate" style="display:none;" onclick="Activate();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Activate Access Code</button>
+
+
+                                    <div class="mt-4 text-center"><strong>Secure signup | Approved by 25+ Scottish councils | Used by 8,000+ students across Scotland</strong></div>
+
 
                                 </div>
 

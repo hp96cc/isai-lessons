@@ -5,7 +5,6 @@
 }
 
 <!-- BREADCRUMB -->
-
 <!-- CONTENT -->
 <section class="p-0 pt-5">
     <div class="container">
@@ -13,7 +12,7 @@
 
 
         <div class="row">
-       
+
             <div class="col-12">
                 <div class="row">
 
@@ -22,7 +21,8 @@
 
                         <!-- Heading -->
                         <h3 class="mb-10">Group Tutorials</h3>
-                        <p>Below is a list of our pre-planned Group Tutorials. </p>
+                        <p class="mb-10">Below is a list of our pre-planned Group Tutorials. </p>
+                        <h4 class="mb-10">To book your spot, register for an account for FREE.</h4>
 
 
 
@@ -30,6 +30,9 @@
 
 
                     <div class="col-12 p-1">
+
+
+
                         <div class="row" id="tutorial-list"></div>
 
 
@@ -52,15 +55,15 @@
             </div>
             <div class="modal-body text-center">
 
-                <p>To Book a Group Tutorial you need to have a Scottish Online Lessons account.</p>
+                <p>Register with Scottish Online Lessons for free and book your group sessions today!</p>
 
                 <button type="button" class="butn x-small green m-3" style="min-width:125px;" onclick="RedirectToLogin()" data-dismiss="modal">Login</button>
 
-                <button type="button" class="butn x-small green m-3" style="min-width:125px;" onclick="RedirectToSignup()" data-dismiss="modal">Register</button>
+                <button type="button" class="butn x-small green m-3" style="min-width:125px;" onclick="RedirectToSignup()" data-dismiss="modal">Register for Free</button>
 
             </div>
             <div class="modal-footer">
-              
+
             </div>
         </div>
     </div>
@@ -69,9 +72,33 @@
 
 @section Scripts {
 
+
+
+    <template id="template-tutorial-group-link">
+
+
+        <a href="#tg-{{Id}}" class="butn x-small pink float-right  m-3 mb-4"><span>{{Name}}</span></a>
+
+    </template>
+
+
+    <template id="template-tutorial-group">
+        <div id="tg-{{Id}}"></div>
+        <div class="col-12 p-0">
+            <div class="card-body pt-0">
+
+                <h4>{{Name}}</h4>
+            </div>
+
+        </div>
+
+
+    </template>
+
+
     <template id="template-tutorial">
 
-        <div class="col-12 p-0">
+        <div class="col-12 col-md-6 p-0">
             <div class="card-body pt-0">
 
                 <!-- Info -->
@@ -84,7 +111,7 @@
                                 <h6 class="heading-xxxs text-muted">
                                     {{Date}} @@ {{TimeStart}} to {{TimeEnd}}
 
-                             
+
                                 </h6>
 
                                 <!-- Text -->
@@ -93,7 +120,7 @@
                                     {{Description}}
                                 </p>
 
-                                <p  class="mt-2"><strong>Cost: £15</strong></p>
+                                <p class="mt-2"><strong>Cost: £15</strong></p>
 
 
 
@@ -109,7 +136,7 @@
 
                                 <a href="#" onclick="BookTutorial({{Id}})" class="butn x-small green p-2 pl-3 pr-3 mb-2"><span>Book Tutorial</span></a>
 
-  
+
                             </div>
 
                         </div>
@@ -118,12 +145,16 @@
 
                 </div>
 
+            </div>
+
+        </div>
+
 
     </template>
-
     <script>
 
         var tutorials = [];
+        var groupTutorialGroups = [];
         var selectedTutorialId;
 
         $(document).ready(function ()
@@ -139,7 +170,7 @@
 
             if (!data)
             {
-               lessonsApp.logout('/account/');
+                lessonsApp.logout('/account/');
             }
             else if (data.Status !== 0)
             {
@@ -149,6 +180,7 @@
             {
                 HidePreloader();
                 tutorials = data.Content.Tutorials;
+                groupTutorialGroups = data.Content.GroupTutorialGroups;
                 DisplayGroupTutorials();
             }
 
@@ -160,18 +192,36 @@
 
             $('#tutorial-list').html('');
 
+            var itemLinkListHTML = '';
             var itemListHTML = '';
+
+            var templateGroupItemLink = $('#template-tutorial-group-link').html();
+            var templateGroupItem = $('#template-tutorial-group').html();
             var templateItem = $('#template-tutorial').html();
 
-            tutorials.forEach(function (item)
+            groupTutorialGroups.forEach(function (item)
             {
-                item.IsGroupTutorial = item.GroupTutorialId ? true : false;
-                itemListHTML += Mustache.render(templateItem, item);
+
+                if (item.Tutorials != null && item.Tutorials.length > 0)
+                {
+
+                    itemLinkListHTML += Mustache.render(templateGroupItemLink, item);
+
+                    itemListHTML += Mustache.render(templateGroupItem, item);
+
+                    item.Tutorials.forEach(function (tutorial)
+                    {
+                        tutorial.IsGroupTutorial = tutorial.GroupTutorialId ? true : false;
+                        itemListHTML += Mustache.render(templateItem, tutorial);
+
+                    });
+
+                }
 
             });
 
 
-            $('#tutorial-list').html(itemListHTML);
+            $('#tutorial-list').html(itemLinkListHTML + itemListHTML);
 
             $('#spinner-loading').hide();
 

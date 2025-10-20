@@ -383,12 +383,17 @@
     <Compile Include="Migrations\202505181140487_HasAbondonedSubscriptionEmailBeenSent.Designer.cs">
       <DependentUpon>202505181140487_HasAbondonedSubscriptionEmailBeenSent.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510200842304_GroupTutorialGroup.cs" />
+    <Compile Include="Migrations\202510200842304_GroupTutorialGroup.Designer.cs">
+      <DependentUpon>202510200842304_GroupTutorialGroup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\CustomerActivity.cs" />
     <Compile Include="Models\CustomerDevice.cs" />
+    <Compile Include="Models\GroupTutorialGroup.cs" />
     <Compile Include="Models\Lesson.cs" />
     <Compile Include="Models\LessonGroup.cs" />
     <Compile Include="Models\StripeWebhookLog.cs" />
@@ -498,6 +503,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202505181140487_HasAbondonedSubscriptionEmailBeenSent.resx">
       <DependentUpon>202505181140487_HasAbondonedSubscriptionEmailBeenSent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510200842304_GroupTutorialGroup.resx">
+      <DependentUpon>202510200842304_GroupTutorialGroup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,21 @@ namespace ISAI.Lessons.Models.ViewModels
     public class TutorialResponseViewModel
     {
         public List<Tutorial> Tutorials { get; set; }
+
+        public List<GroupTutorialGroup> GroupTutorialGroups {  get; set; }
+
+
+    }
+
+    public class GroupTutorialGroup
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public int ListOrder {  get; set; }
+
+        public List<Tutorial> Tutorials { get; set; }
     }
 
     public class Tutorial
@@ -30,6 +45,8 @@ namespace ISAI.Lessons.Models.ViewModels
         public int? GroupTutorialId { get; set; }
 
         public bool IsUserSignedUp { get; set; }
+
+        public int? GroupTutorialGroupId { get; set; }
     }
 
 }

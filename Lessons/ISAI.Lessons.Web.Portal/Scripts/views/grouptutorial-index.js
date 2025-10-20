@@ -4,6 +4,9 @@ var groupTutorialsGrid;
 var groupTutorialDescriptionElement;
 var groupTutorialDescription;
 
+var groupTutorialGroupssDataManager;
+var tutorUserDataManager;
+
 $(document).ready(function ()
 {
     InitDataManagers();
@@ -16,6 +19,13 @@ function InitDataManagers()
 
     groupTutorialsDataManager = new ej.data.DataManager({
         url: '/odata/grouptutorials',
+        adaptor: new GroupTutorialsAdaptor(),
+        crossDomain: true
+    });
+
+
+    groupTutorialGroupssDataManager = new ej.data.DataManager({
+        url: '/odata/grouptutorialgroups',
         adaptor: new ej.data.ODataV4Adaptor(),
         crossDomain: true
     });
@@ -29,13 +39,84 @@ function InitDataManagers()
 
 }
 
+
+class GroupTutorialsAdaptor extends ej.data.ODataV4Adaptor
+{
+
+    update(dm, keyField, value, tableName)
+    {
+
+        var patchData = {};
+        patchData.Name = value.Name;
+        patchData.Description = value.Description;
+        patchData.DateTimeStart = value.DateTimeStart;
+        patchData.DateTimeEnd = value.DateTimeEnd;
+        patchData.GroupTutorialGroupId = value.GroupTutorialGroupId;
+
+
+        return {
+            type: 'PATCH',
+            url: "/odata/grouptutorials(" + value.Id + ")",
+            data: JSON.stringify(patchData)
+        };
+    }
+
+    insert(dm, value, notknown, tableName)
+    {
+
+
+        var postData = {};
+        postData.AppId = value.AppId;
+        postData.Name = value.Name;
+        postData.Description = value.Description;
+        postData.DateTimeStart = value.DateTimeStart;
+        postData.DateTimeEnd = value.DateTimeEnd;
+        postData.GroupTutorialGroupId = value.GroupTutorialGroupId;
+        postData.TutorUserId = value.TutorUserId;
+
+
+        return {
+            type: 'POST',
+            url: "/odata/grouptutorials",
+            data: JSON.stringify(postData)
+        };
+    }
+
+    remove(dm, value, keyField, key)
+    {
+        return {
+            type: 'DELETE',
+            url: "/odata/grouptutorials(" + keyField + ")",
+        };
+    }
+
+    processResponse()
+    {
+        var original = super.processResponse.apply(this, arguments);
+
+        if (arguments[4].type === "PATCH" || arguments[4].type === "DELETE")
+        {
+            setTimeout(RefreshGrid, 0);
+        }
+
+        return original;
+    }
+
+}
+
+//HACK: this method is need because the custom adapter doesnt call the actionComplete on Grid when done
+function RefreshGrid()
+{
+    groupTutorialsGrid.refresh();
+}
+
 function InitGrid()
 {
 
     groupTutorialsGrid = new ej.grids.Grid({
         dataSource: groupTutorialsDataManager,
         query: new ej.data.Query().expand("TutorUser"),
-        editSettings: { showDeleteConfirmDialog: true, allowEditing: false, allowAdding: true, allowDeleting: true, mode: 'Dialog', newRowPosition: 'Top' },
+        editSettings: { showDeleteConfirmDialog: true, allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog', newRowPosition: 'Top' },
         allowPaging: true,
         allowSorting: true,
         sortSettings: { columns: [{ field: 'DateTimeStart', direction: 'Descending' }] },
@@ -62,8 +143,8 @@ function InitGrid()
                 this.columns[1].visible = false;
                 this.columns[2].visible = false;
                 this.columns[3].visible = false;
-                this.columns[9].visible = false;
                 this.columns[10].visible = false;
+                this.columns[11].visible = false;
 
 
             } 
@@ -72,8 +153,8 @@ function InitGrid()
                 this.columns[1].visible = true;
                 this.columns[2].visible = true;
                 this.columns[3].visible = true;
-                this.columns[9].visible = true;
                 this.columns[10].visible = true;
+                this.columns[11].visible = true;
 
             }
         },
@@ -121,6 +202,18 @@ function InitGrid()
             {
                 field: 'Name',
                 headerText: 'Name',
+                validationRules: { required: true },
+                width: 300,
+                allowSorting: false
+            },
+
+            {
+                field: 'GroupTutorialGroupId',
+                headerText: 'Group',
+                foreignKeyField: 'Id',
+                foreignKeyValue: 'Name',
+                dataSource: groupTutorialGroupssDataManager,
+                query: new ej.data.Query().where('Deleted', 'equal', false),
                 validationRules: { required: true },
                 width: 300,
                 allowSorting: false

@@ -14,24 +14,24 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
 
 
     [Authorize]
-    public class GroupTutorialsController : BaseODataController
+    public class GroupTutorialGroupsController : BaseODataController
     {
 
         [EnableQuery]
-        public IQueryable<GroupTutorial> GetGroupTutorials()
+        public IQueryable<GroupTutorialGroup> GetGroupTutorialGroups()
         {
-            return db.GroupTutorial.Where(x => x.Deleted == false);
+            return db.GroupTutorialGroup.Where(x => x.Deleted == false);
         }
 
 
 
         [EnableQuery]
-        public SingleResult<GroupTutorial> GetGroupTutorial([FromODataUri] int key)
+        public SingleResult<GroupTutorialGroup> GetGroupTutorialGroup([FromODataUri] int key)
         {
-            return SingleResult.Create(db.GroupTutorial.Where(GroupTutorial => GroupTutorial.Id == key));
+            return SingleResult.Create(db.GroupTutorialGroup.Where(GroupTutorialGroup => GroupTutorialGroup.Id == key));
         }
 
-        public async Task<IHttpActionResult> Put([FromODataUri] int key, GroupTutorial patch)
+        public async Task<IHttpActionResult> Put([FromODataUri] int key, GroupTutorialGroup patch)
         {
             if (!ModelState.IsValid)
             {
@@ -41,9 +41,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             {
                 return BadRequest();
             }
-
-            patch.TutorUser = null;
-
             db.Entry(patch).State = EntityState.Modified;
             try
             {
@@ -51,7 +48,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!db.GroupTutorial.Any(p => p.Id == key))
+                if (!db.GroupTutorialGroup.Any(p => p.Id == key))
                 {
                     return NotFound();
                 }
@@ -63,24 +60,22 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             return Updated(patch);
         }
 
-        public async Task<IHttpActionResult> Post(GroupTutorial GroupTutorial)
+        public async Task<IHttpActionResult> Post(GroupTutorialGroup GroupTutorialGroup)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            GroupTutorial.TutorUser = null;
-
-            db.GroupTutorial.Add(GroupTutorial);
+            db.GroupTutorialGroup.Add(GroupTutorialGroup);
 
             try
             {
 
-                GroupTutorial.DateModified = DateTime.UtcNow;
-                GroupTutorial.DateCreated = DateTime.UtcNow;
-                GroupTutorial.CreatedUserId = User.Identity.GetUserId();
-                GroupTutorial.ModifiedUserId = User.Identity.GetUserId();
+                GroupTutorialGroup.DateModified = DateTime.UtcNow;
+                GroupTutorialGroup.DateCreated = DateTime.UtcNow;
+                GroupTutorialGroup.CreatedUserId = User.Identity.GetUserId();
+                GroupTutorialGroup.ModifiedUserId = User.Identity.GetUserId();
 
                 await db.SaveChangesAsync();
 
@@ -92,16 +87,16 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             }
 
 
-            return Created(GroupTutorial);
+            return Created(GroupTutorialGroup);
         }
 
-        public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<GroupTutorial> patch)
+        public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<GroupTutorialGroup> patch)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var entity = await db.GroupTutorial.FindAsync(key);
+            var entity = await db.GroupTutorialGroup.FindAsync(key);
             if (entity == null)
             {
                 return NotFound();
@@ -118,7 +113,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!db.GroupTutorial.Any(p => p.Id == key))
+                if (!db.GroupTutorialGroup.Any(p => p.Id == key))
                 {
                     return NotFound();
                 }
@@ -132,17 +127,17 @@ namespace ISAI.Lessons.Web.Portal.Controllers.OData
 
         public async Task<IHttpActionResult> Delete([FromODataUri] int key)
         {
-            GroupTutorial GroupTutorial = await db.GroupTutorial.FindAsync(key);
-            if (GroupTutorial == null)
+            GroupTutorialGroup GroupTutorialGroup = await db.GroupTutorialGroup.FindAsync(key);
+            if (GroupTutorialGroup == null)
             {
                 return NotFound();
             }
 
-            GroupTutorial.Deleted = true;
-            GroupTutorial.DateModified = DateTime.UtcNow;
-            GroupTutorial.ModifiedUserId = User.Identity.GetUserId();
+            GroupTutorialGroup.Deleted = true;
+            GroupTutorialGroup.DateModified = DateTime.UtcNow;
+            GroupTutorialGroup.ModifiedUserId = User.Identity.GetUserId();
 
-            db.Entry(GroupTutorial).State = EntityState.Modified;
+            db.Entry(GroupTutorialGroup).State = EntityState.Modified;
             await db.SaveChangesAsync();
 
             return StatusCode(HttpStatusCode.NoContent);

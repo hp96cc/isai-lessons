@@ -599,6 +599,7 @@
     <Compile Include="Controllers\Api\AppController.cs" />
     <Compile Include="Controllers\Api\BaseApiController.cs" />
     <Compile Include="Controllers\CustomerActivityController.cs" />
+    <Compile Include="Controllers\OData\GroupTutorialGroupsController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\ODataReports\LessonActivityReportsController.cs" />
     <Compile Include="Controllers\OData\CustomerActivitiesController.cs" />
