@@ -82,8 +82,6 @@ namespace ISAI.Lessons.Mobile.Views
                 Title = title;
                 SfItemsListView.ItemsSource = lessonGroups;
                 SfItemsListView.RefreshView();
-
-
             });
 
         }

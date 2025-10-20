@@ -43,9 +43,9 @@
 		<true/>
 	</dict>
 	<key>CFBundleShortVersionString</key>
-	<string>5.1.5</string>
+	<string>5.1.6</string>
 	<key>CFBundleVersion</key>
-	<string>545</string>
+	<string>546</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Our app does not request this permission or utilize this functionality but it is included in our info.plist since our app utilizes some library, which references this permission in its code.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>

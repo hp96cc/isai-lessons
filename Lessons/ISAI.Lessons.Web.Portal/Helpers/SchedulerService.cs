@@ -30,6 +30,8 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         static bool _isSendingAbandonedSubscriptionEmails = false;
 
+        static bool _isCheckTutorialTimeChanges = false;
+
 
         public static void SystemHeartBeat()
         {
@@ -95,6 +97,66 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             finally
             {
                 _isSendingAbandonedSubscriptionEmails = false;
+            }
+        }
+
+
+        public static async void CheckTutorialTimeChanges()
+        {
+            if (_isCheckTutorialTimeChanges) return;
+
+            try
+            {
+
+                _isCheckTutorialTimeChanges = true;
+
+                using (var db = new LessonsDbContext())
+                {
+                    var now = DateTime.Now;
+
+                    var tutorials = await db.Tutorial.Where(x => x.DateTimeStart > now && x.Deleted == false);
+
+                    var dateTime1HourAgo = DateTime.Now.AddHours(1);
+                    var dateTimeFeatureStarted = new DateTime(2025, 05, 19);
+
+                    var subscriptions = db.Subscription
+                        .Include(x => x.Customer)
+                        .Where(
+                        x => x.Deleted == false &&
+                        x.Active == false &&
+                        x.HasAbondonedSubscriptionEmailBeenSent == false &&
+                        x.DateCreated == dateTime1HourAgo &&
+                        x.DateCreated == dateTimeFeatureStarted)
+                        .ToList();
+
+                    foreach (var subscription in subscriptions)
+                    {
+
+                        var subject = "Scottish Online Lessons";
+                        var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/abandoned-subscription/");
+
+                        var graphApi = new MicrosoftGraphApiService();
+                        graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { subscription.Customer.Email }, new List<string> { "info@scottishonlinelessons.com" }, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
+
+                        subscription.HasAbondonedSubscriptionEmailBeenSent = true;
+                        subscription.DateModified = DateTime.UtcNow;
+                        subscription.ModifiedUserId = _systemUserId;
+                        db.Entry(subscription).State = EntityState.Modified;
+
+                    }
+
+                    db.SaveChanges();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var t = true;
+            }
+            finally
+            {
+                _isCheckTutorialTimeChanges = false;
             }
         }
 
