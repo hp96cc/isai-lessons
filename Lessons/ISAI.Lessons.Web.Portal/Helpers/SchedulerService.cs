@@ -24,13 +24,13 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         static bool _isSendingTutorialEmails = false;
 
+        static bool __isSendingTutorialReviewEmails = false;
+
         static bool _isDeletingAbandonedTutorials = false;
 
         static bool _isCreateTeamsMeetingForGroupLessons = false;
 
         static bool _isSendingAbandonedSubscriptionEmails = false;
-
-        static bool _isCheckTutorialTimeChanges = false;
 
 
         public static void SystemHeartBeat()
@@ -100,65 +100,6 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             }
         }
 
-
-        public static async void CheckTutorialTimeChanges()
-        {
-            if (_isCheckTutorialTimeChanges) return;
-
-            try
-            {
-
-                _isCheckTutorialTimeChanges = true;
-
-                using (var db = new LessonsDbContext())
-                {
-                    var now = DateTime.Now;
-
-                    var tutorials = await db.Tutorial.Where(x => x.DateTimeStart > now && x.Deleted == false);
-
-                    var dateTime1HourAgo = DateTime.Now.AddHours(1);
-                    var dateTimeFeatureStarted = new DateTime(2025, 05, 19);
-
-                    var subscriptions = db.Subscription
-                        .Include(x => x.Customer)
-                        .Where(
-                        x => x.Deleted == false &&
-                        x.Active == false &&
-                        x.HasAbondonedSubscriptionEmailBeenSent == false &&
-                        x.DateCreated == dateTime1HourAgo &&
-                        x.DateCreated == dateTimeFeatureStarted)
-                        .ToList();
-
-                    foreach (var subscription in subscriptions)
-                    {
-
-                        var subject = "Scottish Online Lessons";
-                        var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/abandoned-subscription/");
-
-                        var graphApi = new MicrosoftGraphApiService();
-                        graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { subscription.Customer.Email }, new List<string> { "info@scottishonlinelessons.com" }, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
-
-                        subscription.HasAbondonedSubscriptionEmailBeenSent = true;
-                        subscription.DateModified = DateTime.UtcNow;
-                        subscription.ModifiedUserId = _systemUserId;
-                        db.Entry(subscription).State = EntityState.Modified;
-
-                    }
-
-                    db.SaveChanges();
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                var t = true;
-            }
-            finally
-            {
-                _isCheckTutorialTimeChanges = false;
-            }
-        }
 
         public static void CreateTeamsMeetingForGroupLessons()
         {
@@ -324,7 +265,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                         
                             var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", startDate.ToString("dd/MM/yyyy @ HH:mm"));
                             var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/tutorial-confirmation-user/");
-                            htmlBody = AddDataToEmail(htmlBody, tutorial);
+                            htmlBody = AddDataToEmail(htmlBody, tutorial, "INFO");
 
                             var addressCC = new List<string>();
 
@@ -347,6 +288,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
                         if (tutorial.PendingEmailConfirmationTutor)
                         {
+
                             var tutorUser = db.Users.First(x => x.Id == tutorial.TutorUserId);
                             var subject = string.Format("Scottish Online Lessons - Tutorial Booked - {0}", startDate.ToString("dd/MM/yyyy @ HH:mm"));
                             var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/tutorial-confirmation-tutor/");
@@ -378,13 +320,71 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         }
 
-        private static string AddDataToEmail(string htmlBody, Tutorial tutorial)
+
+        public static void SendTutorialReviewEmails()
+        {
+            if (__isSendingTutorialReviewEmails) return;
+
+            try
+            {
+                __isSendingTutorialReviewEmails = true;
+
+                using (var db = new LessonsDbContext())
+                {
+                    var nowOffset = DateTime.Now.AddHours(-1);
+
+                    var tutorialsPendingEmailSending = db.Tutorial
+                        .Include(x => x.Customer)
+                        .Include(x => x.Lesson)
+                        .Include(x => x.TutorUser)
+                        .Include(x => x.TutorialSubject)
+                        .Where(x =>
+                                x.Deleted == false &&
+                                x.HasCompletedCheckout == true &&
+                                (x.PendingReviewEmailConfirmationUser && x.DateTimeEnd < nowOffset)).ToList();
+
+                    foreach (var tutorial in tutorialsPendingEmailSending)
+                    {
+
+                        var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
+                        var startDate = TimeZoneInfo.ConvertTimeFromUtc(tutorial.DateTimeStart.DateTime, gmtStandardTimeZone);
+
+                        var subject = string.Format("Scottish Online Lessons - Tutorial Review - {0}", startDate.ToString("dd/MM/yyyy @ HH:mm"));
+                        var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/tutorial-review-user//");
+                        htmlBody = AddDataToEmail(htmlBody, tutorial, "REVIEW");
+
+                        var graphApi = new MicrosoftGraphApiService();
+                        graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { tutorial.Customer.Email }, new List<string>(), new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
+
+                        tutorial.PendingReviewEmailConfirmationUser = false;
+                        tutorial.DateModified = DateTime.UtcNow;
+                        tutorial.ModifiedUserId = _systemUserId;
+                        db.Entry(tutorial).State = EntityState.Modified;
+
+                    }
+
+                    db.SaveChanges();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var t = true;
+            }
+            finally
+            {
+                __isSendingTutorialReviewEmails = false;
+            }
+
+
+        }
+
+        private static string AddDataToEmail(string htmlBody, Tutorial tutorial, string formUrl = null)
         {
 
             var gmtStandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(_systemTimeZone);
             var startDate = TimeZoneInfo.ConvertTimeFromUtc(tutorial.DateTimeStart.DateTime, gmtStandardTimeZone);
             var endDate = TimeZoneInfo.ConvertTimeFromUtc(tutorial.DateTimeEnd.DateTime, gmtStandardTimeZone);
-
 
             htmlBody = htmlBody.Replace("{{Name}}", tutorial.Customer.FirstName);
             htmlBody = htmlBody.Replace("{{Tutor}}", tutorial.TutorUser.Firstname + " " + tutorial.TutorUser.Surname);
@@ -393,6 +393,21 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             htmlBody = htmlBody.Replace("{{Duration}}", tutorial.DurationInMinutes + " minutes.");
             htmlBody = htmlBody.Replace("{{Cost}}", string.Format("£{0:N2}", tutorial.TutorialCost));
             htmlBody = htmlBody.Replace("/{{Link}}", tutorial.TeamsLink);
+            htmlBody = htmlBody.Replace("/{{FormLink}}", GetFormLink(tutorial, formUrl));
+
+
+            if (tutorial.GroupTutorialId.HasValue)
+            {
+
+                //var formLink = string.Format("https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=M_C4csRnJEWWTtPAHvoazXviK4buKd9HiDSyNfRb9ZZUNkVMWE1LWThJQ1dQVzVHRDRBNVdHMklQNy4u&rad6fe2c492d04bef929a195548189bbd=TutorName&r8dda9ffffd1a4426bda3e41283eb3114=TutorialName&r5f44aeb3e28c4cf89f24857603ab55f6=TutorialDateTime");
+                var formLink = string.Format("https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=M_C4csRnJEWWTtPAHvoazXviK4buKd9HiDSyNfRb9ZZUNkVMWE1LWThJQ1dQVzVHRDRBNVdHMklQNy4u&rad6fe2c492d04bef929a195548189bbd={0}&r8dda9ffffd1a4426bda3e41283eb3114={1}&r5f44aeb3e28c4cf89f24857603ab55f6={2}", tutorial.TutorUser.Fullname, tutorial.Name, tutorial.DateTimeStart.DateTime.ToShortDateString());
+
+                htmlBody = htmlBody.Replace("{{FormLink}}", formLink);
+
+            } else
+            {
+                htmlBody = htmlBody.Replace("{{FormLink}}", string.Empty);
+            }
 
             var lesson = "";
 
@@ -411,6 +426,42 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             htmlBody = htmlBody.Replace("{{Subject}}", lesson);
 
             return htmlBody;
+        }
+
+        private static string GetFormLink(Tutorial tutorial, string formType)
+        {
+
+            string tutorialInfoLink = "https://forms.office.com/Pages/ResponsePage.aspx?id=M_C4csRnJEWWTtPAHvoazXviK4buKd9HiDSyNfRb9ZZUNkVMWE1LWThJQ1dQVzVHRDRBNVdHMklQNy4u&rad6fe2c492d04bef929a195548189bbd=TUTORNAME&r8dda9ffffd1a4426bda3e41283eb3114=TUTORIALNAME&r5f44aeb3e28c4cf89f24857603ab55f6=TUTORIALDATE";
+            string tutorialReviewLink = "https://forms.office.com/Pages/ResponsePage.aspx?id=M_C4csRnJEWWTtPAHvoazXviK4buKd9HiDSyNfRb9ZZURDkxWUVGNzBPS0cxUDVPVFIxVkEySlZWUS4u&r66904992d74a40db8c774537ab1feea2=TUTORNAME&r20842a5f06564d97a3cc7ea7cd9c78af=TUTORIALNAME&rb44e15db5c664207b29d5966d3647528=TUTORIALDATE";
+
+            if (string.IsNullOrWhiteSpace(formType))
+            {
+                return string.Empty;
+            }
+            else if (formType.Equals("INFO"))
+            {
+                tutorialInfoLink = tutorialInfoLink.Replace("TUTORNAME", tutorial.TutorUser.Fullname);
+                tutorialInfoLink = tutorialInfoLink.Replace("TUTORIALNAME", tutorial.Name);
+                tutorialInfoLink = tutorialInfoLink.Replace("TUTORIALDATE", tutorial.DateTimeStart.DateTime.ToString("dd-MM-yyyy"));
+
+                return tutorialInfoLink;
+
+            }
+            else if (formType.Equals("REVIEW"))
+            {
+                tutorialReviewLink = tutorialReviewLink.Replace("TUTORNAME", tutorial.TutorUser.Fullname);
+                tutorialReviewLink = tutorialReviewLink.Replace("TUTORIALNAME", tutorial.Name);
+                tutorialReviewLink = tutorialReviewLink.Replace("TUTORIALDATE", tutorial.DateTimeStart.DateTime.ToString("dd-MM-yyyy"));
+
+                return tutorialReviewLink;
+
+            }
+            else
+            {
+                return string.Empty;
+            }
+         
+
         }
     }
 }

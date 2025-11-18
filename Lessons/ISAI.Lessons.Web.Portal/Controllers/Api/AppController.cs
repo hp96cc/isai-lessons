@@ -2439,6 +2439,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         tutorial.HasCompletedCheckout = true;
                         tutorial.PendingEmailConfirmationTutor = true;
                         tutorial.PendingEmailConfirmationUser = true;
+                        tutorial.PendingReviewEmailConfirmationUser = true;
                         tutorial.StripePaymentId = checkOutComplete.PaymentIntentId;
                         tutorial.DateModified = DateTime.UtcNow;
                         db.Entry(tutorial).State = EntityState.Modified;
@@ -2476,6 +2477,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         tutorial.HasCompletedCheckout = true;
                         tutorial.PendingEmailConfirmationTutor = false; //NOTE: we dont email the tutor for group tutorials
                         tutorial.PendingEmailConfirmationUser = true;
+                        tutorial.PendingReviewEmailConfirmationUser = true;
                         tutorial.StripePaymentId = checkOutComplete.PaymentIntentId;
                         tutorial.DateModified = DateTime.UtcNow;
                         db.Entry(tutorial).State = EntityState.Modified;

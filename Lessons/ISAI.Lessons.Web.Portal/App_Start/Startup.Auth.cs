@@ -102,6 +102,10 @@ namespace ISAI.Lessons.Web.Portal
                 TimeZone = TimeZoneInfo.Local
             });
 
+            RecurringJob.AddOrUpdate("SchedulerService.SendTutorialReviewEmails", () => SchedulerService.SendTutorialReviewEmails(), Cron.Minutely, new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local
+            });
 
         }
     }

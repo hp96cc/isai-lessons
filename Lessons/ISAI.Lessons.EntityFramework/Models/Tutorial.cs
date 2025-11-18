@@ -64,6 +64,9 @@ namespace ISAI.Lessons.EntityFramework.Models
         public bool HasCompletedCheckout { get; set; }
 
         [JsonIgnore]
+        public bool PendingReviewEmailConfirmationUser { get; set; }
+
+        [JsonIgnore]
         public bool PendingEmailConfirmationUser { get; set; }
 
         [JsonIgnore]

@@ -387,6 +387,10 @@
     <Compile Include="Migrations\202510200842304_GroupTutorialGroup.Designer.cs">
       <DependentUpon>202510200842304_GroupTutorialGroup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511180837376_Added Review emails to tutiail.cs" />
+    <Compile Include="Migrations\202511180837376_Added Review emails to tutiail.Designer.cs">
+      <DependentUpon>202511180837376_Added Review emails to tutiail.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -506,6 +510,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510200842304_GroupTutorialGroup.resx">
       <DependentUpon>202510200842304_GroupTutorialGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511180837376_Added Review emails to tutiail.resx">
+      <DependentUpon>202511180837376_Added Review emails to tutiail.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
