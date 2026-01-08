@@ -4,7 +4,6 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.Diagnostics;
 using System.IO.Compression;
-using System.Net.Http.Headers;
 using System.Text;
 using Whisper.net;
 using Whisper.net.Ggml;
@@ -64,6 +63,21 @@ namespace WhisperNet
                 {
                     Console.WriteLine($"Error processing '{videoPath}': {ex.Message}");
                 }
+            }
+
+
+            //NOTE: Check to make sure e can download from OneDrive
+            var files = await OneDriveDownloader.ListFilesAsync("AutomatedUploads").ConfigureAwait(false);
+
+            foreach (var file in files)
+            {
+                Console.WriteLine(@"Downloading {file}");
+                var downloadPath = Path.Combine(BaseFolder, "Download");
+
+                if (!Directory.Exists(downloadPath))
+                    Directory.CreateDirectory(downloadPath);
+
+                OneDriveDownloader.DownloadAndUnzipAsync("AutomatedUploads", file, Path.Combine(downloadPath, Path.GetFileNameWithoutExtension(file))).Wait();
             }
         }
 

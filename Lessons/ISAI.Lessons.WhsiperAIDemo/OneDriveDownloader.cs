@@ -297,9 +297,11 @@ namespace WhisperNet
                 }
 
                 // For larger files use an upload session (resumable)
-                string sessionUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(config.TargetUser)}/drive/root:{Uri.EscapeDataString(remotePath + "/" + fileName)}:/createUploadSession";
-                var sessionRequestBody = JsonSerializer.Serialize(new { item = new { @microsoft_graph_conflictBehavior = "replace" } });
+                // Replace site/path construction with:
+                string itemPathForGraph = remotePath == "/" ? $"/{fileName}" : $"{remotePath}/{fileName}";
+                string sessionUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(config.TargetUser)}/drive/root:{Uri.EscapeDataString(itemPathForGraph)}:/createUploadSession";
 
+                string sessionRequestBody = "{\"item\": {\"@microsoft.graph.conflictBehavior\": \"replace\"}}";
                 using var sessionContent = new StringContent(sessionRequestBody, System.Text.Encoding.UTF8, "application/json");
                 using var sessionResp = await sharedHttpClient.PostAsync(sessionUrl, sessionContent).ConfigureAwait(false);
 

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32929.385
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{D8240E0C-3A07-4F13-9CD8-8EFCDE942EB4}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,6 +28,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.Console.BitmovinPort", "ISAI.Lessons.Console.BitmovinPort\ISAI.Lessons.Console.BitmovinPort.csproj", "{B2366F8D-64D2-4BD1-AB2D-E164207D80E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.App", "ISAI.Lessons.AppModels\ISAI.Lessons.App.csproj", "{344F22CB-5DD5-480E-B989-29D8F1B215E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISAI.Lessons.WhsiperAIDemo", "ISAI.Lessons.WhsiperAIDemo\ISAI.Lessons.WhsiperAIDemo.csproj", "{605498F7-C59B-87B7-E6EF-B20C8EC86914}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,10 @@ Global
 		{344F22CB-5DD5-480E-B989-29D8F1B215E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{344F22CB-5DD5-480E-B989-29D8F1B215E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{344F22CB-5DD5-480E-B989-29D8F1B215E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{605498F7-C59B-87B7-E6EF-B20C8EC86914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{605498F7-C59B-87B7-E6EF-B20C8EC86914}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{605498F7-C59B-87B7-E6EF-B20C8EC86914}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{605498F7-C59B-87B7-E6EF-B20C8EC86914}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +86,7 @@ Global
 		{7A322AC5-B853-4E2E-9CCB-CE0D6DFBD425} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
 		{B2366F8D-64D2-4BD1-AB2D-E164207D80E1} = {C4BD916E-74C1-4224-91F4-4BDB876EA210}
 		{344F22CB-5DD5-480E-B989-29D8F1B215E0} = {7DF8045F-FEC5-4C99-8246-5CAADE969B5F}
+		{605498F7-C59B-87B7-E6EF-B20C8EC86914} = {7DF8045F-FEC5-4C99-8246-5CAADE969B5F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13AF8AE1-3867-4096-A7E3-F867D4849F2F}
