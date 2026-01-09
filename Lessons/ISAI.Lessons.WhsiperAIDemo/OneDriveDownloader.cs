@@ -1,29 +1,42 @@
 using System.IO.Compression;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Collections.Generic;
 using Microsoft.Identity.Client;
 
-namespace WhisperNet
+namespace ISAI.Lessons.WhsiperAIDemo
 {
-    internal static class OneDriveDownloader
+    internal sealed class OneDriveDownloader : IDisposable
     {
-        private static readonly HttpClient sharedHttpClient = new HttpClient();
+        private readonly HttpClient _httpClient;
+        private readonly bool _ownsHttpClient;
 
         // Fallback constants (used only when env vars are not provided)
-        private const string GraphClientIdFallback = "88030882-6822-4b8d-b8ae-19fe43c38f89";
-        private const string GraphTenantIdFallback = "72b8f033-67c4-4524-964e-d3c01efa1acd";
-        private const string GraphClientSecret = "THt8Q~-AQqzVroyoi9nxjKHRUAfFv3nxC1K2rcgU";
-        private const string GraphTargetUser = "craig.champion@scottishonlinelessons.com";
+        private readonly string _graphClientIdFallback = "88030882-6822-4b8d-b8ae-19fe43c38f89";
+        private readonly string _graphTenantIdFallback = "72b8f033-67c4-4524-964e-d3c01efa1acd";
+        private readonly string _graphClientSecretFallback = "THt8Q~-AQqzVroyoi9nxjKHRUAfFv3nxC1K2rcgU";
+        private readonly string _graphTargetUserFallback = "craig.champion@scottishonlinelessons.com";
 
         private sealed record GraphConfig(string ClientId, string TenantId, string ClientSecret, string TargetUser);
+
+        public OneDriveDownloader(HttpClient? httpClient = null)
+        {
+            if (httpClient is null)
+            {
+                _httpClient = new HttpClient();
+                _ownsHttpClient = true;
+            }
+            else
+            {
+                _httpClient = httpClient;
+                _ownsHttpClient = false;
+            }
+        }
 
         /// <summary>
         /// Downloads a file from OneDrive and extracts it to <paramref name="destinationFolder"/>.
         /// Returns true on success.
         /// </summary>
-        public static async Task<bool> DownloadAndUnzipAsync(string remoteFolder, string remoteFileName, string destinationFolder)
+        public async Task<bool> DownloadAndUnzipAsync(string remoteFolder, string remoteFileName, string destinationFolder)
         {
             if (string.IsNullOrWhiteSpace(remoteFileName))
             {
@@ -80,7 +93,7 @@ namespace WhisperNet
         /// Downloads the specified file from OneDrive and returns the local temp path.
         /// Returns null on failure.
         /// </summary>
-        private static async Task<string?> DownloadFileAsync(string remoteFolder, string remoteFileName)
+        private async Task<string?> DownloadFileAsync(string remoteFolder, string remoteFileName)
         {
             GraphConfig config = GetGraphConfig();
 
@@ -103,12 +116,11 @@ namespace WhisperNet
             try
             {
                 var remotePath = NormalizeRemoteFolder(remoteFolder);
-                string escapedFile = Uri.EscapeDataString(remoteFileName);
                 string downloadUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(config.TargetUser)}/drive/root:{Uri.EscapeDataString(remotePath + "/" + remoteFileName)}:/content";
 
                 Console.WriteLine($"Requesting download URL: {downloadUrl}");
 
-                using var resp = await sharedHttpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+                using var resp = await _httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
                 if (!resp.IsSuccessStatusCode)
                 {
@@ -150,7 +162,7 @@ namespace WhisperNet
         /// Lists file names in the specified OneDrive remote folder.
         /// Returns a read-only list of file names, or null on failure.
         /// </summary>
-        public static async Task<IReadOnlyList<string>?> ListFilesAsync(string remoteFolder)
+        public async Task<IReadOnlyList<string>?> ListFilesAsync(string remoteFolder)
         {
             GraphConfig config = GetGraphConfig();
 
@@ -177,7 +189,7 @@ namespace WhisperNet
 
                 Console.WriteLine($"Requesting list URL: {requestUrl}");
 
-                using var resp = await sharedHttpClient.GetAsync(requestUrl).ConfigureAwait(false);
+                using var resp = await _httpClient.GetAsync(requestUrl).ConfigureAwait(false);
 
                 if (!resp.IsSuccessStatusCode)
                 {
@@ -234,7 +246,7 @@ namespace WhisperNet
         /// Uploads a file to the specified OneDrive remote folder.
         /// Returns true on success.
         /// </summary>
-        public static async Task<bool> UploadFileToOneDriveAsync(string localFilePath, string remoteFolder)
+        public async Task<bool> UploadFileToOneDriveAsync(string localFilePath, string remoteFolder)
         {
             if (string.IsNullOrWhiteSpace(localFilePath))
             {
@@ -284,7 +296,7 @@ namespace WhisperNet
                     using var content = new StreamContent(fs);
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
-                    using var putResp = await sharedHttpClient.PutAsync(uploadUrl, content).ConfigureAwait(false);
+                    using var putResp = await _httpClient.PutAsync(uploadUrl, content).ConfigureAwait(false);
                     if (!putResp.IsSuccessStatusCode)
                     {
                         string body = await putResp.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -297,13 +309,12 @@ namespace WhisperNet
                 }
 
                 // For larger files use an upload session (resumable)
-                // Replace site/path construction with:
                 string itemPathForGraph = remotePath == "/" ? $"/{fileName}" : $"{remotePath}/{fileName}";
                 string sessionUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(config.TargetUser)}/drive/root:{Uri.EscapeDataString(itemPathForGraph)}:/createUploadSession";
 
                 string sessionRequestBody = "{\"item\": {\"@microsoft.graph.conflictBehavior\": \"replace\"}}";
                 using var sessionContent = new StringContent(sessionRequestBody, System.Text.Encoding.UTF8, "application/json");
-                using var sessionResp = await sharedHttpClient.PostAsync(sessionUrl, sessionContent).ConfigureAwait(false);
+                using var sessionResp = await _httpClient.PostAsync(sessionUrl, sessionContent).ConfigureAwait(false);
 
                 if (!sessionResp.IsSuccessStatusCode)
                 {
@@ -352,7 +363,7 @@ namespace WhisperNet
                         Content = chunkContent
                     };
 
-                    using var chunkResp = await sharedHttpClient.SendAsync(req).ConfigureAwait(false);
+                    using var chunkResp = await _httpClient.SendAsync(req).ConfigureAwait(false);
 
                     if (chunkResp.IsSuccessStatusCode)
                     {
@@ -404,17 +415,17 @@ namespace WhisperNet
             }
         }
 
-        private static GraphConfig GetGraphConfig()
+        private GraphConfig GetGraphConfig()
         {
-            string clientId = Environment.GetEnvironmentVariable("GRAPH_CLIENT_ID") ?? GraphClientIdFallback;
-            string tenantId = Environment.GetEnvironmentVariable("GRAPH_TENANT_ID") ?? GraphTenantIdFallback;
-            string clientSecret = Environment.GetEnvironmentVariable("GRAPH_CLIENT_SECRET") ?? GraphClientSecret;
-            string targetUser = Environment.GetEnvironmentVariable("GRAPH_TARGET_USER") ?? GraphTargetUser;
+            string clientId = Environment.GetEnvironmentVariable("GRAPH_CLIENT_ID") ?? _graphClientIdFallback;
+            string tenantId = Environment.GetEnvironmentVariable("GRAPH_TENANT_ID") ?? _graphTenantIdFallback;
+            string clientSecret = Environment.GetEnvironmentVariable("GRAPH_CLIENT_SECRET") ?? _graphClientSecretFallback;
+            string targetUser = Environment.GetEnvironmentVariable("GRAPH_TARGET_USER") ?? _graphTargetUserFallback;
 
             return new GraphConfig(clientId, tenantId, clientSecret, targetUser);
         }
 
-        private static async Task<bool> AuthenticateAndSetHeaderAsync(GraphConfig config)
+        private async Task<bool> AuthenticateAndSetHeaderAsync(GraphConfig config)
         {
             try
             {
@@ -427,7 +438,7 @@ namespace WhisperNet
                 string[] appScopes = new[] { "https://graph.microsoft.com/.default" };
                 AuthenticationResult authResult = await confidentialApp.AcquireTokenForClient(appScopes).ExecuteAsync().ConfigureAwait(false);
 
-                sharedHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
                 return true;
             }
             catch (MsalException mex)
@@ -450,6 +461,14 @@ namespace WhisperNet
 
             // Graph path requires leading slash for path notation; return "/" when root
             return remotePath == "/" ? "/" : remotePath;
+        }
+
+        public void Dispose()
+        {
+            if (_ownsHttpClient)
+            {
+                try { _httpClient.Dispose(); } catch { }
+            }
         }
     }
 }

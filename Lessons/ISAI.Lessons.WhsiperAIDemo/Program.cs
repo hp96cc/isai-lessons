@@ -8,7 +8,7 @@ using System.Text;
 using Whisper.net;
 using Whisper.net.Ggml;
 
-namespace WhisperNet
+namespace ISAI.Lessons.WhsiperAIDemo
 {
     internal static class Program
     {
@@ -27,13 +27,11 @@ namespace WhisperNet
 
         static async Task MainAsync()
         {
-
             InitializeLogging(BaseFolder);
             ConfigureFfmpeg();
 
             if (!CheckFFmpegExists(FfmpegPath))
             {
-
                 Console.WriteLine($"FFMPeg not found at: {FfmpegPath}");
                 return;
             }
@@ -51,13 +49,15 @@ namespace WhisperNet
                 return;
             }
 
+            // create reusable OneDriveDownloader instance and Whisper factory
+            using var downloader = new OneDriveDownloader();
             using var factory = WhisperFactory.FromPath(modelPath);
 
             foreach (var videoPath in mp4Files)
             {
                 try
                 {
-                    await ProcessVideoAsync(factory, videoPath, BaseFolder).ConfigureAwait(false);
+                    await ProcessVideoAsync(factory, videoPath, BaseFolder, downloader).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -65,19 +65,21 @@ namespace WhisperNet
                 }
             }
 
-
-            //NOTE: Check to make sure e can download from OneDrive
-            var files = await OneDriveDownloader.ListFilesAsync("AutomatedUploads").ConfigureAwait(false);
-
-            foreach (var file in files)
+            // NOTE: Check to make sure we can download from OneDrive
+            var files = await downloader.ListFilesAsync("AutomatedUploads").ConfigureAwait(false);
+        
+            if (files is not null)
             {
-                Console.WriteLine(@"Downloading {file}");
-                var downloadPath = Path.Combine(BaseFolder, "Download");
+                foreach (var file in files)
+                {
+                    Console.WriteLine($"Downloading {file}");
+                    var downloadPath = Path.Combine(BaseFolder, "Download");
 
-                if (!Directory.Exists(downloadPath))
-                    Directory.CreateDirectory(downloadPath);
+                    if (!Directory.Exists(downloadPath))
+                        Directory.CreateDirectory(downloadPath);
 
-                OneDriveDownloader.DownloadAndUnzipAsync("AutomatedUploads", file, Path.Combine(downloadPath, Path.GetFileNameWithoutExtension(file))).Wait();
+                    await downloader.DownloadAndUnzipAsync("AutomatedUploads", file, Path.Combine(downloadPath, Path.GetFileNameWithoutExtension(file))).ConfigureAwait(false);
+                }
             }
         }
 
@@ -97,7 +99,7 @@ namespace WhisperNet
             });
         }
 
-        private static async Task ProcessVideoAsync(WhisperFactory factory, string videoPath, string baseFolder)
+        private static async Task ProcessVideoAsync(WhisperFactory factory, string videoPath, string baseFolder, OneDriveDownloader downloader)
         {
             var fileName = Path.GetFileName(videoPath);
             var nameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
@@ -121,14 +123,14 @@ namespace WhisperNet
             var thumbImage = Path.Combine(outputFolderM3U8, nameWithoutExt + ".jpg");
             var m3u8File = Path.Combine(outputFolderM3U8, nameWithoutExt + ".m3u8");
 
-            //Copy main file for transport
+            // Copy main file for transport
             File.Copy(videoPath, mp4Path);
 
-            //Convert Encrypted .mu3u files
+            // Convert Encrypted .mu3u files
             var encodingArgsThumb = $"-i \"{videoPath}\" -ss 00:00:00 -frames:v 1 \"{thumbImage}\"";
             var encodingArgsM3U8 = $"-i \"{videoPath}\" -vcodec h264 -b:a 96k -start_number 0 -hls_time 10 -hls_list_size 0 -f hls -hls_enc 1 \"{m3u8File}\"";
 
-            //TODO: add signed processing
+            // TODO: add signed processing
 
             var result = await EncodeFFMpeg(encodingArgsThumb);
             if (result)
@@ -144,7 +146,6 @@ namespace WhisperNet
 
             EnsureAudioExtracted(videoPath, mp3Path);
 
-
             // Use a processor per file and dispose promptly
             using var processor = factory.CreateBuilder()
                 .WithLanguage("auto")
@@ -157,7 +158,6 @@ namespace WhisperNet
                 // Convert to a temporary WAV file on disk to avoid large in-memory buffers
                 tempWavPath = ConvertMp3ToWav(mp3Path, nameWithoutExt);
 
-
                 // Transcribe and write SRT/VTT incrementally to avoid storing all segments in memory
                 await TranscribeAndWriteSubtitlesAsync(processor, tempWavPath, srtPath, vttPath).ConfigureAwait(false);
 
@@ -166,9 +166,7 @@ namespace WhisperNet
                 var destDir = Path.Combine(baseFolder, nameWithoutExt);
                 Directory.CreateDirectory(destDir);
 
-
                 var destVideoPath = Path.Combine(destDir, Path.GetFileName(videoPath));
-
 
                 try
                 {
@@ -193,7 +191,7 @@ namespace WhisperNet
 
                         try
                         {
-                            var uploaded = await OneDriveDownloader.UploadFileToOneDriveAsync(zipPath, "AutomatedUploads").ConfigureAwait(false);
+                            var uploaded = await downloader.UploadFileToOneDriveAsync(zipPath, "AutomatedUploads").ConfigureAwait(false);
                             if (uploaded)
                             {
                                 Console.WriteLine("Upload to OneDrive succeeded.");
@@ -366,7 +364,6 @@ namespace WhisperNet
             }
         }
 
-
         private static async Task DownloadModelAsync(string fileName, GgmlType ggmlType)
         {
             Console.WriteLine($"Downloading Model {fileName}");
@@ -410,7 +407,6 @@ namespace WhisperNet
 
         private static async Task<bool> EncodeFFMpeg(string encodingArgs)
         {
-
             int exitCode = await ExecuteFFmpegAsync(FfmpegPath, encodingArgs);
 
             if (exitCode == 0)
