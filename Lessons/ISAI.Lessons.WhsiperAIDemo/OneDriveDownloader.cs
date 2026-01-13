@@ -1,6 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 
 namespace ISAI.Lessons.WhsiperAIDemo
@@ -411,6 +417,191 @@ namespace ISAI.Lessons.WhsiperAIDemo
             catch (Exception ex)
             {
                 Console.WriteLine($"Unexpected error while uploading: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Move a file between remote folders in OneDrive. Returns true on success.
+        /// If <paramref name="overwrite"/> is true and a file with the same name exists in the destination folder,
+        /// the existing file will be deleted before moving.
+        /// </summary>
+        public async Task<bool> MoveFileAsync(string remoteFolder, string remoteFileName, string destinationFolder, bool overwrite = false)
+        {
+            if (string.IsNullOrWhiteSpace(remoteFileName))
+            {
+                Console.WriteLine("remoteFileName must be specified.");
+                return false;
+            }
+
+            GraphConfig config = GetGraphConfig();
+
+            if (string.IsNullOrWhiteSpace(config.ClientId) || string.IsNullOrWhiteSpace(config.TenantId))
+            {
+                Console.WriteLine("GRAPH_CLIENT_ID and GRAPH_TENANT_ID must be set in environment variables.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(config.TargetUser))
+            {
+                Console.WriteLine("GRAPH_CLIENT_SECRET is set; GRAPH_TARGET_USER must also be set for app-only operations.");
+                return false;
+            }
+
+            bool authOk = await AuthenticateAndSetHeaderAsync(config).ConfigureAwait(false);
+            if (!authOk)
+                return false;
+
+            try
+            {
+                string srcPath = NormalizeRemoteFolder(remoteFolder);
+                string destPath = NormalizeRemoteFolder(destinationFolder);
+
+                // Destination item path (folder + filename)
+                string destItemPath = destPath == "/" ? $"/{remoteFileName}" : $"{destPath}/{remoteFileName}";
+                string destRequestUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(config.TargetUser)}/drive/root:{Uri.EscapeDataString(destItemPath)}";
+
+                // Check if destination file exists
+                using (var getResp = await _httpClient.GetAsync(destRequestUrl).ConfigureAwait(false))
+                {
+                    if (getResp.IsSuccessStatusCode)
+                    {
+                        // Item exists at destination
+                        if (!overwrite)
+                        {
+                            Console.WriteLine($"Destination already contains '{remoteFileName}' and overwrite is false. Aborting move.");
+                            return false;
+                        }
+
+                        // overwrite requested -> delete existing destination item
+                        using var delResp = await _httpClient.DeleteAsync(destRequestUrl).ConfigureAwait(false);
+                        if (!delResp.IsSuccessStatusCode)
+                        {
+                            string delBody = await delResp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            Console.WriteLine($"Failed to delete existing destination item: {delResp.StatusCode} - {delBody}");
+                            return false;
+                        }
+
+                        Console.WriteLine($"Existing destination item '{remoteFileName}' deleted to allow overwrite.");
+                    }
+                    else if (getResp.StatusCode != System.Net.HttpStatusCode.NotFound)
+                    {
+                        // unexpected error when probing destination
+                        string getBody = await getResp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        Console.WriteLine($"Error checking destination existence: {getResp.StatusCode} - {getBody}");
+                        return false;
+                    }
+                }
+
+                // Graph expects source item path like /drive/root:/path/to/file.ext
+                string itemPath = srcPath == "/" ? $"/{remoteFileName}" : $"{srcPath}/{remoteFileName}";
+                string requestUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(config.TargetUser)}/drive/root:{Uri.EscapeDataString(itemPath)}";
+
+                // parentReference.path should be like /drive/root:/destination/folder
+                string parentPath = destPath == "/" ? "/drive/root:/" : $"/drive/root:{destPath}";
+
+                var bodyObj = new
+                {
+                    parentReference = new { path = parentPath },
+                    name = remoteFileName
+                };
+
+                string body = JsonSerializer.Serialize(bodyObj);
+
+                using var content = new StringContent(body, Encoding.UTF8, "application/json");
+                using var req = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl) { Content = content };
+
+                using var resp = await _httpClient.SendAsync(req).ConfigureAwait(false);
+
+                if (!resp.IsSuccessStatusCode)
+                {
+                    string respBody = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    Console.WriteLine($"Move request failed: {resp.StatusCode} - {respBody}");
+                    return false;
+                }
+
+                Console.WriteLine($"Moved '{remoteFileName}' from '{srcPath}' to '{destPath}'.");
+                return true;
+            }
+            catch (MsalException mex)
+            {
+                Console.WriteLine($"Authentication error while moving file: {mex.Message}");
+                return false;
+            }
+            catch (HttpRequestException hex)
+            {
+                Console.WriteLine($"Network error while moving file: {hex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error while moving file: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Delete a remote file. Returns true on success.
+        /// </summary>
+        public async Task<bool> DeleteFileAsync(string remoteFolder, string remoteFileName)
+        {
+            if (string.IsNullOrWhiteSpace(remoteFileName))
+            {
+                Console.WriteLine("remoteFileName must be specified.");
+                return false;
+            }
+
+            GraphConfig config = GetGraphConfig();
+
+            if (string.IsNullOrWhiteSpace(config.ClientId) || string.IsNullOrWhiteSpace(config.TenantId))
+            {
+                Console.WriteLine("GRAPH_CLIENT_ID and GRAPH_TENANT_ID must be set in environment variables.");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(config.TargetUser))
+            {
+                Console.WriteLine("GRAPH_CLIENT_SECRET is set; GRAPH_TARGET_USER must also be set for app-only operations.");
+                return false;
+            }
+
+            bool authOk = await AuthenticateAndSetHeaderAsync(config).ConfigureAwait(false);
+            if (!authOk)
+                return false;
+
+            try
+            {
+                string srcPath = NormalizeRemoteFolder(remoteFolder);
+                string itemPath = srcPath == "/" ? $"/{remoteFileName}" : $"{srcPath}/{remoteFileName}";
+
+                string requestUrl = $"https://graph.microsoft.com/v1.0/users/{Uri.EscapeDataString(config.TargetUser)}/drive/root:{Uri.EscapeDataString(itemPath)}";
+
+                using var resp = await _httpClient.DeleteAsync(requestUrl).ConfigureAwait(false);
+
+                if (resp.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"Deleted '{remoteFileName}' from '{srcPath}'.");
+                    return true;
+                }
+
+                // 404 -> not found; treat as failure but log
+                string respBody = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                Console.WriteLine($"Delete request failed: {resp.StatusCode} - {respBody}");
+                return false;
+            }
+            catch (MsalException mex)
+            {
+                Console.WriteLine($"Authentication error while deleting file: {mex.Message}");
+                return false;
+            }
+            catch (HttpRequestException hex)
+            {
+                Console.WriteLine($"Network error while deleting file: {hex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error while deleting file: {ex.Message}");
                 return false;
             }
         }

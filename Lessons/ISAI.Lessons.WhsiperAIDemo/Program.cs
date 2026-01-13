@@ -1,7 +1,12 @@
 ﻿using FFMpegCore;
-using Microsoft.Identity.Client;
+using Microsoft.Extensions.AI;
+using Microsoft.Identity.Client;    
+using Microsoft.SemanticKernel.Embeddings;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OllamaSharp;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
@@ -12,6 +17,8 @@ namespace ISAI.Lessons.WhsiperAIDemo
 {
     internal static class Program
     {
+        private enum RunMode { Client, Server }
+
         //NOTE: Keep Ggml text for refrence
         //private const GgmlType DefaultGgmlType = GgmlType.Base;
         //private const string DefaultModelPath = "ggml-base.bin";
@@ -22,64 +29,161 @@ namespace ISAI.Lessons.WhsiperAIDemo
 
         static async Task Main(string[] args)
         {
-            await MainAsync();
+            var mode = ParseMode(args);
+            await MainAsync(mode).ConfigureAwait(false);
         }
 
-        static async Task MainAsync()
+        static async Task MainAsync(RunMode mode)
         {
-            InitializeLogging(BaseFolder);
-            ConfigureFfmpeg();
+            //Console.WriteLine($"Starting in mode: {mode}");
+            //ConfigureFfmpeg();
+            //await BuildRagDatabase("C:\\Temp\\SOL RAG Test\\rag.mp4", "C:\\Temp\\SOL RAG Test\\rag.srt");
 
-            if (!CheckFFmpegExists(FfmpegPath))
-            {
-                Console.WriteLine($"FFMPeg not found at: {FfmpegPath}");
-                return;
-            }
+            //return;
 
-            var modelPath = DefaultModelPath;
-            if (!File.Exists(modelPath))
-            {
-                await DownloadModelAsync(modelPath, DefaultGgmlType).ConfigureAwait(false);
-            }
-
-            var mp4Files = Directory.GetFiles(BaseFolder, "*.mp4", SearchOption.TopDirectoryOnly);
-            if (mp4Files.Length == 0)
-            {
-                Console.WriteLine($"No .mp4 files found in folder: {BaseFolder}");
-                return;
-            }
+            mode = RunMode.Server;
+            Console.WriteLine($"Starting in mode: {mode}");
 
             // create reusable OneDriveDownloader instance and Whisper factory
             using var downloader = new OneDriveDownloader();
-            using var factory = WhisperFactory.FromPath(modelPath);
 
-            foreach (var videoPath in mp4Files)
+            if (mode == RunMode.Client)
             {
-                try
+
+                InitializeLogging(BaseFolder);
+                ConfigureFfmpeg();
+
+                if (!CheckFFmpegExists(FfmpegPath))
                 {
-                    await ProcessVideoAsync(factory, videoPath, BaseFolder, downloader).ConfigureAwait(false);
+                    Console.WriteLine($"FFMPeg not found at: {FfmpegPath}");
+                    return;
                 }
-                catch (Exception ex)
+
+                var modelPath = DefaultModelPath;
+                if (!File.Exists(modelPath))
                 {
-                    Console.WriteLine($"Error processing '{videoPath}': {ex.Message}");
+                    await DownloadModelAsync(modelPath, DefaultGgmlType).ConfigureAwait(false);
                 }
+
+                // Client mode: process local videos and upload results
+                var mp4Files = Directory.GetFiles(BaseFolder, "*.mp4", SearchOption.TopDirectoryOnly);
+                if (mp4Files.Length == 0)
+                {
+                    Console.WriteLine($"No .mp4 files found in folder: {BaseFolder}");
+                    return;
+                }
+
+                using var factory = WhisperFactory.FromPath(modelPath);
+
+                foreach (var videoPath in mp4Files)
+                {
+                    try
+                    {
+                        await ProcessVideoAsync(factory, videoPath, BaseFolder, downloader).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error processing '{videoPath}': {ex.Message}");
+                    }
+                }
+
+                Console.WriteLine("Client mode work completed.");
+                return;
+
             }
-
-            // NOTE: Check to make sure we can download from OneDrive
-            var files = await downloader.ListFilesAsync("AutomatedUploads").ConfigureAwait(false);
-        
-            if (files is not null)
+            else
             {
-                foreach (var file in files)
+
+                var remaining = await downloader.ListFilesAsync("AutomatedUploads").ConfigureAwait(false);
+                if (remaining is not null)
                 {
-                    Console.WriteLine($"Downloading {file}");
-                    var downloadPath = Path.Combine(BaseFolder, "Download");
+                    foreach (var file in remaining)
+                    {
+                        Console.WriteLine($"Downloading {file}");
+                        var downloadPath = Path.Combine(BaseFolder, "Download");
 
-                    if (!Directory.Exists(downloadPath))
-                        Directory.CreateDirectory(downloadPath);
+                        if (!Directory.Exists(downloadPath))
+                            Directory.CreateDirectory(downloadPath);
 
-                    await downloader.DownloadAndUnzipAsync("AutomatedUploads", file, Path.Combine(downloadPath, Path.GetFileNameWithoutExtension(file))).ConfigureAwait(false);
+                        var success =  await downloader.DownloadAndUnzipAsync("AutomatedUploads", file, Path.Combine(downloadPath, Path.GetFileNameWithoutExtension(file))).ConfigureAwait(false);
+
+
+                        if (success)
+                        {
+                            await downloader.MoveFileAsync("AutomatedUploads", file, "AutomatedUploads/Processed", true).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            throw new Exception("Download and unzip failed");
+                        }
+
+                    }
                 }
+
+                Console.WriteLine("Server mode work completed.");
+                return;
+
+            }
+        }
+
+
+        public static async Task BuildRagDatabase(string videoPath, string srtPath)
+        {
+
+            var collectionName = "6b0ac5fd-fc60-4cff-9fb1-bcee64832128";
+
+            var ollamaClient = new OllamaApiClient(new Uri("http://localhost:11434"), "moondream");
+            var _embeddingService = ollamaClient.AsTextEmbeddingGenerationService();
+
+            var srtService = new SrtProcessingService();
+            var frameService = new VideoFrameService();
+            var visionService = new OllamaVisionService();
+            var qdrantVectorService = new QdrantVectorService(collectionName);
+
+            //var chatService = new ChatService(qdrantVectorService, _embeddingService);
+            //var respone = await chatService.AskAiAboutLesson("can you summarise this lesson?");
+            //return;
+
+            await qdrantVectorService.DeleteCollectionAsync();
+            await qdrantVectorService.InitializeAsync();
+
+            var segments = srtService.ParseToLessonSegments(srtPath, "Lesson1");
+          
+            ulong lastHash = 0;
+            string lastDescription = "No visual data available.";
+
+            foreach (var segment in segments)
+            {
+                //Add image hashing so we dont process the image again
+
+                string framePath = await frameService.ExtractFrameAsync(videoPath, (int)segment.StartTime, @"C:\Temp\SOL RAG Test\frames");
+             
+                using var img = Image.Load<Rgb24>(framePath);
+                ulong currentHash = VisualHasher.ComputeDifferenceHash(img);
+
+                // 2. Visual Hashing Check (Threshold of 5 bits for Moondream)
+                if (VisualHasher.GetSimilarityDistance(lastHash, currentHash) > 5)
+                {
+                    // The slide changed! Ask Moondream for a fresh description
+                    // We use a 'Balanced' prompt tailored for Moondream's architecture
+                    lastDescription = await visionService.DescribeFrameAsync(framePath);
+                    lastHash = currentHash;
+
+                  
+                }
+
+                // 3. Update the LessonSegment
+                segment.SlideDescription = lastDescription;
+
+                // 4. Create a Hybrid Search String
+                // Merging Transcript (Audio) + SlideDescription (Visual)
+                string ragContent = $"[TRANSCRIPT]: {segment.Transcript}\n[SLIDE]: {segment.SlideDescription}";
+                Console.WriteLine(ragContent);
+
+  
+                segment.Vector = await _embeddingService.GenerateEmbeddingAsync(ragContent);
+                Console.WriteLine(segment.Vector.ToString());
+                await qdrantVectorService.UpsertVectorAsync(segment);
             }
         }
 
@@ -148,7 +252,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
 
             // Use a processor per file and dispose promptly
             using var processor = factory.CreateBuilder()
-                .WithLanguage("auto")
+                .WithLanguage("en")
                 .WithProbabilities()
                 .Build();
 
@@ -457,6 +561,58 @@ namespace ISAI.Lessons.WhsiperAIDemo
 
                 return process.ExitCode;
             }
+        }
+
+        private static RunMode ParseMode(string[] args)
+        {
+            if (args == null || args.Length == 0)
+                return RunMode.Client; // default
+
+            // Accept forms: "server", "client", "--mode=server", "--mode server", "-m server"
+            for (int i = 0; i < args.Length; i++)
+            {
+                var a = args[i].Trim();
+
+                if (a.Equals("-h", StringComparison.OrdinalIgnoreCase) ||
+                    a.Equals("--help", StringComparison.OrdinalIgnoreCase) ||
+                    a.Equals("/?", StringComparison.OrdinalIgnoreCase))
+                {
+                    PrintUsage();
+                    return RunMode.Client;
+                }
+
+                if (a.Equals("server", StringComparison.OrdinalIgnoreCase))
+                    return RunMode.Server;
+
+                if (a.Equals("client", StringComparison.OrdinalIgnoreCase))
+                    return RunMode.Client;
+
+                if (a.StartsWith("--mode=", StringComparison.OrdinalIgnoreCase))
+                {
+                    var val = a.Substring("--mode=".Length).Trim();
+                    if (val.Equals("server", StringComparison.OrdinalIgnoreCase)) return RunMode.Server;
+                    return RunMode.Client;
+                }
+
+                if (a.Equals("--mode", StringComparison.OrdinalIgnoreCase) || a.Equals("-m", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (i + 1 < args.Length)
+                    {
+                        var next = args[i + 1].Trim();
+                        if (next.Equals("server", StringComparison.OrdinalIgnoreCase)) return RunMode.Server;
+                        return RunMode.Client;
+                    }
+                }
+            }
+
+            return RunMode.Client;
+        }
+
+        private static void PrintUsage()
+        {
+            Console.WriteLine("Usage: ISAI.Lessons.WhsiperAIDemo [mode]");
+            Console.WriteLine("  mode: client|server    Runs the app in client (default) or server mode.");
+            Console.WriteLine("  or:  --mode=server     or -m server");
         }
     }
 
