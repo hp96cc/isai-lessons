@@ -22,8 +22,6 @@ namespace ISAI.Lessons.Web.Portal.Controllers
         private PhysicalFileProvider _operation = new PhysicalFileProvider();
         private readonly string _conetentRootFolder = ConfigurationManager.AppSettings["ISAI.Lessons.ContentRootFolder"];
 
-
-
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
