@@ -2847,6 +2847,7 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="Documents\holder.txt" />
+    <Content Include="Scripts\views\lesson-managefiles.js" />
     <Content Include="Scripts\views\report-lessonactivity.js" />
     <Content Include="Scripts\views\customeractivity-index.js" />
     <Content Include="Scripts\views\tutorial-index.js" />
@@ -2931,6 +2932,7 @@
     <Content Include="Views\Tutorial\Index.cshtml" />
     <Content Include="Views\CustomerActivity\Index.cshtml" />
     <Content Include="Views\Report\LessonActivityReport.cshtml" />
+    <Content Include="Views\Lesson\ManageFiles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

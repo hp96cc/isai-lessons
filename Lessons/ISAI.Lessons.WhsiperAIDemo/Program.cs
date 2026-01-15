@@ -35,17 +35,27 @@ namespace ISAI.Lessons.WhsiperAIDemo
 
         static async Task MainAsync(RunMode mode)
         {
-            //Console.WriteLine($"Starting in mode: {mode}");
-            //ConfigureFfmpeg();
-            //await BuildRagDatabase("C:\\Temp\\SOL RAG Test\\rag.mp4", "C:\\Temp\\SOL RAG Test\\rag.srt");
-
-            //return;
 
             mode = RunMode.Server;
             Console.WriteLine($"Starting in mode: {mode}");
 
             // create reusable OneDriveDownloader instance and Whisper factory
             using var downloader = new OneDriveDownloader();
+
+
+
+            var serverDownloader = new ServerDownloader(downloader);
+            await serverDownloader.DownloadAndCopy();
+            return;
+
+
+
+            //Console.WriteLine($"Starting in mode: {mode}");
+            //ConfigureFfmpeg();
+            //await BuildRagDatabase("C:\\Temp\\SOL RAG Test\\rag.mp4", "C:\\Temp\\SOL RAG Test\\rag.srt");
+
+            //return;
+
 
             if (mode == RunMode.Client)
             {
@@ -93,36 +103,118 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
             else
             {
+                // Server mode:
+                // - Get listing from OneDrive folder ("AutomatedUploads")
+                // - Filter filenames before download: must be "<integer>.mp4"
+                // - Download each matching mp4 one-at-a-time (do NOT download ZIPs)
+                // - Process downloaded mp4
+                // - Move the OneDrive file into "AutomatedUploads/processed" on success
+                // - Stop processing on any failure
 
-                var remaining = await downloader.ListFilesAsync("AutomatedUploads").ConfigureAwait(false);
-                if (remaining is not null)
+                const string oneDriveFolder = "VideoUploads";
+                const string processedSubFolder = "processed";
+
+                var remaining = await downloader.ListFilesAsync(oneDriveFolder).ConfigureAwait(false);
+                if (remaining is null || remaining.Count == 0)
                 {
-                    foreach (var file in remaining)
+                    Console.WriteLine($"No files found in OneDrive folder: {oneDriveFolder}");
+                    Console.WriteLine("Server mode work completed.");
+                    return;
+                }
+
+                // Ensure local download dir exists
+                var downloadPath = Path.Combine(BaseFolder, "Download");
+                Directory.CreateDirectory(downloadPath);
+
+                // Load model once
+                var modelPath = DefaultModelPath;
+                if (!File.Exists(modelPath))
+                {
+                    await DownloadModelAsync(modelPath, DefaultGgmlType).ConfigureAwait(false);
+                }
+
+                using var factory = WhisperFactory.FromPath(modelPath);
+
+                foreach (var remoteFile in remaining)
+                {
+                    var fileNameOnly = Path.GetFileName(remoteFile);
+                    var ext = Path.GetExtension(fileNameOnly);
+
+                    // Only consider .mp4 files
+                    if (!ext.Equals(".mp4", StringComparison.OrdinalIgnoreCase))
                     {
-                        Console.WriteLine($"Downloading {file}");
-                        var downloadPath = Path.Combine(BaseFolder, "Download");
+                        Console.WriteLine($"Skipping '{fileNameOnly}': not an .mp4");
+                        continue;
+                    }
 
-                        if (!Directory.Exists(downloadPath))
-                            Directory.CreateDirectory(downloadPath);
+                    var nameWithoutExt = Path.GetFileNameWithoutExtension(fileNameOnly);
 
-                        var success =  await downloader.DownloadAndUnzipAsync("AutomatedUploads", file, Path.Combine(downloadPath, Path.GetFileNameWithoutExtension(file))).ConfigureAwait(false);
+                    // Name must be a valid integer lesson id
+                    if (!int.TryParse(nameWithoutExt, out _))
+                    {
+                        Console.WriteLine($"Skipping '{fileNameOnly}': filename before extension is not a valid integer");
+                        continue;
+                    }
 
+                    Console.WriteLine($"Preparing to download and process OneDrive file: {fileNameOnly}");
 
-                        if (success)
+                    // Download the single mp4 to a local path (one-at-a-time)
+                    var localMp4Path = Path.Combine(downloadPath, fileNameOnly);
+
+                    try
+                    {
+                        // NOTE: assumes OneDriveDownloader exposes DownloadFileAsync(folder, remoteName, localPath)
+                        // Returns bool indicating success. If your implementation differs, adapt accordingly.
+                        var downloaded = await downloader.DownloadFileAsync(oneDriveFolder, remoteFile, localMp4Path).ConfigureAwait(false);
+                        if (!File.Exists(localMp4Path))
                         {
-                            await downloader.MoveFileAsync("AutomatedUploads", file, "AutomatedUploads/Processed", true).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            throw new Exception("Download and unzip failed");
+                            Console.WriteLine($"Failed to download '{fileNameOnly}'. Stopping processing as requested.");
+                            return; // stop on failure
                         }
 
+                        Console.WriteLine($"Downloaded '{fileNameOnly}' to '{localMp4Path}'");
+
+                        // Process the downloaded video file
+                        try
+                        {
+                            await ProcessVideoAsync(factory, localMp4Path, BaseFolder, downloader).ConfigureAwait(false);
+                        }
+                        catch (Exception procEx)
+                        {
+                            Console.WriteLine($"Processing failed for '{fileNameOnly}': {procEx.Message}. Stopping processing as requested.");
+                            return; // stop on failure
+                        }
+
+                        // On success, move remote file to processed subfolder
+                        try
+                        {
+                            var processedTarget = $"{oneDriveFolder}/{processedSubFolder}";
+                            await downloader.MoveFileAsync(oneDriveFolder, remoteFile, processedTarget, true).ConfigureAwait(false);
+                            Console.WriteLine($"Moved OneDrive file '{fileNameOnly}' to '{processedTarget}'.");
+                        }
+                        catch (Exception mvEx)
+                        {
+                            Console.WriteLine($"Failed to move OneDrive file '{fileNameOnly}' to processed folder: {mvEx.Message}. Stopping processing as requested.");
+                            return; // stop on failure
+                        }
+
+                        // Clean up local copy (best-effort)
+                        try
+                        {
+                            if (File.Exists(localMp4Path))
+                                File.Delete(localMp4Path);
+                        }
+                        catch { /* best-effort cleanup */ }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Unexpected error handling '{fileNameOnly}': {ex.Message}. Stopping processing as requested.");
+                        return; // stop on failure
                     }
                 }
 
                 Console.WriteLine("Server mode work completed.");
                 return;
-
             }
         }
 

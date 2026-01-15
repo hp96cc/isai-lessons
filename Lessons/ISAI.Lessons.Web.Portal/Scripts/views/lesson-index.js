@@ -38,20 +38,23 @@ function InitGrid() {
         pageSettings: { pageCount: 4, pageSize: 50 },
         toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel'],
         width: 'auto',
+        dataBound: function ()
+        {
+            var gridObj = this;
+            gridObj.autoFitColumns("Name");
+        },
+
         actionBegin: function (args) {
 
 
             if (args.requestType === "beginEdit" || args.requestType === 'add') {
                 this.columns[2].visible = false;
-                this.columns[7].visible = false;
-                this.columns[8].visible = false;
-
-
-            } else if (args.requestType === "save" || args.requestType === "cancel") {
+                this.columns[9].visible = false;
+            }
+            else if (args.requestType === "save" || args.requestType === "cancel")
+            {
                 this.columns[2].visible = true;
-                this.columns[7].visible = true;
-                this.columns[8].visible = true;
-
+                this.columns[9].visible = true;
             }
         },
         rowDrop: function (args) {
@@ -95,8 +98,8 @@ function InitGrid() {
                 field: 'Name',
                 headerText: 'Name',
                 validationRules: { required: true },
-                width: 300,
-                allowSorting: false
+                allowSorting: false,
+                width: 250,
             },
 
 
@@ -104,7 +107,7 @@ function InitGrid() {
                 field: 'Description',
                 headerText: 'Description',
                 clipMode: 'EllipsisWithTooltip',
-                width: 300,
+
                 valueAccessor: function (field, data, column) {
 
                     return data.Description;
@@ -142,13 +145,6 @@ function InitGrid() {
             },
 
 
-
-            {
-                field: 'SourceUrl',
-                headerText: 'Pickup File Name',
-                width: 200,
-                allowSorting: false
-            },
             {
                 field: 'PendingDownload',
                 headerText: 'Mark for Processing?',
@@ -156,29 +152,57 @@ function InitGrid() {
                 editType: "booleanedit",
                 allowEditing: true,
                 allowSorting: false,
-                width: 120
+
 
             },
 
-
+        
             {
-                field: 'AssetId',
-                headerText: 'AssetId',
-                width: 120,
+                field: 'IsSignedAvailable',
+                headerText: 'Show Signed?',
+                displayAsCheckBox: true,
+                editType: "booleanedit",
+                allowEditing: true,
                 allowSorting: false,
-                allowEditing: false,
-            },
-
          
 
-            {
-                field: 'ListOrder',
-                headerText: 'List Order',
-                allowEditing: false,
-                allowSorting: false,
-                width: 100
             },
 
+            {
+                field: 'IsSubtitlesAvailable',
+                headerText: 'Show Subtitles?',
+                displayAsCheckBox: true,
+                editType: "booleanedit",
+                allowEditing: true,
+                allowSorting: false,
+
+            },
+
+
+            {
+                field: 'IsSigndSubtitlesAvailable',
+                headerText: 'Show Signed Subtitles?',
+                displayAsCheckBox: true,
+                editType: "booleanedit",
+                allowEditing: true,
+                allowSorting: false,
+
+            },
+
+
+            {
+
+                field: 'Id',
+                headerText: '',
+                width: 250,
+                disableHtmlEncode: false,
+                valueAccessor: function (field, data, column)
+                {
+
+                    return "<a class='btn btn-primary btn-sm m-n' target='_blank' href='/lesson/managefiles?lessonId=" + data.Id + "'>Manage Files</a>&nbsp;&nbsp;&nbsp;<a class='btn btn-primary btn-sm m-n' target='_blank' href='https://portal.scottishonlinelessons.com/api/lessonumbracotest/" + data.Id + "'>Test Lesson</a>";
+
+                }
+            },
 
 
 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ISAI.Lessons.Models.ViewModels
 {
@@ -9,6 +7,17 @@ namespace ISAI.Lessons.Models.ViewModels
         public LessonStreamingResponse() { }
 
         public string StreamingUrl { get; set; }
+
+        public string StreamingSignedUrl { get; set; }
+
+        public string SubtitlesUrl { get; set; }
+
+        public string SubtitlesSignedUrl { get; set; }
+
+        public bool IsSignedAvailable { get; set; }
+        public bool IsSubtitlesAvailable { get; set; }
+
+        public bool IsSigndSubtitlesAvailable { get; set; }
 
         public string Token { get; set; }
     }

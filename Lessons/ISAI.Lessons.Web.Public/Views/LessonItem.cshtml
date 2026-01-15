@@ -14,6 +14,7 @@
     }
 
     bool showExtraInfo = Request.QueryString["ExtraInfo"] != null;
+    bool isTestMode = Request.QueryString["TestMode"] != null;
 }
 
 @{
@@ -101,7 +102,7 @@
                            preload="auto"
                            width="640"
                            height="400"
-                           data-setup="{}">
+                           >
 
                         <p class="vjs-no-js">
                             To view this video please enable JavaScript, and consider upgrading to a
@@ -362,14 +363,38 @@
 
                     $("#lessonplayer").show();
 
-                    var myPlayer = videojs('sol-video', {
-                        fill: true
-                    });
-                    myPlayer.src({
-                        type: 'application/x-mpegURL',
-                        src: data.Content.StreamingUrl,
-                    
-                    });
+                    var showSubtitles = @(isTestMode ? "true" : "false");
+
+                    if (data.Content.SubtitlesUrl && showSubtitles)
+                    {
+                        var myPlayer = videojs('sol-video', {
+                            fill: true,
+                            tracks: [{
+                                src: data.Content.SubtitlesUrl,
+                                kind: 'captions',
+                                srclang: 'en',
+                                label: 'English'
+                            }]
+
+                        });
+                        myPlayer.src({
+                            type: 'application/x-mpegURL',
+                            src: data.Content.StreamingUrl,
+
+                        });
+                    } else
+                    {
+                        var myPlayer = videojs('sol-video', {
+                            fill: true,
+                        });
+                        myPlayer.src({
+                            type: 'application/x-mpegURL',
+                            src: data.Content.StreamingUrl,
+
+                        });
+                    }
+
+                  
                    
                     return;
 

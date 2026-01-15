@@ -32,13 +32,7 @@ using TutorialSubjectGroup = ISAI.Lessons.Models.ViewModels.TutorialSubjectGroup
 using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
 using System.Text;
 using ISAI.Lessons.Core.Services;
-using Microsoft.Extensions.Options;
-using System.ClientModel.Primitives;
-using Microsoft.Ajax.Utilities;
 using RequestOptions = Stripe.RequestOptions;
-using Syncfusion.EJ2.Diagrams;
-using ImageResizer.ExtensionMethods;
-using Azure.Core;
 
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
@@ -69,6 +63,8 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         private readonly string _systemTimeZone = ConfigurationManager.AppSettings["SystemTimeZone"];
         private readonly string _videoRootFolder = ConfigurationManager.AppSettings["ISAI.Lessons.VideoRootFolder"];
         private readonly string _videoDownloadFolder = ConfigurationManager.AppSettings["ISAI.Lessons.VideoDownloadFolder"];
+        private readonly string _conetentRootFolder = ConfigurationManager.AppSettings["ISAI.Lessons.ContentRootFolder"];
+
 
         public AppController()
         {
@@ -1291,18 +1287,29 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                         var url = string.Format("/VideoHandler.ashx?lessonId={0}&actionType=m3u8&token={1}", lesson.Id, encryptedToken);
 
+                        var subtitleLocation = Path.Combine(_conetentRootFolder, lesson.Id.ToString(), lesson.Id + ".vtt");
+                        var subtitleUrl = System.IO.File.Exists(subtitleLocation) ? string.Format("/subtitles/{0}/{1}.vtt", lesson.Id, lesson.Id.ToString()) : null;
+
+                        var subtitleSignedLocation = Path.Combine(_conetentRootFolder, lesson.Id.ToString(), lesson.Id + "_signed.vtt");
+                        var subtitleSignedUrl = System.IO.File.Exists(subtitleSignedLocation) ? string.Format("/subtitles/{0}/{1}_signed.vtt", lesson.Id, lesson.Id.ToString()) : null;
+
                         response.Status = ResponseStatus.OK;
                         response.Content = new LessonStreamingResponse()
                         {
-                            StreamingUrl = url,
                             Token = encryptedToken,
+                            StreamingUrl = url,
+                            SubtitlesUrl = subtitleUrl,
+                            StreamingSignedUrl = null, //TODO: 
+                            SubtitlesSignedUrl = subtitleSignedUrl,
+                            IsSignedAvailable = lesson.IsSignedAvailable,
+                            IsSubtitlesAvailable = lesson.IsSubtitlesAvailable,
+                            IsSigndSubtitlesAvailable = lesson.IsSigndSubtitlesAvailable,
                         };
 
                     }
                     else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.Download)
                     {
                         
-
                         var lessonStreamingToken = new LessonStreamingToken()
                         {
                             LessonId = lesson.Id,

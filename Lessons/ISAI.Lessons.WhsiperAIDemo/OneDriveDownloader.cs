@@ -96,11 +96,17 @@ namespace ISAI.Lessons.WhsiperAIDemo
         }
 
         /// <summary>
-        /// Downloads the specified file from OneDrive and returns the local temp path.
-        /// Returns null on failure.
+        /// Downloads the specified file from OneDrive. If <paramref name="localPath"/> is provided the file is saved there;
+        /// otherwise a temp file path is created and returned. Returns the local file path on success, or null on failure.
         /// </summary>
-        private async Task<string?> DownloadFileAsync(string remoteFolder, string remoteFileName)
+        public async Task<string?> DownloadFileAsync(string remoteFolder, string remoteFileName, string? localPath = null)
         {
+            if (string.IsNullOrWhiteSpace(remoteFileName))
+            {
+                Console.WriteLine("remoteFileName must be specified.");
+                return null;
+            }
+
             GraphConfig config = GetGraphConfig();
 
             if (string.IsNullOrWhiteSpace(config.ClientId) || string.IsNullOrWhiteSpace(config.TenantId))
@@ -135,17 +141,36 @@ namespace ISAI.Lessons.WhsiperAIDemo
                     return null;
                 }
 
-                string tempFileName = $"{Path.GetFileNameWithoutExtension(remoteFileName)}_{Guid.NewGuid():N}{Path.GetExtension(remoteFileName)}";
-                string tempPath = Path.Combine(Path.GetTempPath(), tempFileName);
+                // If no localPath supplied, create a temp path like the previous behavior.
+                string resolvedPath;
+                if (string.IsNullOrWhiteSpace(localPath))
+                {
+                    string tempFileName = $"{Path.GetFileNameWithoutExtension(remoteFileName)}_{Guid.NewGuid():N}{Path.GetExtension(remoteFileName)}";
+                    resolvedPath = Path.Combine(Path.GetTempPath(), tempFileName);
+                }
+                else
+                {
+                    resolvedPath = localPath;
+                }
+
+                // Ensure directory for resolvedPath exists
+                var localDir = Path.GetDirectoryName(resolvedPath);
+                if (string.IsNullOrEmpty(localDir))
+                {
+                    Console.WriteLine($"Invalid local path specified: {resolvedPath}");
+                    return null;
+                }
+
+                Directory.CreateDirectory(localDir);
 
                 await using (var responseStream = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                await using (var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                await using (var fs = new FileStream(resolvedPath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     await responseStream.CopyToAsync(fs).ConfigureAwait(false);
                 }
 
-                Console.WriteLine($"Downloaded file saved to: {tempPath}");
-                return tempPath;
+                Console.WriteLine($"Downloaded file saved to: {resolvedPath}");
+                return resolvedPath;
             }
             catch (MsalException mex)
             {

@@ -13,6 +13,9 @@
         bool PendingDownload { get; set; }
         string SourceUrl { get; set; }
         int? SubscriptionTypeId { get; set; }
-        
+        bool IsSignedAvailable { get; set; }
+        bool IsSigndSubtitlesAvailable { get; set; }
+        bool IsSubtitlesAvailable { get; set; }
+
     }
 }

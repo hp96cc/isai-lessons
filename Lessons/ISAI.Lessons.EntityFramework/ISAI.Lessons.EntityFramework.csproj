@@ -391,6 +391,14 @@
     <Compile Include="Migrations\202511180837376_Added Review emails to tutiail.Designer.cs">
       <DependentUpon>202511180837376_Added Review emails to tutiail.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202601151058368_Add Signed Subtitle flags.cs" />
+    <Compile Include="Migrations\202601151058368_Add Signed Subtitle flags.Designer.cs">
+      <DependentUpon>202601151058368_Add Signed Subtitle flags.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202601151104403_Add Signed Subtitle flags 2.cs" />
+    <Compile Include="Migrations\202601151104403_Add Signed Subtitle flags 2.Designer.cs">
+      <DependentUpon>202601151104403_Add Signed Subtitle flags 2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\App.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -513,6 +521,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511180837376_Added Review emails to tutiail.resx">
       <DependentUpon>202511180837376_Added Review emails to tutiail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202601151058368_Add Signed Subtitle flags.resx">
+      <DependentUpon>202601151058368_Add Signed Subtitle flags.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202601151104403_Add Signed Subtitle flags 2.resx">
+      <DependentUpon>202601151104403_Add Signed Subtitle flags 2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
