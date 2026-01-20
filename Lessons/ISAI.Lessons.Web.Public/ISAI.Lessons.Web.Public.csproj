@@ -624,6 +624,8 @@
     <Compile Include="App_Data\Models\AccountSubscriptions.generated.cs" />
     <Compile Include="App_Data\Models\AccountTutorials.generated.cs" />
     <Compile Include="App_Data\Models\AppVideoPage.generated.cs" />
+    <Compile Include="App_Data\Models\AssesmentItem.generated.cs" />
+    <Compile Include="App_Data\Models\AssessmentGroup.generated.cs" />
     <Compile Include="App_Data\Models\BlogGroup.generated.cs" />
     <Compile Include="App_Data\Models\BlogItem.generated.cs" />
     <Compile Include="App_Data\Models\ConfirmGroupTutorial.generated.cs" />
@@ -654,6 +656,7 @@
     <Compile Include="App_Data\Models\SignUpChoosePlan.generated.cs" />
     <Compile Include="App_Data\Models\SignUpConfirmed.generated.cs" />
     <Compile Include="App_Data\Models\SignUpEnterDetails.generated.cs" />
+    <Compile Include="App_Data\Models\SignUpEnterDetails1.generated.cs" />
     <Compile Include="App_Data\Models\SignUpPaymentFailed.generated.cs" />
     <Compile Include="App_Data\Models\SignUpPaymentSuccess.generated.cs" />
     <Compile Include="App_Data\Models\SiteMap.generated.cs" />
@@ -759,6 +762,7 @@
     <Content Include="Views\EmailTemplate.cshtml" />
     <Content Include="Views\AccountGroupTutorials.cshtml" />
     <Content Include="Views\GroupTutorialPublic.cshtml" />
+    <Content Include="Views\SignUpEnterDetailsFreeTrial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

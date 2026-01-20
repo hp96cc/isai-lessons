@@ -49,12 +49,12 @@ function InitGrid() {
 
             if (args.requestType === "beginEdit" || args.requestType === 'add') {
                 this.columns[2].visible = false;
-                this.columns[9].visible = false;
+                this.columns[10].visible = false;
             }
             else if (args.requestType === "save" || args.requestType === "cancel")
             {
                 this.columns[2].visible = true;
-                this.columns[9].visible = true;
+                this.columns[10].visible = true;
             }
         },
         rowDrop: function (args) {
@@ -101,7 +101,7 @@ function InitGrid() {
                 allowSorting: false,
                 width: 250,
             },
-
+             
 
             {
                 field: 'Description',
@@ -145,6 +145,15 @@ function InitGrid() {
             },
 
 
+            {
+                field: 'SourceUrl',
+                headerText: 'Pickup File Name',
+                width: 200,
+                allowSorting: false
+            },
+
+
+            
             {
                 field: 'PendingDownload',
                 headerText: 'Mark for Processing?',

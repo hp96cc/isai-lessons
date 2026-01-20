@@ -16,8 +16,11 @@ var filemanagerInstance = new ej.filemanager.FileManager({
         "Refresh",
         "Selection",
         "View",
+            "Copy",
+            "Paste",
+            "Rename",
         /*"Cut",
-        "Copy",
+        ,
         "Delete",*/
         "Details",
         "Download",

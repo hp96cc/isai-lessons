@@ -1515,16 +1515,16 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         }
 
 
-        async Task<SubscriptionCode> GenerateTrialCode()
+        async Task<SubscriptionCode> GenerateTrialCode(string name, int durationInDays)
         {
             var subscriptionCode = new SubscriptionCode();
             subscriptionCode.Code = Guid.NewGuid().ToString();
 
-            subscriptionCode.IssuedTo = "1 Day Free Trial";
+            subscriptionCode.IssuedTo = name;
             subscriptionCode.SubscriptionTypeId = 1;
             subscriptionCode.ValidFrom = DateTime.Today;
-            subscriptionCode.ValidTo = DateTime.Now.AddDays(1);
-            subscriptionCode.LicenceDays = 1;
+            subscriptionCode.ValidTo = DateTime.Now.AddDays(durationInDays);
+            subscriptionCode.LicenceDays = durationInDays;
 
             db.Entry(subscriptionCode).State = EntityState.Added;
             await db.SaveChangesAsync();
@@ -2233,7 +2233,11 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
                 if (request.AccessCode.Trim().ToUpper().Equals("FREE1DAYTRIAL"))
                 {
-                    subscriptionCode = await GenerateTrialCode();
+                    subscriptionCode = await GenerateTrialCode("1 Day Free Trial", 1);
+                }
+                else if (request.AccessCode.Trim().ToUpper().Equals("FREE7DAYTRIAL"))
+                {
+                    subscriptionCode = await GenerateTrialCode("7 Day Free Trial", 7);
                 }
                 else
                 {

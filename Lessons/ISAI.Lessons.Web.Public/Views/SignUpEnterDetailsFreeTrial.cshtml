@@ -1,0 +1,257 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.SignUpEnterDetails1>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Master.cshtml";
+
+
+    /* Redirect if logged */
+    if (Request.Cookies["lessons_access_token"] != null && Request.Cookies["lessons_access_token"].Value.ToString().Length > 100)
+    {
+        Response.Redirect("/account/info");
+    }
+
+    string redirectUrl = null;
+
+    if (Request.QueryString["redirectUrl"] != null)
+    {
+        redirectUrl = Request.QueryString["redirectUrl"].ToString();
+    }
+
+    var isGroupTutorial = redirectUrl != null && redirectUrl.Contains("groupTutorialId");
+
+    var isStripeTest = (Request.ServerVariables["HTTP_HOST"].ToLower().Contains("localhost")
+        ||
+        Request.ServerVariables["HTTP_HOST"].ToLower().Contains("test")) ? true : false;
+
+    var canonicalUrl = "https://" + Request.ServerVariables["HTTP_HOST"] + Model.Url();
+
+}
+
+
+<section class="page-title-section bg-img cover-background bg-yellow p-5" data-overlay-dark="0" data-background="@Model.BackgroundImage.MediaUrl()" style="background-image: url(@Model.BackgroundImage.MediaUrl());">
+    <div class="container">
+        <div class="page-title">
+
+            <h2 style="color: #18b8ff;">@Model.Title</h2>
+            <p><strong>@Model.Subtitle</strong></p>
+
+        </div>
+    </div>
+</section>
+
+
+<section class="pt-5">
+
+    <div class="container">
+
+        <div class="row">
+           
+            <div class="col-lg-8 col-md-10 center-col">
+
+                <div class="col-12">
+
+                    <p>@Model.PageContent</p>
+
+                </div>
+
+                <div class="block-info">
+
+                    <h6 class="bg-sky">Signup</h6>
+
+
+
+
+
+
+                    <div class="padding-50px-all md-padding-50px-all sm-padding-25px-all">
+
+                        <div class="spinner-border  mb-10" role="status" id="spinner-loading" style="display:none;">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+
+                        <form method="post" id="register-form" class="needs-validation" novalidate>
+
+                            <div class="row">
+
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Email *:</label>
+                                        <input type="email" class="form-control" id="input-email" name="input-email" placeholder="name@email.com" autocomplete="none" required />
+                                        <div class="invalid-feedback">Email is required</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Password *:</label>
+                                        <input type="password" class="form-control" id="input-password" name="input-password" placeholder="Password" autocomplete="new-password" required />
+                                        <div class="invalid-feedback">Password is required</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Confirm Password *:</label>
+                                        <input type="password" class="form-control" id="input-confirmpassword" name="input-confirmpassword" placeholder="Confirm Password" autocomplete="new-password" required />
+                                        <div class="invalid-feedback">Confirm Password is required</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="input-newsletter" checked>
+                                        <label class="custom-control-label" for="input-newsletter">Accept emails for updates and offers?</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="input-terms-condition" required>
+                                        <label class="custom-control-label" for="input-terms-condition">I agree to the <a href="https://www.scottishonlinelessons.com/terms/" target="_blank">Terms &amp; Conditions</a></label>
+                                        <span class="invalid-feedback">You must agree before submitting.</span>
+
+                                    </div>
+                                </div>
+
+
+           
+
+
+                                <div id="form-error-label" class="col-md-12 alert alert-danger m-3 delivery-error-label" role="alert" style="display:none;">
+
+                                </div>
+
+
+
+                                <div class="col-md-12 margin-35px-top sm-margin-25px-top">
+                                    <button type="button" id="button-activate" onclick="Activate();" class="butn yellow small btn-block p-2 pl-4 pr-4 mb-2 mt-2">Sign Up for Free</button>
+
+
+                                    <div class="mt-4 text-center"><strong>Secure signup | Approved by 25+ Scottish councils | Used by 8,000+ students across Scotland</strong></div>
+
+
+                                </div>
+
+                                <div class="col-md-12 text-center margin-25px-top">
+                                    <span>Already have an account? <a href="/account">Login</a></span>
+                                </div>
+
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Head {
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+}
+
+
+@section Scripts {
+
+    <script>
+
+        var loggedIn = false;
+
+        @if(ViewBag.LoggedIn != null)
+        {
+            @:loggedIn = true
+        }
+
+        $(document).ready(function () {
+
+            if (loggedIn)
+            {
+                location.href = '/account/';
+            } else {
+                $('#register-form').show();
+            }
+
+
+        });
+
+        async function Activate() {
+
+            $('#form-error-label').text('');
+            $('#form-error-label').hide();
+
+            var form = document.getElementById("register-form");
+
+            if (form.checkValidity() === false) {
+
+                event.preventDefault();
+                event.stopPropagation();
+                form.classList.add('was-validated');
+
+            } else {
+
+                $('#register-form').hide();
+                $('#spinner-loading').show();
+                var errorHTML = '';
+
+                var registerRequestViewModel = {
+
+                    firstName: '',
+                    lastName: '',
+                    email: $("#input-email").val().trim(),
+                    password: $("#input-password").val().trim(),
+                    passwordConfirm: $('#input-confirmpassword').val().trim(),
+                    acceptMarketing: $('#input-newsletter').prop("checked"),
+                    accessCode: 'FREE7DAYTRIAL',
+                    hearAbout: ''
+
+                }
+
+                var data = await lessonsApp.signupWithAccessCode(registerRequestViewModel);
+
+                if (data.Status === 0) {
+
+                    window.location.href = '/plans/confirmed';
+                    return;
+
+                } else {
+
+                    if (data.ErrorResponse !== null && data.ErrorResponse.length > 0) {
+
+                        errorHTML += '<ul>';
+
+                        data.ErrorResponse.forEach(function (item) {
+                            errorHTML += '<li>' + item.Message + '</li>';
+                        });
+
+                        errorHTML += '</ul>';
+                    }
+                    else if (data.Errors.length === 1) {
+                        errorHTML = data.ErrorResponse[0].Message;
+                    }
+                    else {
+                        errorHTML = 'Could not activate account. Please contact support';
+                    }
+
+                }
+
+                $('#form-error-label').html(errorHTML);
+                $('#form-error-label').show();
+                $('#register-form').show();
+                $('#spinner-loading').hide();
+
+            }
+        }
+
+        
+        var handleResult = function (result) {
+            if (result.error) {
+                showErrorMessage(result.error.message);
+                $('#spinner-loading').hide();
+            }
+        };
+
+    </script>
+
+}

@@ -22,10 +22,10 @@ namespace ISAI.Lessons.WhsiperAIDemo
         //NOTE: Keep Ggml text for refrence
         //private const GgmlType DefaultGgmlType = GgmlType.Base;
         //private const string DefaultModelPath = "ggml-base.bin";
-        private const GgmlType DefaultGgmlType = GgmlType.Medium;
-        private const string DefaultModelPath = "ggml-medium.bin";
-        private const string BaseFolder = @"C:\Temp\SOL Video Processing\";
-        private const string FfmpegPath = @"C:\ffmpeg\bin\ffmpeg.exe";
+        internal const GgmlType DefaultGgmlType = GgmlType.Medium;
+        internal const string DefaultModelPath = "ggml-medium.bin";
+        internal const string BaseFolder = @"C:\Temp\SOL Video Processing\";
+        internal const string FfmpegPath = @"C:\ffmpeg\bin\ffmpeg.exe";
 
         static async Task Main(string[] args)
         {
@@ -35,20 +35,12 @@ namespace ISAI.Lessons.WhsiperAIDemo
 
         static async Task MainAsync(RunMode mode)
         {
-
             mode = RunMode.Server;
             Console.WriteLine($"Starting in mode: {mode}");
 
-            // create reusable OneDriveDownloader instance and Whisper factory
-            using var downloader = new OneDriveDownloader();
-
-
-
-            var serverDownloader = new ServerDownloader(downloader);
-            await serverDownloader.DownloadAndCopy();
-            return;
-
-
+            //var serverDownloader = new ServerDownloader(downloader);
+            //await serverDownloader.DownloadAndCopy();
+            //return;
 
             //Console.WriteLine($"Starting in mode: {mode}");
             //ConfigureFfmpeg();
@@ -57,167 +49,22 @@ namespace ISAI.Lessons.WhsiperAIDemo
             //return;
 
 
+            // create reusable OneDriveDownloader instance and Whisper factory
+            using var downloader = new OneDriveDownloader();
+
             if (mode == RunMode.Client)
             {
-
-                InitializeLogging(BaseFolder);
-                ConfigureFfmpeg();
-
-                if (!CheckFFmpegExists(FfmpegPath))
-                {
-                    Console.WriteLine($"FFMPeg not found at: {FfmpegPath}");
-                    return;
-                }
-
-                var modelPath = DefaultModelPath;
-                if (!File.Exists(modelPath))
-                {
-                    await DownloadModelAsync(modelPath, DefaultGgmlType).ConfigureAwait(false);
-                }
-
-                // Client mode: process local videos and upload results
-                var mp4Files = Directory.GetFiles(BaseFolder, "*.mp4", SearchOption.TopDirectoryOnly);
-                if (mp4Files.Length == 0)
-                {
-                    Console.WriteLine($"No .mp4 files found in folder: {BaseFolder}");
-                    return;
-                }
-
-                using var factory = WhisperFactory.FromPath(modelPath);
-
-                foreach (var videoPath in mp4Files)
-                {
-                    try
-                    {
-                        await ProcessVideoAsync(factory, videoPath, BaseFolder, downloader).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error processing '{videoPath}': {ex.Message}");
-                    }
-                }
-
+                await ClientRunner.RunAsync(downloader).ConfigureAwait(false);
                 Console.WriteLine("Client mode work completed.");
                 return;
-
             }
             else
             {
-                // Server mode:
-                // - Get listing from OneDrive folder ("AutomatedUploads")
-                // - Filter filenames before download: must be "<integer>.mp4"
-                // - Download each matching mp4 one-at-a-time (do NOT download ZIPs)
-                // - Process downloaded mp4
-                // - Move the OneDrive file into "AutomatedUploads/processed" on success
-                // - Stop processing on any failure
-
-                const string oneDriveFolder = "VideoUploads";
-                const string processedSubFolder = "processed";
-
-                var remaining = await downloader.ListFilesAsync(oneDriveFolder).ConfigureAwait(false);
-                if (remaining is null || remaining.Count == 0)
-                {
-                    Console.WriteLine($"No files found in OneDrive folder: {oneDriveFolder}");
-                    Console.WriteLine("Server mode work completed.");
-                    return;
-                }
-
-                // Ensure local download dir exists
-                var downloadPath = Path.Combine(BaseFolder, "Download");
-                Directory.CreateDirectory(downloadPath);
-
-                // Load model once
-                var modelPath = DefaultModelPath;
-                if (!File.Exists(modelPath))
-                {
-                    await DownloadModelAsync(modelPath, DefaultGgmlType).ConfigureAwait(false);
-                }
-
-                using var factory = WhisperFactory.FromPath(modelPath);
-
-                foreach (var remoteFile in remaining)
-                {
-                    var fileNameOnly = Path.GetFileName(remoteFile);
-                    var ext = Path.GetExtension(fileNameOnly);
-
-                    // Only consider .mp4 files
-                    if (!ext.Equals(".mp4", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Console.WriteLine($"Skipping '{fileNameOnly}': not an .mp4");
-                        continue;
-                    }
-
-                    var nameWithoutExt = Path.GetFileNameWithoutExtension(fileNameOnly);
-
-                    // Name must be a valid integer lesson id
-                    if (!int.TryParse(nameWithoutExt, out _))
-                    {
-                        Console.WriteLine($"Skipping '{fileNameOnly}': filename before extension is not a valid integer");
-                        continue;
-                    }
-
-                    Console.WriteLine($"Preparing to download and process OneDrive file: {fileNameOnly}");
-
-                    // Download the single mp4 to a local path (one-at-a-time)
-                    var localMp4Path = Path.Combine(downloadPath, fileNameOnly);
-
-                    try
-                    {
-                        // NOTE: assumes OneDriveDownloader exposes DownloadFileAsync(folder, remoteName, localPath)
-                        // Returns bool indicating success. If your implementation differs, adapt accordingly.
-                        var downloaded = await downloader.DownloadFileAsync(oneDriveFolder, remoteFile, localMp4Path).ConfigureAwait(false);
-                        if (!File.Exists(localMp4Path))
-                        {
-                            Console.WriteLine($"Failed to download '{fileNameOnly}'. Stopping processing as requested.");
-                            return; // stop on failure
-                        }
-
-                        Console.WriteLine($"Downloaded '{fileNameOnly}' to '{localMp4Path}'");
-
-                        // Process the downloaded video file
-                        try
-                        {
-                            await ProcessVideoAsync(factory, localMp4Path, BaseFolder, downloader).ConfigureAwait(false);
-                        }
-                        catch (Exception procEx)
-                        {
-                            Console.WriteLine($"Processing failed for '{fileNameOnly}': {procEx.Message}. Stopping processing as requested.");
-                            return; // stop on failure
-                        }
-
-                        // On success, move remote file to processed subfolder
-                        try
-                        {
-                            var processedTarget = $"{oneDriveFolder}/{processedSubFolder}";
-                            await downloader.MoveFileAsync(oneDriveFolder, remoteFile, processedTarget, true).ConfigureAwait(false);
-                            Console.WriteLine($"Moved OneDrive file '{fileNameOnly}' to '{processedTarget}'.");
-                        }
-                        catch (Exception mvEx)
-                        {
-                            Console.WriteLine($"Failed to move OneDrive file '{fileNameOnly}' to processed folder: {mvEx.Message}. Stopping processing as requested.");
-                            return; // stop on failure
-                        }
-
-                        // Clean up local copy (best-effort)
-                        try
-                        {
-                            if (File.Exists(localMp4Path))
-                                File.Delete(localMp4Path);
-                        }
-                        catch { /* best-effort cleanup */ }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Unexpected error handling '{fileNameOnly}': {ex.Message}. Stopping processing as requested.");
-                        return; // stop on failure
-                    }
-                }
-
+                await ServerRunner.RunAsync(downloader).ConfigureAwait(false);
                 Console.WriteLine("Server mode work completed.");
                 return;
             }
         }
-
 
         public static async Task BuildRagDatabase(string videoPath, string srtPath)
         {
@@ -279,14 +126,14 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
         }
 
-        private static void InitializeLogging(string baseFolder)
+        internal static void InitializeLogging(string baseFolder)
         {
             Directory.CreateDirectory(Path.Combine(baseFolder, "logs"));
             var logFile = Path.Combine(baseFolder, "logs", $"console_{DateTime.Now:yyyyMMdd_HHmmss}.log");
             ConsoleTee.Enable(logFile);
         }
 
-        private static void ConfigureFfmpeg()
+        internal static void ConfigureFfmpeg()
         {
             GlobalFFOptions.Configure(options =>
             {
@@ -295,7 +142,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             });
         }
 
-        private static async Task ProcessVideoAsync(WhisperFactory factory, string videoPath, string baseFolder, OneDriveDownloader downloader)
+        internal static async Task ProcessVideoAsync(WhisperFactory factory, string videoPath, string baseFolder, OneDriveDownloader downloader)
         {
             var fileName = Path.GetFileName(videoPath);
             var nameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
@@ -458,7 +305,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
         }
 
-        private static void EnsureAudioExtracted(string videoPath, string mp3Path)
+        internal static void EnsureAudioExtracted(string videoPath, string mp3Path)
         {
             if (!File.Exists(mp3Path))
             {
@@ -471,7 +318,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
         }
 
-        private static string ConvertMp3ToWav(string mp3Path, string nameWithoutExt)
+        internal static string ConvertMp3ToWav(string mp3Path, string nameWithoutExt)
         {
             Console.WriteLine("Converting to WAV (temporary file)");
             var tempWavPath = Path.Combine(Path.GetTempPath(), $"{nameWithoutExt}_{Guid.NewGuid():N}.wav");
@@ -486,7 +333,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             return tempWavPath;
         }
 
-        private static async Task TranscribeAndWriteSubtitlesAsync(WhisperProcessor processor, string wavPath, string srtPath, string vttPath)
+        internal static async Task TranscribeAndWriteSubtitlesAsync(WhisperProcessor processor, string wavPath, string srtPath, string vttPath)
         {
             using var wavStream = File.OpenRead(wavPath);
 
@@ -516,13 +363,13 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
         }
 
-        private static string FormatSrtTimestamp(TimeSpan time)
+        internal static string FormatSrtTimestamp(TimeSpan time)
         {
             // SRT uses comma as millisecond separator and always hours:minutes:seconds,milliseconds
             return $"{time:hh\\:mm\\:ss},{time.Milliseconds:D3}";
         }
 
-        private static string FormatVttTimestamp(TimeSpan time)
+        internal static string FormatVttTimestamp(TimeSpan time)
         {
             // VTT uses period for milliseconds
             return $"{time:hh\\:mm\\:ss}.{time.Milliseconds:D3}";
@@ -531,7 +378,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
         /// <summary>
         /// Creates a zip file for the given folder. Returns the zip path or null on failure.
         /// </summary>
-        private static string CreateZipForFolder(string folderPath)
+        internal static string CreateZipForFolder(string folderPath)
         {
             try
             {
@@ -560,7 +407,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
         }
 
-        private static async Task DownloadModelAsync(string fileName, GgmlType ggmlType)
+        internal static async Task DownloadModelAsync(string fileName, GgmlType ggmlType)
         {
             Console.WriteLine($"Downloading Model {fileName}");
             await using var modelStream = await WhisperGgmlDownloader.Default.GetGgmlModelAsync(ggmlType).ConfigureAwait(false);
@@ -568,7 +415,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             await modelStream.CopyToAsync(fileWriter).ConfigureAwait(false);
         }
 
-        private static bool CheckFFmpegExists(string ffmpegPath)
+        internal static bool CheckFFmpegExists(string ffmpegPath)
         {
             // If it's a full path, check if file exists
             if (Path.IsPathRooted(ffmpegPath))
@@ -601,7 +448,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
         }
 
-        private static async Task<bool> EncodeFFMpeg(string encodingArgs)
+        internal static async Task<bool> EncodeFFMpeg(string encodingArgs)
         {
             int exitCode = await ExecuteFFmpegAsync(FfmpegPath, encodingArgs);
 
@@ -617,7 +464,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
         }
 
-        private static async Task<int> ExecuteFFmpegAsync(string ffmpegPath, string arguments)
+        internal static async Task<int> ExecuteFFmpegAsync(string ffmpegPath, string arguments)
         {
             var processInfo = new ProcessStartInfo
             {
