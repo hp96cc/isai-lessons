@@ -66,7 +66,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 {
                     EmailAddress = new EmailAddress
                     {
-                        Address = x
+                        Address = x.Trim()
                     }
                 }).ToList(),
 
@@ -75,7 +75,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 {
                     EmailAddress = new EmailAddress
                     {
-                        Address = x
+                        Address = x.Trim()
                     }
                 }).ToList()
             };
@@ -88,7 +88,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 {
                     EmailAddress = new EmailAddress
                     {
-                        Address = x
+                        Address = x.Trim()
                     }
                 }).ToList();
             }
@@ -99,7 +99,7 @@ namespace ISAI.Lessons.EntityFramework.Services
                 {
                     EmailAddress = new EmailAddress
                     {
-                        Address = x
+                        Address = x.Trim()
                     }
                 }).ToList();
             }
@@ -122,7 +122,6 @@ namespace ISAI.Lessons.EntityFramework.Services
                 Message = message,
                 SaveToSentItems = true,
             };
-
 
             await graphClient.Users[userName]
                              .SendMail

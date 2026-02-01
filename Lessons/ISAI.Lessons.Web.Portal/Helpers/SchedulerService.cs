@@ -49,6 +49,9 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void PromptForAbandonedSubscription()
         {
+            //NOTE: come back to this
+            return;
+
                 if (_isSendingAbandonedSubscriptionEmails) return;
 
                 try
@@ -284,6 +287,8 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                             tutorial.DateModified = DateTime.UtcNow;
                             tutorial.ModifiedUserId = _systemUserId;
                             db.Entry(tutorial).State = EntityState.Modified;
+
+                            db.SaveChanges();
                         }
 
                         if (tutorial.PendingEmailConfirmationTutor)
@@ -301,16 +306,17 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                             tutorial.DateModified = DateTime.UtcNow;
                             tutorial.ModifiedUserId = _systemUserId;
                             db.Entry(tutorial).State = EntityState.Modified;
+
+                            db.SaveChanges();
                         }
                     }
 
-                    db.SaveChanges();
                 }
 
             }
             catch (Exception ex)
             {
-                var t = true;
+                throw ex;
             }
             finally
             {
@@ -369,7 +375,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             }
             catch (Exception ex)
             {
-                var t = true;
+                //throw ex;
             }
             finally
             {

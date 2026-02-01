@@ -1,4 +1,3 @@
-ISAI.Lessons.WhsiperAIDemo\ClientRunner.cs
 using System;
 using System.IO;
 using System.Threading.Tasks;
