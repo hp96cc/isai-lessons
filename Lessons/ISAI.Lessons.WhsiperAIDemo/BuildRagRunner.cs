@@ -19,7 +19,8 @@ namespace ISAI.Lessons.WhsiperAIDemo
         /// - extracting frames for each SRT segment,
         /// - hashing frames to avoid redundant vision calls,
         /// - calling a vision service for slide descriptions when slides change,
-        /// - creating hybrid transcript+slide embeddings, and upserting vectors.
+        /// - extracting OCR text from slides for precise text search,
+        /// - creating hybrid transcript+slide+OCR embeddings, and upserting vectors.
         /// </summary>
         public static async Task BuildRagDatabase(string videoPath, string srtPath)
         {
@@ -32,6 +33,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             var srtService = new SrtProcessingService();
             var frameService = new VideoFrameService();
             var visionService = new OllamaVisionService();
+            var ocrService = new TesseractOcrService(@".\tessdata"); // Initialize OCR service
             var qdrantVectorService = new QdrantVectorService(collectionName);
 
             // Reset and ensure vector collection exists
@@ -44,34 +46,50 @@ namespace ISAI.Lessons.WhsiperAIDemo
             // Keep last processed frame hash+description so we only call vision when slide changes
             ulong lastHash = 0;
             string lastDescription = "No visual data available.";
+            string lastOcrText = string.Empty;
 
-            foreach (var segment in segments)
+            try
             {
-                // Extract a representative frame at the segment start time
-                string framePath = await frameService.ExtractFrameAsync(videoPath, (int)segment.StartTime, @"C:\Temp\SOL RAG Test\frames");
-
-                using var img = Image.Load<Rgb24>(framePath);
-                ulong currentHash = VisualHasher.ComputeDifferenceHash(img);
-
-                // Check similarity (threshold tuned for the chosen vision model)
-                if (VisualHasher.GetSimilarityDistance(lastHash, currentHash) > 5)
+                foreach (var segment in segments)
                 {
-                    // Slide changed — ask vision service for a fresh description
-                    lastDescription = await visionService.DescribeFrameAsync(framePath);
-                    lastHash = currentHash;
+                    // Extract a representative frame at the segment start time
+                    string framePath = await frameService.ExtractFrameAsync(videoPath, (int)segment.StartTime, @"C:\Temp\SOL RAG Test\frames");
+
+                    using var img = Image.Load<Rgb24>(framePath);
+                    ulong currentHash = VisualHasher.ComputeDifferenceHash(img);
+
+                    // Check similarity (threshold tuned for the chosen vision model)
+                    if (VisualHasher.GetSimilarityDistance(lastHash, currentHash) > 5)
+                    {
+                        // Slide changed — ask vision service for a fresh description
+                           lastDescription = await visionService.DescribeFrameAsync(framePath);
+                        
+                        // Extract OCR text immediately after vision description
+                        lastOcrText = await ocrService.ExtractTextAsync(framePath);
+                        
+                        lastHash = currentHash;
+                        
+                        Console.WriteLine($"[NEW SLIDE DETECTED] OCR: {lastOcrText}");
+                    }
+
+                    // Annotate the segment with the latest slide description and OCR text
+                    segment.SlideDescription = lastDescription;
+                    segment.ExtractedOcrText = lastOcrText;
+
+                    // Create a hybrid content string that mixes transcript + slide description + OCR text
+                    string ragContent = $"[TRANSCRIPT]: {segment.Transcript}\n[SLIDE]: {segment.SlideDescription}\n[TEXT]: {segment.ExtractedOcrText}";
+                    Console.WriteLine(ragContent);
+
+                    // Generate and persist the embedding vector for hybrid search
+                    segment.Vector = await _embeddingService.GenerateEmbeddingAsync(ragContent);
+                    Console.WriteLine(segment.Vector.ToString());
+                    await qdrantVectorService.UpsertVectorAsync(segment);
                 }
-
-                // Annotate the segment with the latest slide description
-                segment.SlideDescription = lastDescription;
-
-                // Create a hybrid content string that mixes transcript + slide description
-                string ragContent = $"[TRANSCRIPT]: {segment.Transcript}\n[SLIDE]: {segment.SlideDescription}";
-                Console.WriteLine(ragContent);
-
-                // Generate and persist the embedding vector for hybrid search
-                segment.Vector = await _embeddingService.GenerateEmbeddingAsync(ragContent);
-                Console.WriteLine(segment.Vector.ToString());
-                await qdrantVectorService.UpsertVectorAsync(segment);
+            }
+            finally
+            {
+                // Dispose OCR service to free resources
+                ocrService.Dispose();
             }
         }
     }

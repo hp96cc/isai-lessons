@@ -29,6 +29,9 @@ public class LessonSegment
         [VectorStoreData]
         public string SlideDescription { get; set; }
 
+        [VectorStoreData]
+        public string ExtractedOcrText { get; set; }
+
         [VectorStoreVector(2048)]
         public ReadOnlyMemory<float> Vector { get; set; }
 
@@ -36,7 +39,7 @@ public class LessonSegment
         /// Helper to get a unified string for embedding generation
         /// </summary>
         public string GetSearchableText() =>
-            $"Transcript: {Transcript} | Visual Context: {SlideDescription}";
+            $"Transcript: {Transcript} | Visual Context: {SlideDescription} | Slide Text: {ExtractedOcrText}";
     }
 
     public class SrtProcessingService
