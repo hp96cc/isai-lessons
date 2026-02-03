@@ -8,19 +8,20 @@ namespace ISAI.Lessons.WhsiperAIDemo
     {
         private enum RunMode { DownloadAndProcessVideo, DownloadAndMoveToServerLocation }
 
-        // NOTE: Keep Ggml text for reference (examples of alternate model choices)
-        // private const GgmlType DefaultGgmlType = GgmlType.Base;
-        // private const string DefaultModelPath = "ggml-base.bin";
-        internal const GgmlType DefaultGgmlType = GgmlType.Medium;
-        internal const string DefaultModelPath = "ggml-medium.bin";
-
-        // Default folders and ffmpeg executable path used across processing
-        internal const string BaseFolder = @"C:\Temp\SOL Video Processing\";
-        internal const string FfmpegPath = @"C:\ffmpeg\bin\ffmpeg.exe";
+        internal static readonly GgmlType DefaultGgmlType = GgmlType.Medium;
+        
+        internal static string DefaultModelPath => AppConfiguration.Instance.Application.DefaultModelPath;
+        internal static string BaseFolder => AppConfiguration.Instance.Application.BaseFolder;
+        internal static string FfmpegPath => AppConfiguration.Instance.Application.FfmpegPath;
 
         // Application entry point. Parses run mode then delegates to async main.
         static async Task Main(string[] args)
         {
+            Console.WriteLine($"Platform: {System.Runtime.InteropServices.RuntimeInformation.OSDescription}");
+            Console.WriteLine($"Base Folder: {BaseFolder}");
+            Console.WriteLine($"FFmpeg Path: {FfmpegPath}");
+            Console.WriteLine();
+
             var mode = ParseMode(args);
             await MainAsync(mode).ConfigureAwait(false);
         }
@@ -77,9 +78,13 @@ namespace ISAI.Lessons.WhsiperAIDemo
 
         internal static void ConfigureFfmpeg()
         {
+            var ffmpegDir = Path.GetDirectoryName(FfmpegPath);
             GlobalFFOptions.Configure(options =>
             {
-                options.BinaryFolder = @"C:\ffmpeg\bin";
+                if (!string.IsNullOrEmpty(ffmpegDir))
+                {
+                    options.BinaryFolder = ffmpegDir;
+                }
                 options.TemporaryFilesFolder = Path.GetTempPath();
             });
         }

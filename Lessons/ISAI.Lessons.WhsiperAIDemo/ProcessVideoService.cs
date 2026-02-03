@@ -1,7 +1,5 @@
 using FFMpegCore;
 using Microsoft.Identity.Client;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -65,7 +63,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
 
             if (!result)
             {
-                Console.WriteLine("FFMpeg Encoiding failed");
+                Console.WriteLine("FFMpeg Encoding failed");
                 return;
             }
 
@@ -82,7 +80,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             try
             {
                 // Convert MP3 to a temporary WAV file (16 kHz) for Whisper input
-                tempWavPath = ConvertMp3ToWav(mp3Path, nameWithoutExt);
+                tempWavPath = await ConvertMp3ToWavAsync(mp3Path, nameWithoutExt).ConfigureAwait(false);
 
                 // Transcribe and write SRT/VTT incrementally to avoid memory pressure
                 await TranscribeAndWriteSubtitlesAsync(processor, tempWavPath, srtPath, vttPath).ConfigureAwait(false);
@@ -204,21 +202,35 @@ namespace ISAI.Lessons.WhsiperAIDemo
             }
         }
 
-        // Converts MP3 to a 16kHz WAV file on disk using NAudio resampling.
-        // Returns path to the temporary WAV created.
-        private static string ConvertMp3ToWav(string mp3Path, string nameWithoutExt)
+        /// <summary>
+        /// Converts MP3 to a 16kHz mono WAV file using FFMpegCore for cross-platform compatibility.
+        /// Returns path to the temporary WAV created.
+        /// </summary>
+        private static async Task<string> ConvertMp3ToWavAsync(string mp3Path, string nameWithoutExt)
         {
-            Console.WriteLine("Converting to WAV (temporary file)");
+            Console.WriteLine("Converting MP3 to WAV (16kHz mono, temporary file)");
             var tempWavPath = Path.Combine(Path.GetTempPath(), $"{nameWithoutExt}_{Guid.NewGuid():N}.wav");
 
-            using var fileStream = File.OpenRead(mp3Path);
-            using var reader = new Mp3FileReader(fileStream);
-            var resampler = new WdlResamplingSampleProvider(reader.ToSampleProvider(), 16000);
+            try
+            {
+                // Use FFMpegCore to convert MP3 to 16kHz mono WAV with 16-bit PCM encoding
+                // This format is required by Whisper.net for transcription
+                await FFMpegArguments
+                    .FromFileInput(mp3Path)
+                    .OutputToFile(tempWavPath, overwrite: true, options => options
+                        .WithAudioCodec("pcm_s16le")      // 16-bit PCM (little-endian)
+                        .WithAudioSamplingRate(16000)     // 16 kHz sample rate
+                        .WithCustomArgument("-ac 1"))     // Mono channel
+                    .ProcessAsynchronously();
 
-            // Create 16-bit PCM WAV file expected by Whisper processors
-            WaveFileWriter.CreateWaveFile16(tempWavPath, resampler);
-
-            return tempWavPath;
+                Console.WriteLine($"WAV conversion completed: {tempWavPath}");
+                return tempWavPath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to convert MP3 to WAV: {ex.Message}");
+                throw;
+            }
         }
 
         // Streams the WAV into the Whisper processor and writes SRT + VTT incrementally.
