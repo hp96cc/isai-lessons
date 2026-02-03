@@ -107,6 +107,16 @@ namespace ISAI.Lessons.Web.Portal
                 TimeZone = TimeZoneInfo.Local
             });
 
+            RecurringJob.AddOrUpdate("SchedulerService.SendFreeTrailSignupEmails", () => SchedulerService.SendFreeTrailSignupEmails(), Cron.Minutely, new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local
+            });
+
+            RecurringJob.AddOrUpdate("SchedulerService.SendFreeTrailExpirySignupEmails", () => SchedulerService.SendFreeTrailExpirySignupEmails(), Cron.Minutely, new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local
+            });
+
         }
     }
 }

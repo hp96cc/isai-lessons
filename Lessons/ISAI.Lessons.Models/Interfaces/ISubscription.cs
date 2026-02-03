@@ -11,7 +11,8 @@ namespace ISAI.Lessons.Models.Interfaces
         DateTimeOffset StartDate { get; set; }
         string StripeSubscriptionId { get; set; }
         int SubscriptionTypeId { get; set; }
-
         bool HasAbondonedSubscriptionEmailBeenSent { get; set; }
+        bool HasFreeTrialEmailBeenSent { get; set; }
+        bool HasFreeTrialExpiryEmailBeenSent { get; set; }
     }
 }

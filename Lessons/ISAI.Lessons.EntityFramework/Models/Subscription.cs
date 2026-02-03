@@ -30,5 +30,9 @@ namespace ISAI.Lessons.EntityFramework.Models
 
         public bool HasAbondonedSubscriptionEmailBeenSent { get; set; }
 
+        public bool HasFreeTrialEmailBeenSent { get; set; }
+
+        public bool HasFreeTrialExpiryEmailBeenSent { get; set; }
+
     }
 }

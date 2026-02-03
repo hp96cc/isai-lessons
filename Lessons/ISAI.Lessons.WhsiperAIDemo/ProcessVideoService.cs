@@ -1,4 +1,5 @@
 using FFMpegCore;
+using Microsoft.Identity.Client;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;

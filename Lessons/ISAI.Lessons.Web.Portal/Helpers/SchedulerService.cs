@@ -32,6 +32,10 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         static bool _isSendingAbandonedSubscriptionEmails = false;
 
+        // Prevent concurrent runs for free-trial related sender methods
+        static bool _isSendingFreeTrailSignupEmails = false;
+        static bool _isSendingFreeTrailExpiryEmails = false;
+
 
         public static void SystemHeartBeat()
         {
@@ -159,7 +163,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                             //TODO: need to log somehow, but also need to ski ones already removed
                         }
 
-                   
+
 
                     }
 
@@ -385,6 +389,147 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         }
 
+
+        public static void SendFreeTrailSignupEmails()
+        {
+           
+            if (_isSendingFreeTrailSignupEmails) return;
+
+            try
+            {
+                _isSendingFreeTrailSignupEmails = true;
+
+                using (var db = new LessonsDbContext())
+                {
+                    var subscriptions = db.Subscription
+                        .Include(x => x.Customer)
+                        .Where(x => x.Active == true && 
+                                    x.SubscriptionTypeId == 1 && 
+                                    x.HasFreeTrialEmailBeenSent == false && 
+                                    x.Deleted == false)
+                        .ToList();
+
+                    foreach (var subscription in subscriptions)
+                    {
+                        try
+                        {
+                            var subject = "Welcome to your Scottish Online Lessons Free Trial";
+
+                            var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/free-trial-welcome/");
+                            
+                            htmlBody = htmlBody.Replace("{{Name}}", subscription.Customer?.FirstName ?? "Student");
+                            htmlBody = htmlBody.Replace("{{ReturnUrl}}", _returnUrl);
+
+                            var graphApi = new MicrosoftGraphApiService();
+                            graphApi.SendEmail(
+                                _systemGraphUserEmail,
+                                subject,
+                                htmlBody,
+                                new List<string>() { subscription.Customer?.Email },
+                                null,
+                                new List<string>() { _systemAdminEmail, _clientAuditEmail },
+                                new List<string>() { _systemGraphUserEmail },
+                                true
+                            ).Wait();
+
+                            subscription.HasFreeTrialEmailBeenSent = true;
+                            subscription.DateModified = DateTime.UtcNow;
+                            subscription.ModifiedUserId = _systemUserId;
+                            db.Entry(subscription).State = EntityState.Modified;
+                        }
+                        catch (Exception ex)
+                        {
+                            // continue with next subscription; consider logging
+                        }
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                // consider logging
+            }
+            finally
+            {
+                _isSendingFreeTrailSignupEmails = false;
+            }
+        }
+
+        public static void SendFreeTrailExpirySignupEmails()
+        {
+            // Prevent concurrent runs
+            if (_isSendingFreeTrailExpiryEmails) return;
+
+            try
+            {
+                _isSendingFreeTrailExpiryEmails = true;
+
+                using (var db = new LessonsDbContext())
+                {
+                    // Threshold: subscriptions that expired over 24 hours ago.
+                    // Use UtcNow if EndDate is stored in UTC; use DateTime.Now if stored in local time.
+                    var threshold = DateTime.UtcNow.AddHours(-24);
+
+                    var subscriptions = db.Subscription
+                        .Include(x => x.Customer)
+                        .Where(x => x.Active == true &&
+                                    x.SubscriptionTypeId == 1 &&
+                                    x.HasFreeTrialExpiryEmailBeenSent == false &&
+                                    x.Deleted == false &&
+                                    x.EndDate != null &&
+                                    x.EndDate <= threshold)
+                        .ToList();
+
+                    foreach (var subscription in subscriptions)
+                    {
+                        try
+                        {
+                            var subject = "Your Scottish Online Lessons Free Trial is Ending Soon";
+
+                            // Download template HTML for free-trial expiry
+                            var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/free-trial-comming-to-end/");
+                            
+
+                            htmlBody = htmlBody.Replace("{{Name}}", subscription.Customer?.FirstName ?? "Student");
+                            htmlBody = htmlBody.Replace("{{ReturnUrl}}", _returnUrl);
+
+                            var graphApi = new MicrosoftGraphApiService();
+                            graphApi.SendEmail(
+                                _systemGraphUserEmail,
+                                subject,
+                                htmlBody,
+                                new List<string>() { subscription.Customer?.Email },
+                                null,
+                                new List<string>() { _systemAdminEmail, _clientAuditEmail },
+                                new List<string>() { _systemGraphUserEmail },
+                                true
+                            ).Wait();
+
+                            subscription.HasFreeTrialExpiryEmailBeenSent = true;
+                            subscription.DateModified = DateTime.UtcNow;
+                            subscription.ModifiedUserId = _systemUserId;
+                            db.Entry(subscription).State = EntityState.Modified;
+                        }
+                        catch (Exception ex)
+                        {
+                            // continue with next subscription; consider logging
+                        }
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                // consider logging
+            }
+            finally
+            {
+                _isSendingFreeTrailExpiryEmails = false;
+            }
+        }
+
         private static string AddDataToEmail(string htmlBody, Tutorial tutorial, string formUrl = null)
         {
 
@@ -466,7 +611,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
             {
                 return string.Empty;
             }
-         
+
 
         }
     }

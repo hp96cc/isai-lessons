@@ -4,6 +4,8 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ISAI.Lessons.WhsiperAIDemo
@@ -48,6 +50,11 @@ namespace ISAI.Lessons.WhsiperAIDemo
             string lastDescription = "No visual data available.";
             string lastOcrText = string.Empty;
 
+            // JSON output directory for persisted segments (includes embeddings)
+            var outputDir = @"C:\Temp\SOL RAG Test\segments";
+            Directory.CreateDirectory(outputDir);
+            int fileIndex = 0;
+
             try
             {
                 foreach (var segment in segments)
@@ -62,13 +69,13 @@ namespace ISAI.Lessons.WhsiperAIDemo
                     if (VisualHasher.GetSimilarityDistance(lastHash, currentHash) > 5)
                     {
                         // Slide changed — ask vision service for a fresh description
-                           lastDescription = await visionService.DescribeFrameAsync(framePath);
-                        
+                        lastDescription = await visionService.DescribeFrameAsync(framePath);
+
                         // Extract OCR text immediately after vision description
                         lastOcrText = await ocrService.ExtractTextAsync(framePath);
-                        
+
                         lastHash = currentHash;
-                        
+
                         Console.WriteLine($"[NEW SLIDE DETECTED] OCR: {lastOcrText}");
                     }
 
@@ -83,7 +90,16 @@ namespace ISAI.Lessons.WhsiperAIDemo
                     // Generate and persist the embedding vector for hybrid search
                     segment.Vector = await _embeddingService.GenerateEmbeddingAsync(ragContent);
                     Console.WriteLine(segment.Vector.ToString());
-                    await qdrantVectorService.UpsertVectorAsync(segment);
+
+                    // Persist the segment as JSON (includes the embedding vector)
+                    var options = new JsonSerializerOptions { WriteIndented = true };
+                    string safeNamePart = $"{fileIndex++:D4}_{(int)segment.StartTime}";
+                    string fileName = Path.Combine(outputDir, $"{collectionName}_segment_{safeNamePart}.json");
+                    string json = JsonSerializer.Serialize(segment, options);
+                    await File.WriteAllTextAsync(fileName, json);
+                    Console.WriteLine($"Saved segment JSON: {fileName}");
+
+            
                 }
             }
             finally

@@ -159,6 +159,28 @@
     </div>
 </div>
 
+<div class="modal fade" id="tutorialValidationModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tutorialValidationModalLabel">Tutorial Notes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+
+                <p>Please add some notes as to where you need help. This allows the tutor to understand what you are struggling with and need support on.</p>
+
+            </div>
+            <div class="modal-footer">
+           
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Head {
 
     <link href="https://cdn.syncfusion.com/ej2/28.1.33/material.css" rel="stylesheet" type="text/css" />
@@ -522,7 +544,19 @@
 
         function ShowConfirmTutorialDialog()
         {
-            $('#confirmTutorialModal').modal('show');
+            var notes = $('#textarea-tutorial-notes').val();
+
+            if (notes.trim().length === 0)
+            {
+                //code for empty value
+                $('#tutorialValidationModal').modal('show');
+            }
+            else
+            {
+                $('#confirmTutorialModal').modal('show');
+
+            }
+           
         }
 
         async function GoToPurchase()
