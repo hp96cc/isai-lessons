@@ -1,0 +1,52 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link href="/lib/videojs/video-js.css" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: #000
+        }
+
+        .video-js {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <video id="player" class="video-js vjs-fluid" controls playsinline></video>
+
+    <script src="/lib/videojs/video.min.js"></script>
+    <script src="/lib/hls/hls.min.js"></script>
+    <script>
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const src = params.get('src') || '';
+      if (!src) { document.body.innerHTML = '<p style="color:white">No source</p>'; return; }
+
+      const video = document.getElementById('player');
+
+      function initVideojs() {
+        if (window.videojs) window.player = videojs(video, { controls: true, preload: 'auto', fluid: true });
+      }
+
+      // Native HLS (iOS)
+      if (video.canPlayType && video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = src;
+        initVideojs();
+      } else if (window.Hls && Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(src);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () { initVideojs(); });
+      } else {
+        document.body.innerHTML = '<p style="color:white">HLS not supported</p>';
+      }
+    })();
+    </script>
+</body>
+</html>

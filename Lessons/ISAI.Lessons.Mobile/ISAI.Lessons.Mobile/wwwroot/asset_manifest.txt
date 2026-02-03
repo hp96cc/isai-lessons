@@ -1,0 +1,4 @@
+﻿player.html
+lib/videojs/video.min.js
+lib/videojs/video-js.css
+lib/hls/hls.min.js

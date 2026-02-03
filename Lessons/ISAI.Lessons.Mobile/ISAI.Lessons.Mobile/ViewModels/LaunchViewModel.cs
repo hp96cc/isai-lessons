@@ -1,7 +1,8 @@
-﻿using ISAI.Lessons.Mobile.Views;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
+﻿using ISAI.Lessons.Mobile.Services;
+using ISAI.Lessons.Mobile.Views;
 using ISAI.Lessons.Models.Interfaces.App;
+using Microsoft.Maui.Controls;
+using System.Threading.Tasks;
 
 namespace ISAI.Lessons.Mobile.ViewModels
 {
@@ -17,8 +18,9 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
 
             DependencyService.Get<ISqliteService>().Initialize();
-
             var appUser = DependencyService.Get<ISqliteService>().GetUser();
+
+            await LocalAssetInstaller.EnsureAssetsCopiedAsync();
 
             if (appUser != null)
             {
