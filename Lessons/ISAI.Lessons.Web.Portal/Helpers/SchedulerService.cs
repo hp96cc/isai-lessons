@@ -32,7 +32,6 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         static bool _isSendingAbandonedSubscriptionEmails = false;
 
-        // Prevent concurrent runs for free-trial related sender methods
         static bool _isSendingFreeTrailSignupEmails = false;
         static bool _isSendingFreeTrailExpiryEmails = false;
 
@@ -53,8 +52,6 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void PromptForAbandonedSubscription()
         {
-            //NOTE: come back to this
-            return;
 
                 if (_isSendingAbandonedSubscriptionEmails) return;
 
@@ -63,17 +60,23 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
                 using (var db = new LessonsDbContext())
                 {
-                    var dateTime1HourAgo = DateTime.Now.AddHours(1);
-                    var dateTimeFeatureStarted = new DateTime(2025, 05, 19);
+                    // Use UTC if DateCreated is stored in UTC. Adjust to DateTime.Now if stored as local.
+                    var nowUtc = DateTime.UtcNow;
+                    var targetTimeUtc = nowUtc.AddHours(-1);
+
+                    // Allow a small window to account for scheduler frequency.
+                    // If your scheduler runs every minute, +/- 1 minute is reasonable.
+                    var windowStart = targetTimeUtc.AddMinutes(-1);
+                    var windowEnd = targetTimeUtc.AddMinutes(1);
 
                     var subscriptions = db.Subscription
                         .Include(x => x.Customer)
-                        .Where(
-                        x => x.Deleted == false &&
-                        x.Active == false &&
-                        x.HasAbondonedSubscriptionEmailBeenSent == false &&
-                        x.DateCreated == dateTime1HourAgo &&
-                        x.DateCreated == dateTimeFeatureStarted)
+                        .Where(x =>
+                            x.Deleted == false &&
+                            x.Active == false &&
+                            x.HasAbondonedSubscriptionEmailBeenSent == false &&
+                            x.DateCreated >= windowStart &&
+                            x.DateCreated <= windowEnd)
                         .ToList();
 
                     foreach (var subscription in subscriptions)
