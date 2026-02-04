@@ -147,6 +147,11 @@ namespace ISAI.Lessons.WhsiperAIDemo
             public string VideoUploadsFolder { get; set; } = "VideoUploads";
             public string ProcessedSubFolder { get; set; } = "processed";
             public string AutomatedUploadsFolder { get; set; } = "AutomatedUploads";
+
+            public string AutomatedProcessedUploadsFolder { get; set; } = "AutomatedUploads/Processed";
+
+            public string SubtitlesUploadFolder { get; set; } = "SubtitlesUploadFolder";
+
         }
 
         public sealed class GraphSettings
