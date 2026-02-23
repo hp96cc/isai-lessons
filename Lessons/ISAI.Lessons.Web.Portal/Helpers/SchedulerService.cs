@@ -52,7 +52,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void PromptForAbandonedSubscription()
         {
-
+            return;
                 if (_isSendingAbandonedSubscriptionEmails) return;
 
                 try
@@ -113,6 +113,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void CreateTeamsMeetingForGroupLessons()
         {
+            return;
             if (_isCreateTeamsMeetingForGroupLessons) return;
 
             try
@@ -185,6 +186,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
         }
         public static void DeleteAbandonedTutorials()
         {
+            return;
             if (_isDeletingAbandonedTutorials) return;
 
             try
@@ -245,6 +247,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void SendPendingTutorialEmails()
         {
+            return;
             if (_isSendingTutorialEmails) return;
 
             try
@@ -336,6 +339,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void SendTutorialReviewEmails()
         {
+            return;
             if (__isSendingTutorialReviewEmails) return;
 
             try
@@ -395,7 +399,8 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void SendFreeTrailSignupEmails()
         {
-           
+            return;
+
             if (_isSendingFreeTrailSignupEmails) return;
 
             try
@@ -461,6 +466,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void SendFreeTrailExpirySignupEmails()
         {
+            return;
             // Prevent concurrent runs
             if (_isSendingFreeTrailExpiryEmails) return;
 

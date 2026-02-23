@@ -1286,6 +1286,12 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                         var encryptedToken = HttpServerUtility.UrlTokenEncode(encryptedData);
 
                         var url = string.Format("/VideoHandler.ashx?lessonId={0}&actionType=m3u8&token={1}", lesson.Id, encryptedToken);
+                        string streamingSignedUrl = null;
+
+                        var signedVideoLocation = Path.Combine(_conetentRootFolder, lesson.Id.ToString(), "m3u8-signed", lesson.Id + ".m3u8");
+       
+                        if(System.IO.File.Exists(signedVideoLocation))
+                            streamingSignedUrl =  string.Format("/VideoHandler.ashx?lessonId={0}&actionType=m3u8&token={1}&signed=true", lesson.Id, encryptedToken);
 
                         var subtitleLocation = Path.Combine(_conetentRootFolder, lesson.Id.ToString(), lesson.Id + ".vtt");
                         var subtitleUrl = System.IO.File.Exists(subtitleLocation) ? string.Format("/subtitles/{0}/{1}.vtt", lesson.Id, lesson.Id.ToString()) : null;
@@ -1299,7 +1305,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                             Token = encryptedToken,
                             StreamingUrl = url,
                             SubtitlesUrl = subtitleUrl,
-                            StreamingSignedUrl = null, //TODO: 
+                            StreamingSignedUrl = streamingSignedUrl,
                             SubtitlesSignedUrl = subtitleSignedUrl,
                             IsSignedAvailable = lesson.IsSignedAvailable,
                             IsSubtitlesAvailable = lesson.IsSubtitlesAvailable,

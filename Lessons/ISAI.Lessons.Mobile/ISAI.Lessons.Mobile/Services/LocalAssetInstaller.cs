@@ -16,8 +16,8 @@ namespace ISAI.Lessons.Mobile.Services
             var destRoot = Path.Combine(appData, "wwwroot");
             var markerPath = Path.Combine(destRoot, ".assets_installed");
 
-            if (File.Exists(markerPath))
-                return; // already installed
+            //if (File.Exists(markerPath))
+            //   return; // already installed
 
             // Make sure parent exists
             Directory.CreateDirectory(destRoot);

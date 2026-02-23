@@ -208,7 +208,7 @@ namespace ISAI.Lessons.EntityFramework.Services
 
             } else
             {
-
+                var serialisedContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var loginData = string.Format("Authorisaton failed - Email:{0} Password:{1} Status Code:{2}", username, password, response.StatusCode);
 
                 throw new Exception(loginData);

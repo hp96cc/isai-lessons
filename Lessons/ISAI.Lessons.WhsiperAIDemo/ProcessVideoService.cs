@@ -76,6 +76,8 @@ namespace ISAI.Lessons.WhsiperAIDemo
                 .WithProbabilities()
                 .Build();
 
+            
+
             string tempWavPath = null;
             try
             {

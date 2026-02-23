@@ -10,7 +10,7 @@ namespace ISAI.Lessons.Core.Services
 {
     public class SqliteService : ISqliteService
     {
-        public const string DatabaseFilename = "Lessons_v12.db3";
+        public const string DatabaseFilename = "Lessons_v14.db3";
 
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 

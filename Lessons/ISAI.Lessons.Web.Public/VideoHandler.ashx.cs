@@ -6,8 +6,7 @@ using System.Text;
 using System.Web;
 using ISAI.Lessons.Models.ViewModels;
 using System.Configuration;
-using System.Runtime.Remoting.Contexts;
-using AngleSharp.Network.Default;
+
 
 namespace ISAI.Lessons.Web.Public
 {
@@ -18,7 +17,9 @@ namespace ISAI.Lessons.Web.Public
         private readonly string appUrlPrefix = ConfigurationManager.AppSettings["ISAI.Lessons.Web.ReturnUrl"];
         private readonly string _videoRootFolder = ConfigurationManager.AppSettings["ISAI.Lessons.VideoRootFolder"];
         private readonly string _videoDownloadFolder = ConfigurationManager.AppSettings["ISAI.Lessons.VideoDownloadFolder"];
-    
+
+        private readonly string _conetentRootFolder = ConfigurationManager.AppSettings["ISAI.Lessons.ContentRootFolder"];
+
 
         public VideoHandler()
         {
@@ -27,16 +28,6 @@ namespace ISAI.Lessons.Web.Public
 
         public void ProcessRequest(HttpContext context)
         {
-            //TODO: create caching for all files expact tokens
-            //HttpCachePolicy cachePolicy = context.Response.Cache;
-            //TimeSpan freshness = new TimeSpan(1, 0, 0, 0);
-            //DateTime now = DateTime.Now;
-            //cachePolicy.SetCacheability(HttpCacheability.Public);
-            //cachePolicy.SetExpires(now.Add(freshness));
-            //cachePolicy.SetMaxAge(freshness);
-            //cachePolicy.SetValidUntilExpires(true);
-            //cachePolicy.VaryByParams["id"] = true;
-
             if (context.Request.QueryString["lessonThumbId"] != null)
             {
                 int lessonThumbId = Convert.ToInt32(context.Request.QueryString["lessonThumbId"]);
@@ -67,6 +58,28 @@ namespace ISAI.Lessons.Web.Public
 
             }
 
+            // Handle cache clearing
+            if (context.Request.QueryString["clearCache"] == "true")
+            {
+                var adminKey = ConfigurationManager.AppSettings["Video.AdminKey"];
+                var providedKey = context.Request.QueryString["adminKey"];
+                
+                if (!string.IsNullOrEmpty(adminKey) && adminKey == providedKey)
+                {
+                    ClearOutputCache(context);
+                    context.Response.ContentType = "text/plain";
+                    context.Response.Write("Cache cleared successfully");
+                    return;
+                }
+                else
+                {
+                    context.Response.StatusCode = 403;
+                    context.Response.ContentType = "text/plain";
+                    context.Response.Write("Unauthorized");
+                    return;
+                }
+            }
+
             var token = context.Request.QueryString["token"];
             var lessonId = context.Request.QueryString["lessonId"];
             var isApp = context.Request.QueryString["isApp"] == null ? false : Convert.ToBoolean(context.Request.QueryString["isApp"]);
@@ -90,8 +103,28 @@ namespace ISAI.Lessons.Web.Public
                 }
                 else if (actionType == "m3u8")
                 {
-                    var m3u8FilePath = Path.Combine(videoRoot, string.Format("{0}.m3u8", lessonId));
-                    var m3u8FileContents = Parsem3u8File(File.ReadAllText(m3u8FilePath), lessonId, token, isApp);
+                    // Apply caching for m3u8 files
+                    SetCacheHeaders(context, lessonId, actionType);
+
+                    string m3u8FileContents = null;
+                    bool isSigned = (context.Request.QueryString["signed"] != null && context.Request.QueryString["signed"] == "true");
+
+                    if (isSigned)
+                    {
+                        var m3u8FilePath = Path.Combine(_conetentRootFolder, "m3u8-signed", string.Format("{0}.m3u8", lessonId));
+                        m3u8FileContents = Parsem3u8File(File.ReadAllText(m3u8FilePath), lessonId, token, isApp, true);
+
+                    } else
+                    {
+                        var m3u8FilePath = Path.Combine(_conetentRootFolder, "m3u8", string.Format("{0}.m3u8", lessonId));
+
+                        //TODO: need to delete old files
+                        if (!File.Exists(m3u8FilePath))
+                            m3u8FilePath = Path.Combine(videoRoot, string.Format("{0}.m3u8", lessonId)); //Use Legacy Location
+
+                        m3u8FileContents = Parsem3u8File(File.ReadAllText(m3u8FilePath), lessonId, token, isApp, false);
+
+                    }
 
                     context.Response.BufferOutput = true;
                     context.Response.ContentType = "application/x-mpegURL";
@@ -102,8 +135,28 @@ namespace ISAI.Lessons.Web.Public
                 if (actionType == "ts")
                 {
                     var segmentNumber = context.Request.QueryString["segmentNumber"];
-                    var tsFilePath = Path.Combine(videoRoot, string.Format("{0}.ts", segmentNumber, token));
+                    
+                    // Apply caching for ts files
+                    SetCacheHeaders(context, lessonId, segmentNumber);
 
+                    bool isSigned = (context.Request.QueryString["signed"] != null && context.Request.QueryString["signed"] == "true");
+                    string tsFilePath = null;
+
+                    if (isSigned)
+                    {
+
+                        tsFilePath = Path.Combine(_conetentRootFolder, "m3u8-signed", string.Format("{0}.ts", segmentNumber));
+                    }
+                    else
+                    {
+                        tsFilePath = Path.Combine(_conetentRootFolder, "m3u8", string.Format("{0}.ts", segmentNumber));
+
+                        //TODO: need to delete old files
+                        if (!File.Exists(tsFilePath))
+                            tsFilePath = Path.Combine(videoRoot, string.Format("{0}.ts", segmentNumber));
+                    }
+
+                    
                     context.Response.BufferOutput = true;
                     context.Response.ContentType = "video/vnd.dlna.mpeg-tts";
                     context.Response.TransmitFile(tsFilePath);
@@ -113,7 +166,22 @@ namespace ISAI.Lessons.Web.Public
                 else if (actionType == "key")
                 {
 
-                    var keyFilePath = Path.Combine(videoRoot, string.Format("{0}.m3u8.key", lessonId));
+                    bool isSigned = (context.Request.QueryString["signed"] != null && context.Request.QueryString["signed"] == "true");
+                    string keyFilePath = null;
+
+                    if (isSigned)
+                    {
+                        keyFilePath = Path.Combine(_conetentRootFolder, "m3u8-signed", string.Format("{0}.m3u8.key", lessonId));
+                    }
+                    else
+                    {
+                        keyFilePath = Path.Combine(_conetentRootFolder, "m3u8", string.Format("{0}.m3u8.key", lessonId));
+
+                        //TODO: need to delete old files
+                        if (!File.Exists(keyFilePath))
+                            keyFilePath = Path.Combine(videoRoot, string.Format("{0}.m3u8.key", lessonId));
+                    }
+
                     var keyFileContents = File.ReadAllBytes(keyFilePath);
 
                     context.Response.BufferOutput = true;
@@ -130,8 +198,50 @@ namespace ISAI.Lessons.Web.Public
 
         }
 
+        private void SetCacheHeaders(HttpContext context, string lessonId, string identifier)
+        {
+            HttpCachePolicy cache = context.Response.Cache;
+            
+            // Cache for 1 day (adjust as needed)
+            TimeSpan cacheDuration = TimeSpan.FromDays(1);
+            DateTime now = DateTime.Now;
+            
+            // Set public caching
+            cache.SetCacheability(HttpCacheability.Public);
+            cache.SetExpires(now.Add(cacheDuration));
+            cache.SetMaxAge(cacheDuration);
+            cache.SetValidUntilExpires(true);
+            cache.SetLastModified(now);
+            
+            // Vary by lessonId and identifier (actionType or segmentNumber), but NOT by token
+            cache.VaryByParams["lessonId"] = true;
+            cache.VaryByParams["actionType"] = true;
+            cache.VaryByParams["segmentNumber"] = true;
+            cache.VaryByParams["signed"] = true;
+            cache.VaryByParams["token"] = false; // Explicitly ignore token for caching
+            cache.VaryByParams["isApp"] = false; // Ignore isApp for caching
+            
+            // Set ETag for cache validation
+            string etag = string.Format("\"{0}-{1}\"", lessonId, identifier);
+            cache.SetETag(etag);
+            
+            // Enable revalidation
+            cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
+        }
 
-        private string Parsem3u8File(string fileContents, string lineNumber, string token, bool isApp)
+        private void ClearOutputCache(HttpContext context)
+        {
+            // Clear the output cache for this handler
+            if (HttpRuntime.Cache != null)
+            {
+                // You can be more specific by clearing only video-related cache entries
+                // This is a simple approach that works with ASP.NET output caching
+                context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                context.Response.Cache.SetNoStore();
+            }
+        }
+
+        private string Parsem3u8File(string fileContents, string lineNumber, string token, bool isApp, bool isSigned)
         {
 
             var m3u8FileStringBuilder = new StringBuilder();
@@ -143,13 +253,13 @@ namespace ISAI.Lessons.Web.Public
 
                     if (line.Contains("m3u8.key"))
                     {
-                        var handlerLine = string.Format("#EXT-X-KEY:METHOD=AES-128,URI=\"{0}/VideoHandler.ashx?actionType=key&lessonId={1}&token={2}\",IV=0x00000000000000000000000000000000", isApp ? appUrlPrefix : string.Empty, lineNumber, token);
+                        var handlerLine = string.Format("#EXT-X-KEY:METHOD=AES-128,URI=\"{0}/VideoHandler.ashx?actionType=key&lessonId={1}&token={2}&signed={3}\",IV=0x00000000000000000000000000000000", isApp ? appUrlPrefix : string.Empty, lineNumber, token, isSigned);
                         m3u8FileStringBuilder.AppendLine(handlerLine);
                     }
                     else if (line.StartsWith(lineNumber))
                     {
                         var segmentNumber = Path.GetFileNameWithoutExtension(line);
-                        var handlerLine = string.Format("{0}/VideoHandler.ashx?actionType=ts&lessonId={1}&segmentNumber={2}&token={3}", isApp ? appUrlPrefix : string.Empty, lineNumber, segmentNumber, token);
+                        var handlerLine = string.Format("{0}/VideoHandler.ashx?actionType=ts&lessonId={1}&segmentNumber={2}&token={3}&signed={4}", isApp ? appUrlPrefix : string.Empty, lineNumber, segmentNumber, token, isSigned);
                         m3u8FileStringBuilder.AppendLine(handlerLine);
                     }
                     else

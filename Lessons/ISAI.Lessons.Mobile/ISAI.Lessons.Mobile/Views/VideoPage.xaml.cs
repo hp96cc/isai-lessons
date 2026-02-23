@@ -1,6 +1,9 @@
-﻿using EmbedIO;
+﻿using System;
+using System.Threading.Tasks;
+using EmbedIO;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces.App;
+using ISAI.Lessons.Models.Models.App;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Xaml;
@@ -11,16 +14,21 @@ namespace ISAI.Lessons.Mobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class VideoPage : ContentPage
     {
-        private int _lessonId;
-
+        private const string _baseUrl = "http://localhost:9696/";
+        private const string _sourceUrl = "https://portal.scottishonlinelessons.com";
+        private Lesson _lesson;
         private WebServer server;
+        private string _streamingUrl;
 
-        public VideoPage(int lessonId, string streamingUrl)
+        public VideoPage(Lesson lesson, string streamingUrl)
         {
             InitializeComponent();
             
+            _lesson = lesson;
+            _streamingUrl = streamingUrl;
+
             server = new WebServer(o => o
-                    .WithUrlPrefix("http://localhost:9696/")
+                    .WithUrlPrefix(_baseUrl)
                     .WithMode(HttpListenerMode.EmbedIO))
                     .WithLocalSessionManager()
                     .WithStaticFolder("/", FileSystem.Current.AppDataDirectory, true);
@@ -38,24 +46,72 @@ namespace ISAI.Lessons.Mobile.Views
 #elif IOS
 #endif
             });
-
-            
-
-            _lessonId = lessonId;
-            //VideoView.Source = "file:///data/user/0/uk.co.isai.uteachlessons.pupil.droid/files/420/420.m3u8";
-            VideoView.Source = streamingUrl;
-
         }
         
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-            var db = DependencyService.Get<ISqliteService>();
 
-            var lesson  = db.GetLesson(_lessonId);
-
-            Title = lesson.Name;
+            Title = _lesson.Name;
             DependencyService.Get<IDeviceOrientation>().LockOrientation(DeviceOrientations.Landscape);
+
+            // Load video asynchronously
+            await LoadVideoAsync();
+        }
+
+        private async Task LoadVideoAsync()
+        {
+            try
+            {
+                // Show spinner
+                LoadingSpinner.IsVisible = true;
+                LoadingSpinner.IsRunning = true;
+
+                // Move video URL building to background thread
+                await Task.Run(() =>
+                {
+                    // Simulate any heavy processing if needed
+                    Task.Delay(100).Wait();
+                });
+
+                // Build video URL on UI thread (since it's fast)
+                var encodedSrc = Uri.EscapeDataString(_streamingUrl ?? string.Empty);
+                
+                // Build poster URL
+                var posterUrl = string.Format("{0}/VideoHandler.ashx?lessonThumbId={1}", _sourceUrl, _lesson.Id);
+                var encodedPoster = Uri.EscapeDataString(posterUrl);
+                
+                // Build subtitle URLs
+                var subtitleParams = string.Empty;
+
+                if (_lesson.IsSubtitlesAvailable)
+                {
+                    var englishSubUrl = string.Format("{0}/subtitles/{1}/{1}.vtt", _sourceUrl, _lesson.Id);
+                    subtitleParams += "&enSub=" + Uri.EscapeDataString(englishSubUrl);
+                }
+                if (_lesson.IsSigndSubtitlesAvailable)
+                {
+                    var sslSubUrl = string.Format("{0}/subtitles/{1}/{1}_signed.vtt", _sourceUrl, _lesson.Id);
+                    subtitleParams += "&sslSub=" + Uri.EscapeDataString(sslSubUrl);
+                }
+                
+                var videoUrl = _baseUrl + "wwwroot/player.html?src=" + encodedSrc + "&poster=" + encodedPoster + subtitleParams;
+                VideoView.Source = videoUrl;
+
+                // Hide spinner after a short delay to ensure WebView starts loading
+                await Task.Delay(500);
+                LoadingSpinner.IsVisible = false;
+                LoadingSpinner.IsRunning = false;
+            }
+            catch (Exception ex)
+            {
+                // Hide spinner on error
+                LoadingSpinner.IsVisible = false;
+                LoadingSpinner.IsRunning = false;
+                
+                // Optionally show error to user
+                await DisplayAlert("Error", "Failed to load video", "OK");
+            }
         }
 
         protected override void OnDisappearing()

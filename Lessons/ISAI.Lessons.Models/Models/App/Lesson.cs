@@ -21,6 +21,12 @@
 
         public bool PendingDownload { get; set; }
 
+        public string BitmovinId { get; set; }
+        public bool IsSignedAvailable { get; set; }
+        public bool IsSubtitlesAvailable { get; set; }
+
+        public bool IsSigndSubtitlesAvailable { get; set; }
+
 
 
     }

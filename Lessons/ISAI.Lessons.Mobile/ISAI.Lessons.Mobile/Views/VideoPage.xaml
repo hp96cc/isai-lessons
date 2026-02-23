@@ -8,12 +8,22 @@
               BackgroundColor="Black">
 
     <ContentPage.Content>
+        <Grid>
+            <WebView
+                x:Name="VideoView"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"/>
 
-               <WebView
-                   x:Name="VideoView"
-                   HorizontalOptions="FillAndExpand"
-                   VerticalOptions="FillAndExpand"/>
-
+            <ActivityIndicator
+                x:Name="LoadingSpinner"
+                IsRunning="True"
+                IsVisible="True"
+                Color="White"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                WidthRequest="50"
+                HeightRequest="50"/>
+        </Grid>
     </ContentPage.Content>
    
 </ContentPage>

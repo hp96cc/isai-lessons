@@ -6,7 +6,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
 {
     internal static class Program
     {
-        private enum RunMode { DownloadAndProcessVideo, DownloadAndMoveToServerLocation, CreateNewSubtitleLanaguge }
+        private enum RunMode { DownloadAndProcessVideo, DownloadAndMoveToServerLocation }
 
         internal static readonly GgmlType DefaultGgmlType = GgmlType.Medium;
         
@@ -31,7 +31,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
         static async Task MainAsync(RunMode mode)
         {
             // Force DownloadAndProcessVideo for local dev/testing; change as needed.
-            mode = RunMode.CreateNewSubtitleLanaguge;
+            mode = RunMode.DownloadAndProcessVideo;
             Console.WriteLine($"Starting in mode: {mode}");
 
             //DO NOT DELETE - TESTING PURPOSES ONLY
@@ -64,14 +64,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
                 return;
             }
 
-            if(mode == RunMode.CreateNewSubtitleLanaguge)
-            {
-                Console.WriteLine("CreateNewSubtitleLanaguge work started.");
-                await CreateNewSubtitleLanagugeRunner.RunAsync(downloader, [ "pl", "ar" ]);
-          
-                Console.WriteLine("CreateNewSubtitleLanaguge work completed.");
-                return;
-            }
+            
         }
 
         // Delegates to the new BuildRagRunner to keep the original Program API stable.

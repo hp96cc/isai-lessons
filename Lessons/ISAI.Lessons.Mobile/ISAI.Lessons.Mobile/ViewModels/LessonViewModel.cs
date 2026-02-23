@@ -181,7 +181,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
         {
             if (videoDownload != null)
             {
-                var lessonPage = new VideoPage(Lesson.Id, videoDownload.DownloadUrl);
+                var lessonPage = new VideoPage(Lesson, videoDownload.DownloadUrl);
   
                 await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 DependencyService.Get<IHud>().Dismiss();
@@ -218,7 +218,26 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 if (streamingUrlResponse.Status == ResponseStatus.OK)
                 {
 
-                    var lessonPage = new VideoPage(Lesson.Id, _sourceUrl + streamingUrlResponse.Content.StreamingUrl);
+                    // Check to see if a Signed Version is available, if so ask the user which one they want.
+                    string selectedStreamingUrl = streamingUrlResponse.Content?.StreamingUrl ?? string.Empty;
+
+                    if (streamingUrlResponse.Content != null && streamingUrlResponse.Content.IsSignedAvailable && !string.IsNullOrWhiteSpace(streamingUrlResponse.Content.StreamingSignedUrl))
+                    {
+                        // Present a simple action sheet to allow the user to choose
+                        var choice = await Application.Current.MainPage.DisplayActionSheet("Choose version", "Cancel", null, "Standard video", "Sign language version");
+
+                        if (choice == "Sign language version")
+                        {
+                            selectedStreamingUrl = streamingUrlResponse.Content.StreamingSignedUrl;
+                        }
+                        else
+                        {
+                            // default to standard stream (either explicit or fallback)
+                            selectedStreamingUrl = streamingUrlResponse.Content.StreamingUrl;
+                        }
+                    }
+
+                    var lessonPage = new VideoPage(Lesson, _sourceUrl + selectedStreamingUrl);
                     await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 }
                 else if (streamingUrlResponse.ErrorResponse != null)
@@ -274,9 +293,26 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 if (streamingUrlResponse.Status == ResponseStatus.OK)
                 {
 
+                    // Check to see if a Signed Version is available, if so ask the user which one they want.
+                    string selectedStreamingUrl = streamingUrlResponse.Content?.StreamingUrl ?? string.Empty;
+
+                    if (streamingUrlResponse.Content != null && streamingUrlResponse.Content.IsSignedAvailable && !string.IsNullOrWhiteSpace(streamingUrlResponse.Content.StreamingSignedUrl))
+                    {
+                        var choice = await Application.Current.MainPage.DisplayActionSheet("Choose version to download", "Cancel", null, "Standard video", "Sign language version");
+
+                        if (choice == "Sign language version")
+                        {
+                            selectedStreamingUrl = streamingUrlResponse.Content.StreamingSignedUrl;
+                        }
+                        else
+                        {
+                            selectedStreamingUrl = streamingUrlResponse.Content.StreamingUrl;
+                        }
+                    }
+
                     DependencyService.Get<IHud>().ShowSpinner("Downloading Lesson. This may take a few moments.");
 
-                    var downloadUrl = _sourceUrl + streamingUrlResponse.Content.StreamingUrl;
+                    var downloadUrl = _sourceUrl + selectedStreamingUrl;
                   
                     var downloadStatus = await DownloadFileAsync(downloadUrl, _downloadedFilePath, Lesson.Id + ".zip");
 
