@@ -1,0 +1,197 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link href="lib/videojs/video-js.css" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+        }
+
+        #debug {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 90%;
+            word-break: break-all;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="debug"></div>
+
+
+         <video id="player"
+                class="video-js"
+                controls
+                preload="auto"
+                width="640"
+                height="400"
+                >
+
+             <p class="vjs-no-js">
+                 To view this video please enable JavaScript, and consider upgrading to a
+                 web browser that
+                 <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+             </p>
+         </video>
+
+        <script src="lib/videojs/video.min.js"></script>
+        <script src="lib/hls/hls.min.js"></script>
+        <script>
+            (function ()
+            {
+                const debugDiv = document.getElementById('debug');
+                function debug(msg)
+                {
+                    console.log(msg);
+                    debugDiv.innerHTML += msg + '<br>';
+                }
+
+                debug('Player initializing...');
+
+                const params = new URLSearchParams(location.search);
+                const src = "https://portal.scottishonlinelessons.com/VideoHandler.ashx?lessonId=646&actionType=m3u8&token=X2FpG7dkpK8hoSMIM153qboEHbnxllgwHklOM9aVk5KWiGkbvUHrsLadHzw4MlFEVXqfbEly7XeuNvfqBYefHw2";
+                const poster = "https://portal.scottishonlinelessons.com/VideoHandler.ashx?lessonThumbId=646";
+                const enSub = "https://portal.scottishonlinelessons.com/subtitles/646/646.vtt";
+                const sslSub = "https://portal.scottishonlinelessons.com/subtitles/646/646_signed.vtt";
+
+                debug('URL params parsed:');
+                debug('src: ' + (src ? 'present' : 'missing'));
+                debug('poster: ' + (poster ? 'present' : 'missing'));
+                debug('enSub: ' + (enSub || 'missing'));
+                debug('sslSub: ' + (sslSub || 'missing'));
+
+
+                if (!src)
+                {
+                    document.body.innerHTML = '<p style="color:white">No source</p>';
+                    return;
+                }
+
+                const video = document.getElementById('player');
+
+                // Set poster if available
+                if (poster)
+                {
+                    video.poster = poster;
+                    debug('Poster set');
+                }
+
+                function initVideojs()
+                {
+
+                    debug('Initializing Video.js...');
+
+                    // Build tracks up front and pass them into the player options (NOT added after initialization)
+                    const tracks = [];
+                    let firstTrack = true;
+                    if (enSub)
+                    {
+                        debug('Prepared English subtitle track: ' + enSub);
+                        tracks.push({
+                            kind: 'subtitles',
+                            label: 'English',
+                            srclang: 'en',
+                            src: enSub,
+                            default: firstTrack
+                        });
+                        firstTrack = false;
+                    }
+
+                    if (sslSub)
+                    {
+                        debug('Prepared BSL subtitle track: ' + sslSub);
+                        tracks.push({
+                            kind: 'subtitles',
+                            label: 'British Sign Language',
+                            srclang: 'ssl',
+                            src: sslSub,
+                            default: firstTrack
+                        });
+                    }
+
+                    const player = videojs('player', {
+                        controls: true,
+                        preload: 'auto',
+                        fluid: true,
+                        playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+                     
+                        tracks: tracks
+                    });
+
+                    player.src({
+                        type: 'application/x-mpegURL',
+                        src: src,
+
+                    });
+
+                    // Handle fullscreen events
+                    player.on('fullscreenchange', function ()
+                    {
+                        if (player.isFullscreen())
+                        {
+                            debug('Entered fullscreen');
+                        } else
+                        {
+                            debug('Exited fullscreen');
+                        }
+                    });
+
+                    // Fallback: try native fullscreen if Video.js fullscreen fails
+                    player.on('error', function (e)
+                    {
+                        debug('Player error: ' + (player.error() ? player.error().message : 'unknown'));
+                    });
+
+                    window.player = player;
+
+                    // Hide debug info after 5 seconds if everything loaded
+                    setTimeout(() =>
+                    {
+                        debugDiv.style.display = 'none';
+                    }, 5000);
+
+                }
+
+                // Native HLS (iOS)
+                if (video.canPlayType && video.canPlayType('application/vnd.apple.mpegurl'))
+                {
+                    debug('Using native HLS support');
+
+                    initVideojs();
+
+
+                } else if (window.Hls && Hls.isSupported())
+                {
+                    debug('Using HLS.js');
+                    const hls = new Hls();
+                    hls.loadSource(src);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function ()
+                    {
+                        debug('HLS manifest parsed');
+                        initVideojs();
+                    });
+                    hls.on(Hls.Events.ERROR, function (event, data)
+                    {
+                        debug('HLS Error: ' + data.type + ' - ' + data.details);
+                    });
+                } else
+                {
+                    document.body.innerHTML = '<p style="color:white">HLS not supported</p>';
+                }
+            })();
+        </script>
+</body>
+</html>

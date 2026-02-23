@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using EmbedIO;
+﻿using EmbedIO;
+using ISAI.Lessons.Mobile.Platforms;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces.App;
 using ISAI.Lessons.Models.Models.App;
@@ -8,6 +7,8 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Xaml;
 using Microsoft.Maui.Storage;
+using System;
+using System.Threading.Tasks;
 
 namespace ISAI.Lessons.Mobile.Views
 {
@@ -42,12 +43,13 @@ namespace ISAI.Lessons.Mobile.Views
                 handler.PlatformView.Settings.AllowFileAccess = true;
                 handler.PlatformView.Settings.AllowFileAccessFromFileURLs = true;
                 handler.PlatformView.Settings.AllowUniversalAccessFromFileURLs = true;
+                handler.PlatformView.SetWebChromeClient(new WebPlayerChromeClient(handler));
 
 #elif IOS
 #endif
             });
         }
-        
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -63,24 +65,15 @@ namespace ISAI.Lessons.Mobile.Views
         {
             try
             {
-                // Show spinner
-                LoadingSpinner.IsVisible = true;
-                LoadingSpinner.IsRunning = true;
 
-                // Move video URL building to background thread
-                await Task.Run(() =>
-                {
-                    // Simulate any heavy processing if needed
-                    Task.Delay(100).Wait();
-                });
-
+             
                 // Build video URL on UI thread (since it's fast)
                 var encodedSrc = Uri.EscapeDataString(_streamingUrl ?? string.Empty);
-                
+
                 // Build poster URL
                 var posterUrl = string.Format("{0}/VideoHandler.ashx?lessonThumbId={1}", _sourceUrl, _lesson.Id);
                 var encodedPoster = Uri.EscapeDataString(posterUrl);
-                
+
                 // Build subtitle URLs
                 var subtitleParams = string.Empty;
 
@@ -94,21 +87,13 @@ namespace ISAI.Lessons.Mobile.Views
                     var sslSubUrl = string.Format("{0}/subtitles/{1}/{1}_signed.vtt", _sourceUrl, _lesson.Id);
                     subtitleParams += "&sslSub=" + Uri.EscapeDataString(sslSubUrl);
                 }
-                
+
                 var videoUrl = _baseUrl + "wwwroot/player.html?src=" + encodedSrc + "&poster=" + encodedPoster + subtitleParams;
                 VideoView.Source = videoUrl;
 
-                // Hide spinner after a short delay to ensure WebView starts loading
-                await Task.Delay(500);
-                LoadingSpinner.IsVisible = false;
-                LoadingSpinner.IsRunning = false;
             }
             catch (Exception ex)
             {
-                // Hide spinner on error
-                LoadingSpinner.IsVisible = false;
-                LoadingSpinner.IsRunning = false;
-                
                 // Optionally show error to user
                 await DisplayAlert("Error", "Failed to load video", "OK");
             }
@@ -121,7 +106,6 @@ namespace ISAI.Lessons.Mobile.Views
             base.OnDisappearing();
             DependencyService.Get<IDeviceOrientation>().UnlockOrientation();
         }
-
 
     }
 }
