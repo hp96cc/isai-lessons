@@ -1,11 +1,13 @@
 ﻿using CryptoNet;
 using Effortless.Net.Encryption;
+using ISAI.Lessons.Core.Services;
 using ISAI.Lessons.EntityFramework.Models;
 using ISAI.Lessons.EntityFramework.Services;
 using ISAI.Lessons.EntityFramework.ViewModels;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces;
 using ISAI.Lessons.Models.Models;
+using ISAI.Lessons.Models.Models.App;
 using ISAI.Lessons.Models.ViewModels;
 using ISAI.Lessons.Web.Portal.Helpers;
 using Microsoft.Graph.Models;
@@ -15,24 +17,25 @@ using Stripe.Checkout;
 using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Configuration;
 using Customer = ISAI.Lessons.EntityFramework.Models.Customer;
+using Lesson = ISAI.Lessons.EntityFramework.Models.Lesson;
+using LessonGroup = ISAI.Lessons.EntityFramework.Models.LessonGroup;
+using RequestOptions = Stripe.RequestOptions;
 using ResponseStatus = ISAI.Lessons.Models.Enums.ResponseStatus;
 using Subscription = ISAI.Lessons.EntityFramework.Models.Subscription;
+using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
 using TutorialSubject = ISAI.Lessons.Models.ViewModels.TutorialSubject;
 using TutorialSubjectGroup = ISAI.Lessons.Models.ViewModels.TutorialSubjectGroup;
-using Tutorial = ISAI.Lessons.EntityFramework.Models.Tutorial;
-using System.Text;
-using ISAI.Lessons.Core.Services;
-using RequestOptions = Stripe.RequestOptions;
 
 
 namespace ISAI.Lessons.Web.Portal.Controllers.Api
@@ -1146,7 +1149,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
         [Route("api/app/lessondownload")]
         [AllowAnonymous]
         [HttpPost]
-        public ResponseData<LessonStreamingResponse> LessonDownload(LessonRequestViewModel lessonRequestViewModel)
+        public async Task<ResponseData<LessonStreamingResponse>> LessonDownload(LessonRequestViewModel lessonRequestViewModel)
         {
             var response = new ResponseData<LessonStreamingResponse>();
 
@@ -1161,21 +1164,44 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
             var encryptedData = cryptoNetKey.EncryptFromString(lessonStreamingTokenJson);
             var encryptedToken = HttpServerUtility.UrlTokenEncode(encryptedData);
 
-            var videoSourcePath = Path.Combine(_videoRootFolder, lessonRequestViewModel.LessonId.ToString());
+            var legacyVideoSourcePath = Path.Combine(_videoRootFolder, lessonRequestViewModel.LessonId.ToString());
+            var contentVideoLocationPath = Path.Combine(_conetentRootFolder, lessonRequestViewModel.LessonId.ToString());
+
             var downloadZipPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString(), lessonRequestViewModel.LessonId.ToString() + ".zip");
-            var downloadFolderPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString());
 
             if (!System.IO.File.Exists(downloadZipPath))
             {
 
-                if (!Directory.Exists(downloadFolderPath))
-                    Directory.CreateDirectory(downloadFolderPath);
-
-                ZipService.ZipFolder(downloadZipPath, videoSourcePath);
+                if(Directory.Exists(contentVideoLocationPath))
+                    ZipService.ZipFolder(downloadZipPath, contentVideoLocationPath);
+                else
+                    ZipService.ZipFolder(downloadZipPath, legacyVideoSourcePath);
 
             }
 
             var url = string.Format("/VideoHandler.ashx?lessonId={0}&actionType=download&token={1}", lessonRequestViewModel.LessonId, encryptedToken);
+
+            var lesson = await db.Lesson.FirstOrDefaultAsync(x =>
+               x.Id == lessonRequestViewModel.LessonId &&
+               x.Deleted == false);
+
+            var subtitleLocation = Path.Combine(_conetentRootFolder, lesson.Id.ToString(), lesson.Id + ".vtt");
+            var subtitleUrl = System.IO.File.Exists(subtitleLocation) ? string.Format("/subtitles/{0}/{1}.vtt", lesson.Id, lesson.Id.ToString()) : null;
+
+            var subtitleSignedLocation = Path.Combine(_conetentRootFolder, lesson.Id.ToString(), lesson.Id + "_signed.vtt");
+            var subtitleSignedUrl = System.IO.File.Exists(subtitleSignedLocation) ? string.Format("/subtitles/{0}/{1}_signed.vtt", lesson.Id, lesson.Id.ToString()) : null;
+
+            response.Status = ResponseStatus.OK;
+            response.Content = new LessonStreamingResponse()
+            {
+                Token = encryptedToken,
+                StreamingUrl = url,
+                SubtitlesUrl = subtitleUrl,
+                SubtitlesSignedUrl = subtitleSignedUrl,
+                IsSignedAvailable = lesson.IsSignedAvailable,
+                IsSubtitlesAvailable = lesson.IsSubtitlesAvailable,
+                IsSigndSubtitlesAvailable = lesson.IsSigndSubtitlesAvailable,
+            };
 
             response.Status = ResponseStatus.OK;
             response.Content = new LessonStreamingResponse()

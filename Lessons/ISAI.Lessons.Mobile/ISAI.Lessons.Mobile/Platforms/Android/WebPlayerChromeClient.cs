@@ -31,12 +31,7 @@ namespace ISAI.Lessons.Mobile.Platforms
                 if (context.Window.DecorView is FrameLayout layout)
                     layout.RemoveView(customView);
 
-                // It may happen that your app is compatible with Tablet in landscape-only. 
-                // So, use the helper method to validate it. 
-                // Only return to original position if it is a phone
-                // Remove this validation if your app does not require it.
-                if (!IsTablet(context))
-                    context.RequestedOrientation =ScreenOrientation.Portrait;
+                context.RequestedOrientation = ScreenOrientation.Landscape;
 
                 // Show again the SystemBars and Status bar
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.R)
@@ -89,9 +84,6 @@ namespace ISAI.Lessons.Mobile.Platforms
                 layout.AddView(customView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
         }
 
-        private bool IsTablet(Activity context)
-        {
-            return (context.Resources.Configuration.ScreenLayout & ScreenLayout.SizeMask) >= ScreenLayout.SizeLarge;
-        }
+
     }
 }

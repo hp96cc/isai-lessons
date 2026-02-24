@@ -1,5 +1,4 @@
 ﻿using EmbedIO;
-using ISAI.Lessons.Mobile.Platforms;
 using ISAI.Lessons.Models.Enums;
 using ISAI.Lessons.Models.Interfaces.App;
 using ISAI.Lessons.Models.Models.App;
@@ -8,15 +7,22 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Xaml;
 using Microsoft.Maui.Storage;
 using System;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
+
+#if ANDROID
+using ISAI.Lessons.Mobile.Platforms;
+
+#elif IOS
+#endif
 
 namespace ISAI.Lessons.Mobile.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class VideoPage : ContentPage
     {
-        private const string _baseUrl = "http://localhost:9696/";
-        private const string _sourceUrl = "https://portal.scottishonlinelessons.com";
+        private string _sourceUrl = Constants.BaseReturnUrl;
         private Lesson _lesson;
         private WebServer server;
         private string _streamingUrl;
@@ -29,7 +35,7 @@ namespace ISAI.Lessons.Mobile.Views
             _streamingUrl = streamingUrl;
 
             server = new WebServer(o => o
-                    .WithUrlPrefix(_baseUrl)
+                    .WithUrlPrefix(Constants.LocalServerBaseUrl)
                     .WithMode(HttpListenerMode.EmbedIO))
                     .WithLocalSessionManager()
                     .WithStaticFolder("/", FileSystem.Current.AppDataDirectory, true);
@@ -65,8 +71,6 @@ namespace ISAI.Lessons.Mobile.Views
         {
             try
             {
-
-             
                 // Build video URL on UI thread (since it's fast)
                 var encodedSrc = Uri.EscapeDataString(_streamingUrl ?? string.Empty);
 
@@ -77,24 +81,56 @@ namespace ISAI.Lessons.Mobile.Views
                 // Build subtitle URLs
                 var subtitleParams = string.Empty;
 
+                // Ensure local subtitles folder path: {AppDataDirectory}/subtitles/{lessonId}/...
+                var localSubtitleDir = Path.Combine(FileSystem.Current.AppDataDirectory, "subtitles", _lesson.Id.ToString());
+                if (!Directory.Exists(localSubtitleDir))
+                {
+                    Directory.CreateDirectory(localSubtitleDir);
+                }
+
+                using var http = new HttpClient();
+
                 if (_lesson.IsSubtitlesAvailable)
                 {
-                    var englishSubUrl = string.Format("{0}/subtitles/{1}/{1}.vtt", _sourceUrl, _lesson.Id);
-                    subtitleParams += "&enSub=" + Uri.EscapeDataString(englishSubUrl);
+                    // Remote source path (used to download), relative path used in the player query so it resolves to the local server root
+                    var relativeEnglish = $"/subtitles/{_lesson.Id}/{_lesson.Id}.vtt";
+                    var remoteEnglish = $"{_sourceUrl}{relativeEnglish}";
+                    var localEnglishPath = Path.Combine(localSubtitleDir, $"{_lesson.Id}.vtt");
+
+                    try
+                    {
+                        var bytes = await http.GetByteArrayAsync(remoteEnglish);
+                        await File.WriteAllBytesAsync(localEnglishPath, bytes);
+                        subtitleParams += "&enSub=" + Uri.EscapeDataString(relativeEnglish);
+                    }
+                    catch (Exception)
+                    {
+                        // Swallow exception so player still loads without this subtitle.
+                    }
                 }
                 if (_lesson.IsSigndSubtitlesAvailable)
                 {
-                    var sslSubUrl = string.Format("{0}/subtitles/{1}/{1}_signed.vtt", _sourceUrl, _lesson.Id);
-                    subtitleParams += "&sslSub=" + Uri.EscapeDataString(sslSubUrl);
+                    var relativeSsl = $"/subtitles/{_lesson.Id}/{_lesson.Id}_signed.vtt";
+                    var remoteSsl = $"{_sourceUrl}{relativeSsl}";
+                    var localSslPath = Path.Combine(localSubtitleDir, $"{_lesson.Id}_signed.vtt");
+
+                    try
+                    {
+                        var bytes = await http.GetByteArrayAsync(remoteSsl);
+                        await File.WriteAllBytesAsync(localSslPath, bytes);
+                        subtitleParams += "&sslSub=" + Uri.EscapeDataString(relativeSsl);
+                    }
+                    catch (Exception)
+                    {
+                        // Swallow exception so player still loads without this subtitle.
+                    }
                 }
 
-                var videoUrl = _baseUrl + "wwwroot/player.html?src=" + encodedSrc + "&poster=" + encodedPoster + subtitleParams;
+                var videoUrl = Constants.LocalServerBaseUrl + "wwwroot/player.html?src=" + encodedSrc + "&poster=" + encodedPoster + subtitleParams;
                 VideoView.Source = videoUrl;
-
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Optionally show error to user
                 await DisplayAlert("Error", "Failed to load video", "OK");
             }
         }

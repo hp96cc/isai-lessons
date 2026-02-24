@@ -17,6 +17,8 @@ namespace ISAI.Lessons.Models.Models.App
 
         public string DownloadUrl { get; set; }
 
+        public string DownloadSignedUrl { get; set; }
+
         public string DownloadId { get; set; }
 
         public DateTime DateDownloaded { get; set; }

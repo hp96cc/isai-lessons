@@ -179,17 +179,37 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         async void OnWatchClicked(object obj)
         {
+          
+            VideoVersion? selectedVersion = VideoVersion.Standard;
+
+            if (Lesson.IsSignedAvailable)
+            {
+                var versionChoice = await Shell.Current.CurrentPage.DisplayActionSheet(
+                    "Choose version", 
+                    "Cancel", 
+                    null, 
+                    "Standard video", 
+                    "British Sign Language video");
+
+                if (versionChoice == "Cancel")
+                {
+                    return;
+                }
+
+                selectedVersion = versionChoice == "British Sign Language video" 
+                    ? VideoVersion.SignLanguage 
+                    : VideoVersion.Standard;
+            }
+
             if (videoDownload != null)
             {
-                var lessonPage = new VideoPage(Lesson, videoDownload.DownloadUrl);
-  
+                var lessonPage = new VideoPage(Lesson, selectedVersion == VideoVersion.Standard ? videoDownload.DownloadUrl : videoDownload.DownloadSignedUrl);
                 await Shell.Current.Navigation.PushAsync(lessonPage, true);
                 DependencyService.Get<IHud>().Dismiss();
             }
             else
             {
-
-
+                // Streamed video playback
                 DependencyService.Get<IHud>().ShowSpinner("Preparing video");
 
                 var apiService = new ApiService(DependencyService.Get<IAuthService>(), Constants.BasePortalUrl, Constants.BaseReturnUrl);
@@ -206,35 +226,21 @@ namespace ISAI.Lessons.Mobile.ViewModels
                     }
                 };
 
-
                 Console.Write("ISAI:" + JsonConvert.SerializeObject(lessonRequestViewModel));
 
                 Console.Write("ISAI:" + lessonRequestViewModel.LessonId + lessonRequestViewModel.RemoteMediaType.ToString() + lessonRequestViewModel.CustomerDevice.Name + lessonRequestViewModel.CustomerDevice.DeviceIdentifier + lessonRequestViewModel.CustomerDevice.DeviceType);
-
 
                 var streamingUrlResponse = await apiService.GetLessonStreamingUrlAsync(lessonRequestViewModel);
                 DependencyService.Get<IHud>().Dismiss();
 
                 if (streamingUrlResponse.Status == ResponseStatus.OK)
                 {
-
-                    // Check to see if a Signed Version is available, if so ask the user which one they want.
+                    // Select appropriate streaming URL based on version choice
                     string selectedStreamingUrl = streamingUrlResponse.Content?.StreamingUrl ?? string.Empty;
 
-                    if (streamingUrlResponse.Content != null && streamingUrlResponse.Content.IsSignedAvailable && !string.IsNullOrWhiteSpace(streamingUrlResponse.Content.StreamingSignedUrl))
+                    if (selectedVersion == VideoVersion.SignLanguage && !string.IsNullOrWhiteSpace(streamingUrlResponse.Content?.StreamingSignedUrl))
                     {
-                        // Present a simple action sheet to allow the user to choose
-                        var choice = await Application.Current.MainPage.DisplayActionSheet("Choose version", "Cancel", null, "Standard video", "Sign language version");
-
-                        if (choice == "Sign language version")
-                        {
-                            selectedStreamingUrl = streamingUrlResponse.Content.StreamingSignedUrl;
-                        }
-                        else
-                        {
-                            // default to standard stream (either explicit or fallback)
-                            selectedStreamingUrl = streamingUrlResponse.Content.StreamingUrl;
-                        }
+                        selectedStreamingUrl = streamingUrlResponse.Content.StreamingSignedUrl;
                     }
 
                     var lessonPage = new VideoPage(Lesson, _sourceUrl + selectedStreamingUrl);
@@ -243,13 +249,11 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 else if (streamingUrlResponse.ErrorResponse != null)
                 {
                     DependencyService.Get<IHud>().ShowError(streamingUrlResponse.ErrorResponse[0].Message, TimeSpan.FromSeconds(3));
-              }
+                }
                 else
                 {
                     DependencyService.Get<IHud>().ShowError("Cannot stream at this time.", TimeSpan.FromSeconds(3));
                 }
-
-
             }
             
         }
@@ -293,61 +297,105 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 if (streamingUrlResponse.Status == ResponseStatus.OK)
                 {
 
-                    // Check to see if a Signed Version is available, if so ask the user which one they want.
-                    string selectedStreamingUrl = streamingUrlResponse.Content?.StreamingUrl ?? string.Empty;
-
-                    if (streamingUrlResponse.Content != null && streamingUrlResponse.Content.IsSignedAvailable && !string.IsNullOrWhiteSpace(streamingUrlResponse.Content.StreamingSignedUrl))
-                    {
-                        var choice = await Application.Current.MainPage.DisplayActionSheet("Choose version to download", "Cancel", null, "Standard video", "Sign language version");
-
-                        if (choice == "Sign language version")
-                        {
-                            selectedStreamingUrl = streamingUrlResponse.Content.StreamingSignedUrl;
-                        }
-                        else
-                        {
-                            selectedStreamingUrl = streamingUrlResponse.Content.StreamingUrl;
-                        }
-                    }
-
                     DependencyService.Get<IHud>().ShowSpinner("Downloading Lesson. This may take a few moments.");
 
-                    var downloadUrl = _sourceUrl + selectedStreamingUrl;
-                  
-                    var downloadStatus = await DownloadFileAsync(downloadUrl, _downloadedFilePath, Lesson.Id + ".zip");
+                    var downloadStatus = await DownloadFileAsync(streamingUrlResponse.Content?.StreamingUrl, _downloadedFilePath, Lesson.Id + ".zip");
 
                     if (downloadStatus)
                     {
 
                         ZipService.ExtractZipFile(_downloadedFilePath + "/" + Lesson.Id + ".zip", _downloadedFilePath);
 
-                        //Rewrite the m3u8.key key location
-                        var m3u8FilePath = _downloadedFilePath + "/" + Lesson.Id + ".m3u8";
-                        var searchText = "#EXT-X-KEY:METHOD=AES-128,URI=\"";
+                        var lessonFilePath = Path.Combine(_downloadedFilePath, "m3u8");
+                        var lessonSignedFilePath = Path.Combine(_downloadedFilePath, "m3u8-signed");
 
-                        var m3u8FileText = File.ReadAllText(m3u8FilePath);
-                        var keyStartLocation = m3u8FileText.IndexOf(searchText) + searchText.Length;
-                        var keyEndLocation = m3u8FileText.IndexOf("\"", keyStartLocation);
-                        var currentKeyLocationText = m3u8FileText.Substring(keyStartLocation, keyEndLocation - keyStartLocation);
-                        var deviceKeyLocationText = string.Format("{0}.m3u8.key", Lesson.Id);
-
-                        m3u8FileText = m3u8FileText.Replace(currentKeyLocationText, deviceKeyLocationText);
-
-                        File.WriteAllText(m3u8FilePath, m3u8FileText);
-
-                        videoDownload = new VideoDownload()
+                        if (Directory.Exists(lessonFilePath))
                         {
-                            Id = Guid.NewGuid(),
-                            LessonId = Lesson.Id,
-                            LessonName = Lesson.Name,
-                            LessonGroup = Breadcrumb,
-                            DateDownloaded = DateTime.Now,
-                            //DownloadUrl = m3u8FilePath,
-                            DownloadUrl = string.Format("http://localhost:9696/{0}/{1}.m3u8", Lesson.Id, Lesson.Id)
+                            //Legacy support for older downloads where the m3u8 file was in the root of the zip rather than in an m3u8 folder
+                            var m3u8FilePath = lessonFilePath + "/" + Lesson.Id + ".m3u8";
+                            var searchText = "#EXT-X-KEY:METHOD=AES-128,URI=\"";
 
-                        };
+                            var m3u8FileText = File.ReadAllText(m3u8FilePath);
+                            var keyStartLocation = m3u8FileText.IndexOf(searchText) + searchText.Length;
+                            var keyEndLocation = m3u8FileText.IndexOf("\"", keyStartLocation);
+                            var currentKeyLocationText = m3u8FileText.Substring(keyStartLocation, keyEndLocation - keyStartLocation);
+                            var deviceKeyLocationText = string.Format("{0}.m3u8.key", Lesson.Id);
 
-                        DependencyService.Get<ISqliteService>().SaveVideoDownload(videoDownload);
+                            m3u8FileText = m3u8FileText.Replace(currentKeyLocationText, deviceKeyLocationText);
+
+                            File.WriteAllText(m3u8FilePath, m3u8FileText);
+
+                            // Rewrite key location for signed version if available
+                            if (Directory.Exists(lessonSignedFilePath))
+                            {
+                                var m3u8SignedFilePath = lessonSignedFilePath + "/" + Lesson.Id + ".m3u8";
+
+                                if (File.Exists(m3u8SignedFilePath))
+                                {
+                                    searchText = "#EXT-X-KEY:METHOD=AES-128,URI=\"";
+
+                                    m3u8FileText = File.ReadAllText(m3u8SignedFilePath);
+                                    keyStartLocation = m3u8FileText.IndexOf(searchText) + searchText.Length;
+                                    keyEndLocation = m3u8FileText.IndexOf("\"", keyStartLocation);
+                                    currentKeyLocationText = m3u8FileText.Substring(keyStartLocation, keyEndLocation - keyStartLocation);
+                                    deviceKeyLocationText = string.Format("{0}.m3u8.key", Lesson.Id);
+
+                                    m3u8FileText = m3u8FileText.Replace(currentKeyLocationText, deviceKeyLocationText);
+
+                                    File.WriteAllText(m3u8SignedFilePath, m3u8FileText);
+                                }
+                            }
+
+
+                            videoDownload = new VideoDownload()
+                            {
+                                Id = Guid.NewGuid(),
+                                LessonId = Lesson.Id,
+                                LessonName = Lesson.Name,
+                                LessonGroup = Breadcrumb,
+                                DateDownloaded = DateTime.Now,
+                                DownloadUrl = string.Format("http://localhost:9696/{0}/m3u8/{1}.m3u8", Lesson.Id, Lesson.Id),
+                                DownloadSignedUrl = string.Format("http://localhost:9696/{0}/m3u8-signed/{1}.m3u8", Lesson.Id, Lesson.Id),
+
+                            };
+
+                            DependencyService.Get<ISqliteService>().SaveVideoDownload(videoDownload);
+
+                        }
+                        else
+                        {
+                            //Legacy support for older downloads where the m3u8 file was in the root of the zip rather than in an m3u8 folder
+                            var m3u8FilePath = _downloadedFilePath + "/" + Lesson.Id + ".m3u8";
+                            var searchText = "#EXT-X-KEY:METHOD=AES-128,URI=\"";
+
+                            var m3u8FileText = File.ReadAllText(m3u8FilePath);
+                            var keyStartLocation = m3u8FileText.IndexOf(searchText) + searchText.Length;
+                            var keyEndLocation = m3u8FileText.IndexOf("\"", keyStartLocation);
+                            var currentKeyLocationText = m3u8FileText.Substring(keyStartLocation, keyEndLocation - keyStartLocation);
+                            var deviceKeyLocationText = string.Format("{0}.m3u8.key", Lesson.Id);
+
+                            m3u8FileText = m3u8FileText.Replace(currentKeyLocationText, deviceKeyLocationText);
+
+                            File.WriteAllText(m3u8FilePath, m3u8FileText);
+
+                            videoDownload = new VideoDownload()
+                            {
+                                Id = Guid.NewGuid(),
+                                LessonId = Lesson.Id,
+                                LessonName = Lesson.Name,
+                                LessonGroup = Breadcrumb,
+                                DateDownloaded = DateTime.Now,
+                                DownloadUrl = string.Format("http://localhost:9696/{0}/{1}.m3u8", Lesson.Id, Lesson.Id),
+                                DownloadSignedUrl = null
+
+                            };
+
+                            DependencyService.Get<ISqliteService>().SaveVideoDownload(videoDownload);
+
+                        }
+
+                        // Debug: List all files in AppDataDirectory
+                        LogAppDataDirectoryContents();
 
                         CanDeleteDownload = true;
                         CanDownload = false;
@@ -384,6 +432,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
             try
             {
                 using var client = new HttpClient();
+                client.BaseAddress = new Uri(Constants.BaseReturnUrl);
 
                 var downloadStream = await client.GetByteArrayAsync(fileUrl);
 
@@ -407,8 +456,7 @@ namespace ISAI.Lessons.Mobile.ViewModels
 
         async void OnDeleteDownloadClicked(object obj)
         {
-
-            var result = await Application.Current.MainPage.DisplayAlert("Delete Download", "Are you sure you want to delete this download?", "Yes", "Cancel");
+            var result = await Shell.Current.CurrentPage.DisplayAlert("Delete Download", "Are you sure you want to delete this download?", "Yes", "Cancel");
 
             if(result)
             {
@@ -416,12 +464,58 @@ namespace ISAI.Lessons.Mobile.ViewModels
                 DependencyService.Get<ISqliteService>().DeleteVideoDownload(videoDownload);
                 CheckDownloadStatus();
             }
-
-          
         }
 
+        private void LogAppDataDirectoryContents()
+        {
+            try
+            {
+                var appDataDir = FileSystem.Current.AppDataDirectory;
+                Console.WriteLine($"=== Listing all files in AppDataDirectory: {appDataDir} ===");
+                
+                LogDirectoryRecursive(appDataDir, 0);
+                
+                var allFiles = Directory.GetFiles(appDataDir, "*.*", SearchOption.AllDirectories);
+                var allDirs = Directory.GetDirectories(appDataDir, "*", SearchOption.AllDirectories);
+                
+                Console.WriteLine($"=== Total Files: {allFiles.Length}, Total Directories: {allDirs.Length} ===");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error listing files: {ex.Message}");
+            }
+        }
 
-
+        private void LogDirectoryRecursive(string path, int level)
+        {
+            try
+            {
+                var indent = new string(' ', level * 2);
+                
+                // Log directories
+                var directories = Directory.GetDirectories(path);
+                foreach (var dir in directories)
+                {
+                    var dirName = Path.GetFileName(dir);
+                    Console.WriteLine($"{indent}[DIR]  {dirName}/");
+                    LogDirectoryRecursive(dir, level + 1);
+                }
+                
+                // Log files
+                var files = Directory.GetFiles(path);
+                foreach (var file in files)
+                {
+                    var fileName = Path.GetFileName(file);
+                    var fileInfo = new FileInfo(file);
+                    Console.WriteLine($"{indent}[FILE] {fileName} ({fileInfo.Length:N0} bytes)");
+                }
+            }
+            catch (Exception ex)
+            {
+                var indent = new string(' ', level * 2);
+                Console.WriteLine($"{indent}Error accessing {path}: {ex.Message}");
+            }
+        }
 
     }
 }
