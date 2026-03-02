@@ -52,22 +52,18 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void PromptForAbandonedSubscription()
         {
-            return;
-                if (_isSendingAbandonedSubscriptionEmails) return;
+            if (_isSendingAbandonedSubscriptionEmails) return;
 
-                try
-                {
+            try
+            {
+                _isSendingAbandonedSubscriptionEmails = true;
 
                 using (var db = new LessonsDbContext())
                 {
                     // Use UTC if DateCreated is stored in UTC. Adjust to DateTime.Now if stored as local.
                     var nowUtc = DateTime.UtcNow;
-                    var targetTimeUtc = nowUtc.AddHours(-1);
-
-                    // Allow a small window to account for scheduler frequency.
-                    // If your scheduler runs every minute, +/- 1 minute is reasonable.
-                    var windowStart = targetTimeUtc.AddMinutes(-1);
-                    var windowEnd = targetTimeUtc.AddMinutes(1);
+                    // Threshold: created more than 1 hour ago
+                    var thresholdUtc = nowUtc.AddHours(-1);
 
                     var subscriptions = db.Subscription
                         .Include(x => x.Customer)
@@ -75,34 +71,36 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                             x.Deleted == false &&
                             x.Active == false &&
                             x.HasAbondonedSubscriptionEmailBeenSent == false &&
-                            x.DateCreated >= windowStart &&
-                            x.DateCreated <= windowEnd)
+                            x.DateCreated <= thresholdUtc)
                         .ToList();
 
                     foreach (var subscription in subscriptions)
                     {
+                        try
+                        {
+                            var subject = "Scottish Online Lessons";
+                            var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/abandoned-subscription/");
 
-                        var subject = "Scottish Online Lessons";
-                        var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/abandoned-subscription/");
+                            var graphApi = new MicrosoftGraphApiService();
+                            graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { subscription.Customer.Email }, new List<string> { "info@scottishonlinelessons.com" }, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
 
-                        var graphApi = new MicrosoftGraphApiService();
-                        graphApi.SendEmail(_systemGraphUserEmail, subject, htmlBody, new List<string>() { subscription.Customer.Email }, new List<string> { "info@scottishonlinelessons.com" }, new List<string>() { _systemAdminEmail, _clientAuditEmail }, new List<string>() { _systemGraphUserEmail }, true).Wait();
-
-                        subscription.HasAbondonedSubscriptionEmailBeenSent = true;
-                        subscription.DateModified = DateTime.UtcNow;
-                        subscription.ModifiedUserId = _systemUserId;
-                        db.Entry(subscription).State = EntityState.Modified;
-
+                            subscription.HasAbondonedSubscriptionEmailBeenSent = true;
+                            subscription.DateModified = DateTime.UtcNow;
+                            subscription.ModifiedUserId = _systemUserId;
+                            db.Entry(subscription).State = EntityState.Modified;
+                        }
+                        catch (Exception)
+                        {
+                            // continue with next subscription; consider logging
+                        }
                     }
 
                     db.SaveChanges();
-
                 }
-
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                var t = true;
+                // consider logging
             }
             finally
             {
@@ -113,7 +111,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void CreateTeamsMeetingForGroupLessons()
         {
-            return;
+      
             if (_isCreateTeamsMeetingForGroupLessons) return;
 
             try
@@ -186,7 +184,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
         }
         public static void DeleteAbandonedTutorials()
         {
-            return;
+        
             if (_isDeletingAbandonedTutorials) return;
 
             try
@@ -247,7 +245,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void SendPendingTutorialEmails()
         {
-            return;
+        
             if (_isSendingTutorialEmails) return;
 
             try
@@ -339,7 +337,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void SendTutorialReviewEmails()
         {
-            return;
+          
             if (__isSendingTutorialReviewEmails) return;
 
             try
@@ -399,7 +397,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void SendFreeTrailSignupEmails()
         {
-            return;
+          
 
             if (_isSendingFreeTrailSignupEmails) return;
 
@@ -466,7 +464,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
 
         public static void SendFreeTrailExpirySignupEmails()
         {
-            return;
+           
             // Prevent concurrent runs
             if (_isSendingFreeTrailExpiryEmails) return;
 

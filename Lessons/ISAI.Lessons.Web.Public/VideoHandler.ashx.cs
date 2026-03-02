@@ -111,12 +111,12 @@ namespace ISAI.Lessons.Web.Public
 
                     if (isSigned)
                     {
-                        var m3u8FilePath = Path.Combine(_conetentRootFolder, "m3u8-signed", string.Format("{0}.m3u8", lessonId));
+                        var m3u8FilePath = Path.Combine(_conetentRootFolder, lessonId, "m3u8-signed", string.Format("{0}.m3u8", lessonId));
                         m3u8FileContents = Parsem3u8File(File.ReadAllText(m3u8FilePath), lessonId, token, isApp, true);
 
                     } else
                     {
-                        var m3u8FilePath = Path.Combine(_conetentRootFolder, "m3u8", string.Format("{0}.m3u8", lessonId));
+                        var m3u8FilePath = Path.Combine(_conetentRootFolder, lessonId, "m3u8", string.Format("{0}.m3u8", lessonId));
 
                         //TODO: need to delete old files
                         if (!File.Exists(m3u8FilePath))

@@ -15,6 +15,7 @@
 
     bool showExtraInfo = Request.QueryString["ExtraInfo"] != null;
     bool isTestMode = Request.QueryString["TestMode"] != null;
+    bool isSignedVideo = Request.QueryString["Signed"] != null;
 }
 
 @{
@@ -96,13 +97,14 @@
                 @if (ViewBag.LoggedIn != null && ViewBag.LoggedIn == true)
                 {
 
+
+
                     <video id="sol-video"
                            class="video-js vjs-fluid"
                            controls
                            preload="auto"
                            width="640"
-                           height="400"
-                           >
+                           height="400">
 
                         <p class="vjs-no-js">
                             To view this video please enable JavaScript, and consider upgrading to a
@@ -110,6 +112,11 @@
                             <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
                         </p>
                     </video>
+
+                    <div class="mt-4 mb-2 d-flex justify-content-end" id="btn-toggle-sign-container">
+                        <!-- Toggle button for Standard / Sign Language -->
+                        <button id="btn-toggle-sign" class="butn x-small sky" onclick="ToggleSigned();" data-enabled="true" aria-pressed="false" style="">Show Sign Language Version</button>
+                    </div>
 
                 }
                 else
@@ -310,34 +317,98 @@
 
         <script>
 
+              var isSignedVideo = @(isSignedVideo ? "true" : "false");
 
             $(document).ready(function () {
                 $("#panel-nolicence").hide();
+                $("#btn-toggle-sign-container").hide();
+
+                if (isSignedVideo)
+                    $("#btn-toggle-sign").text("Watch Standard Video");
+                else
+                    $("#btn-toggle-sign").text("Watch BSL Signed Video");
+
             });
 
-    function initFingerprintJS() {
-        FingerprintJS.load().then(fp => {
-            fp.get().then(result => {
-                LessonsApp.visitorId = result.visitorId;
-                console.log(LessonsApp.visitorId);
-                
-            });
-        });
+            function initFingerprintJS()
+            {
+                FingerprintJS.load().then(fp =>
+                {
+                    fp.get().then(result =>
+                    {
+                        LessonsApp.visitorId = result.visitorId;
+                        console.log(LessonsApp.visitorId);
+
+                    });
+                });
             }
 
 
 
-        function ToggleLessonNotes() {
+            function ToggleLessonNotes()
+            {
 
-            $("#lesson-notes").toggleClass('d-none');
+                $("#lesson-notes").toggleClass('d-none');
 
-            if ($("#notes-button-label").text === 'Show Notes') {
-                $("#notes-button-label").text('Hide Notes');
-            } else {
-                $("#notes-button-label").text('Show Notes');
+                if ($("#notes-button-label").text === 'Show Notes')
+                {
+                    $("#notes-button-label").text('Hide Notes');
+                } else
+                {
+                    $("#notes-button-label").text('Show Notes');
+                }
+
             }
 
-        }
+
+            function ToggleSigned()
+            {
+                try
+                {
+                    // Use the URL API to preserve other query params and hash
+                    var url = new URL(window.location.href);
+                    var params = url.searchParams;
+
+                    if (isSignedVideo)
+                    {
+                        // currently showing signed, remove Signed param
+                        params.delete('Signed');
+                    } else
+                    {
+                        // add Signed=true
+                        params.set('Signed', 'true');
+                    }
+
+                    // Apply modified query and redirect
+                    url.search = params.toString();
+                    window.location.href = url.toString();
+                } catch (e)
+                {
+                    // Fallback for older browsers: manipulate query string manually
+                    var href = window.location.href;
+                    var hashIndex = href.indexOf('#');
+                    var hash = hashIndex !== -1 ? href.substring(hashIndex) : '';
+                    var main = hashIndex !== -1 ? href.substring(0, hashIndex) : href;
+
+                    var qIndex = main.indexOf('?');
+                    var base = qIndex === -1 ? main : main.substring(0, qIndex);
+                    var query = qIndex === -1 ? '' : main.substring(qIndex + 1);
+
+                    var pairs = query ? query.split('&').filter(function (p)
+                    {
+                        return p.split('=')[0].toLowerCase() !== 'signed';
+                    }) : [];
+
+                    if (!isSignedVideo)
+                    {
+                        pairs.push('Signed=true');
+                    }
+
+                    var newUrl = base + (pairs.length ? '?' + pairs.join('&') : '') + hash;
+                    window.location.href = newUrl;
+                }
+            }
+
 
         async function SetLessonUrl() {
 
@@ -364,22 +435,44 @@
                     $("#lessonplayer").show();
 
                     var showSubtitles = @(isTestMode ? "true" : "false");
+                    var streamingUrl = isSignedVideo ? data.Content.StreamingSignedUrl : data.Content.StreamingUrl;
+
+                    if (showSubtitles === false)
+                        showSubtitles = data.Content.IsSignedAvailable;
+
+                    if (data.Content.IsSignedAvailable)
+                        $("#btn-toggle-sign-container").show();
+                    else
+                        $("#btn-toggle-sign-container").hide();
 
                     if (data.Content.SubtitlesUrl && showSubtitles)
                     {
-                        var myPlayer = videojs('sol-video', {
-                            fill: true,
-                            tracks: [{
-                                src: data.Content.SubtitlesUrl,
+
+                        var tracks = [{
+                            src: data.Content.SubtitlesUrl,
+                            kind: 'captions',
+                            srclang: 'en',
+                            label: 'English'
+                        }];
+
+                        if (data.Content.IsSigndSubtitlesAvailable)
+                        {
+                            tracks.push({
+                                src: data.Content.SubtitlesSignedUrl,
                                 kind: 'captions',
                                 srclang: 'en',
-                                label: 'English'
-                            }]
+                                label: 'BSL Signed English'
+                            });
+                        }
+
+                        var myPlayer = videojs('sol-video', {
+                            fill: true,
+                            tracks: tracks
 
                         });
                         myPlayer.src({
                             type: 'application/x-mpegURL',
-                            src: data.Content.StreamingUrl,
+                            src: streamingUrl,
 
                         });
                     } else
@@ -389,13 +482,13 @@
                         });
                         myPlayer.src({
                             type: 'application/x-mpegURL',
-                            src: data.Content.StreamingUrl,
+                            src: streamingUrl,
 
                         });
                     }
 
-                  
-                   
+
+
                     return;
 
                 } else if(data.ErrorResponse) {
