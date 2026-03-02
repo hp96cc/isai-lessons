@@ -78,6 +78,31 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                     {
                         try
                         {
+                            // normalize email for comparisons
+                            var normalizedEmail = subscription.Customer?.Email.Trim().ToLower();
+
+                            // Check the database for any other subscription (excluding current) where the abandoned email has already been sent
+                            var otherHasBeenSent = db.Subscription
+                                .Include(s => s.Customer)
+                                .Any(s =>
+                                    s.Id != subscription.Id &&
+                                    s.Deleted == false &&
+                                    s.Customer != null &&
+                                    s.Customer.Email != null &&
+                                    s.Customer.Email.Trim().ToLower() == normalizedEmail
+                                );
+
+                            if (otherHasBeenSent)
+                            {
+                                // Another subscription for this email already received the abandoned email — mark this one as sent and persist
+                                subscription.HasAbondonedSubscriptionEmailBeenSent = true;
+                                subscription.DateModified = DateTime.UtcNow;
+                                subscription.ModifiedUserId = _systemUserId;
+                                db.Entry(subscription).State = EntityState.Modified;
+                                db.SaveChanges();
+                                continue;
+                            }
+
                             var subject = "Scottish Online Lessons";
                             var htmlBody = EmailService.GetTemplateHTML(_returnUrl + "/email-templates/abandoned-subscription/");
 
@@ -88,6 +113,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                             subscription.DateModified = DateTime.UtcNow;
                             subscription.ModifiedUserId = _systemUserId;
                             db.Entry(subscription).State = EntityState.Modified;
+                            db.SaveChanges();
                         }
                         catch (Exception)
                         {
@@ -95,7 +121,7 @@ namespace ISAI.Lessons.Web.Portal.Helpers
                         }
                     }
 
-                    db.SaveChanges();
+                    // all changes persisted per-subscription above
                 }
             }
             catch (Exception)
