@@ -4,7 +4,6 @@
     Layout = "Master.cshtml";
 }
 
-
 <!-- BREADCRUMB -->
 <nav class="py-4">
     <div class="container">
@@ -62,17 +61,6 @@
                         <form id="account-form" class="needs-validation" novalidate>
                             <div class="row">
 
-                                <!--<div class="col-12 ">-->
-                                <!-- Email -->
-                                <!--<div class="form-group">
-            <label for="accountFirstName">
-                Title *
-            </label>
-            <input class="form-control form-control-sm" id="accountTitle" type="text" placeholder="Title *" required>
-        </div>
-
-    </div>-->
-
                                 <div class="col-12">
 
                                     <!-- Email -->
@@ -100,9 +88,9 @@
                                     <!-- Email -->
                                     <div class="form-group">
                                         <label for="accountEmail">
-                                            Email Address *
+                                            Email Address
                                         </label>
-                                        <input class="form-control form-control-sm" id="accountEmail" type="email" placeholder="Email Address *" required>
+                                        <input class="form-control form-control-sm" id="accountEmail" type="email" placeholder="Email Address" readonly aria-readonly="true">
                                     </div>
 
                                 </div>
@@ -190,7 +178,6 @@
 
         function DisplayCustomer() {
 
-            //$('#accountTitle').val(lessonsApp.customer.FirstName);
             $('#accountFirstName').val(customer.FirstName);
             $('#accountLastName').val(customer.LastName);
             $('#accountEmail').val(customer.Email);
@@ -230,7 +217,6 @@
                 $('#account-panel').show();
                 $('#spinner-loading').hide();
 
-            //if (result) {
             if (data.Status === 0) {
 
                 $("#label-saved").show();
