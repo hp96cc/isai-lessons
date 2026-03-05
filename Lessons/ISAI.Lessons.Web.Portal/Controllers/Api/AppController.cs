@@ -1147,7 +1147,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
         }
         [Route("api/app/lessondownload")]
-        [AllowAnonymous]
+        [AllowAnonymous] //TODO: this needs to be removed
         [HttpPost]
         public async Task<ResponseData<LessonStreamingResponse>> LessonDownload(LessonRequestViewModel lessonRequestViewModel)
         {
@@ -1166,12 +1166,10 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
 
             var legacyVideoSourcePath = Path.Combine(_videoRootFolder, lessonRequestViewModel.LessonId.ToString());
             var contentVideoLocationPath = Path.Combine(_conetentRootFolder, lessonRequestViewModel.LessonId.ToString());
-
-            var downloadZipPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString(), lessonRequestViewModel.LessonId.ToString() + ".zip");
+            var downloadZipPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString() + ".zip");
 
             if (!System.IO.File.Exists(downloadZipPath))
             {
-
                 if(Directory.Exists(contentVideoLocationPath))
                     ZipService.ZipFolder(downloadZipPath, contentVideoLocationPath);
                 else
@@ -1342,30 +1340,7 @@ namespace ISAI.Lessons.Web.Portal.Controllers.Api
                     else if (lessonRequestViewModel.RemoteMediaType == RemoteMediaType.Download)
                     {
                         
-                        var lessonStreamingToken = new LessonStreamingToken()
-                        {
-                            LessonId = lesson.Id,
-                            ExpiryDate = DateTime.UtcNow.AddHours(2)
-                        };
-
-                        var lessonStreamingTokenJson = JsonConvert.SerializeObject(lessonStreamingToken);
-                        var encryptedData = cryptoNetKey.EncryptFromString(lessonStreamingTokenJson);
-                        var encryptedToken = HttpServerUtility.UrlTokenEncode(encryptedData);
-
-                        var videoSourcePath = Path.Combine(_videoRootFolder, lessonRequestViewModel.LessonId.ToString());
-                        var downloadZipPath = Path.Combine(_videoDownloadFolder, lessonRequestViewModel.LessonId.ToString() + ".zip");
-       
-                        if(!System.IO.File.Exists(downloadZipPath))
-                            ZipService.ZipFolder(downloadZipPath, videoSourcePath);
-
-                        var url = string.Format("/VideoHandler.ashx?lessonId={0}&actionType=download&token={1}", lesson.Id, encryptedToken);
-
-                        response.Status = ResponseStatus.OK;
-                        response.Content = new LessonStreamingResponse()
-                        {
-                            StreamingUrl = url,
-                            Token = encryptedToken,
-                        };
+                        return await LessonDownload(lessonRequestViewModel);
 
                     }
                     else
