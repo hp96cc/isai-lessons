@@ -89,6 +89,29 @@ namespace ISAI.Lessons.WhsiperAIDemo
 
                 Console.WriteLine($"\nWebVTT file created: {vttPath}");
 
+                // Translate subtitles to configured languages
+                var translationConfig = AppConfiguration.Instance.Translation;
+                if (translationConfig.Enabled && translationConfig.TargetLanguages != null && translationConfig.TargetLanguages.Count > 0)
+                {
+                    Console.WriteLine("Starting subtitle translation...");
+
+                    // Read the full transcript from the VTT we just created
+                    var fullTranscript = File.ReadAllText(vttPath);
+
+                    var translationService = new SubtitleTranslationService(
+                        translationConfig.OllamaBaseUrl,
+                        translationConfig.OllamaModel,
+                        translationConfig.MaxCharsPerGroup);
+
+                    await translationService.TranslateToAllLanguagesAsync(
+                        vttPath,
+                        fullTranscript,
+                        nameWithoutExt,
+                        translationConfig.TargetLanguages).ConfigureAwait(false);
+
+                    Console.WriteLine("Subtitle translation complete.");
+                }
+
                 var destDir = Path.Combine(baseFolder, nameWithoutExt);
                 Directory.CreateDirectory(destDir);
 

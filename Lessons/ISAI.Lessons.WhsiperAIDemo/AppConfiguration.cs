@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Runtime.InteropServices;
@@ -19,6 +20,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
         public OneDriveSettings OneDrive { get; init; }
         public GraphSettings Graph { get; init; }
         public RagDatabaseSettings RagDatabase { get; init; }
+        public TranslationSettings Translation { get; init; }
 
         private AppConfiguration()
         {
@@ -26,6 +28,7 @@ namespace ISAI.Lessons.WhsiperAIDemo
             OneDrive = new OneDriveSettings();
             Graph = new GraphSettings();
             RagDatabase = new RagDatabaseSettings();
+            Translation = new TranslationSettings();
         }
 
         private static AppConfiguration LoadConfiguration()
@@ -101,6 +104,18 @@ namespace ISAI.Lessons.WhsiperAIDemo
                 baseConfig.RagDatabase.OutputDirectory = platformConfig.RagDatabase.OutputDirectory ?? baseConfig.RagDatabase.OutputDirectory;
                 baseConfig.RagDatabase.FramesDirectory = platformConfig.RagDatabase.FramesDirectory ?? baseConfig.RagDatabase.FramesDirectory;
             }
+
+            // Merge Translation settings
+            if (platformConfig.Translation != null)
+            {
+                baseConfig.Translation.OllamaBaseUrl = platformConfig.Translation.OllamaBaseUrl ?? baseConfig.Translation.OllamaBaseUrl;
+                baseConfig.Translation.OllamaModel = platformConfig.Translation.OllamaModel ?? baseConfig.Translation.OllamaModel;
+                if (platformConfig.Translation.TargetLanguages != null)
+                    baseConfig.Translation.TargetLanguages = platformConfig.Translation.TargetLanguages;
+                baseConfig.Translation.Enabled = platformConfig.Translation.Enabled;
+                if (platformConfig.Translation.MaxCharsPerGroup > 0)
+                    baseConfig.Translation.MaxCharsPerGroup = platformConfig.Translation.MaxCharsPerGroup;
+            }
         }
 
         private static void ApplyEnvironmentVariableOverrides(AppConfiguration config)
@@ -175,6 +190,15 @@ namespace ISAI.Lessons.WhsiperAIDemo
             public string FramesDirectory { get; set; } = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? @"C:\Temp\SOL RAG Test\frames"
                 : "/tmp/SOL RAG Test/frames";
+        }
+
+        public sealed class TranslationSettings
+        {
+            public string OllamaBaseUrl { get; set; } = "http://localhost:11434";
+            public string OllamaModel { get; set; } = "gemma3:12b";
+            public List<string> TargetLanguages { get; set; } = new List<string> { "es", "fr", "de" };
+            public bool Enabled { get; set; } = true;
+            public int MaxCharsPerGroup { get; set; } = 500;
         }
     }
 }
