@@ -115,6 +115,11 @@ namespace ISAI.Lessons.WhsiperAIDemo
                 baseConfig.Translation.Enabled = platformConfig.Translation.Enabled;
                 if (platformConfig.Translation.MaxCharsPerGroup > 0)
                     baseConfig.Translation.MaxCharsPerGroup = platformConfig.Translation.MaxCharsPerGroup;
+                baseConfig.Translation.PiperPath = platformConfig.Translation.PiperPath ?? baseConfig.Translation.PiperPath;
+                baseConfig.Translation.PiperVoicesPath = platformConfig.Translation.PiperVoicesPath ?? baseConfig.Translation.PiperVoicesPath;
+                baseConfig.Translation.GenerateDubbedAudio = platformConfig.Translation.GenerateDubbedAudio;
+                if (platformConfig.Translation.VoiceMap != null && platformConfig.Translation.VoiceMap.Count > 0)
+                    baseConfig.Translation.VoiceMap = platformConfig.Translation.VoiceMap;
             }
         }
 
@@ -199,6 +204,28 @@ namespace ISAI.Lessons.WhsiperAIDemo
             public List<string> TargetLanguages { get; set; } = new List<string> { "es", "fr", "de" };
             public bool Enabled { get; set; } = true;
             public int MaxCharsPerGroup { get; set; } = 500;
+
+            public string PiperPath { get; set; } = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? @"C:\piper\piper.exe"
+                : "/usr/local/bin/piper";
+            public string PiperVoicesPath { get; set; } = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? @"C:\piper\voices\"
+                : "/usr/local/share/piper-voices/";
+            public bool GenerateDubbedAudio { get; set; } = false;
+            public Dictionary<string, string> VoiceMap { get; set; } = new Dictionary<string, string>
+            {
+                { "es", "es_ES-davefx-medium" },
+                { "fr", "fr_FR-tom-medium" },
+                { "de", "de_DE-thorsten-high" },
+                { "it", "it_IT-paola-medium" },
+                { "pt", "pt_BR-faber-medium" },
+                { "pl", "pl_PL-gosia-medium" },
+                { "nl", "nl_NL-mls-medium" },
+                { "ru", "ru_RU-denis-medium" },
+                { "ar", "ar_JO-kareem-medium" },
+                { "hi", "hi_IN-pratham-medium" },
+                { "zh", "zh_CN-huayan-medium" }
+            };
         }
     }
 }

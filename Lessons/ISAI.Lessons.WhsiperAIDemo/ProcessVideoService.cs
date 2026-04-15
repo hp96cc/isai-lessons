@@ -1,6 +1,7 @@
 using FFMpegCore;
 using Microsoft.Identity.Client;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -110,6 +111,27 @@ namespace ISAI.Lessons.WhsiperAIDemo
                         translationConfig.TargetLanguages).ConfigureAwait(false);
 
                     Console.WriteLine("Subtitle translation complete.");
+                }
+
+                // Generate dubbed MP4s with Piper TTS (after subtitle translation, before zip)
+                var dubbingConfig = AppConfiguration.Instance.Translation;
+                if (dubbingConfig != null && dubbingConfig.GenerateDubbedAudio
+                    && dubbingConfig.TargetLanguages != null && dubbingConfig.TargetLanguages.Count > 0)
+                {
+                    Console.WriteLine("Starting audio dubbing with Piper TTS...");
+
+                    var piperTts = new PiperTtsService(dubbingConfig.PiperPath, dubbingConfig.PiperVoicesPath);
+                    var dubbingService = new AudioDubbingService(piperTts);
+
+                    await dubbingService.GenerateAllDubbedVideosAsync(
+                        mp4Path,
+                        outputFolder,
+                        nameWithoutExt,
+                        dubbingConfig.TargetLanguages,
+                        dubbingConfig.VoiceMap ?? new Dictionary<string, string>()
+                    ).ConfigureAwait(false);
+
+                    Console.WriteLine("Audio dubbing complete.");
                 }
 
                 var destDir = Path.Combine(baseFolder, nameWithoutExt);
